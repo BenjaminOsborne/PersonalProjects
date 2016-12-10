@@ -1,0 +1,11 @@
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\bin\Release\ProjectEuler.exe.config
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\bin\Release\ProjectEuler.XML
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\bin\Release\ProjectEuler.exe
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\bin\Release\ProjectEuler.pdb
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\bin\Release\CSharpHelperFunctions.dll
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\bin\Release\FSharp.Core.dll
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\bin\Release\CSharpHelperFunctions.pdb
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\bin\Release\FSharp.Core.xml
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\obj\Release\ProjectEuler.fsprojResolveAssemblyReference.cache
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\obj\Release\ProjectEuler.exe
+C:\Google Drive\C# Programs\F#\Examples\ProjectEuler\obj\Release\ProjectEuler.pdb

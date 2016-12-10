@@ -1,0 +1,447 @@
+﻿<Window x:Class="SodukuWPFA.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" FontSize="20" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Height="748" Width="656" Loaded="Window_Loaded">
+    <TabControl Height="700" Name="tabControl1" Width="508" HorizontalContentAlignment="Left" VerticalContentAlignment="Top">
+        <TabItem Header="Soduku Solver" Name="tabItem1">
+            <Grid Height="658" HorizontalAlignment="Center" VerticalAlignment="Top" Width="498">
+                <Grid Height="450" HorizontalAlignment="Center" Name="grid1" VerticalAlignment="Top" Width="449" Margin="18,6,12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="50" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="50" />
+                    </Grid.RowDefinitions>
+                    <TextBox FontSize="22" Height="50" Name="textBox1" VerticalAlignment="Top" Grid.Row="1" Grid.Column="1" TextChanged="textBox1_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="2" Height="50" Name="textBox2" VerticalAlignment="Top" Grid.Row="1" TextChanged="textBox2_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="3" Height="50" HorizontalAlignment="Left" Name="textBox3" VerticalAlignment="Top" Width="50" Grid.Row="1" TextChanged="textBox3_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="4" Height="50" HorizontalAlignment="Left" Name="textBox4" VerticalAlignment="Top" Width="50" Grid.Row="1" TextChanged="textBox4_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="5" Height="50" HorizontalAlignment="Left" Name="textBox5" VerticalAlignment="Top" Width="50" Grid.Row="1" TextChanged="textBox5_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="6" Height="50" HorizontalAlignment="Left" Name="textBox6" VerticalAlignment="Top" Width="50" Grid.Row="1" TextChanged="textBox6_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="7" Height="50" HorizontalAlignment="Left" Name="textBox7" VerticalAlignment="Top" Width="50" Grid.Row="1" TextChanged="textBox7_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="8" Height="50" HorizontalAlignment="Left" Name="textBox8" VerticalAlignment="Top" Width="50" Grid.Row="1" TextChanged="textBox8_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="9" Height="50" HorizontalAlignment="Left" Name="textBox9" VerticalAlignment="Top" Width="50" Grid.Row="1" TextChanged="textBox9_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Row="2" Height="50" HorizontalAlignment="Left" Name="textBox10" VerticalAlignment="Bottom" Width="50" Grid.Column="1" TextChanged="textBox10_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="2" Grid.Row="2" Height="50" HorizontalAlignment="Left" Name="textBox11" VerticalAlignment="Top" Width="50" TextChanged="textBox11_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="3" Grid.Row="2" Height="50" Name="textBox12" VerticalAlignment="Top" TextChanged="textBox12_TextChanged" HorizontalAlignment="Left" Width="50" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="4" Grid.Row="2" Height="50" HorizontalAlignment="Left" Name="textBox13" VerticalAlignment="Top" Width="50" TextChanged="textBox13_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="5" Grid.Row="2" Height="50" HorizontalAlignment="Left" Name="textBox14" VerticalAlignment="Top" Width="50" TextChanged="textBox14_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="6" Grid.Row="2" Height="50" Name="textBox15" VerticalAlignment="Top" TextChanged="textBox15_TextChanged" HorizontalAlignment="Left" Width="50" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="7" Grid.Row="2" Height="50" Name="textBox16" VerticalAlignment="Top" TextChanged="textBox16_TextChanged" HorizontalAlignment="Left" Width="50" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="8" Grid.Row="2" Height="50" Name="textBox17" VerticalAlignment="Top" TextChanged="textBox17_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="9" Grid.Row="2" Height="50" HorizontalAlignment="Left" Name="textBox18" VerticalAlignment="Top" Width="50" TextChanged="textBox18_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Row="3" Height="50" HorizontalAlignment="Left" Name="textBox19" VerticalAlignment="Top" Width="50" Grid.Column="1" TextChanged="textBox19_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="2" Grid.Row="3" Height="50" HorizontalAlignment="Left" Name="textBox20" VerticalAlignment="Top" Width="50" TextChanged="textBox20_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="3" Grid.Row="3" Height="50" HorizontalAlignment="Left" Name="textBox21" VerticalAlignment="Top" Width="50" TextChanged="textBox21_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="4" Grid.Row="3" Height="50" HorizontalAlignment="Left" Name="textBox22" VerticalAlignment="Top" Width="50" TextChanged="textBox22_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="5" Grid.Row="3" Height="50" HorizontalAlignment="Left" Name="textBox23" VerticalAlignment="Top" Width="50" TextChanged="textBox23_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="6" Grid.Row="3" Height="50" HorizontalAlignment="Left" Name="textBox24" VerticalAlignment="Top" Width="50" TextChanged="textBox24_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="7" Grid.Row="3" Height="50" HorizontalAlignment="Left" Name="textBox25" VerticalAlignment="Top" Width="50" TextChanged="textBox25_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="8" Grid.Row="3" Height="50" HorizontalAlignment="Left" Name="textBox26" VerticalAlignment="Top" Width="50" TextChanged="textBox26_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="9" Grid.Row="3" Height="50" HorizontalAlignment="Left" Name="textBox27" VerticalAlignment="Top" Width="50" TextChanged="textBox27_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Row="4" Height="50" HorizontalAlignment="Left" Name="textBox28" VerticalAlignment="Top" Width="50" Grid.Column="1" TextChanged="textBox28_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="2" Grid.Row="4" Height="50" HorizontalAlignment="Left" Name="textBox29" VerticalAlignment="Top" Width="50" TextChanged="textBox29_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="3" Grid.Row="4" Height="50" Name="textBox30" VerticalAlignment="Top" TextChanged="textBox30_TextChanged" HorizontalAlignment="Left" Width="50" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="4" Grid.Row="4" Height="50" HorizontalAlignment="Left" Name="textBox31" VerticalAlignment="Top" Width="50" TextChanged="textBox31_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="5" Grid.Row="4" Height="50" HorizontalAlignment="Left" Name="textBox32" VerticalAlignment="Top" Width="50" TextChanged="textBox32_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="6" Grid.Row="4" Height="50" HorizontalAlignment="Left" Name="textBox33" VerticalAlignment="Top" Width="50" TextChanged="textBox33_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="7" Grid.Row="4" Height="50" HorizontalAlignment="Left" Name="textBox34" VerticalAlignment="Top" Width="50" TextChanged="textBox34_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="8" Grid.Row="4" Height="50" HorizontalAlignment="Left" Name="textBox35" VerticalAlignment="Top" Width="50" TextChanged="textBox35_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="9" Grid.Row="4" Height="50" HorizontalAlignment="Left" Name="textBox36" VerticalAlignment="Top" Width="50" TextChanged="textBox36_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Row="5" Height="50" HorizontalAlignment="Left" Name="textBox37" VerticalAlignment="Top" Width="50" Grid.Column="1" TextChanged="textBox37_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="2" Grid.Row="5" Height="50" HorizontalAlignment="Left" Name="textBox38" VerticalAlignment="Top" Width="50" TextChanged="textBox38_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="3" Grid.Row="5" Height="50" HorizontalAlignment="Left" Name="textBox39" VerticalAlignment="Top" Width="50" TextChanged="textBox39_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="4" Grid.Row="5" Height="50" HorizontalAlignment="Left" Name="textBox40" VerticalAlignment="Top" Width="50" TextChanged="textBox40_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="5" Grid.Row="5" Height="50" HorizontalAlignment="Left" Name="textBox41" VerticalAlignment="Top" Width="50" TextChanged="textBox41_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="6" Grid.Row="5" Height="50" HorizontalAlignment="Left" Name="textBox42" VerticalAlignment="Top" Width="50" TextChanged="textBox42_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="7" Grid.Row="5" Height="50" HorizontalAlignment="Left" Name="textBox43" VerticalAlignment="Top" Width="50" TextChanged="textBox43_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="8" Grid.Row="5" Height="50" HorizontalAlignment="Left" Name="textBox44" VerticalAlignment="Top" Width="50" TextChanged="textBox44_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="9" Grid.Row="5" Height="50" HorizontalAlignment="Left" Name="textBox45" VerticalAlignment="Top" Width="50" TextChanged="textBox45_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Row="6" Height="50" HorizontalAlignment="Left" Name="textBox46" VerticalAlignment="Top" Width="50" Grid.Column="1" TextChanged="textBox46_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="2" Grid.Row="6" Height="50" HorizontalAlignment="Left" Name="textBox47" VerticalAlignment="Top" Width="50" TextChanged="textBox47_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="3" Grid.Row="6" Height="50" HorizontalAlignment="Left" Name="textBox48" VerticalAlignment="Top" Width="50" TextChanged="textBox48_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="4" Grid.Row="6" Height="50" HorizontalAlignment="Left" Name="textBox49" VerticalAlignment="Top" Width="50" TextChanged="textBox49_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="5" Grid.Row="6" Height="50" HorizontalAlignment="Left" Name="textBox50" VerticalAlignment="Top" Width="50" TextChanged="textBox50_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="6" Grid.Row="6" Height="50" HorizontalAlignment="Left" Name="textBox51" VerticalAlignment="Top" Width="50" TextChanged="textBox51_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="7" Grid.Row="6" Height="50" HorizontalAlignment="Left" Name="textBox52" VerticalAlignment="Top" Width="50" TextChanged="textBox52_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="8" Grid.Row="6" Height="50" HorizontalAlignment="Left" Name="textBox53" VerticalAlignment="Top" Width="50" TextChanged="textBox53_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="9" Grid.Row="6" Height="50" HorizontalAlignment="Left" Name="textBox54" VerticalAlignment="Top" Width="50" TextChanged="textBox54_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Row="7" Height="50" Name="textBox55" VerticalAlignment="Top" Grid.Column="1" TextChanged="textBox55_TextChanged" HorizontalAlignment="Left" Width="50" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="2" Grid.Row="7" Height="50" HorizontalAlignment="Left" Name="textBox56" VerticalAlignment="Top" Width="50" TextChanged="textBox56_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="3" Grid.Row="7" Height="50" HorizontalAlignment="Left" Name="textBox57" VerticalAlignment="Top" Width="50" TextChanged="textBox57_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="4" Grid.Row="7" Height="50" HorizontalAlignment="Left" Name="textBox58" VerticalAlignment="Top" Width="50" TextChanged="textBox58_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="5" Grid.Row="7" Height="50" HorizontalAlignment="Left" Name="textBox59" VerticalAlignment="Top" Width="50" TextChanged="textBox59_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="6" Grid.Row="7" Height="50" HorizontalAlignment="Left" Name="textBox60" VerticalAlignment="Top" Width="50" TextChanged="textBox60_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="7" Grid.Row="7" Height="50" Name="textBox61" VerticalAlignment="Top" TextChanged="textBox61_TextChanged" HorizontalAlignment="Left" Width="50" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="8" Grid.Row="7" Height="50" HorizontalAlignment="Left" Name="textBox62" VerticalAlignment="Top" Width="50" TextChanged="textBox62_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="9" Grid.Row="7" Height="50" HorizontalAlignment="Left" Name="textBox63" VerticalAlignment="Top" Width="50" TextChanged="textBox63_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Row="8" Height="50" HorizontalAlignment="Left" Name="textBox64" VerticalAlignment="Top" Width="50" Grid.Column="1" TextChanged="textBox64_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="2" Grid.Row="8" Height="50" HorizontalAlignment="Left" Name="textBox65" VerticalAlignment="Top" Width="50" TextChanged="textBox65_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="3" Grid.Row="8" Height="50" HorizontalAlignment="Left" Name="textBox66" VerticalAlignment="Top" Width="50" TextChanged="textBox66_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="4" Grid.Row="8" Height="50" HorizontalAlignment="Left" Name="textBox67" VerticalAlignment="Top" Width="50" TextChanged="textBox67_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="5" Grid.Row="8" Height="50" Name="textBox68" VerticalAlignment="Top" TextChanged="textBox68_TextChanged" HorizontalAlignment="Left" Width="50" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="6" Grid.Row="8" Height="50" HorizontalAlignment="Left" Name="textBox69" VerticalAlignment="Top" Width="50" TextChanged="textBox69_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="7" Grid.Row="8" Height="50" HorizontalAlignment="Left" Name="textBox70" VerticalAlignment="Top" Width="50" TextChanged="textBox70_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="8" Grid.Row="8" Height="50" HorizontalAlignment="Left" Name="textBox71" VerticalAlignment="Top" Width="50" TextChanged="textBox71_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="9" Grid.Row="8" Height="50" HorizontalAlignment="Left" Name="textBox72" VerticalAlignment="Top" Width="50" TextChanged="textBox72_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Row="9" Height="50" HorizontalAlignment="Left" Name="textBox73" VerticalAlignment="Top" Width="50" Grid.Column="1" TextChanged="textBox73_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="2" Grid.Row="9" Height="50" HorizontalAlignment="Left" Name="textBox74" VerticalAlignment="Top" Width="50" TextChanged="textBox74_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="3" Grid.Row="9" Height="50" HorizontalAlignment="Left" Name="textBox75" VerticalAlignment="Top" Width="50" TextChanged="textBox75_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="4" Grid.Row="9" Height="50" HorizontalAlignment="Left" Name="textBox76" VerticalAlignment="Top" Width="50" TextChanged="textBox76_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="5" Grid.Row="9" Height="50" HorizontalAlignment="Left" Name="textBox77" VerticalAlignment="Top" Width="50" TextChanged="textBox77_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="6" Grid.Row="9" Height="50" HorizontalAlignment="Left" Name="textBox78" VerticalAlignment="Top" Width="50" TextChanged="textBox78_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="7" Grid.Row="9" Height="50" HorizontalAlignment="Left" Name="textBox79" VerticalAlignment="Top" Width="50" TextChanged="textBox79_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="8" Grid.Row="9" Height="50" HorizontalAlignment="Left" Name="textBox80" VerticalAlignment="Top" Width="50" TextChanged="textBox80_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                    <TextBox FontSize="22" Grid.Column="9" Grid.Row="9" Height="50" HorizontalAlignment="Left" Name="textBox81" VerticalAlignment="Top" Width="50" TextChanged="textBox81_TextChanged" TextAlignment="Center">
+                        <TextBox.BindingGroup>
+                            <BindingGroup />
+                        </TextBox.BindingGroup>
+                    </TextBox>
+                </Grid>
+                <Button Content="Find Solution" Height="66" HorizontalAlignment="Left" Name="FindSolution" VerticalAlignment="Top" Width="186" Click="findSolution_Click" FontSize="26" Margin="26,539,0,0" />
+                <TextBox Height="66" HorizontalAlignment="Right" Name="MessageBar" VerticalAlignment="Top" Width="251" FontSize="16" TextWrapping="Wrap" Margin="0,539,6,0" />
+                <TextBlock Height="23" HorizontalAlignment="Left" Margin="257,-75,0,0" Name="textBlock1" Text="TextBlock" VerticalAlignment="Top" />
+                <CheckBox Content="Use Default Seed" Height="27" HorizontalAlignment="Left" Margin="26,462,0,0" Name="useDefault" VerticalAlignment="Top" Width="186" Checked="useDefault_Changed" Unchecked="useDefault_Changed" />
+                <ComboBox Height="22" HorizontalAlignment="Left" Margin="307,467,0,0" Name="comboBox1" VerticalAlignment="Top" Width="169" ItemsSource="{Binding}" SelectionChanged="comboBox1_SelectionChanged" />
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>

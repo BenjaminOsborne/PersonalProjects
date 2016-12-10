@@ -1,0 +1,7 @@
+C:\Users\Ben\AppData\Local\Temporary Projects\CaptureTest\bin\Debug\CaptureTest.exe
+C:\Users\Ben\AppData\Local\Temporary Projects\CaptureTest\bin\Debug\CaptureTest.pdb
+C:\Users\Ben\AppData\Local\Temporary Projects\CaptureTest\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Ben\AppData\Local\Temporary Projects\CaptureTest\obj\x86\Debug\CaptureTest.exe
+C:\Users\Ben\AppData\Local\Temporary Projects\CaptureTest\obj\x86\Debug\CaptureTest.pdb
+C:\Ben\Google Drive\C# Programs\CaptureTest\CaptureTest\obj\x86\Debug\CaptureTest.exe
+C:\Ben\Google Drive\C# Programs\CaptureTest\CaptureTest\obj\x86\Debug\CaptureTest.pdb

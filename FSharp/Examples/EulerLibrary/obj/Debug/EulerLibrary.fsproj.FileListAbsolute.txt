@@ -1,0 +1,10 @@
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\EulerLibrary\obj\Debug\EulerLibrary.fsprojResolveAssemblyReference.cache
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\EulerLibrary\bin\Debug\EulerLibrary.XML
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\EulerLibrary\bin\Debug\EulerLibrary.exe
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\EulerLibrary\bin\Debug\EulerLibrary.pdb
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\EulerLibrary\bin\Debug\CSharpHelperFunctions.dll
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\EulerLibrary\bin\Debug\FSharp.Core.dll
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\EulerLibrary\bin\Debug\CSharpHelperFunctions.pdb
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\EulerLibrary\bin\Debug\FSharp.Core.xml
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\EulerLibrary\obj\Debug\EulerLibrary.exe
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\EulerLibrary\obj\Debug\EulerLibrary.pdb

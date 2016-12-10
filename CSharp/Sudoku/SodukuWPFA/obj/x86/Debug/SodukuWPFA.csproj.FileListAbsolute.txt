@@ -1,0 +1,17 @@
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\bin\Debug\SodukuWPFA.exe
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\bin\Debug\SodukuWPFA.pdb
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\MainWindow.baml
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\MainWindow.g.cs
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\App.g.cs
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\SodukuWPFA_MarkupCompile.cache
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\SodukuWPFA.g.resources
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\SodukuWPFA.Properties.Resources.resources
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\GenerateResource.read.1.tlog
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\GenerateResource.write.1.tlog
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\SodukuWPFA.exe
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\obj\x86\Debug\SodukuWPFA.pdb
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\bin\Debug\SudokuSolver.exe
+E:\Ben\My Dropbox\Programs\sudoku\SodukuWPFA\bin\Debug\SudokuSolver.pdb
+C:\Users\bosborne\Google Drive\C# Programs\sudoku\SodukuWPFA\obj\x86\Debug\SodukuWPFA.exe
+C:\Users\bosborne\Google Drive\C# Programs\sudoku\SodukuWPFA\obj\x86\Debug\SodukuWPFA.pdb

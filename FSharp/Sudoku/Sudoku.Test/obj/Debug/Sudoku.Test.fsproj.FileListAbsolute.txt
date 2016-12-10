@@ -1,0 +1,15 @@
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\obj\Debug\Sudoku.Test.fsprojResolveAssemblyReference.cache
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\Sudoku.Test.XML
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\Sudoku.Test.pdb
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\FSharp.Core.dll
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\FsUnit.NUnit.dll
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\nunit.framework.dll
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\Sudoku.exe
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\Sudoku.pdb
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\Sudoku.xml
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\FSharp.Core.xml
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\nunit.framework.xml
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\obj\Debug\Sudoku.Test.pdb
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\Sudoku.Test.exe.config
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\bin\Debug\Sudoku.Test.exe
+C:\Google Drive\C# Programs\F#\Sudoku\Sudoku.Test\obj\Debug\Sudoku.Test.exe

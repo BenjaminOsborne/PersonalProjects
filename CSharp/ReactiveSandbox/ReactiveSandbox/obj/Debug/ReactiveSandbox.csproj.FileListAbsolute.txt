@@ -1,0 +1,32 @@
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\ReactiveSandbox.exe.config
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\ReactiveSandbox.exe
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\ReactiveSandbox.pdb
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Core.dll
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Interfaces.dll
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Linq.dll
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.PlatformServices.dll
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Windows.Threading.dll
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Core.xml
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Interfaces.xml
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Linq.xml
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.PlatformServices.xml
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Windows.Threading.xml
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\obj\Debug\ReactiveSandbox.csprojResolveAssemblyReference.cache
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\obj\Debug\ReactiveSandbox.exe
+C:\Users\bosborne\Google Drive\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\obj\Debug\ReactiveSandbox.pdb
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\ReactiveSandbox.exe.config
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\obj\Debug\ReactiveSandbox.exe
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\obj\Debug\ReactiveSandbox.pdb
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\ReactiveSandbox.exe
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\ReactiveSandbox.pdb
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Core.dll
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Interfaces.dll
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Linq.dll
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.PlatformServices.dll
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Windows.Threading.dll
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Core.xml
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Interfaces.xml
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Linq.xml
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.PlatformServices.xml
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\bin\Debug\System.Reactive.Windows.Threading.xml
+D:\Google\Coding\ReactiveExtensions\ReactiveSandbox\ReactiveSandbox\obj\Debug\ReactiveSandbox.csprojResolveAssemblyReference.cache

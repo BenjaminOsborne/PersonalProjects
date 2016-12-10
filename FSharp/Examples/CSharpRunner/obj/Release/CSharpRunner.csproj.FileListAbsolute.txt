@@ -1,0 +1,8 @@
+C:\Google Drive\C# Programs\F#\Examples\CSharpRunner\bin\Release\CSharpRunner.exe.config
+C:\Google Drive\C# Programs\F#\Examples\CSharpRunner\bin\Release\CSharpRunner.exe
+C:\Google Drive\C# Programs\F#\Examples\CSharpRunner\bin\Release\CSharpRunner.pdb
+C:\Google Drive\C# Programs\F#\Examples\CSharpRunner\bin\Release\CSharpHelperFunctions.dll
+C:\Google Drive\C# Programs\F#\Examples\CSharpRunner\bin\Release\CSharpHelperFunctions.pdb
+C:\Google Drive\C# Programs\F#\Examples\CSharpRunner\obj\Release\CSharpRunner.csprojResolveAssemblyReference.cache
+C:\Google Drive\C# Programs\F#\Examples\CSharpRunner\obj\Release\CSharpRunner.exe
+C:\Google Drive\C# Programs\F#\Examples\CSharpRunner\obj\Release\CSharpRunner.pdb

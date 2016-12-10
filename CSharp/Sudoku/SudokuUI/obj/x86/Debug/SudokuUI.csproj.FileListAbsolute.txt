@@ -1,0 +1,9 @@
+E:\Ben\My Dropbox\Programs\sudoku\SudokuUI\bin\Debug\SudokuUI.exe
+E:\Ben\My Dropbox\Programs\sudoku\SudokuUI\bin\Debug\SudokuUI.pdb
+E:\Ben\My Dropbox\Programs\sudoku\SudokuUI\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\Ben\My Dropbox\Programs\sudoku\SudokuUI\obj\x86\Debug\SudokuUI.Properties.Resources.resources
+E:\Ben\My Dropbox\Programs\sudoku\SudokuUI\obj\x86\Debug\GenerateResource.read.1.tlog
+E:\Ben\My Dropbox\Programs\sudoku\SudokuUI\obj\x86\Debug\GenerateResource.write.1.tlog
+E:\Ben\My Dropbox\Programs\sudoku\SudokuUI\obj\x86\Debug\SudokuUI.exe
+E:\Ben\My Dropbox\Programs\sudoku\SudokuUI\obj\x86\Debug\SudokuUI.pdb
+E:\Ben\My Dropbox\Programs\sudoku\SudokuUI\obj\x86\Debug\SudokuUI.Form1.resources

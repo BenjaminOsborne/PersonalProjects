@@ -1,0 +1,5 @@
+C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\bin\Debug\HelperFunctions.dll
+C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\bin\Debug\HelperFunctions.pdb
+C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\HelperFunctions.csprojResolveAssemblyReference.cache
+C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\HelperFunctions.dll
+C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\HelperFunctions.pdb

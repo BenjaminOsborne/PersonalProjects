@@ -1,0 +1,7 @@
+C:\Users\bosborne\Google Drive\C# Programs\Async\FSharpAsync\bin\Debug\FSharpAsync.XML
+C:\Users\bosborne\Google Drive\C# Programs\Async\FSharpAsync\bin\Debug\FSharpAsync.dll
+C:\Users\bosborne\Google Drive\C# Programs\Async\FSharpAsync\bin\Debug\FSharpAsync.pdb
+C:\Users\bosborne\Google Drive\C# Programs\Async\FSharpAsync\bin\Debug\FSharp.Core.dll
+C:\Users\bosborne\Google Drive\C# Programs\Async\FSharpAsync\bin\Debug\FSharp.Core.xml
+C:\Users\bosborne\Google Drive\C# Programs\Async\FSharpAsync\obj\Debug\FSharpAsync.dll
+C:\Users\bosborne\Google Drive\C# Programs\Async\FSharpAsync\obj\Debug\FSharpAsync.pdb

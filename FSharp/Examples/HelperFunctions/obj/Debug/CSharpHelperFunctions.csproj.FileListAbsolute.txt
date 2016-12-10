@@ -1,0 +1,15 @@
+C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\bin\Debug\CSharpHelperFunctions.dll
+C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\bin\Debug\CSharpHelperFunctions.pdb
+C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\CSharpHelperFunctions.dll
+C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\CSharpHelperFunctions.pdb
+C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\CSharpHelperFunctions.csprojResolveAssemblyReference.cache
+C:\Ben\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\CSharpHelperFunctions.csprojResolveAssemblyReference.cache
+C:\Ben\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\CSharpHelperFunctions.dll
+C:\Ben\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\CSharpHelperFunctions.pdb
+C:\Ben\Google Drive\C# Programs\F#\Examples\HelperFunctions\bin\Debug\CSharpHelperFunctions.dll
+C:\Ben\Google Drive\C# Programs\F#\Examples\HelperFunctions\bin\Debug\CSharpHelperFunctions.pdb
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\HelperFunctions\bin\Debug\CSharpHelperFunctions.dll
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\HelperFunctions\bin\Debug\CSharpHelperFunctions.pdb
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\CSharpHelperFunctions.csprojResolveAssemblyReference.cache
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\CSharpHelperFunctions.dll
+C:\Users\Ben\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Debug\CSharpHelperFunctions.pdb

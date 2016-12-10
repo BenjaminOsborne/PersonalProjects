@@ -1,0 +1,6 @@
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\Joseph\bin\Debug\Joseph.exe.config
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\Joseph\bin\Debug\Joseph.exe
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\Joseph\bin\Debug\Joseph.pdb
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\Joseph\obj\Debug\Joseph.csprojResolveAssemblyReference.cache
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\Joseph\obj\Debug\Joseph.exe
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\Joseph\obj\Debug\Joseph.pdb

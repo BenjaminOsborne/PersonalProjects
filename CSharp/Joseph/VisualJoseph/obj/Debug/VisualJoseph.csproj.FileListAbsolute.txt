@@ -1,0 +1,9 @@
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\VisualJoseph\bin\Debug\VisualJoseph.exe.config
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\VisualJoseph\bin\Debug\VisualJoseph.exe
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\VisualJoseph\bin\Debug\VisualJoseph.pdb
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\VisualJoseph\obj\Debug\VisualJoseph.csprojResolveAssemblyReference.cache
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\VisualJoseph\obj\Debug\VisualJoseph.Properties.Resources.resources
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\VisualJoseph\obj\Debug\VisualJoseph.csproj.GenerateResource.Cache
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\VisualJoseph\obj\Debug\VisualJoseph.exe
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\VisualJoseph\obj\Debug\VisualJoseph.pdb
+C:\Users\bosborne\Google Drive\C# Programs\Joseph\VisualJoseph\obj\Debug\VisualJoseph.Form1.resources
