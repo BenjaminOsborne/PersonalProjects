@@ -28,3 +28,13 @@ C:\Users\Ben\Documents\GitHub\ProjectEulerFSharp\EulerLibrary\bin\Debug\CSharpHe
 C:\Users\Ben\Documents\GitHub\ProjectEulerFSharp\EulerLibrary\bin\Debug\FSharp.Core.dll
 C:\Users\Ben\Documents\GitHub\ProjectEulerFSharp\EulerLibrary\bin\Debug\CSharpHelperFunctions.pdb
 C:\Users\Ben\Documents\GitHub\ProjectEulerFSharp\EulerLibrary\bin\Debug\FSharp.Core.xml
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\EulerLibrary\bin\Debug\EulerLibrary.XML
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\EulerLibrary\obj\Debug\EulerLibrary.fsprojResolveAssemblyReference.cache
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\EulerLibrary\obj\Debug\EulerLibrary.exe
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\EulerLibrary\obj\Debug\EulerLibrary.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\EulerLibrary\bin\Debug\EulerLibrary.exe
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\EulerLibrary\bin\Debug\EulerLibrary.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\EulerLibrary\bin\Debug\CSharpHelperFunctions.dll
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\EulerLibrary\bin\Debug\FSharp.Core.dll
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\EulerLibrary\bin\Debug\CSharpHelperFunctions.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\EulerLibrary\bin\Debug\FSharp.Core.xml

@@ -1,6 +1,7 @@
 ﻿namespace Ben.Example
 open System
 open Ben.Example.PersonModule
+open FunctionalFlow
 
 module Main =
 
@@ -9,8 +10,8 @@ module Main =
     | Me = 1
     | You = 2
 
-    [<EntryPoint>]
-    let main argv = 
+    //[<EntryPoint>]
+    let mainOld argv = 
         let isDisivisibleBy num elem = elem % num = 0
         let fIsDivisibleBy31 n = isDisivisibleBy 31 n
 
@@ -43,6 +44,16 @@ module Main =
 
         let swap a b = b,a
         printfn "%s" ((swap 3 4).ToString())
+
+        0
+
+    [<EntryPoint>]
+    let main argv = 
+        let a = FunctionalFlow.chainedDivisionSuccess
+
+        let (+) a b = a + b + 1
+        let (+-+) a b = a + b - 10
+        let a = 5 +-+ 6;
 
         0
 

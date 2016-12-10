@@ -24,3 +24,12 @@ C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\Examples\bin\Debug\FSharp.
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\Examples\obj\Debug\Examples.fsprojResolveAssemblyReference.cache
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\Examples\obj\Debug\Examples.exe
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\Examples\obj\Debug\Examples.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\Examples\bin\Debug\Examples.XML
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\Examples\obj\Debug\Examples.fsprojResolveAssemblyReference.cache
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\Examples\obj\Debug\Examples.exe
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\Examples\obj\Debug\Examples.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\Examples\bin\Debug\Examples.exe.config
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\Examples\bin\Debug\Examples.exe
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\Examples\bin\Debug\Examples.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\Examples\bin\Debug\FSharp.Core.dll
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\Examples\bin\Debug\FSharp.Core.xml

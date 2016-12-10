@@ -23,3 +23,8 @@ C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\HelperFunctions\bin\Debug\
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\HelperFunctions\obj\Debug\CSharpHelperFunctions.csprojResolveAssemblyReference.cache
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\HelperFunctions\obj\Debug\CSharpHelperFunctions.dll
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\HelperFunctions\obj\Debug\CSharpHelperFunctions.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\HelperFunctions\bin\Debug\CSharpHelperFunctions.dll
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\HelperFunctions\bin\Debug\CSharpHelperFunctions.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\HelperFunctions\obj\Debug\CSharpHelperFunctions.csprojResolveAssemblyReference.cache
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\HelperFunctions\obj\Debug\CSharpHelperFunctions.dll
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\HelperFunctions\obj\Debug\CSharpHelperFunctions.pdb

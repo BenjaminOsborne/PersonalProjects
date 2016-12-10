@@ -22,3 +22,11 @@ C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\CSharpRunner\bin\Debug\CSh
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\CSharpRunner\obj\Debug\CSharpRunner.csprojResolveAssemblyReference.cache
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\CSharpRunner\obj\Debug\CSharpRunner.exe
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\CSharpRunner\obj\Debug\CSharpRunner.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\CSharpRunner\bin\Debug\CSharpRunner.exe.config
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\CSharpRunner\bin\Debug\CSharpRunner.exe
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\CSharpRunner\bin\Debug\CSharpRunner.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\CSharpRunner\bin\Debug\CSharpHelperFunctions.dll
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\CSharpRunner\bin\Debug\CSharpHelperFunctions.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\CSharpRunner\obj\Debug\CSharpRunner.csprojResolveAssemblyReference.cache
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\CSharpRunner\obj\Debug\CSharpRunner.exe
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\CSharpRunner\obj\Debug\CSharpRunner.pdb

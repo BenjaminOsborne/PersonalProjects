@@ -51,6 +51,7 @@
     <Compile Include="Person.fs" />
     <Compile Include="ShortExamples.fs" />
     <Compile Include="Point.fs" />
+    <Compile Include="FunctionalFlow.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <PropertyGroup>

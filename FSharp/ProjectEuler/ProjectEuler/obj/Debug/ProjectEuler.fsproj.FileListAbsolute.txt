@@ -31,3 +31,14 @@ C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\ProjectEuler\bin\Debug\FSh
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\ProjectEuler\obj\Debug\ProjectEuler.fsprojResolveAssemblyReference.cache
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\ProjectEuler\obj\Debug\ProjectEuler.exe
 C:\Users\bosborne\Documents\GitHub\ProjectEulerFSharp\ProjectEuler\obj\Debug\ProjectEuler.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\bin\Debug\ProjectEuler.exe.config
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\bin\Debug\ProjectEuler.XML
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\bin\Debug\ProjectEuler.exe
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\bin\Debug\ProjectEuler.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\bin\Debug\CSharpHelperFunctions.dll
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\bin\Debug\FSharp.Core.dll
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\bin\Debug\CSharpHelperFunctions.pdb
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\bin\Debug\FSharp.Core.xml
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\obj\Debug\ProjectEuler.fsprojResolveAssemblyReference.cache
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\obj\Debug\ProjectEuler.exe
+D:\Ben\GitHub\PersonalProjects\FSharp\ProjectEuler\ProjectEuler\obj\Debug\ProjectEuler.pdb

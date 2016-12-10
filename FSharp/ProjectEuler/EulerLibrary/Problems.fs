@@ -1209,7 +1209,7 @@ open HelperTypes;
         
         let fnGetA0 nSq = SQRT nSq
         
-        let fnGetA1 nSq a1 =
+        //let fnGetA1 nSq a1 =
             //a0 +1/x => x = 1/(n-a0) = (a0 + n)/(nSq - a0*a0) = 
 
 
