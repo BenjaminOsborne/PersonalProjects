@@ -1,4 +1,0 @@
-C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\bin\Release\CSharpHelperFunctions.dll
-C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\bin\Release\CSharpHelperFunctions.pdb
-C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Release\CSharpHelperFunctions.dll
-C:\Google Drive\C# Programs\F#\Examples\HelperFunctions\obj\Release\CSharpHelperFunctions.pdb
