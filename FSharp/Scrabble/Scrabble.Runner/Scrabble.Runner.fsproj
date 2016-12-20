@@ -5,14 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>2e7a8487-65e1-4b85-b3bb-81dfd0cb91de</ProjectGuid>
+    <ProjectGuid>93eb0ae5-b1cb-48b4-94df-ab5855084fbd</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Runner</RootNamespace>
-    <AssemblyName>Runner</AssemblyName>
+    <RootNamespace>Scrabble.Runner</RootNamespace>
+    <AssemblyName>Scrabble.Runner</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
-    <Name>Runner</Name>
+    <Name>Scrabble.Runner</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\Runner.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Scrabble.Runner.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -34,7 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\Runner.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Scrabble.Runner.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>

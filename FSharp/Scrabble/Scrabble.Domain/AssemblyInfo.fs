@@ -1,4 +1,4 @@
-﻿namespace Runner.AssemblyInfo
+﻿namespace Scrabble.Domain.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -7,11 +7,11 @@ open System.Runtime.InteropServices
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[<assembly: AssemblyTitle("Runner")>]
+[<assembly: AssemblyTitle("Scrabble.Domain")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
-[<assembly: AssemblyProduct("Runner")>]
+[<assembly: AssemblyProduct("Scrabble.Domain")>]
 [<assembly: AssemblyCopyright("Copyright ©  2016")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
@@ -22,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[<assembly: Guid("2e7a8487-65e1-4b85-b3bb-81dfd0cb91de")>]
+[<assembly: Guid("7d36a17f-ec9a-4743-9e9a-5ac4e567530c")>]
 
 // Version information for an assembly consists of the following four values:
 // 
