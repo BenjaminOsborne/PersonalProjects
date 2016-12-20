@@ -12,7 +12,7 @@ type PlayValueHelper() =
 
 type BoardPlay = { Board : BoardState; PlayPosition:Location; PlayValue : PlayValue }
 
-type PlayLeaf = {FinalPlay : BoardPlay; Depth : int }
+type PlayLeaf = { FinalPlay : BoardPlay; Depth : int }
 type PlayBranch = { LastPlay : BoardPlay; Depth : int; Tree : PlayTree list; }
 and PlayTree = | Leaf of PlayLeaf
                | Branch of PlayBranch
