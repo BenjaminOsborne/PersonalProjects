@@ -1,7 +1,5 @@
 ﻿namespace ConnectFour.Engine
 
-open ConnectFour.Engine
-
 type CounterPlay = { SlotIndex : int; HeightIndex : int; Colour : CounterColour}
 
 type PlayValue = | Win | Value of int

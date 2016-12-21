@@ -1,7 +1,5 @@
 ﻿namespace ConnectFour.Engine
 
-open System.Diagnostics
-
 type CounterColour = Red | Yellow
     with member this.Flip() = match this with
                               | CounterColour.Red -> CounterColour.Yellow | CounterColour.Yellow -> CounterColour.Red;
