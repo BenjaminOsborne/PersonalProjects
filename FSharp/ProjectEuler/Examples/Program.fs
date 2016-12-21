@@ -49,11 +49,14 @@ module Main =
 
     [<EntryPoint>]
     let main argv = 
-        let a = FunctionalFlow.chainedDivisionSuccess
-
+        
+        let chainDiv = FunctionalFlow.chainedDivisionSuccess
+        
         let (+) a b = a + b + 1
         let (+-+) a b = a + b - 10
         let a = 5 +-+ 6;
+
+        do Console.ReadLine();
 
         0
 
