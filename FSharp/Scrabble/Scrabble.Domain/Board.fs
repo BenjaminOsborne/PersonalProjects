@@ -55,8 +55,10 @@ type BoardCreator =
         let createFromRange indexes state = indexes |> Seq.collect (fun x -> x) |> Seq.map (fun (w,h) -> create w h state)
 
         let tripWrd = createFromRange (coMap {0..7..size}) (WordMultiply 3)
-        let dubWrd = createFromRange ({1..4} |> Seq.map (fun n -> [ (n,n); (n, size-1-n); (size-1-n,n); (size-1-n,size-1-n)] ))
-                                     (WordMultiply 2)
+        
+        let dubWrdSeq = {1..4} |> Seq.map (fun n -> [ (n,n); (n, size-1-n); (size-1-n,n); (size-1-n,size-1-n)] );
+        let dubWrd = createFromRange dubWrdSeq (WordMultiply 2)
+
         let start = [7] |> Seq.map (fun x -> create x x (WordMultiply 2))
 
         let trpLet = createFromRange (coMap [1;5;9;13]) (LetterMultiply 3)

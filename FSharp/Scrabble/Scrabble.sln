@@ -7,6 +7,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Scrabble.Runner", "Scrabble
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Scrabble.Domain", "Scrabble.Domain\Scrabble.Domain.fsproj", "{7D36A17F-EC9A-4743-9E9A-5AC4E567530C}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Scrabble.Domain.Tests", "Scrabble.Domain.Tests\Scrabble.Domain.Tests.fsproj", "{4F839831-2514-4179-B23B-7002B61F052A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{7D36A17F-EC9A-4743-9E9A-5AC4E567530C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D36A17F-EC9A-4743-9E9A-5AC4E567530C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D36A17F-EC9A-4743-9E9A-5AC4E567530C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F839831-2514-4179-B23B-7002B61F052A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F839831-2514-4179-B23B-7002B61F052A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F839831-2514-4179-B23B-7002B61F052A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F839831-2514-4179-B23B-7002B61F052A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
