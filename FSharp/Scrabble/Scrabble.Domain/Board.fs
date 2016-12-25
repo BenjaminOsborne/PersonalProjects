@@ -37,7 +37,7 @@ type Board(tileLocations : TileLocation[,], Width:int, Height:int) =
         let array = Array2D.init width height (fun w h -> { Location = { Width = w; Height = h }; State = TileState.Free(None) })
         new Board(array, width, height)
 
-    member this.Play(tiles : TilePlay list) =
+    member this.Play(tiles : seq<TilePlay>) =
         let state = tileLocations |> Array2D.copy
         for tile in tiles do
             state.[tile.Location.Width, tile.Location.Height] <- { Location = tile.Location; State = TileState.Played tile.Piece }

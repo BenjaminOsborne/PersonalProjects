@@ -19,6 +19,6 @@ let ``When empty board``() =
 let ``When play tile 2``() =
     let empty = Board.Empty 4 4
     let tiles = [ play 2 2 'a' 1];
-    let board = empty.PlayTiles tiles
+    let board = empty.Play tiles
     let tile = board.TileAt 2 2
     tile.State |> should equal (Played { Letter = Letter 'a'; Value = 1 })
