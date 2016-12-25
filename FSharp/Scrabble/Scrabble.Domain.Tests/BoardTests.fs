@@ -5,13 +5,20 @@ open FsUnit
 open Scrabble.Domain
 
 let coMap2 a b = SequenceHelpers.CoMap2 a b
+let play w h c v = { Location = { Width = w; Height = h }; Piece = { Letter = Letter c; Value = v } };
 
 [<Test>]
-let ``When empty board``() = 
+let ``When empty board``() =
     let board = Board.Empty 2 3
     coMap2 [0..1] [0..2]
         |> Seq.iter (fun (w, h) ->
             let tile = board.TileAt w h
             tile.State |> should equal (Free None))
-    
 
+[<Test>]
+let ``When play tile 2``() =
+    let empty = Board.Empty 4 4
+    let tiles = [ play 2 2 'a' 1];
+    let board = empty.PlayTiles tiles
+    let tile = board.TileAt 2 2
+    tile.State |> should equal (Played { Letter = Letter 'a'; Value = 1 })
