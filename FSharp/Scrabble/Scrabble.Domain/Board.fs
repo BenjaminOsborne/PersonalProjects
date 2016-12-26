@@ -12,17 +12,17 @@ type Letter = | Letter of char
 type Tile = { Letter : Letter; Value : int }
 
 type BoardSpace = | None
-                 | LetterMultiply of int
-                 | WordMultiply of int
+                  | LetterMultiply of int
+                  | WordMultiply of int
 
 type BoardState = | Played of Tile
-                 | Free of BoardSpace
+                  | Free of BoardSpace
 
 type BoardLocation = { Location : Location; State : BoardState }
 
 type TilePlay = { Location : Location; Piece : Tile }
 
-type Board(tileLocations : BoardLocation[,], Width:int, Height:int) = 
+type Board(tileLocations : BoardLocation[,], width:int, height:int) = 
     
     let tileToString tile = match tile.State with
                             | Played(p) -> match(p.Letter) with
@@ -37,17 +37,20 @@ type Board(tileLocations : BoardLocation[,], Width:int, Height:int) =
         let array = Array2D.init width height (fun w h -> { Location = { Width = w; Height = h }; State = BoardState.Free(None) })
         new Board(array, width, height)
 
+    member this.Width = width
+    member this.Height = height
+
     member this.Play(tiles : TilePlay list) =
         let state = tileLocations |> Array2D.copy
         for tile in tiles do
             state.[tile.Location.Width, tile.Location.Height] <- { Location = tile.Location; State = BoardState.Played tile.Piece }
-        new Board(state, Width, Height)
+        new Board(state, width, height)
 
     member this.TileAt width height = tileLocations.[width, height]
     
     override this.ToString() = 
-        let rows = {Height-1 .. -1 .. 0} |> Seq.map
-                    (fun h -> {0 .. Width-1} |> Seq.map (fun w -> tileLocations.[w,h] |> tileToString)
+        let rows = {height-1 .. -1 .. 0} |> Seq.map
+                    (fun h -> {0 .. width-1} |> Seq.map (fun w -> tileLocations.[w,h] |> tileToString)
                                              |> Seq.fold (fun acc x -> acc + x + "|") "|");
         rows |> Seq.fold (fun acc x -> acc + "\n" + x) ""
 
