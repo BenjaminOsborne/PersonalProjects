@@ -17,6 +17,9 @@ type BoardSpace = | None
 
 type BoardState = | Played of Tile
                   | Free of BoardSpace
+    with member this.IsSpace = match this with
+                               | Free(_) -> true
+                               | _ -> false
 
 type BoardLocation = { Location : Location; State : BoardState }
 
