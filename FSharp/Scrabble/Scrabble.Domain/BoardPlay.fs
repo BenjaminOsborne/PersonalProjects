@@ -8,6 +8,7 @@ type BoardPlay(locations : BoardLocation list) =
 type BoardSpaceAnalyser =
 
     static member GenerateSpaces(board:Board) =        
+
         let allSpaces outer inner hasSpaceOrEdge tileAt =
             let manySeqs = {0 .. outer-1} |> Seq.map (fun o ->
                 {0 .. inner-1} |> Seq.filter (fun inS -> hasSpaceOrEdge o (inS-1))
@@ -26,8 +27,7 @@ type BoardSpaceAnalyser =
         let vertSpaces = allSpaces width height (fun w h -> hasSpaceOrEdge w h) (fun w h -> board.TileAt w h)
                             |> Seq.filter (fun x -> x.Locations.Length > 1) //1 length spaces will be duplicated in both directions
         
-        let isValidHorizontal(play:BoardPlay) =
-            play.Spaces > 0
+
 
         let allSpaces = (Seq.append horiSpaces vertSpaces) |> Seq.toList
         allSpaces
