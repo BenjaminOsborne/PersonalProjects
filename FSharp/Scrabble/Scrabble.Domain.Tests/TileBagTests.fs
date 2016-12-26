@@ -41,3 +41,10 @@ let ``When draw some tiles from bag``() =
         b.Tiles.Length |> should equal (bag.Tiles.Length - draw)
 
     {0..4} |> Seq.iter assertDraw
+
+    //Print...
+    {0..10} |> Seq.iter (fun _ ->
+        {0..4} |> Seq.iter (fun n ->
+            let (tl,b) = bag.Draw n
+            let print = tl |> Seq.map (fun x -> x) |> Seq.fold (fun agg x -> agg + " " + x) ""
+            printfn "%s" print))
