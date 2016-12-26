@@ -9,20 +9,20 @@ type Location = { Width : int; Height: int}
 type Letter = | Letter of char
               | Blank
 
-type PlayedPiece = { Letter : Letter; Value : int }
+type Tile = { Letter : Letter; Value : int }
 
-type TileSpace = | None
+type BoardSpace = | None
                  | LetterMultiply of int
                  | WordMultiply of int
 
-type TileState = | Played of PlayedPiece
-                 | Free of TileSpace
+type BoardState = | Played of Tile
+                 | Free of BoardSpace
 
-type TileLocation = { Location : Location; State : TileState }
+type BoardLocation = { Location : Location; State : BoardState }
 
-type TilePlay = { Location : Location; Piece : PlayedPiece }
+type TilePlay = { Location : Location; Piece : Tile }
 
-type Board(tileLocations : TileLocation[,], Width:int, Height:int) = 
+type Board(tileLocations : BoardLocation[,], Width:int, Height:int) = 
     
     let tileToString tile = match tile.State with
                             | Played(p) -> match(p.Letter) with
@@ -34,13 +34,13 @@ type Board(tileLocations : TileLocation[,], Width:int, Height:int) =
                                            | WordMultiply(m) -> "W" + m.ToString() + ""
 
     static member Empty width height =
-        let array = Array2D.init width height (fun w h -> { Location = { Width = w; Height = h }; State = TileState.Free(None) })
+        let array = Array2D.init width height (fun w h -> { Location = { Width = w; Height = h }; State = BoardState.Free(None) })
         new Board(array, width, height)
 
     member this.Play(tiles : TilePlay list) =
         let state = tileLocations |> Array2D.copy
         for tile in tiles do
-            state.[tile.Location.Width, tile.Location.Height] <- { Location = tile.Location; State = TileState.Played tile.Piece }
+            state.[tile.Location.Width, tile.Location.Height] <- { Location = tile.Location; State = BoardState.Played tile.Piece }
         new Board(state, Width, Height)
 
     member this.TileAt width height = tileLocations.[width, height]
@@ -52,11 +52,12 @@ type Board(tileLocations : TileLocation[,], Width:int, Height:int) =
         rows |> Seq.fold (fun acc x -> acc + "\n" + x) ""
 
 type BoardCreator = 
+    
     static member Default =
         let size = 15
-        let create w h space = { Location = { Width = w; Height = h }; State = TileState.Free(space) }
+        let create w h space = { Location = { Width = w; Height = h }; State = BoardState.Free(space) }
         let array = Array2D.init size size (fun x y -> create x y None)
-        let apply(tiles: seq<TileLocation>) = tiles |> Seq.iter (fun x -> array.[x.Location.Width, x.Location.Height] <- x);
+        let apply(tiles: seq<BoardLocation>) = tiles |> Seq.iter (fun x -> array.[x.Location.Width, x.Location.Height] <- x);
         
         let coMap2 = SequenceHelpers.CoMap2
         let coMap = SequenceHelpers.CoMap
