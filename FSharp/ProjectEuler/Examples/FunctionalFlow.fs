@@ -304,29 +304,28 @@
 //MaybeBuilderLazy
     
     type MaybeLazy<'a> = Maybe of Lazy<'a option>
-        
+    
     type MaybeBuilderLazy() =
         member this.Bind(m, f) = Option.bind f m
         member this.Return(x) = Some x
         member this.ReturnFrom(Maybe f) = f.Force()
         member this.Zero() = None
-        member this.Combine (a,b) =  match a with
-                                     | Some _ -> a  // if a is good, skip b
-                                     | None -> b()  // if a is bad, run b
-        member this.Delay(f) = f
+        member this.Combine (a,b) = match a with
+                                    | Some _ -> a  // if a is good, skip b
+                                    | None -> b()  // if a is bad, run b
+        member this.Delay(f) = f 
         member this.Run(f) = Maybe (lazy f())
 
     let maybeLazy = new MaybeBuilderLazy()
     printfn "\nBegin Lazy..."
 
-    let m4: Maybe<unit> = maybeLazy { 
-                                        let childWorkflow3 = maybeLazy { printfn "Child workflow Lazy" }
-                                        return! maybeLazy { printfn "Part 1: about to return None" }
-                                        return! childWorkflow3
-                                        return! childWorkflow3
-                                    } 
+    let m4: MaybeLazy<unit> = maybeLazy { 
+        let childWorkflow3 = maybeLazy { printfn "Child workflow Lazy" }
+        return! maybeLazy { printfn "Part 1: about to return None" }
+        return! childWorkflow3
+        return! childWorkflow3
+        }
 
     let runLazy (Maybe f) = f.Force()
     let evaluatedLazy = runLazy m4;
-    evaluatedLazy |> printfn "Result for Part1 but not Part2: %A" 
-
+    evaluatedLazy |> printfn "Result for Part1 but not Part2: %A"
