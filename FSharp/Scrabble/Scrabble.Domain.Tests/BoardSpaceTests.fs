@@ -53,11 +53,13 @@ let ``When middle row or column``() =
         let locs = (SequenceHelpers.CoMap {0.. size-1}) |> Seq.filter filter
         playAll (Board.Empty size size) locs
     
-    let assertExpected size expected = 
+    let assertExpected size expected expectedBoth = 
         let rowBoard = playRow size (fun (w,h) -> h = size/2)
         let colBoard = playRow size (fun (w,h) -> w = size/2)
+        let rowColBoard = playRow size (fun (w,h) -> w = size/2 || h = size/2)
         assertBoardSpaces rowBoard expected
         assertBoardSpaces colBoard expected
+        assertBoardSpaces rowColBoard expectedBoth
     
-    assertExpected 3 15
-    assertExpected 5 60 //V: (8 * 5) + H: (10 * 2) = 60
+    assertExpected 3 15 8
+    assertExpected 5 60 60 //(V: (8 * 5) + H: (10 * 2) = 60), (V: 8*4 + H:V - 4 repeats = 60)
