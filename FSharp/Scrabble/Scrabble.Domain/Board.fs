@@ -36,9 +36,9 @@ type Board(tileLocations : BoardLocation[,], width:int, height:int) =
                                            | LetterMultiply(m) -> "L" + m.ToString() + ""
                                            | WordMultiply(m) -> "W" + m.ToString() + ""
 
-    static member Empty width height =
-        let array = Array2D.init width height (fun w h -> { Location = { Width = w; Height = h }; State = BoardState.Free(None) })
-        new Board(array, width, height)
+    static member Empty wdth hght =
+        let array = Array2D.init wdth hght (fun w h -> { Location = { Width = w; Height = h }; State = BoardState.Free(None) })
+        new Board(array, wdth, hght)
 
     member this.Width = width
     member this.Height = height
@@ -49,8 +49,16 @@ type Board(tileLocations : BoardLocation[,], width:int, height:int) =
             state.[tile.Location.Width, tile.Location.Height] <- { Location = tile.Location; State = BoardState.Played tile.Piece }
         new Board(state, width, height)
 
-    member this.TileAt width height = tileLocations.[width, height]
+    member this.TileAt wght hght = tileLocations.[wght, hght]
     
+    /// <summary> Location (or any either side or above/below), are a tile </summary>
+    member this.IsTouchingTile wdth hght = 
+        let locations = [ (wdth, hght); (wdth-1, hght); (wdth+1, hght); (wdth, hght-1); (wdth, hght+1) ]
+        locations |> Seq.filter (fun (w,h) -> w >= 0 && w < this.Width && h >=0 && h < this.Height)
+                  |> Seq.exists (fun (w,h) -> (this.TileAt w h).State.IsSpace <> true)
+    
+    member this.IsMiddleTile wdth hght = (wdth = width/2) && (hght = height/2)
+
     override this.ToString() = 
         let rows = {height-1 .. -1 .. 0} |> Seq.map
                     (fun h -> {0 .. width-1} |> Seq.map (fun w -> tileLocations.[w,h] |> tileToString)

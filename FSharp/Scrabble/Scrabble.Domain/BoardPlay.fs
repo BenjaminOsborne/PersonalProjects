@@ -27,8 +27,9 @@ type BoardSpaceAnalyser =
         let vertSpaces = allSpaces width height (fun w h -> hasSpaceOrEdge w h) (fun w h -> board.TileAt w h)
                             |> Seq.filter (fun x -> x.Locations.Length > 1) //1 length spaces will be duplicated in both directions
         
+        let isTouching loc = board.IsTouchingTile loc.Width loc.Height || board.IsMiddleTile loc.Width loc.Height
 
-
-        let allSpaces = (Seq.append horiSpaces vertSpaces) |> Seq.toList
-        allSpaces
+        let allSpaces = (Seq.append horiSpaces vertSpaces)
+        let allValid = allSpaces |> Seq.filter (fun x -> x.Locations |> Seq.exists (fun t -> isTouching t.Location)) |> Seq.toList
+        allValid
     
