@@ -48,8 +48,8 @@
     <Compile Include="Extensions.fs" />
     <Compile Include="Board.fs" />
     <Compile Include="TileBag.fs" />
-    <Compile Include="BoardPlay.fs" />
     <Compile Include="Words.fs" />
+    <Compile Include="BoardPlay.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

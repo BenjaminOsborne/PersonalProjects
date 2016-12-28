@@ -15,10 +15,9 @@ type Location =
     override this.GetHashCode() = (this.Width * 397) ^^^ this.Height  
     override this.ToString() = "(" + this.Width.ToString() + " " + this.Height.ToString() + ")"
 
-type Letter = | Letter of char
-              | Blank
+type LetterTile = | Letter of char | Blank
 
-type Tile = { Letter : Letter; Value : int }
+type Tile = { Letter : char; Value : int }
 
 type BoardSpace = | None
                   | LetterMultiply of int
@@ -37,9 +36,7 @@ type TilePlay = { Location : Location; Piece : Tile }
 type Board(tileLocations : BoardLocation[,], width:int, height:int) = 
     
     let tileToString tile = match tile.State with
-                            | Played(p) -> match(p.Letter) with
-                                           | Letter(c) -> " " + c.ToString()
-                                           | Blank -> "  "
+                            | Played(p) -> " " + p.Letter.ToString()
                             | Free(t)   -> match(t) with
                                            | None -> "  "
                                            | LetterMultiply(m) -> "L" + m.ToString() + ""

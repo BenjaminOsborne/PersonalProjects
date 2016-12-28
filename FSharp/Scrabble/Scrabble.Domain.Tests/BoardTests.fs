@@ -5,7 +5,7 @@ open FsUnit
 open Scrabble.Domain
 
 let coMap2 a b = SequenceHelpers.CoMap2 a b
-let play w h c v = { Location = { Width = w; Height = h }; Piece = { Letter = Letter c; Value = v } };
+let play w h c v = { Location = { Width = w; Height = h }; Piece = { Letter = c; Value = v } };
 
 [<Test>]
 let ``When empty board``() =
@@ -19,4 +19,4 @@ let ``When empty board``() =
 let ``When play tile 2``() =
     let board = (Board.Empty 4 4).Play [ play 2 2 'a' 4]
     let tile = board.TileAt 2 2
-    tile.State |> should equal (Played { Letter = Letter 'a'; Value = 4 })
+    tile.State |> should equal (Played { Letter = 'a'; Value = 4 })

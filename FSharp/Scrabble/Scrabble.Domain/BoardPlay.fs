@@ -15,7 +15,7 @@ type BoardPlay(locations : BoardLocation list) =
 
 type BoardSpaceAnalyser =
 
-    static member GenerateSpaces(board:Board) =        
+    static member GenerateSpaces (board:Board) =        
 
         let allSpaces outer inner hasSpaceOrEdge tileAt =
             let manySeqs = {0 .. outer-1} |> Seq.map (fun o ->
@@ -31,7 +31,7 @@ type BoardSpaceAnalyser =
         let height = board.Height
         let hasSpaceOrEdge w h = w < 0 || w >= width || h < 0 || h >= height || (board.TileAt w h).State.IsSpace
         
-        let horiSpaces = allSpaces height width (fun h w ->  hasSpaceOrEdge w h) (fun h w -> board.TileAt w h)
+        let horiSpaces = allSpaces height width (fun h w -> hasSpaceOrEdge w h) (fun h w -> board.TileAt w h)
         let vertSpaces = allSpaces width height (fun w h -> hasSpaceOrEdge w h) (fun w h -> board.TileAt w h)
         let allSpaces = (Seq.append horiSpaces vertSpaces)
         
@@ -41,3 +41,22 @@ type BoardSpaceAnalyser =
         let distinct = Seq.distinctByField(allValid, (fun x -> Seq.EqualitySet x.Spaces)) |> Seq.toList
         distinct
     
+    static member GetScoredPlays (board:Board) (handLetterSet:LetterSet) (wordSet: WordSet) =
+        
+        let pinnedLettersMatch (play:BoardPlay) (word : Word) =
+            play.Locations |> Seq.mapi (fun nx l -> match l.State with
+                                                    | Free(_) -> true
+                                                    | Played(t) -> t.Letter = word.Word.[nx])
+                           |> Seq.forall (fun x -> x)
+        
+        let wordCouldMatch (play:BoardPlay) (word : Word) =
+            (pinnedLettersMatch play word) && word.CanMakeWordFromSet handLetterSet
+
+        let boardPlays = BoardSpaceAnalyser.GenerateSpaces board
+        let possible (play:BoardPlay) =
+            let words = wordSet.WordsForLength play.Locations.Length
+            words |> Seq.filter (fun w -> wordCouldMatch play w)
+        
+        let possiblePlays = boardPlays |> Seq.map (fun x -> (x, possible x))
+
+        0

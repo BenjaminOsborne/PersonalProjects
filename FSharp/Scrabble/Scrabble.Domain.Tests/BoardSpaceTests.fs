@@ -10,7 +10,7 @@ let assertBoardSpaces board expected =
         let spaces = getSpaces board
         spaces.Length |> should equal expected
 
-let play w h c v = { Location = { Width = w; Height = h }; Piece = { Letter = Letter c; Value = v } };
+let play w h c v = { Location = { Width = w; Height = h }; Piece = { Letter = c; Value = v } };
 
 let playAll (board:Board) locations =
     let plays = locations |> Seq.map (fun (w,h) -> play w h 'f' 4) |> Seq.toList
