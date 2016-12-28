@@ -23,8 +23,16 @@ let ``When empty board``() =
     assertSpaces 5 17 //H: 9, V: 9 (1 same) -> 17
 
 [<Test>]
+let ``When full board``() = 
+    let fullBoard size = 
+        let plays = SequenceHelpers.CoMap {0 .. size-1} |> Seq.map (fun (w,h) -> play w h 'f' 4) |> Seq.toList
+        (Board.Empty size size).Play plays
+    {1..15} |> Seq.iter (fun size -> assertBoardSpaces (fullBoard size) 0)
+
+[<Test>]
 let ``When middle piece``() = 
     let board = (Board.Empty 3 3).Play [play 1 1 'a' 1]
     //All: H: 3 x (3 + 2 + 1) = 18. //V = H - (3 * 3) = 9 // Total = 18 + 9 = 27
     //Excluded: Middle + 4 corners -> 27 - 5 = 22
     assertBoardSpaces board 22
+
