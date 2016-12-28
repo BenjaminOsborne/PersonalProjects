@@ -33,6 +33,13 @@ let ``When full board``() =
     {1..15} |> Seq.iter (fun size -> assertBoardSpaces (fullBoard size) 0)
 
 [<Test>]
+let ``When 1 space``() = 
+    let create size =
+        let locs = (SequenceHelpers.CoMap {0.. size-1}) |> Seq.filter (fun (w, h) -> w <> size/2 || h <> size/2)
+        playAll (Board.Empty size size) locs
+    {1..15} |> Seq.iter (fun size -> assertBoardSpaces (create size) 1) //Should be 1 play if only 1 space
+
+[<Test>]
 let ``When single middle piece``() = 
     let board = (Board.Empty 3 3).Play [play 1 1 'a' 1]
     //All: H: 3 x (3 + 2 + 1) = 18. //V = H - (3 * 3) = 9 // Total = 18 + 9 = 27
@@ -41,8 +48,13 @@ let ``When single middle piece``() =
     assertBoardSpaces board 18
 
 [<Test>]
-let ``When 1 space``() = 
-    let create size =
-        let locs = (SequenceHelpers.CoMap {0.. size-1}) |> Seq.filter (fun (w, h) -> w <> size/2 || h <> size/2)
+let ``When middle row``() =
+    let playRow size row =
+        let locs = (SequenceHelpers.CoMap {0.. size-1}) |> Seq.filter (fun (w, h) -> h <> row)
         playAll (Board.Empty size size) locs
-    {1..15} |> Seq.iter (fun size -> assertBoardSpaces (create size) 1) //Should be 1 play if only 1 space
+    
+    let assertExpected size expected = 
+        let board = playRow size (size/2)
+        assertBoardSpaces board expected
+    
+    assertExpected 3 15
