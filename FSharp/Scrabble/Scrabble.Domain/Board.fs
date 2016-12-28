@@ -4,7 +4,16 @@ type SequenceHelpers =
     static member CoMap2 indW indH = indW |> Seq.map (fun w -> indH |> Seq.map (fun h -> (w,h))) |> Seq.collect (fun x -> x);
     static member CoMap ind = SequenceHelpers.CoMap2 ind ind;
 
-type Location = { Width : int; Height: int}
+[<CustomEqualityAttribute>]
+[<NoComparisonAttribute>]
+type Location =
+    { Width : int; Height: int}
+    override this.Equals(obj) =
+        match obj with
+        | :? Location as other -> other.Width = this.Width && other.Height = this.Height
+        | _ -> false
+    override this.GetHashCode() = (this.Width * 397) ^^^ this.Height  
+    override this.ToString() = "(" + this.Width.ToString() + " " + this.Height.ToString() + ")"
 
 type Letter = | Letter of char
               | Blank

@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Extensions.fs" />
     <Compile Include="Board.fs" />
     <Compile Include="TileBag.fs" />
     <Compile Include="BoardPlay.fs" />
