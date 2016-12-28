@@ -48,14 +48,16 @@ let ``When single middle piece``() =
     assertBoardSpaces board 18
 
 [<Test>]
-let ``When middle row``() =
-    let playRow size row =
-        let locs = (SequenceHelpers.CoMap {0.. size-1}) |> Seq.filter (fun (w, h) -> h = row)
+let ``When middle row or column``() =
+    let playRow size filter =
+        let locs = (SequenceHelpers.CoMap {0.. size-1}) |> Seq.filter filter
         playAll (Board.Empty size size) locs
     
     let assertExpected size expected = 
-        let board = playRow size (size/2)
-        assertBoardSpaces board expected
+        let rowBoard = playRow size (fun (w,h) -> h = size/2)
+        let colBoard = playRow size (fun (w,h) -> w = size/2)
+        assertBoardSpaces rowBoard expected
+        assertBoardSpaces colBoard expected
     
     assertExpected 3 15
     assertExpected 5 60 //V: (8 * 5) + H: (10 * 2) = 60
