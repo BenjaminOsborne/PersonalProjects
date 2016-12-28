@@ -1,9 +1,7 @@
 ﻿namespace Scrabble.Domain
 
 type BoardPlay(locations : BoardLocation list) =
-    let spaces = new System.Lazy<int>(fun _ -> locations |> Seq.filter (fun x -> x.State.IsSpace) |> Seq.length);
     member this.Locations = locations
-    member this.Spaces = spaces.Value
 
     override this.ToString() =
         match locations.Length with
@@ -34,8 +32,9 @@ type BoardSpaceAnalyser =
         let vertSpaces = allSpaces width height (fun w h -> hasSpaceOrEdge w h) (fun w h -> board.TileAt w h)
         let allSpaces = (Seq.append horiSpaces vertSpaces)
         
-        let isTouching loc = board.IsTouchingTile loc.Width loc.Height || board.IsMiddleTile loc.Width loc.Height
-        let allValid = allSpaces |> Seq.filter (fun x -> x.Locations |> Seq.exists (fun t -> isTouching t.Location))
+        let isTouchTile loc = board.IsTouchingTile loc.Width loc.Height || board.IsMiddleTile loc.Width loc.Height
+        let allValid = allSpaces |> Seq.filter (fun x -> x.Locations |> Seq.exists (fun x -> x.State.IsSpace) && //Must be at least 1 space
+                                                         x.Locations |> Seq.exists (fun t -> isTouchTile t.Location)) //Must be touching at least 1 existing tiles
         
         let distinct = Seq.distinctByField(allValid, (fun x -> Seq.EqualitySet x.Locations)) |> Seq.toList
         distinct
