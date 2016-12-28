@@ -1,0 +1,26 @@
+﻿namespace Scrabble.Domain
+
+type LetterSet(letters : string) = 
+
+    let letterSet = letters |> Seq.groupBy (fun x -> x) |> Seq.map (fun (key, items) -> key, items |> Seq.length) |> Map
+    member this.LetterSet = letterSet
+    
+    member this.ContainsAtLeastAllFrom (other:LetterSet) = 
+        other.LetterSet |> Seq.forall (fun kvp -> let someVal = this.LetterSet.TryFind kvp.Key
+                                                  match someVal with
+                                                  | Some(count) -> count >= kvp.Value
+                                                  | _ -> false)
+
+type Word(word : string) =
+    let thisSet = LetterSet(word)
+    member this.Word = word
+    member this.CanMakeWordFromSet(letters : LetterSet) = letters.ContainsAtLeastAllFrom thisSet
+
+type WordSet(words : Set<string>) = 
+    let wordsByLength = words |> Seq.groupBy (fun x -> x.Length)
+                              |> Seq.map(fun (key, items) -> key, items |> Seq.map (fun x -> Word(x)) |> Seq.toList)
+                              |> Map
+    
+    member this.WordsForLength len = let somelist = wordsByLength.TryFind len
+                                     match somelist with | Some(l) -> l | _ -> []
+    

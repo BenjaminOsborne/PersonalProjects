@@ -52,10 +52,11 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="TileBagTests.fs" />
-    <Compile Include="BoardSpaceTests.fs" />
     <Content Include="packages.config" />
     <Compile Include="BoardTests.fs" />
     <Compile Include="ExampleTests.fs" />
+    <Compile Include="BoardSpaceTests.fs" />
+    <Compile Include="WordTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
