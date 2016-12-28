@@ -64,7 +64,7 @@ type Board(tileLocations : BoardLocation[,], width:int, height:int) =
     member this.IsTouchingTile wdth hght = 
         let locations = [ (wdth, hght); (wdth-1, hght); (wdth+1, hght); (wdth, hght-1); (wdth, hght+1) ]
         locations |> Seq.filter (fun (w,h) -> w >= 0 && w < this.Width && h >=0 && h < this.Height)
-                  |> Seq.exists (fun (w,h) -> (this.TileAt w h).State.IsSpace <> true)
+                  |> Seq.exists (fun (w,h) -> (this.TileAt w h).State.IsSpace = false)
     
     member this.IsMiddleTile wdth hght = (wdth = width/2) && (hght = height/2)
 

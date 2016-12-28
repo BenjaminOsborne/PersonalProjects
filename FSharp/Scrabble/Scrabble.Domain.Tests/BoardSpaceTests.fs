@@ -50,7 +50,7 @@ let ``When single middle piece``() =
 [<Test>]
 let ``When middle row``() =
     let playRow size row =
-        let locs = (SequenceHelpers.CoMap {0.. size-1}) |> Seq.filter (fun (w, h) -> h <> row)
+        let locs = (SequenceHelpers.CoMap {0.. size-1}) |> Seq.filter (fun (w, h) -> h = row)
         playAll (Board.Empty size size) locs
     
     let assertExpected size expected = 
@@ -58,3 +58,4 @@ let ``When middle row``() =
         assertBoardSpaces board expected
     
     assertExpected 3 15
+    assertExpected 5 60 //V: (8 * 5) + H: (10 * 2) = 60
