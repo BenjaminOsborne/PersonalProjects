@@ -79,7 +79,7 @@ type BoardSpaceAnalyser() =
             let getTiles start getLocation = 
                 let forward = walkWhileTiles (fun x -> start + x + 1) getLocation
                 let backward = walkWhileTiles (fun x -> start - x - 1) getLocation
-                (backward |> List.rev) |> List.append (letter::forward) 
+                List.append (backward |> List.rev) (letter::forward) 
 
             let chars = match direction with
                         | Across -> getTiles location.Width (fun x -> { Width = x; Height = location.Height })

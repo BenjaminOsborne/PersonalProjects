@@ -34,3 +34,4 @@ let ``With board with letters``() =
                                         (play 3 2 'd' 1);
                                         (play 4 2 'e' 1)]
     assertPossible board ["bad"] ['b';'a';'d'] [1;1;1]
+    assertPossible board ["at";"to";"bo"] ['t';'o'] [1]
