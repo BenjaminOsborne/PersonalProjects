@@ -1,10 +1,18 @@
 ﻿namespace Scrabble.Domain
 
 type LetterSet(letters : string) = 
-
-    let letterSet = letters |> Seq.groupBy (fun x -> x) |> Seq.map (fun (key, items) -> key, items |> Seq.length) |> Map
-    member this.LetterSet = letterSet
     
+    let letterSet = letters |> Seq.groupBy (fun x -> x) |> Seq.map (fun (key, items) -> key, items |> Seq.length) |> Map
+
+    static member FromTiles (tiles : Tile list) =
+        let charsToString chars (len:int) =
+            let builder = new System.Text.StringBuilder(len)
+            chars |> Seq.iter (fun c -> builder.Append(c.ToString()) |> ignore)
+            builder.ToString()
+        new LetterSet(charsToString (tiles |> Seq.map (fun x -> x.Letter)) tiles.Length)
+    
+    member this.LetterSet = letterSet
+    member this.InputLetters = letters
     member this.ContainsAtLeastAllFrom (other:LetterSet) = 
         other.LetterSet |> Seq.forall (fun kvp -> let someVal = this.LetterSet.TryFind kvp.Key
                                                   match someVal with
@@ -14,12 +22,7 @@ type LetterSet(letters : string) =
 type TileHand(tiles : Tile list) =
     
     let mapTiles = tiles |> Seq.groupBy (fun x -> x.Letter) |> Seq.map (fun (key,vals) -> (key, vals |> Seq.toList)) |> Map
-
-    let charsToString chars (len:int) =
-        let builder = new System.Text.StringBuilder(len)
-        chars |> Seq.iter (fun c -> builder.Append(c.ToString()) |> ignore)
-        builder.ToString()
-    let letters = new LetterSet(charsToString (tiles |> Seq.map (fun x -> x.Letter)) tiles.Length)
+    let letters = LetterSet.FromTiles tiles
     
     member this.Tiles = tiles
     member this.LetterSet = letters

@@ -4,6 +4,10 @@ type SequenceHelpers =
     static member CoMap2 indW indH = indW |> Seq.map (fun w -> indH |> Seq.map (fun h -> (w,h))) |> Seq.collect (fun x -> x);
     static member CoMap ind = SequenceHelpers.CoMap2 ind ind;
 
+type Direction = | Across
+                 | Down
+    with member this.Flip = match(this) with | Across -> Down | Down -> Across
+
 [<CustomEqualityAttribute>]
 [<NoComparisonAttribute>]
 type Location =

@@ -1,9 +1,5 @@
 ﻿namespace Scrabble.Domain
 
-type Direction = | Across
-                 | Down
-    with member this.Flip = match(this) with | Across -> Down | Down -> Across
-
 type BoardPlay(locations : BoardLocation list, direction : Direction) =
     let lazySpaces = new System.Lazy<BoardLocation list>(fun _ -> locations |> Seq.filter (fun x -> x.State.IsSpace) |> Seq.toList)
     member this.Locations = locations
@@ -84,8 +80,12 @@ type BoardSpaceAnalyser() =
                 let middle = (tileHand.GetTiles letter).Head //TODO handle blanks with diff. values...
                 (backward |> List.rev) |> List.append (middle::forward) 
 
-            let across = getTiles location.Width (fun x -> { Width = x; Height = location.Height })
-
+            let tiles = match direction with
+                        | Across -> getTiles location.Width (fun x -> { Width = x; Height = location.Height })
+                        | Down   -> getTiles location.Height (fun x -> { Width = location.Width; Height = x })
+            let word = (LetterSet.FromTiles tiles).InputLetters
+            let isWord = wordSet.IsWord word
+            //let scoreWord
             0
 
         let buildPlayData (word:Word) (play:BoardPlay) =
