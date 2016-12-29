@@ -109,3 +109,10 @@ type BoardCreator =
         apply ([trpLet; dubLet; tripWrd; dubWrd; start] |> Seq.collect (fun x -> x))
         
         new Board(array, size, size);
+
+    static member FromArray (array: char list list) = 
+        
+        let height = array.Length;
+        let width = match height with | 0 -> 0 | _ -> array.Head.Length
+        let empty = Board.Empty width height
+        empty
