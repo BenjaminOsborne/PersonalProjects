@@ -11,6 +11,20 @@ type LetterSet(letters : string) =
                                                   | Some(count) -> count >= kvp.Value
                                                   | _ -> false)
 
+type TileHand(tiles : Tile list) =
+    
+    let mapTiles = tiles |> Seq.groupBy (fun x -> x.Letter) |> Seq.map (fun (key,vals) -> (key, vals |> Seq.toList)) |> Map
+
+    let charsToString chars (len:int) =
+        let builder = new System.Text.StringBuilder(len)
+        chars |> Seq.iter (fun c -> builder.Append(c.ToString()) |> ignore)
+        builder.ToString()
+    let letters = new LetterSet(charsToString (tiles |> Seq.map (fun x -> x.Letter)) tiles.Length)
+    
+    member this.Tiles = tiles
+    member this.LetterSet = letters
+    member this.GetTiles c = match mapTiles.TryFind c with | Some(lst) -> lst | None -> []
+
 type Word(word : string) =
     let thisSet = LetterSet(word)
     member this.Word = word

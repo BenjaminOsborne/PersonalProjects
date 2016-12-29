@@ -19,15 +19,20 @@ type LetterTile = | Letter of char | Blank
 
 type Tile = { Letter : char; Value : int }
 
-type BoardSpace = | None
+type BoardSpace = | Normal
                   | LetterMultiply of int
                   | WordMultiply of int
 
-type BoardState = | Played of Tile
-                  | Free of BoardSpace
-    with member this.IsSpace = match this with
+type BoardState =
+    | Played of Tile
+    | Free of BoardSpace
+    
+    member this.IsSpace = match this with
                                | Free(_) -> true
                                | _ -> false
+    member this.Tile = match this with
+                         | Free(_) -> None
+                         | Played(t) -> Some(t)
 
 type BoardLocation = { Location : Location; State : BoardState }
 
@@ -38,12 +43,12 @@ type Board(tileLocations : BoardLocation[,], width:int, height:int) =
     let tileToString tile = match tile.State with
                             | Played(p) -> " " + p.Letter.ToString()
                             | Free(t)   -> match(t) with
-                                           | None -> "  "
+                                           | Normal -> "  "
                                            | LetterMultiply(m) -> "L" + m.ToString() + ""
                                            | WordMultiply(m) -> "W" + m.ToString() + ""
 
     static member Empty wdth hght =
-        let array = Array2D.init wdth hght (fun w h -> { Location = { Width = w; Height = h }; State = BoardState.Free(None) })
+        let array = Array2D.init wdth hght (fun w h -> { Location = { Width = w; Height = h }; State = BoardState.Free(Normal) })
         new Board(array, wdth, hght)
 
     member this.Width = width
@@ -76,7 +81,7 @@ type BoardCreator =
     static member Default =
         let size = 15
         let create w h space = { Location = { Width = w; Height = h }; State = BoardState.Free(space) }
-        let array = Array2D.init size size (fun x y -> create x y None)
+        let array = Array2D.init size size (fun x y -> create x y Normal)
         let apply(tiles: seq<BoardLocation>) = tiles |> Seq.iter (fun x -> array.[x.Location.Width, x.Location.Height] <- x);
         
         let coMap2 = SequenceHelpers.CoMap2

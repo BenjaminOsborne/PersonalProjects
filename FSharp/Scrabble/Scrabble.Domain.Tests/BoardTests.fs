@@ -13,7 +13,7 @@ let ``When empty board``() =
     coMap2 [0..1] [0..2]
         |> Seq.iter (fun (w, h) ->
             let tile = board.TileAt w h
-            tile.State |> should equal (Free None))
+            tile.State |> should equal (Free Normal))
 
 [<Test>]
 let ``When play tile 2``() =

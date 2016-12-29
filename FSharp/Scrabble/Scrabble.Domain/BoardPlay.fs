@@ -2,6 +2,7 @@
 
 type Direction = | Across
                  | Down
+    with member this.Flip = match(this) with | Across -> Down | Down -> Across
 
 type BoardPlay(locations : BoardLocation list, direction : Direction) =
     let lazySpaces = new System.Lazy<BoardLocation list>(fun _ -> locations |> Seq.filter (fun x -> x.State.IsSpace) |> Seq.toList)
@@ -17,9 +18,24 @@ type BoardPlay(locations : BoardLocation list, direction : Direction) =
         | _ -> let last = locations |> Seq.last
                locations.Head.Location.ToString() + " - " + last.Location.ToString()
 
-type BoardSpaceAnalyser =
+type BoardSpaceAnalyser() =
+    
+    let isOutOfRange (board:Board) w h =
+        let width = board.Width
+        let height = board.Height
+        w < 0 || w >= width || h < 0 || h >= height
 
-    static member GenerateSpaces (board:Board) =        
+    let hasSpaceOrEdge (board:Board) w h =
+        isOutOfRange board w h || (board.TileAt w h).State.IsSpace
+    
+    let getTile (board:Board) location =
+        let w = location.Width
+        let h = location.Height
+        match isOutOfRange board w h with
+        | true -> None
+        | false -> (board.TileAt w h).State.Tile
+
+    member this.GenerateSpaces (board:Board) =        
 
         let allSpaces direction outer inner hasSpaceOrEdge tileAt =
             let manySeqs = {0 .. outer-1} |> Seq.map (fun o ->
@@ -31,12 +47,10 @@ type BoardSpaceAnalyser =
                         BoardPlay(spaceList, direction))))
             manySeqs |> Seq.collect (fun x -> x) |> Seq.collect (fun x -> x)
         
-        let width = board.Width
-        let height = board.Height
-        let hasSpaceOrEdge w h = w < 0 || w >= width || h < 0 || h >= height || (board.TileAt w h).State.IsSpace
+        let hasSpaceOrEdge w h = hasSpaceOrEdge board w h
         
-        let horiSpaces = allSpaces Across height width (fun h w -> hasSpaceOrEdge w h) (fun h w -> board.TileAt w h)
-        let vertSpaces = allSpaces Down width height (fun w h -> hasSpaceOrEdge w h) (fun w h -> board.TileAt w h)
+        let horiSpaces = allSpaces Across board.Height board.Width (fun h w -> hasSpaceOrEdge w h) (fun h w -> board.TileAt w h)
+        let vertSpaces = allSpaces Down board.Width board.Height (fun w h -> hasSpaceOrEdge w h) (fun w h -> board.TileAt w h)
         let allSpaces = (Seq.append horiSpaces vertSpaces)
         
         let isTouchTile loc = board.IsTouchingTile loc.Width loc.Height || board.IsMiddleTile loc.Width loc.Height
@@ -45,7 +59,7 @@ type BoardSpaceAnalyser =
         let distinct = Seq.distinctByField(allValid, (fun x -> Seq.EqualitySet x.Spaces)) |> Seq.toList
         distinct
     
-    static member GetPossibleScoredPlays (board:Board) (handLetterSet:LetterSet) (wordSet: WordSet) =
+    member this.GetPossibleScoredPlays (board:Board) (tileHand:TileHand) (wordSet: WordSet) =
         
         let pinnedLettersMatch (play:BoardPlay) (word : Word) =
             play.Locations |> Seq.mapi (fun nx l -> match l.State with
@@ -54,11 +68,33 @@ type BoardSpaceAnalyser =
                            |> Seq.forall (fun x -> x)
         
         let wordMatches (play:BoardPlay) (word : Word) =
-            (pinnedLettersMatch play word) && word.CanMakeWordFromSet handLetterSet
+            (pinnedLettersMatch play word) && word.CanMakeWordFromSet tileHand.LetterSet
 
-        let buildPlayData word play = word
+        let getWord (location:Location) (letter:char) (direction:Direction) =
+            let walkWhileTiles init getLocation =
+                Seq.initInfinite init
+                |> Seq.map (fun x -> getTile board (getLocation x))
+                |> Seq.takeWhile (fun x -> x.IsSome)
+                |> Seq.map (fun x -> x.Value)
+                |> Seq.toList
+            
+            let getTiles start getLocation = 
+                let forward = walkWhileTiles (fun x -> start + x + 1) getLocation
+                let backward = walkWhileTiles (fun x -> start - x - 1) getLocation
+                let middle = (tileHand.GetTiles letter).Head //TODO handle blanks with diff. values...
+                (backward |> List.rev) |> List.append (middle::forward) 
 
-        let boardPlays = BoardSpaceAnalyser.GenerateSpaces board
+            let across = getTiles location.Width (fun x -> { Width = x; Height = location.Height })
+
+            0
+
+        let buildPlayData (word:Word) (play:BoardPlay) =
+            let a = play.Locations |> Seq.mapi (fun nx bp -> (word.Word.[nx], bp))
+                                   |> Seq.filter (fun (c,bp) -> bp.State.IsSpace)
+                                   |> Seq.map (fun (c, bp) -> getWord bp.Location c play.Direction.Flip)
+            word
+
+        let boardPlays = this.GenerateSpaces board
         let getPossibleWords (play:BoardPlay) =
             let words = wordSet.WordsForLength play.Locations.Length
             words |> Seq.filter (fun w -> wordMatches play w)

@@ -4,7 +4,7 @@ open NUnit.Framework
 open FsUnit
 open Scrabble.Domain
 
-let getSpaces board = BoardSpaceAnalyser.GenerateSpaces board
+let getSpaces board = (new BoardSpaceAnalyser()).GenerateSpaces board
 
 let assertBoardSpaces board expectedAcross expectedDown =
         let spaces = getSpaces board
