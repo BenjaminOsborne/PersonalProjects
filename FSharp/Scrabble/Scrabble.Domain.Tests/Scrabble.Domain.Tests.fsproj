@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="TileBagTests.fs" />
+    <Compile Include="PossibleWordPlayTests.fs" />
     <Content Include="packages.config" />
     <Compile Include="BoardTests.fs" />
     <Compile Include="ExampleTests.fs" />

@@ -84,12 +84,11 @@ type BoardSpaceAnalyser() =
             let chars = match direction with
                         | Across -> getTiles location.Width (fun x -> { Width = x; Height = location.Height })
                         | Down   -> getTiles location.Height (fun x -> { Width = location.Width; Height = x })
-            if (chars.Length <= 1) then
-                (true)
-            else
-                let word = LetterHelpers.CharListToString chars
-                let isWord = wordSet.IsWord word
-                (isWord)
+            let isValid = match chars.Length with
+                          | 1 -> true
+                          | _ -> let word = LetterHelpers.CharListToString chars
+                                 wordSet.IsWord word
+            isValid
 
         let areSecondaryWordsValid (word:Word) (play:BoardPlay) =
             play.Locations |> Seq.mapi (fun nx bp -> (word.Word.[nx], bp))
@@ -103,5 +102,7 @@ type BoardSpaceAnalyser() =
             words |> Seq.filter (fun w -> (wordMatches play w) && (areSecondaryWordsValid w play))
                   |> Seq.toList
         
-        let possiblePlays = boardPlays |> Seq.map (fun bp -> { BoardPlay = bp; Words = getPossibleWords bp }) |> Seq.toList
+        let possiblePlays = boardPlays |> Seq.map (fun bp -> { BoardPlay = bp; Words = getPossibleWords bp })
+                                       |> Seq.filter (fun x -> x.Words.IsEmpty = false)
+                                       |> Seq.toList
         possiblePlays
