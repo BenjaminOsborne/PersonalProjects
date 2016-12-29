@@ -14,6 +14,8 @@ type BoardPlay(locations : BoardLocation list, direction : Direction) =
         | _ -> let last = locations |> Seq.last
                locations.Head.Location.ToString() + " - " + last.Location.ToString()
 
+type ValidWordPlays = { BoardPlay : BoardPlay; Words : Word list }
+
 type BoardSpaceAnalyser() =
     
     let isOutOfRange (board:Board) w h =
@@ -66,42 +68,40 @@ type BoardSpaceAnalyser() =
         let wordMatches (play:BoardPlay) (word : Word) =
             (pinnedLettersMatch play word) && word.CanMakeWordFromSet tileHand.LetterSet
 
-        let getWord (location:Location) (letter:char) (direction:Direction) =
+        let isWordValid (location:Location) (letter:char) (direction:Direction) =
             let walkWhileTiles init getLocation =
                 Seq.initInfinite init
                 |> Seq.map (fun x -> getTile board (getLocation x))
                 |> Seq.takeWhile (fun x -> x.IsSome)
-                |> Seq.map (fun x -> x.Value)
+                |> Seq.map (fun x -> x.Value.Letter)
                 |> Seq.toList
             
             let getTiles start getLocation = 
                 let forward = walkWhileTiles (fun x -> start + x + 1) getLocation
                 let backward = walkWhileTiles (fun x -> start - x - 1) getLocation
-                let middle = (tileHand.GetTiles letter).Head //TODO handle blanks with diff. values...
-                (backward |> List.rev) |> List.append (middle::forward) 
+                (backward |> List.rev) |> List.append (letter::forward) 
 
-            let tiles = match direction with
+            let chars = match direction with
                         | Across -> getTiles location.Width (fun x -> { Width = x; Height = location.Height })
                         | Down   -> getTiles location.Height (fun x -> { Width = location.Width; Height = x })
-            let word = (LetterSet.FromTiles tiles).InputLetters
-            let isWord = wordSet.IsWord word
-            //let scoreWord
-            0
+            if (chars.Length <= 1) then
+                (true)
+            else
+                let word = LetterHelpers.CharListToString chars
+                let isWord = wordSet.IsWord word
+                (isWord)
 
-        let buildPlayData (word:Word) (play:BoardPlay) =
-            let a = play.Locations |> Seq.mapi (fun nx bp -> (word.Word.[nx], bp))
-                                   |> Seq.filter (fun (c,bp) -> bp.State.IsSpace)
-                                   |> Seq.map (fun (c, bp) -> getWord bp.Location c play.Direction.Flip)
-            word
+        let areSecondaryWordsValid (word:Word) (play:BoardPlay) =
+            play.Locations |> Seq.mapi (fun nx bp -> (word.Word.[nx], bp))
+                           |> Seq.filter (fun (c,bp) -> bp.State.IsSpace)
+                           |> Seq.map (fun (c, bp) -> isWordValid bp.Location c play.Direction.Flip)
+                           |> Seq.forall (fun x -> x)
 
         let boardPlays = this.GenerateSpaces board
         let getPossibleWords (play:BoardPlay) =
             let words = wordSet.WordsForLength play.Locations.Length
-            words |> Seq.filter (fun w -> wordMatches play w)
-                  |> Seq.map (fun x -> buildPlayData x play)
+            words |> Seq.filter (fun w -> (wordMatches play w) && (areSecondaryWordsValid w play))
+                  |> Seq.toList
         
-        let possiblePlays = boardPlays |> Seq.map (fun x -> (x, getPossibleWords x))
-
-        
-
-        0
+        let possiblePlays = boardPlays |> Seq.map (fun bp -> { BoardPlay = bp; Words = getPossibleWords bp }) |> Seq.toList
+        possiblePlays

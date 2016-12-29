@@ -1,15 +1,18 @@
 ﻿namespace Scrabble.Domain
 
+type LetterHelpers = 
+    static member CharsToString chars (len:int) =
+            let builder = new System.Text.StringBuilder(len)
+            chars |> Seq.iter (fun c -> builder.Append(c.ToString()) |> ignore)
+            builder.ToString()
+    static member CharListToString (chars: char list) = LetterHelpers.CharsToString chars chars.Length
+
 type LetterSet(letters : string) = 
     
     let letterSet = letters |> Seq.groupBy (fun x -> x) |> Seq.map (fun (key, items) -> key, items |> Seq.length) |> Map
 
     static member FromTiles (tiles : Tile list) =
-        let charsToString chars (len:int) =
-            let builder = new System.Text.StringBuilder(len)
-            chars |> Seq.iter (fun c -> builder.Append(c.ToString()) |> ignore)
-            builder.ToString()
-        new LetterSet(charsToString (tiles |> Seq.map (fun x -> x.Letter)) tiles.Length)
+        new LetterSet(LetterHelpers.CharsToString (tiles |> Seq.map (fun x -> x.Letter)) tiles.Length)
     
     member this.LetterSet = letterSet
     member this.InputLetters = letters
