@@ -6,7 +6,9 @@ open Scrabble.Domain
 
 let getPossible board tileHand wordSet = (new BoardSpaceAnalyser()).GetPossibleScoredPlays board tileHand wordSet
 
-let assertSome board words letters (assertData: int list) =
+let play w h c v = { Location = { Width = w; Height = h }; Piece = { Letter = c; Value = v } };
+
+let assertPossible board words letters (assertData: int list) =
     let tiles = letters |> Seq.map (fun c -> { Letter = c; Value = 0}) |> Seq.toList
     let tileHand = new TileHand(tiles)
     let wordSet = new WordSet(words |> Set)
@@ -17,9 +19,18 @@ let assertSome board words letters (assertData: int list) =
 [<Test>]
 let ``With empty board``() =
     let board = Board.Empty 3 3
-    assertSome board ["tie"] [] []
-    assertSome board ["tie"] ['t'; 'i'; 'f'] []
+    assertPossible board ["tie"] [] []
+    assertPossible board ["tie"] ['t'; 'i'; 'f'] []
 
-    assertSome board ["tie"] ['t'; 'i'; 'e'] [1; 1]
+    assertPossible board ["tie"] ['t'; 'i'; 'e'] [1; 1]
     
-    assertSome board ["dog"; "god"] ['o'; 'd'; 'g'] [2; 2]
+    assertPossible board ["dog"; "god"] ['o'; 'd'; 'g'] [2; 2]
+
+[<Test>]
+let ``With board with letters``() =
+    let board = (Board.Empty 5 5).Play [(play 0 2 'a' 1);
+                                        (play 1 2 'b' 1);
+                                        (play 2 2 'c' 1);
+                                        (play 3 2 'd' 1);
+                                        (play 4 2 'e' 1)]
+    assertPossible board ["bad"] ['b';'a';'d'] [1;1;1]
