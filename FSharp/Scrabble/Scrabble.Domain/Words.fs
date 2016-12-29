@@ -24,3 +24,5 @@ type WordSet(words : Set<string>) =
     member this.WordsForLength len = let somelist = wordsByLength.TryFind len
                                      match somelist with | Some(l) -> l | _ -> []
     
+    member this.IsWord word = words.Contains word
+    
