@@ -26,4 +26,11 @@ type ItemBag<'a>(tiles : 'a list) =
 
 type ItemBag = static member Create<'a> a = new ItemBag<'a>(a)
 
-type TileBag = ItemBag<Tile>
+type TileBag(items) =
+    inherit ItemBag<BagTile>(items)
+
+    member this.DrawFromLetter (letter:BagTileLetter) =
+        let index = items |> Seq.findIndex (fun x -> x.TileLetter.Equals(letter))
+        let remaining = {0 .. items.Length-1} |> Seq.filter (fun n -> n <> index)
+                                              |> Seq.map (fun n -> items.[n]) |> Seq.toList
+        (new TileBag(remaining), items.[index])

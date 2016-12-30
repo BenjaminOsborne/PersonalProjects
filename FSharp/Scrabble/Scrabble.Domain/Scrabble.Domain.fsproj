@@ -50,6 +50,7 @@
     <Compile Include="TileBag.fs" />
     <Compile Include="Words.fs" />
     <Compile Include="BoardPlay.fs" />
+    <Compile Include="GameHelpers.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

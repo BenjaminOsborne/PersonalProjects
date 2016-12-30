@@ -19,7 +19,9 @@ type Location =
     override this.GetHashCode() = (this.Width * 397) ^^^ this.Height  
     override this.ToString() = "(" + this.Width.ToString() + " " + this.Height.ToString() + ")"
 
-type LetterTile = | Letter of char | Blank
+type BagTileLetter = | Letter of char
+                     | Blank
+type BagTile = { TileLetter : BagTileLetter; Value : int }
 
 type Tile = { Letter : char; Value : int }
 
@@ -79,40 +81,3 @@ type Board(tileLocations : BoardLocation[,], width:int, height:int) =
                     (fun h -> {0 .. width-1} |> Seq.map (fun w -> tileLocations.[w,h] |> tileToString)
                                              |> Seq.fold (fun acc x -> acc + x + "|") "|");
         rows |> Seq.fold (fun acc x -> acc + "\n" + x) ""
-
-type BoardCreator = 
-    
-    static member Default =
-        let size = 15
-        let create w h space = { Location = { Width = w; Height = h }; State = BoardState.Free(space) }
-        let array = Array2D.init size size (fun x y -> create x y Normal)
-        let apply(tiles: seq<BoardLocation>) = tiles |> Seq.iter (fun x -> array.[x.Location.Width, x.Location.Height] <- x);
-        
-        let coMap2 = SequenceHelpers.CoMap2
-        let coMap = SequenceHelpers.CoMap
-        let coMapRev indA indB = Seq.append (coMap2 indA indB) (coMap2 indB indA);
-        
-        let createFromRange indexes state = indexes |> Seq.map (fun (w,h) -> create w h state)
-
-        let tripWrd = createFromRange (coMap {0..7..size}) (WordMultiply 3)
-        
-        let dubWrdSeq = {1..4} |> Seq.map (fun n -> [ (n,n); (n, size-1-n); (size-1-n,n); (size-1-n,size-1-n)] ) |> Seq.collect (fun x -> x);
-        let dubWrd = createFromRange dubWrdSeq (WordMultiply 2)
-
-        let start = [7] |> Seq.map (fun x -> create x x (WordMultiply 2))
-
-        let trpLet = createFromRange (coMap [1;5;9;13]) (LetterMultiply 3)
-        
-        let dubLetSeq = Seq.append (coMapRev [0;7;14] [3;11]) (coMap [2;6;8;12]);
-        let dubLet = createFromRange dubLetSeq (LetterMultiply 2)
-        
-        apply ([trpLet; dubLet; tripWrd; dubWrd; start] |> Seq.collect (fun x -> x))
-        
-        new Board(array, size, size);
-
-    static member FromArray (array: char list list) = 
-        
-        let height = array.Length;
-        let width = match height with | 0 -> 0 | _ -> array.Head.Length
-        let empty = Board.Empty width height
-        empty
