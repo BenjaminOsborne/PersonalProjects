@@ -25,4 +25,18 @@ let ``Cannot make word``() =
 [<Test>]
 let ``Load all words``() =
     let words = WordLoader.LoadAllWords
+    
+    let isWord = words.IsWord "ambiguous"
+    let isNotWord = words.IsWord "blaaah"
+
+    let count1 = words.WordsForLength 1 |> List.length
+    let count9 = words.WordsForLength 9 |> List.length
+    let count25 = words.WordsForLength 25 |> List.length
+
     words.Count |> should equal 267752
+    isWord |> should equal true
+    isNotWord |> should equal false
+    
+    count1 |> should equal 0
+    count9 |> should equal 40727
+    count25 |> should equal 0
