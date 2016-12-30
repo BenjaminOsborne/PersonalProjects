@@ -100,12 +100,11 @@ type BoardSpaceAnalyser() =
                            |> Seq.map (fun (c, bp) -> isWordValid bp.Location c play.Direction.Flip)
                            |> Seq.toList
         
-        let scoreWordPlay (word:Word) (data: (Location*char*int) list) = 
-            
-            //let tiles = tileHand.
-            
+        let scoreWordPlay (boardPlay:BoardPlay) (word:Word) (data: (Location*char*int) list) = 
             let score = 0
-            
+            let locationOrder = boardPlay.Locations |> Seq.sortBy (fun x -> match x.State with //Biggest letter then biggest word
+                                                                            | Free(t) -> -t.GetLetterMultiply, -t.GetWordMultiply
+                                                                            | _ -> 0,0) |> Seq.toList
             { Word = word; Locations = []; Score = 0 }
 
         let getPossibleWords (play:BoardPlay) =
@@ -114,7 +113,7 @@ type BoardSpaceAnalyser() =
                                     |> Seq.map (fun w -> (w, (getSecondaryWordsValidScore w play)))
                                     |> Seq.filter (fun (_, data) -> data |> Seq.forall (fun (valid, _) -> valid))
                                     |> Seq.map (fun (wrd, data) -> let scoreData = data |> Seq.map (fun (_,x) -> x) |> Seq.toList
-                                                                   scoreWordPlay wrd scoreData)
+                                                                   scoreWordPlay play wrd scoreData)
                                     |> Seq.toList
             scoredWords
         

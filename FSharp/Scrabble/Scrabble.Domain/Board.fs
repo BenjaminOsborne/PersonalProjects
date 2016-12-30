@@ -25,20 +25,18 @@ type BagTile = { TileLetter : BagTileLetter; Value : int }
 
 type Tile = { Letter : char; Value : int }
 
-type BoardSpace = | Normal
-                  | LetterMultiply of int
-                  | WordMultiply of int
+type BoardSpace =
+    | Normal
+    | LetterMultiply of int
+    | WordMultiply of int
+    member this.GetLetterMultiply = match this with | LetterMultiply(v) -> v  | _ -> 1
+    member this.GetWordMultiply = match this with | WordMultiply(v) -> v  | _ -> 1
 
 type BoardState =
     | Played of Tile
     | Free of BoardSpace
-    
-    member this.IsSpace = match this with
-                               | Free(_) -> true
-                               | _ -> false
-    member this.Tile = match this with
-                         | Free(_) -> None
-                         | Played(t) -> Some(t)
+    member this.IsSpace = match this with | Free(_) -> true | _ -> false
+    member this.Tile = match this with | Free(_) -> None | Played(t) -> Some(t)
 
 type BoardLocation = { Location : Location; State : BoardState }
 
