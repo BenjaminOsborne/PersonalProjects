@@ -24,12 +24,14 @@ type LetterSet(letters : string) =
 
 type TileHand(tiles : Tile list) =
     
-    let mapTiles = tiles |> Seq.groupBy (fun x -> x.Letter) |> Seq.map (fun (key,vals) -> (key, vals |> Seq.toList)) |> Map
-    let letters = LetterSet.FromTiles tiles
+    let orderTiles = Lazy.Create (fun _ -> tiles |> Seq.sortBy (fun x -> x.Letter, -x.Value) |> Seq.toList)
+    let letters = Lazy.Create (fun _ -> LetterSet.FromTiles tiles)
     
     member this.Tiles = tiles
-    member this.LetterSet = letters
-    member this.GetTiles c = match mapTiles.TryFind c with | Some(lst) -> lst | None -> []
+    member this.LetterSet = letters.Value
+    member this.PopNextTileFor c =
+        let (tile, remaining) = orderTiles.Value |> Seq.removeFirstWith (fun x -> x.Letter = c)
+        (tile, new TileHand(remaining))
 
 type Word(word : string) =
     let thisSet = LetterSet(word)
@@ -38,11 +40,9 @@ type Word(word : string) =
 
 type WordSet(words : Set<string>) = 
 
-    let toLazy (func: _-> 'a) = new Lazy<'a>(func)
-
-    let wordsByLength = toLazy (fun _ -> words |> Seq.groupBy (fun x -> x.Length)
-                                               |> Seq.map(fun (key, items) -> key, toLazy (fun _ -> items |> Seq.map (fun x -> Word(x)) |> Seq.toList))
-                                               |> Map)
+    let wordsByLength = Lazy.Create (fun _ -> words |> Seq.groupBy (fun x -> x.Length)
+                                                    |> Seq.map(fun (key, items) -> key, Lazy.Create (fun _ -> items |> Seq.map (fun x -> Word(x)) |> Seq.toList))
+                                                    |> Map)
     member this.Count = words.Count
 
     member this.WordsForLength len = let somelist = wordsByLength.Value.TryFind len

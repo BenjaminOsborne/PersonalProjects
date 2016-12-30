@@ -30,7 +30,5 @@ type TileBag(items) =
     inherit ItemBag<BagTile>(items)
 
     member this.DrawFromLetter (letter:BagTileLetter) =
-        let index = items |> Seq.findIndex (fun x -> x.TileLetter.Equals(letter))
-        let remaining = {0 .. items.Length-1} |> Seq.filter (fun n -> n <> index)
-                                              |> Seq.map (fun n -> items.[n]) |> Seq.toList
-        (new TileBag(remaining), items.[index])
+        let (item, remaining) = items |> Seq.removeFirstWith (fun x -> x.TileLetter.Equals(letter))
+        (new TileBag(remaining), item)

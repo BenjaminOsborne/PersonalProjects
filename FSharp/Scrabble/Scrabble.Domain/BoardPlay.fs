@@ -55,7 +55,7 @@ type BoardSpaceAnalyser() =
         let isTouchTile loc = board.IsTouchingTile loc.Width loc.Height || board.IsMiddleTile loc.Width loc.Height
         let allValid = allSpaces |> Seq.filter (fun x -> x.AnySpaces && x.Locations |> Seq.exists (fun t -> isTouchTile t.Location)) //Must be at least 1 space and touching at least 1 existing tile
         
-        let distinct = Seq.distinctByField(allValid, (fun x -> Seq.EqualitySet x.Spaces)) |> Seq.toList
+        let distinct = allValid |> Seq.distinctByField (fun x -> Seq.EqualitySet x.Spaces) |> Seq.toList
         distinct
     
     member this.GetPossibleScoredPlays (board:Board) (tileHand:TileHand) (wordSet: WordSet) =
@@ -101,7 +101,11 @@ type BoardSpaceAnalyser() =
                            |> Seq.toList
         
         let scoreWordPlay (word:Word) (data: (Location*char*int) list) = 
+            
+            //let tiles = tileHand.
+            
             let score = 0
+            
             { Word = word; Locations = []; Score = 0 }
 
         let getPossibleWords (play:BoardPlay) =
