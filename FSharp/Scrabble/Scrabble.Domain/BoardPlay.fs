@@ -100,7 +100,7 @@ type BoardSpaceAnalyser() =
                            |> Seq.map (fun (c, bp) -> isWordValid bp.Location c play.Direction.Flip)
                            |> Seq.toList
         
-        let scoreStuff (word:Word) (data: seq<(Location*char*int)>) = 
+        let scoreWordPlay (word:Word) (data: (Location*char*int) list) = 
             let score = 0
             { Word = word; Locations = []; Score = 0 }
 
@@ -109,7 +109,8 @@ type BoardSpaceAnalyser() =
             let scoredWords = words |> Seq.filter (fun w -> (wordMatches play w))
                                     |> Seq.map (fun w -> (w, (getSecondaryWordsValidScore w play)))
                                     |> Seq.filter (fun (_, data) -> data |> Seq.forall (fun (valid, _) -> valid))
-                                    |> Seq.map (fun (wrd, data) -> scoreStuff wrd (data |> Seq.map (fun (_,x) -> x)))
+                                    |> Seq.map (fun (wrd, data) -> let scoreData = data |> Seq.map (fun (_,x) -> x) |> Seq.toList
+                                                                   scoreWordPlay wrd scoreData)
                                     |> Seq.toList
             scoredWords
         
