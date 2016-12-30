@@ -12,7 +12,7 @@ let assertPossible board words letters (assertData: int list) =
     let wordSet = new WordSet(words |> Set)
     let possible = getPossible board tileHand wordSet |> Seq.toArray
     possible.Length |> should equal assertData.Length
-    assertData |> Seq.iteri (fun nx x -> possible.[nx].Words.Length |> should equal x)
+    assertData |> Seq.iteri (fun nx x -> possible.[nx].WordScores.Length |> should equal x)
 
 [<Test>]
 let ``With empty board``() =

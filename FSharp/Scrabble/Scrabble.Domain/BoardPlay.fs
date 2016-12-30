@@ -14,7 +14,8 @@ type BoardPlay(locations : BoardLocation list, direction : Direction) =
         | _ -> let last = locations |> Seq.last
                locations.Head.Location.ToString() + " - " + last.Location.ToString()
 
-type ValidWordPlays = { BoardPlay : BoardPlay; Words : Word list }
+type WordScore = { Word : Word; Locations: (Location*Tile) list; Score : int }
+type ValidWordPlays = { BoardPlay : BoardPlay; WordScores : WordScore list }
 
 type BoardSpaceAnalyser() =
     
@@ -73,36 +74,47 @@ type BoardSpaceAnalyser() =
                 Seq.initInfinite init
                 |> Seq.map (fun x -> getTile board (getLocation x))
                 |> Seq.takeWhile (fun x -> x.IsSome)
-                |> Seq.map (fun x -> x.Value.Letter)
+                |> Seq.map (fun x -> x.Value)
                 |> Seq.toList
             
             let getTiles start getLocation = 
                 let forward = walkWhileTiles (fun x -> start + x + 1) getLocation
                 let backward = walkWhileTiles (fun x -> start - x - 1) getLocation
-                List.append (backward |> List.rev) (letter::forward) 
+                let fakeTile = { Letter = letter; Value = 0}
+                List.append (backward |> List.rev) (fakeTile::forward) 
 
-            let chars = match direction with
+            let tiles = match direction with
                         | Across -> getTiles location.Width (fun x -> { Width = x; Height = location.Height })
                         | Down   -> getTiles location.Height (fun x -> { Width = location.Width; Height = x })
-            let isValid = match chars.Length with
+            let isValid = match tiles.Length with
                           | 1 -> true
-                          | _ -> let word = LetterHelpers.CharListToString chars
+                          | _ -> let chars = tiles |> Seq.map (fun x -> x.Letter) |> Seq.toList
+                                 let word = LetterHelpers.CharListToString chars
                                  wordSet.IsWord word
-            isValid
+            let incomingScore = tiles |> Seq.sumBy (fun x -> x.Value)
+            (isValid, (location, letter, incomingScore))
 
-        let areSecondaryWordsValid (word:Word) (play:BoardPlay) =
+        let getSecondaryWordsValidScore (word:Word) (play:BoardPlay) =
             play.Locations |> Seq.mapi (fun nx bp -> (word.Word.[nx], bp))
                            |> Seq.filter (fun (c,bp) -> bp.State.IsSpace)
                            |> Seq.map (fun (c, bp) -> isWordValid bp.Location c play.Direction.Flip)
-                           |> Seq.forall (fun x -> x)
+                           |> Seq.toList
+        
+        let scoreStuff (word:Word) (data: seq<(Location*char*int)>) = 
+            let score = 0
+            { Word = word; Locations = []; Score = 0 }
 
-        let boardPlays = this.GenerateSpaces board
         let getPossibleWords (play:BoardPlay) =
             let words = wordSet.WordsForLength play.Locations.Length
-            words |> Seq.filter (fun w -> (wordMatches play w) && (areSecondaryWordsValid w play))
-                  |> Seq.toList
+            let scoredWords = words |> Seq.filter (fun w -> (wordMatches play w))
+                                    |> Seq.map (fun w -> (w, (getSecondaryWordsValidScore w play)))
+                                    |> Seq.filter (fun (_, data) -> data |> Seq.forall (fun (valid, _) -> valid))
+                                    |> Seq.map (fun (wrd, data) -> scoreStuff wrd (data |> Seq.map (fun (_,x) -> x)))
+                                    |> Seq.toList
+            scoredWords
         
-        let possiblePlays = boardPlays |> Seq.map (fun bp -> { BoardPlay = bp; Words = getPossibleWords bp })
-                                       |> Seq.filter (fun x -> x.Words.IsEmpty = false)
+        let boardPlays = this.GenerateSpaces board
+        let possiblePlays = boardPlays |> Seq.map (fun bp -> { BoardPlay = bp; WordScores = getPossibleWords bp })
+                                       |> Seq.filter (fun x -> x.WordScores.IsEmpty = false)
                                        |> Seq.toList
         possiblePlays
