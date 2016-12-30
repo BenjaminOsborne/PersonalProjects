@@ -87,3 +87,13 @@ type BoardCreator =
                                                                       let newBoard = play brd w h c tbl.Value
                                                                       (newBoard, newTb)) (initial, tileBag)
         board
+
+type WordLoader = 
+    
+    static member LoadAllWords =
+        let location = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
+        let raw = System.IO.File.ReadAllText (location + @"\\sowpods.txt")
+        let set = raw.Split '\n' |> Seq.map (fun x -> x.ToLower().Trim())
+                                 |> Seq.filter (fun x -> System.String.IsNullOrEmpty x = false)
+                                 |> Set
+        new WordSet(set)

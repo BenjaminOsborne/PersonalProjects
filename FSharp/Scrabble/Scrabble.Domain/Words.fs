@@ -37,12 +37,16 @@ type Word(word : string) =
     member this.CanMakeWordFromSet(letters : LetterSet) = letters.ContainsAtLeastAllFrom thisSet
 
 type WordSet(words : Set<string>) = 
-    let wordsByLength = words |> Seq.groupBy (fun x -> x.Length)
-                              |> Seq.map(fun (key, items) -> key, items |> Seq.map (fun x -> Word(x)) |> Seq.toList)
-                              |> Map
-    
-    member this.WordsForLength len = let somelist = wordsByLength.TryFind len
-                                     match somelist with | Some(l) -> l | _ -> []
+
+    let toLazy (func: _-> 'a) = new Lazy<'a>(func)
+
+    let wordsByLength = toLazy (fun _ -> words |> Seq.groupBy (fun x -> x.Length)
+                                               |> Seq.map(fun (key, items) -> key, toLazy (fun _ -> items |> Seq.map (fun x -> Word(x)) |> Seq.toList))
+                                               |> Map)
+    member this.Count = words.Count
+
+    member this.WordsForLength len = let somelist = wordsByLength.Value.TryFind len
+                                     match somelist with | Some(l) -> l.Value | _ -> []
     
     member this.IsWord word = words.Contains word
     

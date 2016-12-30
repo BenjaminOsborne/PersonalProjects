@@ -21,3 +21,8 @@ let ``Cannot make word``() =
                  ("a", "b");
                  ("llyon", "nylon")]
     pairs |> Seq.iter (fun (set,word) -> canMakeWord word set false)
+
+[<Test>]
+let ``Load all words``() =
+    let words = WordLoader.LoadAllWords
+    words.Count |> should equal 267752
