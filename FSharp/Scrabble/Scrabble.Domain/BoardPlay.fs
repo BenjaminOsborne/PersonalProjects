@@ -26,7 +26,7 @@ type ScoreData =
     member this.WithNextLocationScore location getItem =
         let getSideScore (tiles : Tile list) tileValue letterMult wordMult =
             match tiles.Length with
-            | 0 -> 0
+            | 0 | 1 -> 0
             | _ -> let incomingScore = tiles |> Seq.sumBy (fun x -> x.Value)
                    (incomingScore + (tileValue * letterMult)) * wordMult
         
