@@ -31,6 +31,5 @@ let main argv =
         
         Console.WriteLine(board);
 
-
     let ignore = Console.ReadLine()
     0 // return an integer exit code
