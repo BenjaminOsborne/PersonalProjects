@@ -25,7 +25,14 @@ type ScoreData =
 
     static member Create ms msm ss th = { MainScore = ms; MainScoreMultiplier = msm; SideScores = ss; RemainingTileHand = th; }
     static member Initial th = ScoreData.Create 0 1 0 th
-    member this.WithNextLocation location getItem getSideScore =
+    
+    member this.WithNextLocationScore location getItem =
+        let getSideScore (tiles : Tile list) tileValue letterMult wordMult =
+            match tiles.Length with
+            | 0 -> 0
+            | _ -> let incomingScore = tiles |> Seq.sumBy (fun x -> x.Value)
+                   (incomingScore + (tileValue * letterMult)) * wordMult
+        
         let (ms,msm,ss,th) = match location.State with
                                 | Played(t) ->  (t.Value, 1, 0, this.RemainingTileHand)
                                 | Free(bs) ->   let (c,tiles) = getItem (location.Location.Width, location.Location.Height)
@@ -117,19 +124,13 @@ type BoardSpaceAnalyser() =
                            |> Seq.map (fun (c, bp) -> getWordValidData bp.Location c play.Direction.Flip)
                            |> Seq.toList
         
-        let getSideScore (tiles : Tile list) tileValue letterMult wordMult =
-            match tiles.Length with
-            | 0 -> 0
-            | _ -> let incomingScore = tiles |> Seq.sumBy (fun x -> x.Value)
-                   (incomingScore + (tileValue * letterMult)) * wordMult
-
         let scoreWordPlay (boardPlay:BoardPlay) (word:Word) (data: (Location*char*(Tile list)) list) = 
             let orderedLocs = boardPlay.Locations |> Seq.sortBy (fun x -> match x.State with //Biggest letter then biggest word
                                                                           | Free(t) -> -t.GetLetterMultiply, -t.GetWordMultiply
                                                                           | _ -> 0,0) |> Seq.toList
             let mapData = data |> Seq.map (fun (a,b,c) -> (a.Width, a.Height), (b,c)) |> Map
             let getItem = (fun (w,h) -> mapData.Item (w,h))
-            let aggData = orderedLocs|> Seq.fold (fun (agg : ScoreData) location -> agg.WithNextLocation location getItem getSideScore) (ScoreData.Initial tileHand)
+            let aggData = orderedLocs|> Seq.fold (fun (agg : ScoreData) location -> agg.WithNextLocationScore location getItem) (ScoreData.Initial tileHand)
             let finalScore = aggData.MainScore * aggData.MainScoreMultiplier + aggData.SideScores
             { Word = word; Locations = []; Score = finalScore }
 
