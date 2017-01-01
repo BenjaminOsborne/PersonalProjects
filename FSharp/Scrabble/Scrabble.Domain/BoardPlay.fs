@@ -18,10 +18,7 @@ type WordScore = { Word : Word; Locations: (Location*Tile) list; Score : int }
 type ValidWordPlays = { BoardPlay : BoardPlay; WordScores : WordScore list }
 
 type ScoreData =
-    { MainScore : int;
-      MainScoreMultiplier : int;
-      SideScores : int;
-      RemainingTileHand : TileHand }
+    { MainScore : int; MainScoreMultiplier : int; SideScores : int; RemainingTileHand : TileHand }
 
     static member Create ms msm ss th = { MainScore = ms; MainScoreMultiplier = msm; SideScores = ss; RemainingTileHand = th; }
     static member Initial th = ScoreData.Create 0 1 0 th
