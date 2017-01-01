@@ -1,4 +1,4 @@
-﻿module BoardTests
+﻿module BoardPlayTests
 
 open NUnit.Framework
 open FsUnit

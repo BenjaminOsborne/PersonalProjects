@@ -24,7 +24,7 @@ let ``Cannot make word``() =
 
 [<Test>]
 let ``Load all words``() =
-    let words = WordLoader.LoadAllWords
+    let words = WordLoader.LoadAllWords()
     
     let isWord = words.IsWord "ambiguous"
     let isNotWord = words.IsWord "blaaah"

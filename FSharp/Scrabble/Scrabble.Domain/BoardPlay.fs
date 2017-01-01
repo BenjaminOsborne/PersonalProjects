@@ -137,11 +137,13 @@ type BoardSpaceAnalyser() =
                                     |> Seq.filter (fun (_, data) -> data |> Seq.forall (fun (valid, _) -> valid))
                                     |> Seq.map (fun (wrd, data) -> let scoreData = data |> Seq.map (fun (_,x) -> x) |> Seq.toList
                                                                    scoreWordPlay play wrd scoreData)
+                                    |> Seq.sortBy (fun x -> -x.Score)
                                     |> Seq.toList
             scoredWords
         
         let boardPlays = this.GenerateSpaces board
         let possiblePlays = boardPlays |> Seq.map (fun bp -> { BoardPlay = bp; WordScores = getPossibleWords bp })
                                        |> Seq.filter (fun x -> x.WordScores.IsEmpty = false)
+                                       |> Seq.sortBy (fun x -> -x.WordScores.Head.Score)
                                        |> Seq.toList
         possiblePlays

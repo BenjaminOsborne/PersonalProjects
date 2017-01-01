@@ -54,7 +54,7 @@
     <Content Include="packages.config" />
     <Compile Include="TileBagTests.fs" />
     <Compile Include="PossibleWordPlayTests.fs" />
-    <Compile Include="BoardTests.fs" />
+    <Compile Include="BoardPlayTests.fs" />
     <Compile Include="ExampleTests.fs" />
     <Compile Include="BoardSpaceTests.fs" />
     <Compile Include="WordTests.fs" />

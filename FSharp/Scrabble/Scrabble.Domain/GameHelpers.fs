@@ -90,7 +90,7 @@ type BoardCreator =
 
 type WordLoader = 
     
-    static member LoadAllWords =
+    static member LoadAllWords() =
         let location = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
         let raw = System.IO.File.ReadAllText (location + @"\\sowpods.txt")
         let set = raw.Split '\n' |> Seq.map (fun x -> x.ToLower().Trim())
