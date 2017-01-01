@@ -30,4 +30,7 @@ let ``With empty board``() =
 [<Test>]
 let ``With default board``() =
     let board = BoardCreator.Default
+    
+    assertScore board "a" 2 //(1*2)
     assertScore board "avise" 18 //((1*2) + 4 + 1 + 1 + 1) * 2
+    assertScore board "aaeeiioo" 54 //(7 + 1*2) * 2 * 3 -> 54
