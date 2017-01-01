@@ -34,12 +34,12 @@ type ScoreData =
                    (incomingScore + (tileValue * letterMult)) * wordMult
         
         let (ms,msm,ss,th) = match location.State with
-                                | Played(t) ->  (t.Value, 1, 0, this.RemainingTileHand)
-                                | Free(bs) ->   let (c,tiles) = getItem (location.Location.Width, location.Location.Height)
-                                                let (t,th) = this.RemainingTileHand.PopNextTileFor c
-                                                let (lm,wm) = (bs.GetLetterMultiply, bs.GetWordMultiply)
-                                                let sideScore = getSideScore tiles t.Value lm wm
-                                                (t.Value * lm, wm, sideScore, th)
+                             | Played(t) ->  (t.Value, 1, 0, this.RemainingTileHand)
+                             | Free(bs) ->   let (c,tiles) = getItem (location.Location.Width, location.Location.Height)
+                                             let (t,th) = this.RemainingTileHand.PopNextTileFor c
+                                             let (lm,wm) = (bs.GetLetterMultiply, bs.GetWordMultiply)
+                                             let sideScore = getSideScore tiles t.Value lm wm
+                                             (t.Value * lm, wm, sideScore, th)
         ScoreData.Create (this.MainScore + ms) (this.MainScoreMultiplier * msm) (this.SideScores + ss) th
 
 type BoardSpaceAnalyser() =
