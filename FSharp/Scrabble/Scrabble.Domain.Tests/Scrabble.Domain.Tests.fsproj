@@ -53,11 +53,11 @@
     <Compile Include="AssemblyInfo.fs" />
     <Content Include="packages.config" />
     <Compile Include="TileBagTests.fs" />
-    <Compile Include="PossibleWordPlayTests.fs" />
     <Compile Include="BoardPlayTests.fs" />
-    <Compile Include="ExampleTests.fs" />
     <Compile Include="BoardSpaceTests.fs" />
-    <Compile Include="WordTests.fs" />
+    <Compile Include="PossibleWordPlayTests.fs" />
+    <Compile Include="WordSetTests.fs" />
+    <Compile Include="ExampleTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">

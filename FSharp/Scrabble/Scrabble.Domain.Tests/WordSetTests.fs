@@ -1,4 +1,4 @@
-﻿module WordTests
+﻿module WordSetTests
 
 open NUnit.Framework
 open FsUnit
