@@ -69,7 +69,7 @@ type BoardSpaceAnalyser() =
         let wordMatches (play:BoardPlay) (word : Word) =
             (pinnedLettersMatch play word) && word.CanMakeWordFromSet tileHand.LetterSet
 
-        let isWordValid (location:Location) (letter:char) (direction:Direction) =
+        let getWordValidData (location:Location) (letter:char) (direction:Direction) =
             let walkWhileTiles init getLocation =
                 Seq.initInfinite init
                 |> Seq.map (fun x -> getTile board (getLocation x))
@@ -91,20 +91,43 @@ type BoardSpaceAnalyser() =
                           | _ -> let chars = tiles |> Seq.map (fun x -> x.Letter) |> Seq.toList
                                  let word = LetterHelpers.CharListToString chars
                                  wordSet.IsWord word
-            let incomingScore = tiles |> Seq.sumBy (fun x -> x.Value)
-            (isValid, (location, letter, incomingScore))
+            (isValid, (location, letter, tiles))
 
         let getSecondaryWordsValidScore (word:Word) (play:BoardPlay) =
             play.Locations |> Seq.mapi (fun nx bp -> (word.Word.[nx], bp))
                            |> Seq.filter (fun (c,bp) -> bp.State.IsSpace)
-                           |> Seq.map (fun (c, bp) -> isWordValid bp.Location c play.Direction.Flip)
+                           |> Seq.map (fun (c, bp) -> getWordValidData bp.Location c play.Direction.Flip)
                            |> Seq.toList
         
-        let scoreWordPlay (boardPlay:BoardPlay) (word:Word) (data: (Location*char*int) list) = 
-            let score = 0
-            let locationOrder = boardPlay.Locations |> Seq.sortBy (fun x -> match x.State with //Biggest letter then biggest word
-                                                                            | Free(t) -> -t.GetLetterMultiply, -t.GetWordMultiply
-                                                                            | _ -> 0,0) |> Seq.toList
+        let getSideScore (tiles : Tile list) tileValue letterMult wordMult =
+            let incomingScore = tiles |> Seq.sumBy (fun x -> x.Value)
+            let incomeScale = match tiles.Length with | 0 -> 0 | _ -> 1
+            (incomingScore + (tileValue * ( 1 + incomeScale) * letterMult)) * wordMult
+
+        let scoreWordPlay (boardPlay:BoardPlay) (word:Word) (data: (Location*char*(Tile list)) list) = 
+            let orderedLocs = boardPlay.Locations |> Seq.sortBy (fun x -> match x.State with //Biggest letter then biggest word
+                                                                          | Free(t) -> -t.GetLetterMultiply, -t.GetWordMultiply
+                                                                          | _ -> 0,0) |> Seq.toList
+            
+            let mapData = data |> Seq.map (fun (a,b,c) -> (a.Width, a.Height), (b,c)) |> Map
+
+            let mutable mainScore = 0
+            let mutable mainScoreMultiplier = 1;
+            let mutable sideScore = 0
+            let mutable remainingTileHand = tileHand
+
+            for location in orderedLocs do
+                match location.State with
+                | Played(t) -> mainScore <- mainScore + t.Value
+                | Free(bs) -> let (c,tiles) = mapData.Item (location.Location.Width, location.Location.Height)
+                              let (t,th) = remainingTileHand.PopNextTileFor c
+                              remainingTileHand <- th
+                              let (lm,wm) = (bs.GetLetterMultiply, bs.GetWordMultiply)
+                              let sideScore = getSideScore tiles t.Value lm wm
+                              mainScore <- mainScore + score
+                              mainScoreMultiplier <- mainScoreMultiplier * wm
+            
+            let finalScore = mainScore * mainScoreMultiplier + sideScore
             { Word = word; Locations = []; Score = 0 }
 
         let getPossibleWords (play:BoardPlay) =
