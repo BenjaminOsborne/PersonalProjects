@@ -17,6 +17,24 @@ type BoardPlay(locations : BoardLocation list, direction : Direction) =
 type WordScore = { Word : Word; Locations: (Location*Tile) list; Score : int }
 type ValidWordPlays = { BoardPlay : BoardPlay; WordScores : WordScore list }
 
+type ScoreData =
+    { MainScore : int;
+      MainScoreMultiplier : int;
+      SideScores : int;
+      RemainingTileHand : TileHand }
+
+    static member Create ms msm ss th = { MainScore = ms; MainScoreMultiplier = msm; SideScores = ss; RemainingTileHand = th; }
+    static member Initial th = ScoreData.Create 0 1 0 th
+    member this.WithNextLocation location getItem getSideScore =
+        let (ms,msm,ss,th) = match location.State with
+                                | Played(t) ->  (t.Value, 1, 0, this.RemainingTileHand)
+                                | Free(bs) ->   let (c,tiles) = getItem (location.Location.Width, location.Location.Height)
+                                                let (t,th) = this.RemainingTileHand.PopNextTileFor c
+                                                let (lm,wm) = (bs.GetLetterMultiply, bs.GetWordMultiply)
+                                                let sideScore = getSideScore tiles t.Value lm wm
+                                                (t.Value * lm, wm, sideScore, th)
+        ScoreData.Create (this.MainScore + ms) (this.MainScoreMultiplier * msm) (this.SideScores + ss) th
+
 type BoardSpaceAnalyser() =
     
     let isOutOfRange (board:Board) w h =
@@ -59,7 +77,7 @@ type BoardSpaceAnalyser() =
         distinct
     
     member this.GetPossibleScoredPlays (board:Board) (tileHand:TileHand) (wordSet: WordSet) =
-        
+
         let pinnedLettersMatch (play:BoardPlay) (word : Word) =
             play.Locations |> Seq.mapi (fun nx l -> match l.State with
                                                     | Free(_) -> true
@@ -100,35 +118,20 @@ type BoardSpaceAnalyser() =
                            |> Seq.toList
         
         let getSideScore (tiles : Tile list) tileValue letterMult wordMult =
-            let incomingScore = tiles |> Seq.sumBy (fun x -> x.Value)
-            let incomeScale = match tiles.Length with | 0 -> 0 | _ -> 1
-            (incomingScore + (tileValue * ( 1 + incomeScale) * letterMult)) * wordMult
+            match tiles.Length with
+            | 0 -> 0
+            | _ -> let incomingScore = tiles |> Seq.sumBy (fun x -> x.Value)
+                   (incomingScore + (tileValue * letterMult)) * wordMult
 
         let scoreWordPlay (boardPlay:BoardPlay) (word:Word) (data: (Location*char*(Tile list)) list) = 
             let orderedLocs = boardPlay.Locations |> Seq.sortBy (fun x -> match x.State with //Biggest letter then biggest word
                                                                           | Free(t) -> -t.GetLetterMultiply, -t.GetWordMultiply
                                                                           | _ -> 0,0) |> Seq.toList
-            
             let mapData = data |> Seq.map (fun (a,b,c) -> (a.Width, a.Height), (b,c)) |> Map
-
-            let mutable mainScore = 0
-            let mutable mainScoreMultiplier = 1;
-            let mutable sideScore = 0
-            let mutable remainingTileHand = tileHand
-
-            for location in orderedLocs do
-                match location.State with
-                | Played(t) -> mainScore <- mainScore + t.Value
-                | Free(bs) -> let (c,tiles) = mapData.Item (location.Location.Width, location.Location.Height)
-                              let (t,th) = remainingTileHand.PopNextTileFor c
-                              remainingTileHand <- th
-                              let (lm,wm) = (bs.GetLetterMultiply, bs.GetWordMultiply)
-                              let sideScore = getSideScore tiles t.Value lm wm
-                              mainScore <- mainScore + score
-                              mainScoreMultiplier <- mainScoreMultiplier * wm
-            
-            let finalScore = mainScore * mainScoreMultiplier + sideScore
-            { Word = word; Locations = []; Score = 0 }
+            let getItem = (fun (w,h) -> mapData.Item (w,h))
+            let aggData = orderedLocs|> Seq.fold (fun (agg : ScoreData) location -> agg.WithNextLocation location getItem getSideScore) (ScoreData.Initial tileHand)
+            let finalScore = aggData.MainScore * aggData.MainScoreMultiplier + aggData.SideScores
+            { Word = word; Locations = []; Score = finalScore }
 
         let getPossibleWords (play:BoardPlay) =
             let words = wordSet.WordsForLength play.Locations.Length
