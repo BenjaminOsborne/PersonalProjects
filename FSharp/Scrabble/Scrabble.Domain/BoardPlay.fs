@@ -14,6 +14,7 @@ type BoardPlay(locations : BoardLocation list, direction : Direction) =
         | _ -> let last = locations |> Seq.last
                locations.Head.Location.ToString() + " - " + last.Location.ToString()
 
+[<System.Diagnostics.DebuggerDisplayAttribute("{Word.Word} - {Score}")>]
 type WordScore = { Word : Word; Locations: (Location*Tile) list; Score : int }
 type ValidWordPlays = { BoardPlay : BoardPlay; WordScores : WordScore list }
 

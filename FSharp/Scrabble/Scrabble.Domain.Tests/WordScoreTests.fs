@@ -16,11 +16,14 @@ let assertScore board (word:string) score =
     let possible = getPossible board tileHand wordSet |> Seq.toList
     possible.Length |> should greaterThanOrEqualTo 1
     
-    let best = possible.Head;
-    best.WordScores.Length |> should equal 1
-    let single = best.WordScores.Head
-    single.Word.Word |> should equal word
-    single.Score |> should equal score
+    let best = possible.Head.WordScores.Head
+    best.Word.Word |> should equal word
+    best.Score |> should equal score
+    
+    possible |> Seq.iter (fun t ->
+        t.WordScores.Length |> should equal 1
+        t.WordScores.Head.Score |> should lessThanOrEqualTo best.Score
+        )
 
 [<Test>]
 let ``With empty board``() =
@@ -34,3 +37,4 @@ let ``With default board``() =
     assertScore board "a" 2 //(1*2)
     assertScore board "avise" 18 //((1*2) + 4 + 1 + 1 + 1) * 2
     assertScore board "aaeeiioo" 54 //(7 + 1*2) * 2 * 3 -> 54
+    assertScore board "farces" 30 //((4*2) + 1 + 1 + 3 + 1 + 1) * 2 -> 30
