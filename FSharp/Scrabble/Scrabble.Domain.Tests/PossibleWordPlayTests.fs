@@ -25,6 +25,14 @@ let ``With empty board``() =
     assertPossible board ["dog"; "god"] ['o'; 'd'; 'g'] [2; 2]
 
 [<Test>]
+let ``Board with singe letter``() =
+    let board = BoardCreator.FromArray [[' '; 'b'; ' '; ' ';' ']]
+
+    assertPossible board ["bad"] ['a';'d'] [1]
+    assertPossible board ["abate"] ['a';'a';'t'; 'e'] [1]
+    assertPossible board ["bib"] ['i';'b'] [1]
+
+[<Test>]
 let ``Board with letters 1``() =
     let board = BoardCreator.FromArray [[' '; ' '; ' '; ' ';' '];
                                         [' '; ' '; ' '; ' ';' '];
@@ -32,6 +40,7 @@ let ``Board with letters 1``() =
                                         [' '; ' '; ' '; ' ';' '];
                                         [' '; ' '; ' '; ' ';' '];]
 
+    assertPossible board ["bad"] ['a';'d'] [1]
     assertPossible board ["bad"] ['b';'a';'d'] [1;1;1]
     assertPossible board ["at";"to";"bo"] ['t';'o'] [1]
 
@@ -42,4 +51,4 @@ let ``Board with letters 2``() =
                                         ['d'; 'o'; 'n'; 'u';'t'];
                                         [' '; ' '; ' '; ' ';' '];
                                         [' '; ' '; ' '; ' ';' '];]
-    assertPossible board ["donut"; "dot"; "dug"] ['d';'o';'t'; 'u'; 'g'] [2;1;1;1]
+    assertPossible board ["donut"; "dot"; "dug"] ['d';'o';'t'; 'u'; 'g'] [2;1;1;1;1]

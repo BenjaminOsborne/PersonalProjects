@@ -7,15 +7,23 @@ type LetterHelpers =
             builder.ToString()
     static member CharListToString (chars: char list) = LetterHelpers.CharsToString chars chars.Length
 
-type LetterSet(letters : string) = 
+type LetterSet private (letterSet : Map<char,int>) = 
     
-    let letterSet = letters |> Seq.groupBy (fun x -> x) |> Seq.map (fun (key, items) -> key, items |> Seq.length) |> Map
+    static member private toLetterSet (letters:seq<char>)  = letters |> Seq.groupBy (fun x -> x) |> Seq.map (fun (key, items) -> key, items |> Seq.length) |> Map
 
-    static member FromTiles (tiles : Tile list) =
-        new LetterSet(LetterHelpers.CharsToString (tiles |> Seq.map (fun x -> x.Letter)) tiles.Length)
+    static member FromTiles (tiles : Tile list) = new LetterSet(LetterSet.toLetterSet (tiles |> Seq.map (fun x -> x.Letter)))
     
-    member this.LetterSet = letterSet
-    member this.InputLetters = letters
+    static member FromLetters (letters : string) = new LetterSet(LetterSet.toLetterSet letters)
+    
+    member this.WithNewLetters (letters : seq<char>) =
+        let finalMap = letters |> Seq.fold (fun (agg:Map<char,int>) c -> let existing = agg.TryFind c
+                                                                         match existing with
+                                                                         | None -> agg.Add (c,1)
+                                                                         | Some(count) -> agg.Add (c, count+1)) letterSet
+        new LetterSet(finalMap)
+
+    member private this.LetterSet = letterSet
+    
     member this.ContainsAtLeastAllFrom (other:LetterSet) = 
         other.LetterSet |> Seq.forall (fun kvp -> let someVal = this.LetterSet.TryFind kvp.Key
                                                   match someVal with
@@ -34,9 +42,10 @@ type TileHand(tiles : Tile list) =
         (tile, new TileHand(remaining))
 
 type Word(word : string) =
-    let thisSet = LetterSet(word)
+    let thisSet = LetterSet.FromLetters(word)
     member this.Word = word
-    member this.CanMakeWordFromSet(letters : LetterSet) = letters.ContainsAtLeastAllFrom thisSet
+    member this.CanMakeWordFromSet (letters : LetterSet) =
+        letters.ContainsAtLeastAllFrom thisSet
 
 type WordSet(words : Set<string>) = 
 

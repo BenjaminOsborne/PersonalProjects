@@ -89,8 +89,14 @@ type BoardSpaceAnalyser() =
                                                     | Played(t) -> t.Letter = word.Word.[nx])
                            |> Seq.forall (fun x -> x)
         
-        let wordMatches (play:BoardPlay) (word : Word) =
-            (pinnedLettersMatch play word) && word.CanMakeWordFromSet tileHand.LetterSet
+        let canMakeWord (play:BoardPlay) (word : Word) =
+            let getLetters() = play.Locations |> Seq.map (fun l -> match l.State with
+                                                                   | Free(_) -> None
+                                                                   | Played(t) -> Some(t.Letter))
+                                              |> Seq.filter (fun x -> x.IsSome)
+                                              |> Seq.map (fun x -> x.Value)
+
+            (pinnedLettersMatch play word) && word.CanMakeWordFromSet (tileHand.LetterSet.WithNewLetters (getLetters()))
 
         let getWordValidData (location:Location) (letter:char) (direction:Direction) =
             let walkWhileTiles init getLocation =
@@ -133,7 +139,7 @@ type BoardSpaceAnalyser() =
 
         let getPossibleWords (play:BoardPlay) =
             let words = wordSet.WordsForLength play.Locations.Length
-            let scoredWords = words |> Seq.filter (fun w -> (wordMatches play w))
+            let scoredWords = words |> Seq.filter (fun w -> (canMakeWord play w))
                                     |> Seq.map (fun w -> (w, (getSecondaryWordsValidScore w play)))
                                     |> Seq.filter (fun (_, data) -> data |> Seq.forall (fun (valid, _) -> valid))
                                     |> Seq.map (fun (wrd, data) -> let scoreData = data |> Seq.map (fun (_,x) -> x) |> Seq.toList

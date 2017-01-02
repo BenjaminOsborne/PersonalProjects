@@ -4,7 +4,7 @@ open NUnit.Framework
 open FsUnit
 open Scrabble.Domain
 
-let canMakeWord word set expected = (new Word(word)).CanMakeWordFromSet (new LetterSet(set)) |> should equal expected
+let canMakeWord word set expected = (new Word(word)).CanMakeWordFromSet (LetterSet.FromLetters(set)) |> should equal expected
 
 [<Test>]
 let ``Can make word``() =
