@@ -20,15 +20,22 @@ let main argv =
 
     let mutable tileBag = TileBagCreator.Default
     let mutable board = BoardCreator.Default
-    
-    while tileBag.Tiles.IsEmpty = false do
+    let mutable shouldContinue = true
+    while shouldContinue do
         let (dts, bag) = tileBag.Draw 7
         tileBag <- bag
         let tiles = dts |> List.map (fun x -> let letter = match x.TileLetter with | Blank -> 'a' | Letter(c) -> c
                                               { Letter = letter; Value = x.Value })
         let tileHand = new TileHand(tiles)
-        let a = (new BoardSpaceAnalyser()).GetPossibleScoredPlays board tileHand words
+        let possible = (new BoardSpaceAnalyser()).GetPossibleScoredPlays board tileHand words
         
+        let played = match possible with
+                     | head :: tail -> head.BoardPlay //WiP...
+                                       true
+                     | _ -> false
+
+        shouldContinue <- shouldContinue && (tileBag.Tiles.IsEmpty = false)
+
         Console.WriteLine(board);
 
     let ignore = Console.ReadLine()
