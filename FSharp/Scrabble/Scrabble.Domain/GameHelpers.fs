@@ -67,14 +67,7 @@ type BoardCreator =
         
         new Board(array, size, size);
 
-    static member FromArray (items: char list list) = 
-        
-        let tileBag = TileBagCreator.Default
-
-        let height = items.Length;
-        let width = match height with | 0 -> 0 | _ -> items.Head.Length
-        let initial = Board.Empty width height
-        
+    static member PlayArray (startBoard:Board) (items: char list list) = 
         let chars = items |> Seq.mapi (fun h wList -> wList |> Seq.mapi (fun w c -> (w, h, c)))
                           |> Seq.collect (fun x -> x)
                           |> Seq.filter (fun (_, _, c) -> System.Char.IsLetter c)
@@ -83,10 +76,17 @@ type BoardCreator =
         let draw (tb:TileBag) (c:char) = tb.DrawFromLetter(Letter(c))
         let play (board:Board) w h c v = board.Play [ { Location = { Width = w; Height = h}; Piece = { Letter = c; Value = v } } ]
         
+        let tileBag = TileBagCreator.Default
         let (board,bag) = chars |> Seq.fold (fun (brd, tb) (w,h,c) -> let (newTb, tbl) = draw tb c
                                                                       let newBoard = play brd w h c tbl.Value
-                                                                      (newBoard, newTb)) (initial, tileBag)
+                                                                      (newBoard, newTb)) (startBoard, tileBag)
         board
+
+    static member FromArray (items: char list list) = 
+        let height = items.Length;
+        let width = match height with | 0 -> 0 | _ -> items.Head.Length
+        let initial = Board.Empty width height
+        BoardCreator.PlayArray initial items
 
 type WordLoader = 
     
