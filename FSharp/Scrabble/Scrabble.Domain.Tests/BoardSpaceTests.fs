@@ -7,11 +7,11 @@ open Scrabble.Domain
 let getSpaces board = (new BoardSpaceAnalyser()).GenerateSpaces board
 
 let assertBoardSpaces board expectedAcross expectedDown =
-        let spaces = getSpaces board
-        let filter direction = spaces |> Seq.filter (fun x -> x.Direction = direction) |> Seq.toList
-        (filter Across).Length |> should equal expectedAcross
-        (filter Down).Length |> should equal expectedDown
-        spaces.Length |> should equal (expectedAcross + expectedDown)
+    let spaces = getSpaces board
+    let filter direction = spaces |> Seq.filter (fun x -> x.Direction = direction) |> Seq.toList
+    (filter Across).Length |> should equal expectedAcross
+    (filter Down).Length |> should equal expectedDown
+    spaces.Length |> should equal (expectedAcross + expectedDown)
 
 let play w h c v = { Location = { Width = w; Height = h }; Piece = { Letter = c; Value = v } };
 
