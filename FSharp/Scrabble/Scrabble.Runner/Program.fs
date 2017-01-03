@@ -19,22 +19,34 @@ let main argv =
     let words = WordLoader.LoadAllWords()
 
     let mutable tileBag = TileBagCreator.Default
+    let mutable tileList = List.empty<BagTile>;
     let mutable board = BoardCreator.Default
     let mutable shouldContinue = true
+
     while shouldContinue do
-        let (dts, bag) = tileBag.Draw 7
+        let (bts, bag) = tileBag.Draw (7-tileList.Length)
+        tileList <- List.append tileList bts
         tileBag <- bag
-        let tiles = dts |> List.map (fun x -> let letter = match x.TileLetter with | Blank -> 'a' | Letter(c) -> c
-                                              { Letter = letter; Value = x.Value })
+
+        let getLetter bt = match bt.TileLetter with | Blank -> 'a' | Letter(c) -> c
+        let tiles = tileList |> List.map (fun bt-> { Letter = (getLetter bt); Value = bt.Value })
+                             |> Seq.sortBy (fun x -> -x.Value) |> Seq.toList
+
         let tileHand = new TileHand(tiles)
         let possible = (new BoardSpaceAnalyser()).GetPossibleScoredPlays board tileHand words
         
         let played = match possible with
-                     | head :: tail -> head.BoardPlay //WiP...
+                     | head :: tail -> let locationPlays = head.WordScores.Head.Locations;
+                                       let plays = locationPlays |> List.map (fun (loc, tile) -> { Location = loc; Piece = tile })
+                                       let updateBoard = board.Play plays
+                                       board <- updateBoard
+                                       let remain = locationPlays |> Seq.fold (fun (agg : BagTile list) (l,t) -> let (a,b) = agg |> Seq.removeFirstWith (fun x -> t.Letter = (getLetter x))
+                                                                                                                 b) tileList
+                                       tileList <- remain
                                        true
                      | _ -> false
 
-        shouldContinue <- shouldContinue && (tileBag.Tiles.IsEmpty = false)
+        shouldContinue <- shouldContinue && played && (tileBag.Tiles.IsEmpty = false)
 
         Console.WriteLine(board);
 
