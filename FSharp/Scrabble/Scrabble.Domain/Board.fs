@@ -75,7 +75,7 @@ type Board(tileLocations : BoardLocation[,], width:int, height:int) =
     member this.IsMiddleTile wdth hght = (wdth = width/2) && (hght = height/2)
 
     override this.ToString() = 
-        let rows = {height-1 .. -1 .. 0} |> Seq.map
+        let rows = {0 .. height-1} |> Seq.map
                     (fun h -> {0 .. width-1} |> Seq.map (fun w -> tileLocations.[w,h] |> tileToString)
                                              |> Seq.fold (fun acc x -> acc + x + "|") "|");
         rows |> Seq.fold (fun acc x -> acc + "\n" + x) ""

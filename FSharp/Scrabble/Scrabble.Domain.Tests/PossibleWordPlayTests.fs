@@ -25,12 +25,20 @@ let ``With empty board``() =
     assertPossible board ["dog"; "god"] ['o'; 'd'; 'g'] [2; 2]
 
 [<Test>]
-let ``Board with singe letter``() =
+let ``Board with single letter 1 row``() =
     let board = BoardCreator.FromArray [[' '; 'b'; ' '; ' ';' ']]
 
     assertPossible board ["bad"] ['a';'d'] [1]
     assertPossible board ["abate"] ['a';'a';'t'; 'e'] [1]
     assertPossible board ["bib"] ['i';'b'] [1]
+
+[<Test>]
+let ``Board with single letter 3 rows``() =
+    let board = BoardCreator.FromArray [[' '; ' '; ' ';]
+                                        [' '; ' '; ' ';]
+                                        [' '; 'b'; ' ']]
+
+    assertPossible board ["cab"] ['c';'a'] [1]
 
 [<Test>]
 let ``Board with letters 1``() =
