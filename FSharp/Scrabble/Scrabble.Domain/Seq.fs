@@ -10,6 +10,10 @@ let removeFirstWith (select : 'T -> bool) (items : 'T list) =
                                           |> Seq.map (fun n -> items.[n]) |> Seq.toList
     (items.[index], remaining)
 
+let someValues (items : seq<Option<'T>>) =
+    items |> Seq.filter (fun x -> x.IsSome)
+          |> Seq.map (fun x -> x.Value)
+
 type EqualitySet<'T when 'T : equality>(items : 'T list) = 
     member this.Items = items
     

@@ -83,20 +83,22 @@ type BoardSpaceAnalyser() =
     
     member this.GetPossibleScoredPlays (board:Board) (tileHand:TileHand) (wordSet: WordSet) =
 
-        let pinnedLettersMatch (play:BoardPlay) (word : Word) =
-            play.Locations |> Seq.mapi (fun nx l -> match l.State with
-                                                    | Free(_) -> true
-                                                    | Played(t) -> t.Letter = word.Word.[nx])
-                           |> Seq.forall (fun x -> x)
-        
-        let canMakeWord (play:BoardPlay) (word : Word) =
-            let getLetters() = play.Locations |> Seq.map (fun l -> match l.State with
-                                                                   | Free(_) -> None
-                                                                   | Played(t) -> Some(t.Letter))
-                                              |> Seq.filter (fun x -> x.IsSome)
-                                              |> Seq.map (fun x -> x.Value)
+        let getPossibleWords (play:BoardPlay) =
+            let pinnedLetters = play.Locations |> Seq.mapi (fun nx l -> match l.State with
+                                                                        | Free(_) -> None
+                                                                        | Played(t) -> Some(nx, t.Letter))
+                                               |> Seq.someValues |> Seq.toList
+            
+            let letters = pinnedLetters |> Seq.map (fun (nx, c) -> c) |> Seq.toList
 
-            (pinnedLettersMatch play word) && word.CanMakeWordFromSet (tileHand.LetterSet.WithNewLetters (getLetters()))
+            let pinnedLettersMatch (word : Word) =
+                pinnedLetters |> Seq.forall (fun (nx,c) -> word.Word.[nx] = c)
+            
+            let canMakeWord (word : Word) =
+                (pinnedLettersMatch word) && word.CanMakeWordFromSet (tileHand.LetterSet.WithNewLetters letters)
+            
+            let wordsForLength = wordSet.WordsForLength play.Locations.Length
+            wordsForLength |> Seq.filter (fun w -> (canMakeWord w))
 
         let getWordValidData (location:Location) (letter:char) (direction:Direction) =
             let walkWhileTiles init getLocation =
@@ -138,9 +140,8 @@ type BoardSpaceAnalyser() =
             { Word = word; Locations = aggData.Locations; Score = aggData.CalcScore }
 
         let getPossibleWords (play:BoardPlay) =
-            let words = wordSet.WordsForLength play.Locations.Length
-            let scoredWords = words |> Seq.filter (fun w -> (canMakeWord play w))
-                                    |> Seq.map (fun w -> (w, (getSecondaryWordsValidScore w play)))
+            let words = getPossibleWords play
+            let scoredWords = words |> Seq.map (fun w -> (w, (getSecondaryWordsValidScore w play)))
                                     |> Seq.filter (fun (_, data) -> data |> Seq.forall (fun (valid, _) -> valid))
                                     |> Seq.map (fun (wrd, data) -> let scoreData = data |> Seq.map (fun (_,x) -> x) |> Seq.toList
                                                                    scoreWordPlay play wrd scoreData)
