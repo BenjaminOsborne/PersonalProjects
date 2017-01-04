@@ -17,6 +17,20 @@ let ``When empty board``() =
 
 [<Test>]
 let ``When play tile 2``() =
-    let board = (Board.Empty 4 4).Play [ play 2 2 'a' 4]
-    let tile = board.TileAt 2 2
-    tile.State |> should equal (Played { Letter = 'a'; Value = 4 })
+    let assertBoard (board:Board) w h c v =
+        let board = board.Play [ play w h c v]
+        let tile = board.TileAt w h
+        tile.State |> should equal (Played { Letter = c; Value = v })
+        board
+
+    let next0 = (Board.Empty 4 4);
+    let next1 = assertBoard next0 2 1 'a' 4
+    let next2 = assertBoard next1 2 2 'b' 3
+    let next3 = assertBoard next2 2 3 'c' 2
+    
+    let next4 = assertBoard next3 0 0 't' 1
+    let next5 = assertBoard next4 1 0 'o' 0
+    let next6 = assertBoard next5 2 0 'p' 6
+    
+    next6 |> ignore
+
