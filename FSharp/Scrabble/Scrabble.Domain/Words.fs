@@ -48,14 +48,32 @@ type Word(word : string) =
         letters.ContainsAtLeastAllFrom thisSet
 
 type WordSet(words : Set<string>) = 
+    
+    let groupByFirstLetter (items:seq<string>) =
+        items |> Seq.groupBy (fun x -> x.[0]) |> Seq.map (fun (key, items) -> key, items |> Seq.map (fun x -> Word(x)) |> Seq.toList) |> Map
 
     let wordsByLength = Lazy.Create (fun _ -> words |> Seq.groupBy (fun x -> x.Length)
-                                                    |> Seq.map(fun (key, items) -> key, Lazy.Create (fun _ -> items |> Seq.map (fun x -> Word(x)) |> Seq.toList))
+                                                    |> Seq.map(fun (key, items) -> key, Lazy.Create (fun _ -> groupByFirstLetter items))
                                                     |> Map)
+    
+    let mapForLength wordLength selectValue =
+        let someMap = wordsByLength.Value.TryFind wordLength
+        match someMap with
+        | Some(map) -> selectValue map
+        | _ -> Seq.empty
+
     member this.Count = words.Count
 
-    member this.WordsForLength len = let somelist = wordsByLength.Value.TryFind len
-                                     match somelist with | Some(l) -> l.Value | _ -> []
+    member this.WordsForLength wordLength =
+        mapForLength wordLength (fun map -> map.Value |> Seq.map (fun x -> x.Value)
+                                                      |> Seq.collect (fun x -> x))
     
+    member this.WordsForLengthWithStart (wordLength:int) (startLetters: seq<char>) =
+        mapForLength wordLength (fun map -> startLetters |> Seq.map (fun c -> let someList = map.Value.TryFind c
+                                                                              match someList with
+                                                                              | Some(l) -> l
+                                                                              | _ -> [])
+                                                         |> Seq.collect (fun x -> x))
+
     member this.IsWord word = words.Contains word
     
