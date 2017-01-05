@@ -29,12 +29,19 @@ let assertScoreSingleWord board (word:string) score =
     possible |> Seq.iter (fun t -> t.WordScores.Length |> should equal 1
                                    t.WordScores.Head.Score |> should lessThanOrEqualTo score)
 
-let assertPlayArray array word tiles score =
+let assertPlayArray array word tiles score (extraAssert: (string*int) list) =
     let initial = BoardCreator.Default
     let board = BoardCreator.PlayArray initial array
     let wordSet = loadedWordSet.Value
     let possible = assertScoreTiles board wordSet word tiles score
-    possible |> ignore
+
+    let assertExtra w sc =
+        let found = possible |> Seq.map (fun x -> x.WordScores |> Seq.filter (fun ws -> ws.Word.Word = w))
+                             |> Seq.collect (fun x -> x) |> Seq.toList
+        found.Length |> should greaterThanOrEqualTo 1
+        found.Head.Score |> should equal sc
+
+    extraAssert |> Seq.iter (fun (w,sc) -> assertExtra w sc)
 
 [<Test>]
 let ``With empty board``() =
@@ -67,7 +74,7 @@ let ``Puzzle 1``() =
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' ']]
-    assertPlayArray array "pipework" "rockpil" 38
+    assertPlayArray array "pipework" "rockpil" 38 []
 
 [<Test>]
 let ``Puzzle 2``() =
@@ -86,7 +93,7 @@ let ``Puzzle 2``() =
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' ']]
-    assertPlayArray array "workmen" "enflomb" 65 //Next: menfolk, 43
+    assertPlayArray array "menfolk" "enflomb" 43 ["workmen", 41]
 
 [<Test>]
 let ``Puzzle 3``() =
@@ -105,7 +112,7 @@ let ``Puzzle 3``() =
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' ']]
-    assertPlayArray array "questioned" "odepain" 27
+    assertPlayArray array "fadein" "odepain" 31 ["questioned", 27]
 
 [<Test>]
 let ``Puzzle 4``() =
@@ -124,5 +131,5 @@ let ``Puzzle 4``() =
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' ']]
-    assertPlayArray array "livestock" "koolcig" 34 //Next: clockwise 33
+    assertPlayArray array "gook" "koolcig" 40 [("livestock", 34); ("clockwise", 33)]
     
