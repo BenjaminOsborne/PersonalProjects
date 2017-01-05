@@ -33,6 +33,11 @@ let ``Load all words``() =
     let count9 = words.WordsForLength 9 |> Seq.length
     let count25 = words.WordsForLength 25 |> Seq.length
 
+    let count9a = words.WordsForLengthWithStart 9 ['a'] |> Seq.length
+    let count9b = words.WordsForLengthWithStart 9 ['b'] |> Seq.length
+    let count9c = words.WordsForLengthWithStart 9 ['c'] |> Seq.length
+    let count9abc = words.WordsForLengthWithStart 9 ['a'; 'b'; 'c'] |> Seq.length
+
     words.Count |> should equal 267752
     isWord |> should equal true
     isNotWord |> should equal false
@@ -40,3 +45,8 @@ let ``Load all words``() =
     count1 |> should equal 0
     count9 |> should equal 40727
     count25 |> should equal 0
+    
+    count9a |> should equal 2471
+    count9b |> should equal 2356
+    count9c |> should equal 3737
+    count9abc |> should equal (2471+2356+3737)
