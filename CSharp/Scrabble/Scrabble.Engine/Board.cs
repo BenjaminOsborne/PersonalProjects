@@ -456,11 +456,25 @@ namespace Scrabble.Engine
             _PerformActionPerTile((nWidth, nHeight, oBoardTile) =>
             {
                 if (nWidth == 0){ OutputPrinter.WriteLine(""); }
-                var cChar = (oBoardTile.HasLetter) ? oBoardTile.LetterTile.Letter : ' ';
-                OutputPrinter.Write("|" + cChar);
+                var txt = (oBoardTile.HasLetter) ? oBoardTile.LetterTile.Letter.ToString() + " " : _BonusText(oBoardTile);
+                OutputPrinter.Write("|" + txt);
                 if(nWidth == Width - 1) { OutputPrinter.Write("|");}
             });
             OutputPrinter.WriteLine("");
+        }
+
+        private static string _BonusText(BoardTile oBoardTile)
+        {
+            switch (oBoardTile.TileBonus)
+            {
+                case TileBonus.None: return "  ";
+                case TileBonus.DoubleLetter: return "DL";
+                case TileBonus.TripleLetter: return "TL";
+                case TileBonus.DoubleWord: return "DW";
+                case TileBonus.TripleWord: return "TW";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         /// <summary>
