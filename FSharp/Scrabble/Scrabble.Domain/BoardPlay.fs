@@ -85,8 +85,8 @@ type BoardSpaceAnalyser() =
 
         let getPossibleWords (play:BoardPlay) =
             let pinnedIndexLetters = play.Locations |> Seq.mapi (fun nx l -> match l.State with
-                                                                        | Free(_) -> None
-                                                                        | Played(t) -> Some(nx, t.Letter))
+                                                                             | Free(_) -> None
+                                                                             | Played(t) -> Some(nx, t.Letter))
                                                |> Seq.someValues |> Seq.toList
             
             let pinnedletters = pinnedIndexLetters |> Seq.map (fun (nx, c) -> c)

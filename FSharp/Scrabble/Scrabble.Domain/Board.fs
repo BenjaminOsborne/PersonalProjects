@@ -44,13 +44,6 @@ type TilePlay = { Location : Location; Piece : Tile }
 
 type Board(tileLocations : BoardLocation[,], width:int, height:int) = 
     
-    let tileToString tile = match tile.State with
-                            | Played(p) -> " " + p.Letter.ToString()
-                            | Free(t)   -> match(t) with
-                                           | Normal -> "  "
-                                           | LetterMultiply(m) -> "L" + m.ToString() + ""
-                                           | WordMultiply(m) -> "W" + m.ToString() + ""
-
     static member Empty wdth hght =
         let array = Array2D.init wdth hght (fun w h -> { Location = { Width = w; Height = h }; State = BoardState.Free(Normal) })
         new Board(array, wdth, hght)
@@ -74,7 +67,16 @@ type Board(tileLocations : BoardLocation[,], width:int, height:int) =
     
     member this.IsMiddleTile wdth hght = (wdth = width/2) && (hght = height/2)
 
-    override this.ToString() = 
+    override this.ToString() =
+        let scoreToString score = if score < 10 then " " + score.ToString() else score.ToString()
+
+        let tileToString tile = match tile.State with
+                                | Played(p) -> " " + p.Letter.ToString() + " "  + scoreToString p.Value
+                                | Free(t)   -> match(t) with
+                                               | Normal -> "  " + "   "
+                                               | LetterMultiply(m) -> " L" + m.ToString() + "  "
+                                               | WordMultiply(m) -> " W" + m.ToString() + "  "
+
         let rows = {0 .. height-1} |> Seq.map
                     (fun h -> {0 .. width-1} |> Seq.map (fun w -> tileLocations.[w,h] |> tileToString)
                                              |> Seq.fold (fun acc x -> acc + x + "|") "|");
