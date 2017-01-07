@@ -95,12 +95,11 @@ type BoardSpaceAnalyser() =
             let pinnedLettersMatch (word : Word) =
                 pinnedIndexLetters |> Seq.forall (fun (nx,c) -> word.Word.[nx] = c)
             
-            let startLetters = match pinnedIndexLetters with
-                               | (nx, c)::tail when nx = 0 -> [c]
-                               | _ -> tileHand.Tiles |> Seq.map (fun x -> x.Letter)
-                                                     |> Seq.distinct |> Seq.toList
+            let freeLetters = tileHand.Tiles |> Seq.map (fun x -> x.Letter) |> Seq.distinct
 
-            let wordsLen = wordSet.WordsForLengthWithStart play.Locations.Length startLetters
+            let wordsLen = if pinnedIndexLetters.Length > 0 then wordSet.WordsForLengthWithPinned play.Locations.Length pinnedIndexLetters
+                           else wordSet.WordsForLengthWithStarting play.Locations.Length freeLetters
+
             let pinMatch = wordsLen |> Seq.filter pinnedLettersMatch
             let setMatch = pinMatch |> Seq.filter (fun w -> w.CanMakeWordFromSet tileHandWithLetters)
             setMatch

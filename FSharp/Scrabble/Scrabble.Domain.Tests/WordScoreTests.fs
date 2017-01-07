@@ -14,7 +14,11 @@ let assertScoreTiles board wordSet (word:string) (letters:seq<char>) score =
                                              { Letter = c; Value = t.Value })
                         |> Seq.toList
     let tileHand = new TileHand(tiles)
+    let sw = System.Diagnostics.Stopwatch.StartNew();
     let possible = getPossible board tileHand wordSet |> Seq.toList
+    sw.Stop();
+    System.Console.WriteLine(sw.ElapsedMilliseconds)
+
     possible.Length |> should greaterThanOrEqualTo 1
     
     let best = possible.Head.WordScores.Head
