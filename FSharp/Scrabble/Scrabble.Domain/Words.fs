@@ -50,7 +50,7 @@ type Word(word : string) =
     interface System.IComparable with
         member this.CompareTo other = word.CompareTo (other :?> Word).Word
 
-type WordSetAtLength = { Length : int; Words : Map<string, Word>; IndexMap : Map<char, Set<Word>> list }
+type WordSetAtLength = { Length : int; Words : Map<string, Word>; IndexMap : Lazy<Map<char, Set<Word>>> list }
 
 type WordSet(words : Set<string>) = 
     
@@ -59,9 +59,9 @@ type WordSet(words : Set<string>) =
     
     let groupByLetterIndex length (items:seq<string>) =
         let mapWords = items |> Seq.map (fun x -> x, new Word(x)) |> Map
-        let indexMap = [0 .. length-1] |> List.map (fun nx -> mapWords |> Seq.groupBy (fun kvp -> kvp.Key.[nx])
-                                                                       |> Seq.map (fun (k, items) -> k, items |> Seq.map (fun i -> i.Value) |> Set)
-                                                                       |> Map)
+        let indexMap = [0 .. length-1] |> List.map (fun nx -> Lazy.Create(fun _ -> mapWords |> Seq.groupBy (fun kvp -> kvp.Key.[nx])
+                                                                                            |> Seq.map (fun (k, items) -> k, items |> Seq.map (fun i -> i.Value) |> Set)
+                                                                                            |> Map))
         { Length = length; Words = mapWords; IndexMap = indexMap }
         
     let wordsByLength = Lazy.Create (fun _ -> words |> Seq.groupBy (fun x -> x.Length)
@@ -75,7 +75,7 @@ type WordSet(words : Set<string>) =
         | _ -> Seq.empty
 
     let wordsForLengthWithPinned wordLength (pinnedLetters: (int*char) list) =
-        let sets = mapForLength wordLength (fun map -> pinnedLetters |> Seq.map (fun (nx,c) -> let someSet = map.IndexMap.[nx].TryFind c
+        let sets = mapForLength wordLength (fun map -> pinnedLetters |> Seq.map (fun (nx,c) -> let someSet = map.IndexMap.[nx].Value.TryFind c
                                                                                                match someSet with
                                                                                                | Some(l) -> l
                                                                                                | _ -> Set.empty))

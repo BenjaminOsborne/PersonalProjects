@@ -55,6 +55,8 @@
     </Content>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Seq.fs" />
+    <Compile Include="List.fs" />
+    <Compile Include="EqualitySet.fs" />
     <Compile Include="Board.fs" />
     <Compile Include="TileBag.fs" />
     <Compile Include="Words.fs" />
