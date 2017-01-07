@@ -24,6 +24,8 @@ let main argv =
     let mutable shouldContinue = true
 
     while shouldContinue do
+        Console.WriteLine(board);
+
         let (bts, bag) = tileBag.Draw (7-tileList.Length)
         tileList <- List.append tileList bts
         tileBag <- bag
@@ -47,8 +49,6 @@ let main argv =
                      | _ -> false
 
         shouldContinue <- shouldContinue && played && (tileBag.Tiles.IsEmpty = false)
-
-        Console.WriteLine(board);
 
     let ignore = Console.ReadLine()
     0 // return an integer exit code
