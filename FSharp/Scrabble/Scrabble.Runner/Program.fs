@@ -12,8 +12,7 @@ let somePlay() =
                                             (play 9 7 'c' 1) ]
     printfn "%s" (board.ToString())
 
-[<EntryPoint>]
-let main argv = 
+let manualRoutine () = 
     
     //somePlay
     let words = WordLoader.LoadAllWords()
@@ -72,3 +71,7 @@ let main argv =
 
     let ignore = Console.ReadLine()
     0 // return an integer exit code
+
+[<EntryPoint>]
+let main argv = 
+    manualRoutine()

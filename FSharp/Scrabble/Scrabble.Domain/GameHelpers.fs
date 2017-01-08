@@ -100,12 +100,7 @@ type WordLoader =
 
 type GameStateCreator =
     static member BeginGameFor (players : Player list) =
-        let getNext (tileBag:TileBag) (states: PlayerState list) player =
-            let (dts,nxtBag) = tileBag.Draw 7
-            let state = { Player = player; Tiles = dts; Plays = []}
-            (nxtBag, state::states)
-
-        let initialBag = TileBagCreator.Default
-        let (finalBag, states) = players |> Seq.fold (fun (tileBag, states) p -> getNext tileBag states p) (initialBag, [])
         let board = BoardCreator.Default
-        { Board = board; TileBag = finalBag; PlayerStates = states |> List.rev }
+        let initialBag = TileBagCreator.Default
+        let states = players |> List.map (fun p -> { Player = p; Tiles = []; Plays = []})
+        { Board = board; TileBag = initialBag; PlayerStates = states; }
