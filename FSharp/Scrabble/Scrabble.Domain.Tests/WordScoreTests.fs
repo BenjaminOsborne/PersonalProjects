@@ -22,7 +22,7 @@ let assertScoreTiles board wordSet (word:string) (letters:seq<char>) score =
     possible.Length |> should greaterThanOrEqualTo 1
     
     let best = possible.Head.WordScores.Head
-    best.Word.Word |> should equal word
+    best.Word |> should equal word
     best.Score |> should equal score
     possible
 
@@ -40,7 +40,7 @@ let assertPlayArray array word tiles score (extraAssert: (string*int) list) =
     let possible = assertScoreTiles board wordSet word tiles score
 
     let assertExtra w sc =
-        let found = possible |> Seq.map (fun x -> x.WordScores |> Seq.filter (fun ws -> ws.Word.Word = w))
+        let found = possible |> Seq.map (fun x -> x.WordScores |> Seq.filter (fun ws -> ws.Word = w))
                              |> Seq.collect (fun x -> x) |> Seq.toList
         found.Length |> should greaterThanOrEqualTo 1
         found.Head.Score |> should equal sc

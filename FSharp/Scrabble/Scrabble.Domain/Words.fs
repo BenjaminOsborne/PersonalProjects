@@ -44,19 +44,10 @@ type TileHand(tiles : Tile list) =
         let (tile, remaining) = orderTiles.Value |> List.removeFirstWith (fun x -> x.Letter = c)
         (tile, new TileHand(remaining))
 
-type Word(word : string) =
-    let thisSet = Lazy.Create(fun _ -> LetterSet.FromLetters(word))
-    member this.Word = word
-    member this.CanMakeWordFromSet (letters : LetterSet) =
-        letters.ContainsAtLeastAllFrom thisSet.Value
-
-    interface System.IComparable with
-        member this.CompareTo other = word.CompareTo (other :?> Word).Word
-
-type WordNode = | Leaf of Word
+type WordNode = | Leaf of string
                 | Branch of WordBranch
 
-and WordBranch (length:int, words: (string * Word) list) =
+and WordBranch (length:int, words: (string * string) list) =
     
     let doSome (tree: Map<char, Lazy<WordNode>>) c walkBranch = 
         match tree.TryFind c with
@@ -72,7 +63,7 @@ and WordBranch (length:int, words: (string * Word) list) =
                                                                                 walkWith nextChrs pinned (currentIndex+1) branch.memberTree))
                           |> Seq.collect (fun x -> x)
         
-    let makeNode (grp: seq<string*Word>) =
+    let makeNode (grp: seq<string*string>) =
         match length with 
         | 1 -> let word = grp |> Seq.map (fun (_,w) -> w) |> Seq.head
                Leaf(word)
@@ -93,7 +84,7 @@ and WordBranch (length:int, words: (string * Word) list) =
 type WordSet(words : Set<string>) = 
     
     let wordsByLength = words |> Seq.groupBy (fun x -> x.Length)
-                              |> Seq.map(fun (key, items) -> key, Lazy.Create(fun _ -> new WordBranch(key, items |> Seq.map (fun s -> (s, new Word(s))) |> Seq.toList)))
+                              |> Seq.map(fun (key, items) -> key, Lazy.Create(fun _ -> new WordBranch(key, items |> Seq.map (fun s -> (s, s)) |> Seq.toList)))
                               |> Map
 
     member this.Count = words.Count

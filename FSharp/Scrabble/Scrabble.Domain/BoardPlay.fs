@@ -15,7 +15,7 @@ type BoardPlay(locations : BoardLocation list, direction : Direction) =
                locations.Head.Location.ToString() + " - " + last.Location.ToString()
 
 [<System.Diagnostics.DebuggerDisplayAttribute("{Word.Word} - {Score}")>]
-type WordScore = { Word : Word; Locations: (Location*Tile) list; Score : int }
+type WordScore = { Word : string; Locations: (Location*Tile) list; Score : int }
 type ValidWordPlays = { BoardPlay : BoardPlay; WordScores : WordScore list }
 
 type ScoreData =
@@ -158,13 +158,13 @@ type BoardSpaceAnalyser() =
                                  wordSet.IsWord word
             (isValid, (location, letter, tiles))
 
-        let getSecondaryWordsValidScore (word:Word) (play:BoardPlay) =
-            play.Locations |> Seq.mapi (fun nx bp -> (word.Word.[nx], bp))
+        let getSecondaryWordsValidScore (word:string) (play:BoardPlay) =
+            play.Locations |> Seq.mapi (fun nx bp -> (word.[nx], bp))
                            |> Seq.filter (fun (c,bp) -> bp.State.IsSpace)
                            |> Seq.map (fun (c, bp) -> getWordValidData bp.Location c play.Direction.Flip)
                            |> Seq.toList
         
-        let scoreWordPlay (boardPlay:BoardPlay) (word:Word) (data: (Location*char*(Tile list)) list) = 
+        let scoreWordPlay (boardPlay:BoardPlay) (word:string) (data: (Location*char*(Tile list)) list) = 
             let orderedLocs = boardPlay.Locations |> Seq.sortBy (fun x -> match x.State with //Biggest letter then biggest word
                                                                           | Free(t) -> -t.GetLetterMultiply, -t.GetWordMultiply
                                                                           | _ -> 0,0) |> Seq.toList

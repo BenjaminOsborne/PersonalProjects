@@ -5,28 +5,10 @@ open FsUnit
 open Scrabble.Domain
 open System.Collections.Generic
 
-let canMakeWord word set expected = (new Word(word)).CanMakeWordFromSet (LetterSet.FromLetters(set)) |> should equal expected
-
 let wordsByLength (words:WordSet) = words.AllWords |> Seq.groupBy (fun x -> x.Length)
                                                    |> Seq.map (fun (k,vals) -> k, vals |> Seq.toList)
                                                    |> Map
 let wordsForLength (wordsByLength:Map<int, string list>) n = match wordsByLength.TryFind n with | Some(l) -> l | None -> []
-
-[<Test>]
-let ``Can make word``() =
-    let pairs = [("aabbccdd","cab");
-                 ("hello", "hell");
-                 ("nnbaaa", "banana");
-                 ("a", "a")]
-    pairs |> Seq.iter (fun (set,word) -> canMakeWord word set true)
-
-[<Test>]
-let ``Cannot make word``() =
-    let pairs = [("back","backs");
-                 ("hell", "hello");
-                 ("a", "b");
-                 ("llyon", "nylon")]
-    pairs |> Seq.iter (fun (set,word) -> canMakeWord word set false)
 
 [<Test>]
 let ``Load all words``() =
