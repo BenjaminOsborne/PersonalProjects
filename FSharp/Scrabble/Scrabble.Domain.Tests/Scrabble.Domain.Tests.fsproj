@@ -58,6 +58,7 @@
     <Compile Include="PossibleWordPlayTests.fs" />
     <Compile Include="WordScoreTests.fs" />
     <Compile Include="WordSetTests.fs" />
+    <Compile Include="WordLoadTests.fs" />
     <Compile Include="ExampleTests.fs" />
   </ItemGroup>
   <ItemGroup>
