@@ -23,37 +23,38 @@ type WordNode = | Leaf of string
 
 and WordBranch (length:int, words: (string * string) list) =
     
-    let doSome (tree: Map<char, Lazy<WordNode>>) c walkBranch = 
+    let tryWalkNode (tree: Map<char, Lazy<WordNode>>) c walkIfBranch = 
         match tree.TryFind c with
         | Some(node) -> match node.Value with
                         | Leaf(word) -> Seq.single word
-                        | Branch(branch) -> walkBranch branch
+                        | Branch(branch) -> walkIfBranch branch
         | None -> Seq.empty
 
     let rec walkWith (chrs: char list) (pinned : Map<int,char>) (currentIndex : int) (tree: Map<char, Lazy<WordNode>>) =
+        
+        let walkWithNexChars nextChars (branch:WordBranch) = walkWith nextChars pinned (currentIndex+1) branch.treeMember
+        
         match pinned.TryFind currentIndex with
-        | Some(c) -> doSome tree c (fun branch -> walkWith chrs pinned (currentIndex+1) branch.memberTree)
-        | None ->    chrs |> Seq.mapi (fun nx c -> doSome tree c (fun branch -> let nextChrs = chrs |> List.removeIndex nx
-                                                                                walkWith nextChrs pinned (currentIndex+1) branch.memberTree))
+        | Some(c) -> tryWalkNode tree c (fun branch -> walkWithNexChars chrs branch)
+        | None ->    chrs |> Seq.mapi (fun nx c -> tryWalkNode tree c (fun branch -> let nextChrs = chrs |> List.removeIndex nx
+                                                                                     walkWithNexChars nextChrs branch))
                           |> Seq.collect (fun x -> x)
         
     let makeNode (grp: seq<string*string>) =
         match length with 
-        | 1 -> let word = grp |> Seq.map (fun (_,w) -> w) |> Seq.head
+        | 1 -> let word = grp |> Seq.map (fun (_, w) -> w) |> Seq.head
                Leaf(word)
-        | _ -> let nextStrings = grp |> Seq.map (fun (s,w) -> (s.Substring(1, s.Length-1),w)) |> Seq.toList
+        | _ -> let nextStrings = grp |> Seq.map (fun (s,w) -> (s.Substring(1, s.Length-1), w)) |> Seq.toList
                Branch(new WordBranch(length-1, nextStrings))
 
     let treeField = words |> Seq.groupBy (fun (s,w) -> s.[0])
                           |> Seq.map (fun (c, grp) -> c, Lazy.Create(fun _ -> makeNode grp))
                           |> Map
     
-    member private this.memberTree = treeField
-
-    member this.Length = length
+    member private this.treeMember = treeField
 
     member this.WalkWith (chars: char list) (pinned : Map<int,char>) =
-        (walkWith chars pinned 0 this.memberTree) |> Seq.distinct |> Seq.toList
+        (walkWith chars pinned 0 this.treeMember) |> Seq.distinct
 
 type WordSet(words : Set<string>) = 
     
@@ -68,7 +69,7 @@ type WordSet(words : Set<string>) =
     member this.WordsForLengthWithLetters wordLength (letters: char list) (pinned: Map<int,char>) =
         match wordsByLength.TryFind wordLength with
         | Some(wb) -> wb.Value.WalkWith letters pinned
-        | None -> []
+        | None -> Seq.empty
 
     member this.IsWord word = words.Contains word
     
