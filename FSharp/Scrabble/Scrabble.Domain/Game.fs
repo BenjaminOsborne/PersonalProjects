@@ -2,21 +2,27 @@
 
 type Player = { Name : string }
 
-type PlayerState =
-    { Player : Player; Tiles : BagTile list; Plays : WordScore list }
-    member this.TotalScore = this.Plays |> Seq.sumBy (fun x -> x.Score)
+type GameMoveData = { WordSet : WordSet; Board : Board; Player : Player; Tiles : BagTile list }
+
+type GameMovePlay = { WordScore : WordScore; UsedTiles: BagTile list; }
+
+type GameMove = | Play of GameMovePlay
+                | Switch of BagTile list
+                | Complete
+
+type PlayerState = { Player : Player; Tiles : BagTile list; Plays : GameMove list }
 
 type GameState = { Board: Board; TileBag : TileBag; PlayerStates : PlayerState list; }
 
-type GameMoveData = { WordSet : WordSet; Board : Board; Player : Player; Tiles : BagTile list }
-
-type GameMoveResult = { WordScore : WordScore; UsedTiles: BagTile list; }
-
 type IGameMoveProvider =
-    abstract member GetNextMove: GameMoveData -> Option<GameMoveResult>
+    abstract member GetNextMove: GameMoveData -> GameMove
 
 type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
     
+    let removeFrom initial remove =
+        let removeSet = remove |> Set
+        initial |> List.filter (fun x -> removeSet.Contains x = false)
+
     let getNextState gameState (moveProvider : IGameMoveProvider) = 
         let playerState = gameState.PlayerStates.Head
         let player = playerState.Player
@@ -27,22 +33,24 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
         let fullTileList = List.append playerState.Tiles bts
 
         let moveData = { WordSet = words; Board = board; Player = player; Tiles = fullTileList}
-        let optMove = moveProvider.GetNextMove moveData
-        let nextData = match optMove with
-                       | Some(move) -> let plays = move.WordScore.Locations |> List.map (fun (loc, tile) -> { Location = loc; Piece = tile })
-                                       let updateBoard = board.Play plays
-                                       let playedTiles = move.UsedTiles |> Set
-                                       let remaining = fullTileList |> List.filter (fun x -> playedTiles.Contains x = false)
-                                       (move.WordScore, updateBoard, remaining)
-                       | None -> let emptyScore = { Word = ""; Locations = []; Score = 0 }
-                                 (emptyScore, board, fullTileList)
+        let moveResult = moveProvider.GetNextMove moveData
+        let nextData = match moveResult with
+                       | Play(move) ->      let plays = move.WordScore.Locations |> List.map (fun (loc, tile) -> { Location = loc; Piece = tile })
+                                            let updateBoard = board.Play plays
+                                            let remaining = removeFrom fullTileList move.UsedTiles
+                                            (updateBoard, remaining)
+                       | Switch(switch) ->  let remaining = removeFrom fullTileList switch
+                                            (board, remaining)
+                       | Complete ->        (board, fullTileList)
 
-        let (play, nextBoard, nextTiles) = nextData
-        let newState = { Player = player; Tiles = nextTiles; Plays = play :: playerState.Plays }
+        let (nextBoard, nextTiles) = nextData
+        let newState = { Player = player; Tiles = nextTiles; Plays = moveResult :: playerState.Plays }
         let newStates = List.append gameState.PlayerStates.Tail [newState]
         { Board = nextBoard; TileBag = newBag; PlayerStates = newStates; }
 
     member this.PlayGame (moveProvider : IGameMoveProvider) =
+        let getNext state = getNextState state moveProvider
+
         //Seq.initInfinite (fun x -> x) |> Seq.scan ()
         
         //let getNext (tileBag:TileBag) (states: PlayerState list) player =
@@ -52,5 +60,5 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
 
         let mutable gameState = initialState
         while true do
-            gameState <- getNextState gameState moveProvider
+            gameState <- getNext gameState
         0
