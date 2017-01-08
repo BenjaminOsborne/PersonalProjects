@@ -42,7 +42,7 @@ let main argv =
                                        let plays = locationPlays |> List.map (fun (loc, tile) -> { Location = loc; Piece = tile })
                                        let updateBoard = board.Play plays
                                        board <- updateBoard
-                                       let remain = locationPlays |> Seq.fold (fun (agg : BagTile list) (l,t) -> let (a,b) = agg |> Seq.removeFirstWith (fun x -> t.Letter = (getLetter x))
+                                       let remain = locationPlays |> Seq.fold (fun (agg : BagTile list) (l,t) -> let (a,b) = agg |> List.removeFirstWith (fun x -> t.Letter = (getLetter x))
                                                                                                                  b) tileList
                                        tileList <- remain
                                        true

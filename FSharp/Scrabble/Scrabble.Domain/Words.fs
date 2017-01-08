@@ -7,73 +7,70 @@ type LetterHelpers =
             builder.ToString()
     static member CharListToString (chars: char list) = LetterHelpers.CharsToString chars chars.Length
 
-type LetterSet private (letterSet : Map<char,int>) = 
-    
-    static member private toLetterSet (letters:seq<char>)  = letters |> Seq.groupBy (fun x -> x) |> Seq.map (fun (key, items) -> key, items |> Seq.length) |> Map
-
-    static member FromTiles (tiles : Tile list) = new LetterSet(LetterSet.toLetterSet (tiles |> Seq.map (fun x -> x.Letter)))
-    
-    static member FromLetters (letters : string) = new LetterSet(LetterSet.toLetterSet letters)
-    
-    member this.WithNewLetters (letters : seq<char>) =
-        let finalMap = letters |> Seq.fold (fun (agg:Map<char,int>) c -> let existing = agg.TryFind c
-                                                                         match existing with
-                                                                         | None -> agg.Add (c,1)
-                                                                         | Some(count) -> agg.Add (c, count+1)) letterSet
-        new LetterSet(finalMap)
-
-    member private this.LetterSet = letterSet
-    
-    member this.ContainsAtLeastAllFrom (other:LetterSet) = 
-        other.LetterSet |> Seq.forall (fun kvp -> let someVal = this.LetterSet.TryFind kvp.Key
-                                                  match someVal with
-                                                  | Some(count) -> count >= kvp.Value
-                                                  | _ -> false)
-
 type TileHand(tiles : Tile list) =
     
     let orderTiles = Lazy.Create (fun _ -> tiles |> Seq.sortBy (fun x -> x.Letter, -x.Value) |> Seq.toList)
-    let letters = Lazy.Create (fun _ -> LetterSet.FromTiles tiles)
+    let letters = Lazy.Create (fun _ -> tiles |> Seq.map (fun x -> x.Letter) |> Seq.toList)
     
     member this.Tiles = tiles
-    member this.LetterSet = letters.Value
+    member this.Letters = letters.Value
     member this.PopNextTileFor c =
-        let (tile, remaining) = orderTiles.Value |> Seq.removeFirstWith (fun x -> x.Letter = c)
+        let (tile, remaining) = orderTiles.Value |> List.removeFirstWith (fun x -> x.Letter = c)
         (tile, new TileHand(remaining))
 
-type Word(word : string) =
-    let thisSet = LetterSet.FromLetters(word)
-    member this.Word = word
-    member this.CanMakeWordFromSet (letters : LetterSet) =
-        letters.ContainsAtLeastAllFrom thisSet
+type WordNode = | Leaf of string
+                | Branch of WordBranch
+
+and WordBranch (length:int, words: (string * string) list) =
+    
+    let tryWalkNode (tree: Map<char, Lazy<WordNode>>) c walkIfBranch = 
+        match tree.TryFind c with
+        | Some(node) -> match node.Value with
+                        | Leaf(word) -> Seq.single word
+                        | Branch(branch) -> walkIfBranch branch
+        | None -> Seq.empty
+
+    let rec walkWith (chrs: char list) (pinned : Map<int,char>) (currentIndex : int) (tree: Map<char, Lazy<WordNode>>) =
+        
+        let walkWithNexChars nextChars (branch:WordBranch) = walkWith nextChars pinned (currentIndex+1) branch.treeMember
+        
+        match pinned.TryFind currentIndex with
+        | Some(c) -> tryWalkNode tree c (fun branch -> walkWithNexChars chrs branch)
+        | None ->    chrs |> Seq.mapi (fun nx c -> tryWalkNode tree c (fun branch -> let nextChrs = chrs |> List.removeIndex nx
+                                                                                     walkWithNexChars nextChrs branch))
+                          |> Seq.collect (fun x -> x)
+        
+    let makeNode (grp: seq<string*string>) =
+        match length with 
+        | 1 -> let word = grp |> Seq.map (fun (_, w) -> w) |> Seq.head
+               Leaf(word)
+        | _ -> let nextStrings = grp |> Seq.map (fun (s,w) -> (s.Substring(1, s.Length-1), w)) |> Seq.toList
+               Branch(new WordBranch(length-1, nextStrings))
+
+    let treeField = words |> Seq.groupBy (fun (s,w) -> s.[0])
+                          |> Seq.map (fun (c, grp) -> c, Lazy.Create(fun _ -> makeNode grp))
+                          |> Map
+    
+    member private this.treeMember = treeField
+
+    member this.WalkWith (chars: char list) (pinned : Map<int,char>) =
+        (walkWith chars pinned 0 this.treeMember) |> Seq.distinct
 
 type WordSet(words : Set<string>) = 
     
-    let groupByFirstLetter (items:seq<string>) =
-        items |> Seq.groupBy (fun x -> x.[0]) |> Seq.map (fun (key, items) -> key, items |> Seq.map (fun x -> Word(x)) |> Seq.toList) |> Map
-
-    let wordsByLength = Lazy.Create (fun _ -> words |> Seq.groupBy (fun x -> x.Length)
-                                                    |> Seq.map(fun (key, items) -> key, Lazy.Create (fun _ -> groupByFirstLetter items))
-                                                    |> Map)
-    
-    let mapForLength wordLength selectValue =
-        let someMap = wordsByLength.Value.TryFind wordLength
-        match someMap with
-        | Some(map) -> selectValue map
-        | _ -> Seq.empty
+    let wordsByLength = words |> Seq.groupBy (fun x -> x.Length)
+                              |> Seq.map(fun (key, items) -> key, Lazy.Create(fun _ -> new WordBranch(key, items |> Seq.map (fun s -> (s, s)) |> Seq.toList)))
+                              |> Map
 
     member this.Count = words.Count
 
-    member this.WordsForLength wordLength =
-        mapForLength wordLength (fun map -> map.Value |> Seq.map (fun x -> x.Value)
-                                                      |> Seq.collect (fun x -> x))
-    
-    member this.WordsForLengthWithStart (wordLength:int) (startLetters: seq<char>) =
-        mapForLength wordLength (fun map -> startLetters |> Seq.map (fun c -> let someList = map.Value.TryFind c
-                                                                              match someList with
-                                                                              | Some(l) -> l
-                                                                              | _ -> [])
-                                                         |> Seq.collect (fun x -> x))
+    member this.AllWords = words
+
+    member this.WordsForLengthWithLetters wordLength (letters: char list) (pinned: Map<int,char>) =
+        match wordsByLength.TryFind wordLength with
+        | Some(wb) -> wb.Value.WalkWith letters pinned
+        | None -> Seq.empty
 
     member this.IsWord word = words.Contains word
+    
     

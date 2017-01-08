@@ -30,7 +30,7 @@ type TileBag(items) =
     inherit ItemBag<BagTile>(items)
 
     member this.DrawFromLetter (letter:BagTileLetter) =
-        let (item, remaining) = items |> Seq.removeFirstWith (fun x -> x.TileLetter.Equals(letter))
+        let (item, remaining) = items |> List.removeFirstWith (fun x -> x.TileLetter.Equals(letter))
         (new TileBag(remaining), item)
 
     member this.Draw count = this.DrawCreate count (fun l -> new TileBag(l))

@@ -71,11 +71,11 @@ type Board(tileLocations : BoardLocation[,], width:int, height:int) =
         let scoreToString score = if score < 10 then " " + score.ToString() else score.ToString()
 
         let tileToString tile = match tile.State with
-                                | Played(p) -> " " + p.Letter.ToString() + " "  + scoreToString p.Value
+                                | Played(p) -> " " + p.Letter.ToString()
                                 | Free(t)   -> match(t) with
-                                               | Normal -> "  " + "   "
-                                               | LetterMultiply(m) -> " L" + m.ToString() + "  "
-                                               | WordMultiply(m) -> " W" + m.ToString() + "  "
+                                               | Normal -> "  "
+                                               | LetterMultiply(m) -> "L" + m.ToString()
+                                               | WordMultiply(m) -> "W" + m.ToString()
 
         let rows = {0 .. height-1} |> Seq.map
                     (fun h -> {0 .. width-1} |> Seq.map (fun w -> tileLocations.[w,h] |> tileToString)

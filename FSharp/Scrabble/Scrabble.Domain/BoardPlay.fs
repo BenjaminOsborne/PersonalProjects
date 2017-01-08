@@ -15,7 +15,7 @@ type BoardPlay(locations : BoardLocation list, direction : Direction) =
                locations.Head.Location.ToString() + " - " + last.Location.ToString()
 
 [<System.Diagnostics.DebuggerDisplayAttribute("{Word.Word} - {Score}")>]
-type WordScore = { Word : Word; Locations: (Location*Tile) list; Score : int }
+type WordScore = { Word : string; Locations: (Location*Tile) list; Score : int }
 type ValidWordPlays = { BoardPlay : BoardPlay; WordScores : WordScore list }
 
 type ScoreData =
@@ -39,6 +39,34 @@ type ScoreData =
                                                  let sideScore = getSideScore tiles t.Value lm wm
                                                  (t.Value * lm, wm, sideScore, th, [(location.Location, t)])
         ScoreData.Create (this.MainScore + ms) (this.MainScoreMultiplier * msm) (this.SideScores + ss) th (List.append this.Locations lcs)
+
+[<CustomEqualityAttribute>]
+[<NoComparisonAttribute>]
+type BoardPlayTileData =
+    { TotalLength : int; PinnedIndexLetters : Map<int, char> }
+    
+    static member private mapsEqual (map1 : Map<int, char>) (map2 : Map<int, char>) =
+        map1.Count = map2.Count && map1 |> Seq.forall (fun kvp -> match map2.TryFind kvp.Key with 
+                                                                  | Some(v) -> kvp.Value = v
+                                                                  | None -> false)
+
+    member this.FreeSpaces = this.TotalLength - this.PinnedIndexLetters.Count
+
+    override this.Equals obj =
+        match obj with
+        | :? BoardPlayTileData as other -> this.TotalLength = other.TotalLength &&
+                                           BoardPlayTileData.mapsEqual this.PinnedIndexLetters other.PinnedIndexLetters
+        | _ -> false
+
+    override this.GetHashCode() = this.PinnedIndexLetters |> Seq.fold (fun agg x -> (agg * 397) ^^^ x.GetHashCode()) (this.TotalLength.GetHashCode())
+    
+    static member FromPlay (play:BoardPlay) =
+        let pinnedIndexLetters = play.Locations |> Seq.mapi (fun nx l -> match l.State with
+                                                                         | Free(_) -> None
+                                                                         | Played(t) -> Some(nx, t.Letter))
+                                                |> Seq.someValues
+                                                |> Map
+        { TotalLength = play.Locations.Length; PinnedIndexLetters = pinnedIndexLetters}
 
 type BoardSpaceAnalyser() =
     
@@ -78,32 +106,14 @@ type BoardSpaceAnalyser() =
         let isTouchTile loc = board.IsTouchingTile loc.Width loc.Height || board.IsMiddleTile loc.Width loc.Height
         let allValid = allSpaces |> Seq.filter (fun x -> x.AnySpaces && x.Locations |> Seq.exists (fun t -> isTouchTile t.Location)) //Must be at least 1 space and touching at least 1 existing tile
         
-        let distinct = allValid |> Seq.distinctByField (fun x -> Seq.EqualitySet x.Spaces) |> Seq.toList
+        let distinct = allValid |> Seq.distinctByField (fun x -> EqualitySet.EqualitySet x.Spaces) |> Seq.toList
         distinct
     
     member this.GetPossibleScoredPlays (board:Board) (tileHand:TileHand) (wordSet: WordSet) =
-
-        let getPossibleWords (play:BoardPlay) =
-            let pinnedIndexLetters = play.Locations |> Seq.mapi (fun nx l -> match l.State with
-                                                                             | Free(_) -> None
-                                                                             | Played(t) -> Some(nx, t.Letter))
-                                                    |> Seq.someValues |> Seq.toList
-            
-            let pinnedletters = pinnedIndexLetters |> Seq.map (fun (nx, c) -> c)
-            let tileHandWithLetters = tileHand.LetterSet.WithNewLetters pinnedletters
-            
-            let pinnedLettersMatch (word : Word) =
-                pinnedIndexLetters |> Seq.forall (fun (nx,c) -> word.Word.[nx] = c)
-            
-            let startLetters = match pinnedIndexLetters with
-                               | (nx, c)::tail when nx = 0 -> [c]
-                               | _ -> tileHand.Tiles |> Seq.map (fun x -> x.Letter)
-                                                     |> Seq.distinct |> Seq.toList
-
-            let wordsLen = wordSet.WordsForLengthWithStart play.Locations.Length startLetters
-            let pinMatch = wordsLen |> Seq.filter pinnedLettersMatch
-            let setMatch = pinMatch |> Seq.filter (fun w -> w.CanMakeWordFromSet tileHandWithLetters)
-            setMatch
+        
+        let getPossibleWords (play:BoardPlayTileData) =
+            let wordsLen = wordSet.WordsForLengthWithLetters play.TotalLength (tileHand.Letters |> Seq.toList) play.PinnedIndexLetters
+            wordsLen
 
         let getWordValidData (location:Location) (letter:char) (direction:Direction) =
             let walkWhileTiles init getLocation =
@@ -129,13 +139,13 @@ type BoardSpaceAnalyser() =
                                  wordSet.IsWord word
             (isValid, (location, letter, tiles))
 
-        let getSecondaryWordsValidScore (word:Word) (play:BoardPlay) =
-            play.Locations |> Seq.mapi (fun nx bp -> (word.Word.[nx], bp))
+        let getSecondaryWordsValidScore (word:string) (play:BoardPlay) =
+            play.Locations |> Seq.mapi (fun nx bp -> (word.[nx], bp))
                            |> Seq.filter (fun (c,bp) -> bp.State.IsSpace)
                            |> Seq.map (fun (c, bp) -> getWordValidData bp.Location c play.Direction.Flip)
                            |> Seq.toList
         
-        let scoreWordPlay (boardPlay:BoardPlay) (word:Word) (data: (Location*char*(Tile list)) list) = 
+        let scoreWordPlay (boardPlay:BoardPlay) (word:string) (data: (Location*char*(Tile list)) list) = 
             let orderedLocs = boardPlay.Locations |> Seq.sortBy (fun x -> match x.State with //Biggest letter then biggest word
                                                                           | Free(t) -> -t.GetLetterMultiply, -t.GetWordMultiply
                                                                           | _ -> 0,0) |> Seq.toList
@@ -144,8 +154,7 @@ type BoardSpaceAnalyser() =
             let aggData = orderedLocs|> Seq.fold (fun (agg : ScoreData) location -> agg.WithNextLocationScore location getItem) (ScoreData.Initial tileHand)
             { Word = word; Locations = aggData.Locations; Score = aggData.CalcScore }
 
-        let getPossibleWords (play:BoardPlay) =
-            let words = getPossibleWords play
+        let getPossibleWordScore words (play:BoardPlay) =
             let scoredWords = words |> Seq.map (fun w -> (w, (getSecondaryWordsValidScore w play)))
                                     |> Seq.filter (fun (_, data) -> data |> Seq.forall (fun (valid, _) -> valid))
                                     |> Seq.map (fun (wrd, data) -> let scoreData = data |> Seq.map (fun (_,x) -> x) |> Seq.toList
@@ -155,8 +164,13 @@ type BoardSpaceAnalyser() =
             scoredWords
         
         let boardPlays = this.GenerateSpaces board
-        let possiblePlays = boardPlays |> Seq.map (fun bp -> { BoardPlay = bp; WordScores = getPossibleWords bp })
-                                       |> Seq.filter (fun x -> x.WordScores.IsEmpty = false)
-                                       |> Seq.sortBy (fun x -> -x.WordScores.Head.Score)
-                                       |> Seq.toList
+        let groupPlayData = boardPlays |> Seq.map (fun bp -> (bp, BoardPlayTileData.FromPlay bp))
+                                       |> Seq.filter (fun (_, td) -> td.FreeSpaces <= tileHand.Tiles.Length)
+                                       |> Seq.groupBy (fun (_, td) -> td)
+        let possiblePlays = groupPlayData |> Seq.map (fun (key, items) -> let words = getPossibleWords key
+                                                                          items |> Seq.map (fun (bp, _) -> { BoardPlay = bp; WordScores = getPossibleWordScore words bp }))
+                                          |> Seq.collect (fun x -> x)
+                                          |> Seq.filter (fun x -> x.WordScores.IsEmpty = false)
+                                          |> Seq.sortBy (fun x -> -x.WordScores.Head.Score)
+                                          |> Seq.toList
         possiblePlays
