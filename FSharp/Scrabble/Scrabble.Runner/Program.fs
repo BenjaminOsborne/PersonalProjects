@@ -21,16 +21,20 @@ let main argv =
     let mutable tileBag = TileBagCreator.Default
     let mutable tileList = List.empty<BagTile>;
     let mutable board = BoardCreator.Default
+    let mutable wordPlays = List.empty<string*int>
     let mutable shouldContinue = true
+
+    let getLetter bt = match bt.TileLetter with | Blank -> 'a' | Letter(c) -> c
 
     while shouldContinue do
         Console.WriteLine(board);
+        wordPlays |> Seq.iter (fun (w,s) -> let space = LetterHelpers.CharListToString ([w.Length..15] |> List.map (fun _ -> ' '))
+                                            Console.WriteLine(w + space + s.ToString()))
 
         let (bts, bag) = tileBag.Draw (7-tileList.Length)
         tileList <- List.append tileList bts
         tileBag <- bag
 
-        let getLetter bt = match bt.TileLetter with | Blank -> 'a' | Letter(c) -> c
         let tiles = tileList |> List.map (fun bt-> { Letter = (getLetter bt); Value = bt.Value })
                              |> Seq.sortBy (fun x -> -x.Value) |> Seq.toList
 
@@ -38,10 +42,14 @@ let main argv =
         let possible = (new BoardSpaceAnalyser()).GetPossibleScoredPlays board tileHand words
         
         let played = match possible with
-                     | head :: tail -> let locationPlays = head.WordScores.Head.Locations;
+                     | head :: tail -> let topScore = head.WordScores.Head
+                                       let locationPlays = topScore.Locations;
                                        let plays = locationPlays |> List.map (fun (loc, tile) -> { Location = loc; Piece = tile })
                                        let updateBoard = board.Play plays
+                                       
                                        board <- updateBoard
+                                       wordPlays <- (topScore.Word,topScore.Score) :: wordPlays
+
                                        let remain = locationPlays |> Seq.fold (fun (agg : BagTile list) (l,t) -> let (a,b) = agg |> List.removeFirstWith (fun x -> t.Letter = (getLetter x))
                                                                                                                  b) tileList
                                        tileList <- remain
@@ -49,6 +57,15 @@ let main argv =
                      | _ -> false
 
         shouldContinue <- shouldContinue && played && (tileBag.Tiles.IsEmpty = false)
+    
+    Console.WriteLine("Done...")
+
+    let printTiles context (tiles:BagTile list) = 
+        Console.WriteLine("Remaining " + context + " Tiles: " + tiles.Length.ToString())
+        Console.WriteLine(LetterHelpers.CharListToString (tiles |> List.map (fun x -> getLetter x)))
+    
+    printTiles "Hand" tileList
+    printTiles "Bag" tileBag.Tiles
 
     let ignore = Console.ReadLine()
     0 // return an integer exit code
