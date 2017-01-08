@@ -97,3 +97,15 @@ type WordLoader =
                                  |> Seq.filter (fun x -> System.String.IsNullOrEmpty x = false)
                                  |> Set
         new WordSet(set)
+
+type GameStateCreator =
+    static member BeginGameFor (players : Player list) =
+        let getNext (tileBag:TileBag) (states: PlayerState list) player =
+            let (dts,nxtBag) = tileBag.Draw 7
+            let state = { Player = player; Tiles = dts; Plays = []}
+            (nxtBag, state::states)
+
+        let initialBag = TileBagCreator.Default
+        let (finalBag, states) = players |> Seq.fold (fun (tileBag, states) p -> getNext tileBag states p) (initialBag, [])
+        let board = BoardCreator.Default
+        { Board = board; TileBag = finalBag; PlayerStates = states |> List.rev }

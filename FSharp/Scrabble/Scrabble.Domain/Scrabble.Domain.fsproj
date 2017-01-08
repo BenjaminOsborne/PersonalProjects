@@ -61,6 +61,7 @@
     <Compile Include="TileBag.fs" />
     <Compile Include="Words.fs" />
     <Compile Include="BoardPlay.fs" />
+    <Compile Include="Game.fs" />
     <Compile Include="GameHelpers.fs" />
   </ItemGroup>
   <ItemGroup>
