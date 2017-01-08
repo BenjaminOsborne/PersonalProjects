@@ -28,9 +28,7 @@ let main argv =
 
     while shouldContinue do
         Console.WriteLine(board);
-        wordPlays |> Seq.iter (fun (w,s) -> let space = LetterHelpers.CharListToString ([w.Length..15] |> List.map (fun _ -> ' '))
-                                            Console.WriteLine(w + space + s.ToString()))
-
+        
         let (bts, bag) = tileBag.Draw (7-tileList.Length)
         tileList <- List.append tileList bts
         tileBag <- bag
@@ -55,17 +53,22 @@ let main argv =
                                        tileList <- remain
                                        true
                      | _ -> false
-
+        
         shouldContinue <- shouldContinue && played && (tileBag.Tiles.IsEmpty = false)
     
-    Console.WriteLine("Done...")
+    Console.WriteLine("\nFinal Scores...")
+
+    wordPlays |> Seq.iter (fun (w,s) -> let space = LetterHelpers.CharListToString ([w.Length..15] |> List.map (fun _ -> ' '))
+                                        Console.WriteLine(w + space + s.ToString()))
 
     let printTiles context (tiles:BagTile list) = 
-        Console.WriteLine("Remaining " + context + " Tiles: " + tiles.Length.ToString())
-        Console.WriteLine(LetterHelpers.CharListToString (tiles |> List.map (fun x -> getLetter x)))
+        let tileText = LetterHelpers.CharListToString (tiles |> List.map (fun x -> getLetter x))
+        Console.WriteLine("Remaining " + context + " Tiles: " + tiles.Length.ToString() + " (" + tileText + ")")
     
     printTiles "Hand" tileList
     printTiles "Bag" tileBag.Tiles
+
+    Console.WriteLine("Total Score: " + (wordPlays |> Seq.sumBy (fun (_,s) -> s)).ToString())
 
     let ignore = Console.ReadLine()
     0 // return an integer exit code
