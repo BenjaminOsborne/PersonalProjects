@@ -99,7 +99,7 @@ type WordLoader =
         new WordSet(set)
 
 type GameStateCreator =
-    static member BeginGameFor (players : Player list) =
+    static member InitialiseGameFor (players : Player list) =
         let board = BoardCreator.Default
         let initialBag = TileBagCreator.Default
         let states = players |> List.map (fun p -> { Player = p; Tiles = []; Plays = []})

@@ -72,6 +72,20 @@ let manualRoutine () =
     let ignore = Console.ReadLine()
     0 // return an integer exit code
 
+let gameRoutine () =
+    let words = WordLoader.LoadAllWords()
+    let initial = GameStateCreator.InitialiseGameFor [ { Name = "Auto 1" }; { Name = "Auto 2" }]
+    let game = new ScrabbleGame(words, 7, initial)
+    
+    let moveProvider =
+        { new IGameMoveProvider with
+          member x.GetNextMove data =
+            Complete
+        }
+
+    let result = game.PlayGame moveProvider
+    0
+
 [<EntryPoint>]
 let main argv = 
     manualRoutine()
