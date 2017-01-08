@@ -104,6 +104,25 @@ type BoardSpaceAnalyser() =
     
     member this.GetPossibleScoredPlays (board:Board) (tileHand:TileHand) (wordSet: WordSet) =
 
+//        let getPossibleWordsOld (play:BoardPlayTileData) =
+//            let pinnedIndexLetters = play.PinnedIndexLetters
+//            let length = play.TotalLength
+//
+//            let pinnedLettersMatch (word : Word) =
+//                pinnedIndexLetters |> Seq.forall (fun (nx,c) -> word.Word.[nx] = c)
+//            
+//            let wordsLen =  if pinnedIndexLetters.Length > 0 then
+//                                wordSet.WordsForLengthWithPinned length pinnedIndexLetters
+//                            else
+//                                let freeLetters = tileHand.Tiles |> Seq.map (fun x -> x.Letter) |> Seq.distinct
+//                                wordSet.WordsForLengthWithStarting length freeLetters
+//            
+//            let pinnedletters = pinnedIndexLetters |> Seq.map (fun (nx, c) -> c)
+//            let tileHandWithLetters = tileHand.LetterSet.WithNewLetters pinnedletters
+//            let pinMatch = wordsLen |> Seq.filter pinnedLettersMatch
+//            let setMatch = pinMatch |> Seq.filter (fun w -> w.CanMakeWordFromSet tileHandWithLetters)
+//            setMatch
+        
         let getPossibleWords (play:BoardPlayTileData) =
             let pinnedIndexLetters = play.PinnedIndexLetters
             let length = play.TotalLength
@@ -111,17 +130,12 @@ type BoardSpaceAnalyser() =
             let pinnedLettersMatch (word : Word) =
                 pinnedIndexLetters |> Seq.forall (fun (nx,c) -> word.Word.[nx] = c)
             
-            let wordsLen =  if pinnedIndexLetters.Length > 0 then
-                                wordSet.WordsForLengthWithPinned length pinnedIndexLetters
-                            else
-                                let freeLetters = tileHand.Tiles |> Seq.map (fun x -> x.Letter) |> Seq.distinct
-                                wordSet.WordsForLengthWithStarting length freeLetters
-            
             let pinnedletters = pinnedIndexLetters |> Seq.map (fun (nx, c) -> c)
             let tileHandWithLetters = tileHand.LetterSet.WithNewLetters pinnedletters
+            
+            let wordsLen = wordSet.WordsForLengthWithLetters length (tileHandWithLetters.Letters |> Seq.toList)
             let pinMatch = wordsLen |> Seq.filter pinnedLettersMatch
-            let setMatch = pinMatch |> Seq.filter (fun w -> w.CanMakeWordFromSet tileHandWithLetters)
-            setMatch
+            pinMatch
 
         let getWordValidData (location:Location) (letter:char) (direction:Direction) =
             let walkWhileTiles init getLocation =
