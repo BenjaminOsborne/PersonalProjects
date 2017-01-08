@@ -7,3 +7,5 @@ let distinctByField (fieldSelect: 'T -> 'U) (items: seq<'T>) =
 let someValues (items : seq<Option<'T>>) =
     items |> Seq.filter (fun x -> x.IsSome)
           |> Seq.map (fun x -> x.Value)
+
+let single item = [item] :> seq<'a>

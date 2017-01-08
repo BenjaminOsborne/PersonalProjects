@@ -43,13 +43,19 @@ type ScoreData =
 [<CustomEqualityAttribute>]
 [<NoComparisonAttribute>]
 type BoardPlayTileData =
-    { TotalLength : int; PinnedIndexLetters : (int * char) list }
+    { TotalLength : int; PinnedIndexLetters : Map<int, char> }
     
-    member this.FreeSpaces = this.TotalLength - this.PinnedIndexLetters.Length
+    static member private mapsEqual (map1 : Map<int, char>) (map2 : Map<int, char>) =
+        map1.Count = map2.Count && map1 |> Seq.forall (fun kvp -> match map2.TryFind kvp.Key with 
+                                                                  | Some(v) -> kvp.Value = v
+                                                                  | None -> false)
+
+    member this.FreeSpaces = this.TotalLength - this.PinnedIndexLetters.Count
 
     override this.Equals obj =
         match obj with
-        | :? BoardPlayTileData as other -> this.TotalLength = other.TotalLength && this.PinnedIndexLetters |> List.sequenceEqual other.PinnedIndexLetters
+        | :? BoardPlayTileData as other -> this.TotalLength = other.TotalLength &&
+                                           BoardPlayTileData.mapsEqual this.PinnedIndexLetters other.PinnedIndexLetters
         | _ -> false
 
     override this.GetHashCode() = this.PinnedIndexLetters |> Seq.fold (fun agg x -> (agg * 397) ^^^ x.GetHashCode()) (this.TotalLength.GetHashCode())
@@ -58,7 +64,8 @@ type BoardPlayTileData =
         let pinnedIndexLetters = play.Locations |> Seq.mapi (fun nx l -> match l.State with
                                                                          | Free(_) -> None
                                                                          | Played(t) -> Some(nx, t.Letter))
-                                                |> Seq.someValues |> Seq.toList
+                                                |> Seq.someValues
+                                                |> Map
         { TotalLength = play.Locations.Length; PinnedIndexLetters = pinnedIndexLetters}
 
 type BoardSpaceAnalyser() =
@@ -124,18 +131,8 @@ type BoardSpaceAnalyser() =
 //            setMatch
         
         let getPossibleWords (play:BoardPlayTileData) =
-            let pinnedIndexLetters = play.PinnedIndexLetters
-            let length = play.TotalLength
-
-            let pinnedLettersMatch (word : Word) =
-                pinnedIndexLetters |> Seq.forall (fun (nx,c) -> word.Word.[nx] = c)
-            
-            let pinnedletters = pinnedIndexLetters |> Seq.map (fun (nx, c) -> c)
-            let tileHandWithLetters = tileHand.LetterSet.WithNewLetters pinnedletters
-            
-            let wordsLen = wordSet.WordsForLengthWithLetters length (tileHandWithLetters.Letters |> Seq.toList)
-            let pinMatch = wordsLen |> Seq.filter pinnedLettersMatch
-            pinMatch
+            let wordsLen = wordSet.WordsForLengthWithLetters play.TotalLength (tileHand.LetterSet.Letters |> Seq.toList) play.PinnedIndexLetters
+            wordsLen
 
         let getWordValidData (location:Location) (letter:char) (direction:Direction) =
             let walkWhileTiles init getLocation =

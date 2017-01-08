@@ -1,8 +1,13 @@
 ﻿module List
 
 let removeIndex (index : int) (items : 'T list) =
-    {0 .. items.Length-1} |> Seq.filter (fun n -> n <> index)
-                          |> Seq.map (fun n -> items.[n]) |> Seq.toList
+    let rec skipIfIndex list currentIndex =
+        match list with
+        | head::tail -> if currentIndex = index then tail
+                        else head :: (skipIfIndex tail (currentIndex+1))
+        | [] -> []
+    let final = skipIfIndex items 0
+    final
 
 let removeFirstWith (select : 'T -> bool) (items : 'T list) =
     let index = items |> Seq.findIndex select
