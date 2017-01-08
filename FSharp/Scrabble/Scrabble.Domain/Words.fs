@@ -7,39 +7,13 @@ type LetterHelpers =
             builder.ToString()
     static member CharListToString (chars: char list) = LetterHelpers.CharsToString chars chars.Length
 
-type LetterSet private (letterSet : Map<char,int>) = 
-    
-    static member private toLetterSet (letters:seq<char>)  = letters |> Seq.groupBy (fun x -> x) |> Seq.map (fun (key, items) -> key, items |> Seq.length) |> Map
-
-    static member FromTiles (tiles : Tile list) = new LetterSet(LetterSet.toLetterSet (tiles |> Seq.map (fun x -> x.Letter)))
-    
-    static member FromLetters (letters : string) = new LetterSet(LetterSet.toLetterSet letters)
-    
-    member this.WithNewLetters (letters : seq<char>) =
-        let finalMap = letters |> Seq.fold (fun (agg:Map<char,int>) c -> let existing = agg.TryFind c
-                                                                         match existing with
-                                                                         | None -> agg.Add (c,1)
-                                                                         | Some(count) -> agg.Add (c, count+1)) letterSet
-        new LetterSet(finalMap)
-
-    member private this.LetterSet = letterSet
-    
-    member this.ContainsAtLeastAllFrom (other:LetterSet) = 
-        other.LetterSet |> Seq.forall (fun kvp -> let someVal = this.LetterSet.TryFind kvp.Key
-                                                  match someVal with
-                                                  | Some(count) -> count >= kvp.Value
-                                                  | _ -> false)
-    
-    member this.Letters = letterSet |> Seq.map (fun x -> [1..x.Value] |> Seq.map (fun _ -> x.Key))
-                                    |> Seq.collect (fun x -> x)
-
 type TileHand(tiles : Tile list) =
     
     let orderTiles = Lazy.Create (fun _ -> tiles |> Seq.sortBy (fun x -> x.Letter, -x.Value) |> Seq.toList)
-    let letters = Lazy.Create (fun _ -> LetterSet.FromTiles tiles)
+    let letters = Lazy.Create (fun _ -> tiles |> Seq.map (fun x -> x.Letter) |> Seq.toList)
     
     member this.Tiles = tiles
-    member this.LetterSet = letters.Value
+    member this.Letters = letters.Value
     member this.PopNextTileFor c =
         let (tile, remaining) = orderTiles.Value |> List.removeFirstWith (fun x -> x.Letter = c)
         (tile, new TileHand(remaining))
