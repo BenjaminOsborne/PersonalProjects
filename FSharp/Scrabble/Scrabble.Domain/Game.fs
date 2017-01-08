@@ -49,16 +49,24 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
         { Board = nextBoard; TileBag = newBag; PlayerStates = newStates; }
 
     member this.PlayGame (moveProvider : IGameMoveProvider) =
+        
+        let playerCount = initialState.PlayerStates.Length
+
+        let shouldContinue (state : GameState) =
+            let latest = state.PlayerStates |> Seq.map (fun x -> match x.Plays with | head::tail -> [head] | [] -> [])
+                                            |> Seq.collect (fun x -> x) |> Seq.toList
+            if latest.Length < playerCount then
+                true
+            else
+                let shouldStop = latest |> Seq.forall (fun x -> match x with
+                                                                | Play(p) -> false
+                                                                | Switch(s) -> true //For now, if everyone switches -> game over
+                                                                | Complete -> true)
+                (shouldStop = false)
+        
         let getNext state = getNextState state moveProvider
 
-        //Seq.initInfinite (fun x -> x) |> Seq.scan ()
-        
-        //let getNext (tileBag:TileBag) (states: PlayerState list) player =
-        //    let (dts,nxtBag) = tileBag.Draw 7
-        //    let state = { Player = player; Tiles = dts; Plays = []}
-        //    (nxtBag, state::states)
-
-        let mutable gameState = initialState
-        while true do
-            gameState <- getNext gameState
+        let states = Seq.initInfinite (fun x -> x) |> Seq.scan
+                        (fun state _ -> getNext state) initialState
+        let gameStates = states |> Seq.takeWhile shouldContinue |> Seq.toList
         0
