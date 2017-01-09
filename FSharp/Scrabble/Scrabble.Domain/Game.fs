@@ -10,7 +10,9 @@ type GameMove = | Play of GameMovePlay
                 | Switch of BagTile list
                 | Complete
 
-type PlayerState = { Player : Player; Tiles : BagTile list; Plays : GameMove list }
+type PlayerState =
+    { Player : Player; Tiles : BagTile list; Plays : GameMove list }
+    static member Empty p = { Player = p; Tiles = []; Plays = [] }
 
 type GameState = { Board: Board; TileBag : TileBag; PlayerStates : PlayerState list; }
 
@@ -69,4 +71,4 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
         let states = Seq.initInfinite (fun x -> x) |> Seq.scan
                         (fun state _ -> getNext state) initialState
         let gameStates = states |> Seq.takeWhile shouldContinue |> Seq.toList
-        0
+        gameStates |> Seq.last
