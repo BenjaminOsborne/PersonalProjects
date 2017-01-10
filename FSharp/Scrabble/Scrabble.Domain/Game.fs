@@ -70,5 +70,5 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
 
         let states = Seq.initInfinite (fun x -> x) |> Seq.scan
                         (fun state _ -> getNext state) initialState
-        let gameStates = states |> Seq.takeWhile shouldContinue |> Seq.toList
+        let gameStates = states |> Seq.takeWhileAndNext shouldContinue |> Seq.toList
         gameStates |> Seq.last

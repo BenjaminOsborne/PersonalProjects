@@ -39,13 +39,15 @@ let ``Game has 4 plays``() =
     let emptyPlay = { WordScore = { Word = ""; Locations = []; Score = 0 }; UsedTiles = [] }
     let testProvider = new TestProvider (fun count gmd -> 
         match count with
-        | 1|2|3|4 -> Play(emptyPlay)
-        | _       -> Complete)
+        | c when c <= 8 -> Play(emptyPlay)
+        | _             -> Complete)
 
     let result = game.PlayGame testProvider
     
     result.PlayerStates.Length |> should equal 2
     result.PlayerStates |> Seq.iter (fun x ->
-        x.Plays.Length |> should equal 1
-        let allComplete = x.Plays |> Seq.forall (fun p -> p = Complete)
-        allComplete |> should equal true)
+        x.Plays.Length |> should equal (4+1)
+        let first4Plays = x.Plays |> Seq.skip 1 |> Seq.take 4 |> Seq.forall (fun p -> match p with Play(_) -> true | _ -> false)
+        let lastComplete = (x.Plays |> Seq.head) = Complete
+        first4Plays |> should equal true
+        lastComplete |> should equal true)
