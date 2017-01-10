@@ -36,10 +36,10 @@ let ``Game has 4 plays``() =
     let initial = { Board = board_3_3; TileBag = emptyBag; PlayerStates = initStates_2 }
     let game = new ScrabbleGame(words, 3, initial)
     
-    let emptyPlay = { WordScore = { Word = ""; Locations = []; Score = 0 }; UsedTiles = [] }
     let testProvider = new TestProvider (fun count gmd -> 
         match count with
-        | c when c <= 8 -> Play(emptyPlay)
+        | c when c <= 8 -> let emptyPlay = { WordScore = { Word = ""; Locations = []; Score = 0 }; UsedTiles = [] }
+                           Play(emptyPlay)
         | _             -> Complete)
 
     let result = game.PlayGame testProvider
