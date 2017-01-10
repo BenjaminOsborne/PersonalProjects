@@ -11,7 +11,7 @@ type TestProvider (getMove : int -> GameMoveData -> GameMove) =
             count <- count+1
             getMove count data
 
-let words = new WordSet(["one"; "two"; "tre";] |> Set)
+let emptyWords = new WordSet([] |> Set)
 let initStates_2 = [ { Name = "1" }; { Name = "2" }] |> List.map (fun p -> PlayerState.Empty p)
 let board_3_3 = Board.Empty 3 3
 let emptyBag = new TileBag([])
@@ -20,7 +20,7 @@ let emptyBag = new TileBag([])
 let ``Game has no plays``() =
     
     let initial = { Board = board_3_3; TileBag = emptyBag; PlayerStates = initStates_2 }
-    let game = new ScrabbleGame(words, 3, initial)
+    let game = new ScrabbleGame(emptyWords, 3, initial)
     
     let testProvider = new TestProvider (fun count gmd -> Complete)
     let result = game.PlayGame testProvider
@@ -34,7 +34,7 @@ let ``Game has no plays``() =
 [<Test>]
 let ``Game has 4 plays``() =
     let initial = { Board = board_3_3; TileBag = emptyBag; PlayerStates = initStates_2 }
-    let game = new ScrabbleGame(words, 3, initial)
+    let game = new ScrabbleGame(emptyWords, 3, initial)
     
     let testProvider = new TestProvider (fun count gmd -> 
         match count with
