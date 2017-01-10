@@ -11,7 +11,7 @@ type TestProvider (getMove : int -> GameMoveData -> GameMove) =
             count <- count+1
             getMove count data
 
-let emptyWords = new WordSet([] |> Set)
+let emptyWords = new WordSet(Set.empty)
 let initStates_2 = [ { Name = "1" }; { Name = "2" }] |> List.map (fun p -> PlayerState.Empty p)
 let board_3_3 = Board.Empty 3 3
 let emptyBag = new TileBag([])
