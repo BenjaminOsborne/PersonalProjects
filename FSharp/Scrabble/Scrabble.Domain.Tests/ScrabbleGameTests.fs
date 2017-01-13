@@ -51,3 +51,43 @@ let ``Game has 4 plays``() =
         let lastComplete = (x.Plays |> Seq.head) = Complete
         first4Plays |> should equal true
         lastComplete |> should equal true)
+
+[<Test>]
+let ``Game has limited tiles``() = 
+    let bagTile = { TileLetter = Letter('e'); Value = 1 };
+    let tileBag = new TileBag([0..9] |> List.map (fun _ -> bagTile)) //10 tiles
+    let initial = { Board = board_3_3; TileBag = tileBag; PlayerStates = initStates_2 }
+    let words = new WordSet(["eee"] |> Set)
+    let handSize = 4
+    let game = new ScrabbleGame(words, handSize, initial)
+    
+    let testProvider = new TestProvider (fun count gmd -> 
+        match gmd.Tiles.Length with
+        | 0 -> Complete
+        | _ -> let max = System.Math.Min(2, gmd.Tiles.Length-1)
+               let locs = [0..max] |> List.map (fun w -> ({ Width = w; Height = 0 }, { Letter = 'e'; Value = 1 }))
+               let usedTiles = locs |> List.map (fun _ -> bagTile)
+               let emptyPlay = { WordScore = { Word = "eee"; Locations = locs; Score = 0 }; UsedTiles = usedTiles }
+               Play(emptyPlay))
+
+    let result = game.PlayGame testProvider
+
+    result.PlayerStates.Length |> should equal 2
+    let first = result.PlayerStates |> List.index 0
+    let second = result.PlayerStates |> List.index 1
+    first.Plays.Length |> should equal 3
+    second.Plays.Length |> should equal 3
+
+
+    let hasTileCount tileCount play = 
+        match play with
+        | Play(a) -> a.UsedTiles.Length = tileCount
+        | _ -> false
+
+    let assertCountThenComplete element count1 count2 =
+        element.Plays |> List.index 0 |> should equal Complete
+        element.Plays |> List.index 1 |> hasTileCount count2 |> should equal true
+        element.Plays |> List.index 2 |> hasTileCount count1 |> should equal true
+
+    assertCountThenComplete first 3 3
+    assertCountThenComplete second 3 1

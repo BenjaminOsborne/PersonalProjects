@@ -14,6 +14,13 @@ let removeFirstWith (select : 'T -> bool) (items : 'T list) =
     let remaining = removeIndex index items
     (items.[index], remaining)
 
+let index n (items : 'T list) =
+    if n < 0 then
+        failwith "negative index"
+    else
+        let remain = [1 .. n] |> List.fold (fun (agg : 'T list) _ -> agg.Tail) items
+        remain.Head
+
 let sequenceEqual (list1 : 'T list) (list2 : 'T list) =
     let rec matchDeep (x : 'T list) (y : 'T list) =
         match x.Length with

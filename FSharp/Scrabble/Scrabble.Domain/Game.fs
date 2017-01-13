@@ -22,8 +22,16 @@ type IGameMoveProvider =
 type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
     
     let removeFrom initial remove =
-        let removeSet = remove |> Set
-        initial |> List.filter (fun x -> removeSet.Contains x = false)
+        let mapInit = initial |> Seq.groupBy (fun x -> x) |> Seq.map (fun (key,vals) -> key, vals |> Seq.length) |> Map
+        
+        let finalMap = remove |> Seq.fold (fun (agg:Map<'a,int>) x -> let count = agg.Item x
+                                                                      agg.Add(x,count-1)) mapInit
+        let valid = finalMap |> Seq.forall (fun kvp -> kvp.Value >= 0)
+        if valid then
+            finalMap |> Seq.map (fun kvp -> [1 .. kvp.Value] |> Seq.map (fun _ -> kvp.Key))
+                     |> Seq.collect (fun x -> x) |> Seq.toList
+        else
+            failwith "Could not find tile"
 
     let getNextState gameState (moveProvider : IGameMoveProvider) = 
         let playerState = gameState.PlayerStates.Head
