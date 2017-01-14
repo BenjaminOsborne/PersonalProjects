@@ -20,6 +20,10 @@ let bagTile_a = { TileLetter = Letter('a'); Value = 1 };
 let bagTile_e = { TileLetter = Letter('e'); Value = 1 };
 
 [<Test>]
+let ``Game has different numbers of players``() =
+    failwith "impl missing" |> ignore
+
+[<Test>]
 let ``Game has no plays``() =
     
     let initial = { Board = board_3_3; TileBag = emptyBag; PlayerStates = initStates_2 }
@@ -54,6 +58,7 @@ let ``Game has 4 plays``() =
         let lastComplete = (x.Plays |> Seq.head) = Complete
         first4Plays |> should equal true
         lastComplete |> should equal true)
+
 
 let playGameWith1Word bagTiles =
     let tileBag = new TileBag(bagTiles) 
@@ -114,3 +119,12 @@ let ``Game has limited tiles - e and a only``() =
     let first = result.PlayerStates |> List.index 0
     let second = result.PlayerStates |> List.index 1
     (List.append first.Tiles second.Tiles) |> should equal [bagTile_a]
+
+[<Test>]
+let ``Game has blank tiles``() =
+    failwith "impl missing" |> ignore
+
+
+[<Test>]
+let ``Tests for computer impl of interface``() =
+    failwith "add tests in new file" |> ignore
