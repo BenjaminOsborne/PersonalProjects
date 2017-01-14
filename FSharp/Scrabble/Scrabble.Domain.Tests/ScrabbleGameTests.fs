@@ -11,8 +11,11 @@ type TestProvider (getMove : int -> GameMoveData -> GameMove) =
             count <- count+1
             getMove count data
 
+let createPlayerStates count =
+    [1..count] |> List.map (fun num -> PlayerState.Empty { Name = num.ToString() })
+
 let emptyWords = new WordSet(Set.empty)
-let initStates_2 = [ { Name = "1" }; { Name = "2" }] |> List.map (fun p -> PlayerState.Empty p)
+let initStates_2 = createPlayerStates 2
 let board_3_3 = Board.Empty 3 3
 let emptyBag = new TileBag([])
 
@@ -20,23 +23,21 @@ let bagTile_a = { TileLetter = Letter('a'); Value = 1 };
 let bagTile_e = { TileLetter = Letter('e'); Value = 1 };
 
 [<Test>]
-let ``Game has different numbers of players``() =
-    failwith "impl missing" |> ignore
-
-[<Test>]
-let ``Game has no plays``() =
+let ``Game has no plays different player count``() =
+    let assertPlayerCount playerCount =
+        let initStates = createPlayerStates playerCount
+        let initial = { Board = board_3_3; TileBag = emptyBag; PlayerStates = initStates }
+        let game = new ScrabbleGame(emptyWords, 3, initial)
     
-    let initial = { Board = board_3_3; TileBag = emptyBag; PlayerStates = initStates_2 }
-    let game = new ScrabbleGame(emptyWords, 3, initial)
+        let testProvider = new TestProvider (fun count gmd -> Complete)
+        let result = game.PlayGame testProvider
     
-    let testProvider = new TestProvider (fun count gmd -> Complete)
-    let result = game.PlayGame testProvider
+        result.PlayerStates.Length |> should equal playerCount
+        result.PlayerStates |> Seq.iter (fun x ->
+            x.Plays.Length |> should equal 1
+            x.Plays.Head |> should equal Complete)
     
-    result.PlayerStates.Length |> should equal 2
-    result.PlayerStates |> Seq.iter (fun x ->
-        x.Plays.Length |> should equal 1
-        let allComplete = x.Plays |> Seq.forall (fun p -> p = Complete)
-        allComplete |> should equal true)
+    [1..10] |> Seq.iter assertPlayerCount
 
 [<Test>]
 let ``Game has 4 plays``() =
