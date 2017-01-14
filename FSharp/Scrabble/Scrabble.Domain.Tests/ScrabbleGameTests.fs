@@ -16,6 +16,9 @@ let initStates_2 = [ { Name = "1" }; { Name = "2" }] |> List.map (fun p -> Playe
 let board_3_3 = Board.Empty 3 3
 let emptyBag = new TileBag([])
 
+let bagTile_a = { TileLetter = Letter('a'); Value = 1 };
+let bagTile_e = { TileLetter = Letter('e'); Value = 1 };
+
 [<Test>]
 let ``Game has no plays``() =
     
@@ -52,10 +55,8 @@ let ``Game has 4 plays``() =
         first4Plays |> should equal true
         lastComplete |> should equal true)
 
-[<Test>]
-let ``Game has limited tiles``() = 
-    let bagTile = { TileLetter = Letter('e'); Value = 1 };
-    let tileBag = new TileBag([0..9] |> List.map (fun _ -> bagTile)) //10 tiles
+let playGameWith1Word bagTiles =
+    let tileBag = new TileBag(bagTiles) 
     let initial = { Board = board_3_3; TileBag = tileBag; PlayerStates = initStates_2 }
     let words = new WordSet(["eee"] |> Set)
     let handSize = 4
@@ -64,13 +65,21 @@ let ``Game has limited tiles``() =
     let testProvider = new TestProvider (fun count gmd -> 
         match gmd.Tiles.Length with
         | 0 -> Complete
-        | _ -> let max = System.Math.Min(2, gmd.Tiles.Length-1)
-               let locs = [0..max] |> List.map (fun w -> ({ Width = w; Height = 0 }, { Letter = 'e'; Value = 1 }))
-               let usedTiles = locs |> List.map (fun _ -> bagTile)
-               let emptyPlay = { WordScore = { Word = "eee"; Locations = locs; Score = 0 }; UsedTiles = usedTiles }
-               Play(emptyPlay))
+        | _ -> let eCount = gmd.Tiles |> Seq.filter (fun x -> x.TileLetter = Letter('e')) |> Seq.length
+               match eCount with
+               | 0 -> Complete
+               | _ -> let max = System.Math.Min(2, eCount-1)
+                      let locs = [0..max] |> List.map (fun w -> ({ Width = w; Height = 0 }, { Letter = 'e'; Value = 1 }))
+                      let usedTiles = locs |> List.map (fun _ -> bagTile_e)
+                      let emptyPlay = { WordScore = { Word = "eee"; Locations = locs; Score = 0 }; UsedTiles = usedTiles }
+                      Play(emptyPlay))
+    
+    game.PlayGame testProvider
 
-    let result = game.PlayGame testProvider
+[<Test>]
+let ``Game has limited tiles - e only``() =
+    let bagTiles = [0..9] |> List.map (fun _ -> bagTile_e); //10 tiles
+    let result = playGameWith1Word bagTiles
 
     result.TileBag.Tiles.Length |> should equal 0
 
@@ -92,3 +101,16 @@ let ``Game has limited tiles``() =
 
     assertCountThenComplete first 3 3
     assertCountThenComplete second 3 1
+
+[<Test>]
+let ``Game has limited tiles - e and a only``() =
+    let aTiles = [0..0] |> List.map (fun _ -> bagTile_a); //1 tile
+    let eTiles = [0..9] |> List.map (fun _ -> bagTile_e); //10 tiles
+    
+    let result = playGameWith1Word (List.append aTiles eTiles)
+    result.TileBag.Tiles.Length |> should equal 0
+    
+    result.PlayerStates.Length |> should equal 2
+    let first = result.PlayerStates |> List.index 0
+    let second = result.PlayerStates |> List.index 1
+    (List.append first.Tiles second.Tiles) |> should equal [bagTile_a]
