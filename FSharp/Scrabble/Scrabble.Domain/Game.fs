@@ -77,3 +77,18 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
         let states = Seq.initInfinite (fun x -> x) |> Seq.scan (fun state _ -> getNextState state moveProvider) initialState
         let gameStates = states |> Seq.takeWhileAndNext shouldContinue |> Seq.toList
         gameStates |> Seq.last
+
+
+type GameMoveProvider() =
+    interface IGameMoveProvider with
+        member this.GetNextMove (data:GameMoveData) =
+            let tileHand = new TileHand([]) //Todo: Fill in and handle blank tiles!
+            let possible = (new BoardSpaceAnalyser()).GetPossibleScoredPlays data.Board tileHand data.WordSet
+            let played = match possible with
+                         | head :: tail -> let topScore = head.WordScores.Head
+                                           let locationPlays = topScore.Locations;
+                                           let plays = locationPlays |> List.map (fun (loc, tile) -> { Location = loc; Piece = tile })
+                                           let usedTiles = [] //Todo: Pull out used tiles
+                                           Play({ WordScore = topScore; UsedTiles = usedTiles })
+                         | _ -> Complete
+            Complete
