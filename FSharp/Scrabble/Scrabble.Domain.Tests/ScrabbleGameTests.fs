@@ -72,12 +72,13 @@ let ``Game has limited tiles``() =
 
     let result = game.PlayGame testProvider
 
+    result.TileBag.Tiles.Length |> should equal 0
+
     result.PlayerStates.Length |> should equal 2
     let first = result.PlayerStates |> List.index 0
     let second = result.PlayerStates |> List.index 1
     first.Plays.Length |> should equal 3
     second.Plays.Length |> should equal 3
-
 
     let hasTileCount tileCount play = 
         match play with
