@@ -80,15 +80,39 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
 
 
 type GameMoveProvider() =
+    let getTiles bagTile =
+        match bagTile.TileLetter with
+        | Letter(c) -> [{ Letter = c; Value = bagTile.Value }]
+        | Blank -> ['a'..'z'] |> List.map (fun c -> { Letter = c; Value = 0 })
+    
+    let buildNext (current:(BagTile * Tile) list list) bagTile =
+        let nextSet = getTiles bagTile
+        nextSet |> List.map (fun x -> let nxtPair = (bagTile, x)
+                                      match current with
+                                      | [] -> [nxtPair]
+                                      | _ -> let branches = current |> List.map (fun cur -> (nxtPair :: cur))
+                                             branches |> Seq.collect (fun x -> x) |> Seq.toList)
+
+    let getAllTileSets (tiles:BagTile list) =
+        tiles |> List.fold (fun agg bt -> buildNext agg bt) []
+    
+    let getBestPlay (data:GameMoveData) (bagTilePairs:(BagTile * Tile) list) =
+        let tileHand = new TileHand(bagTilePairs |> List.map (fun (_,t) -> t))
+        let possible = (new BoardSpaceAnalyser()).GetPossibleScoredPlays data.Board tileHand data.WordSet
+        match possible with
+           | head :: tail -> let topScore = head.WordScores.Head
+                             let usedTiles = topScore.Locations |> List.map (fun (loc,tle) -> tle)
+                             let usedBagTiles = usedTiles |> List.map (fun ut -> bagTilePairs |> List.find (fun (_,tl) -> ut = tl))
+                                                          |> List.map (fun (bt,_) -> bt)
+                             Play({ WordScore = topScore; UsedTiles = usedBagTiles })
+           | _ -> Complete
+
     interface IGameMoveProvider with
         member this.GetNextMove (data:GameMoveData) =
-            let tileHand = new TileHand([]) //Todo: Fill in and handle blank tiles!
-            let possible = (new BoardSpaceAnalyser()).GetPossibleScoredPlays data.Board tileHand data.WordSet
-            let played = match possible with
-                         | head :: tail -> let topScore = head.WordScores.Head
-                                           let locationPlays = topScore.Locations;
-                                           let plays = locationPlays |> List.map (fun (loc, tile) -> { Location = loc; Piece = tile })
-                                           let usedTiles = [] //Todo: Pull out used tiles
-                                           Play({ WordScore = topScore; UsedTiles = usedTiles })
-                         | _ -> Complete
-            Complete
+            let allSets = getAllTileSets data.Tiles
+            match allSets with
+            | [] -> Complete
+            | _ -> allSets |> List.map (fun set -> getBestPlay data set)
+                           |> Seq.sortBy (fun x -> match x with | Play(a) -> -a.WordScore.Score | _ -> 1)
+                           |> Seq.head
+            
