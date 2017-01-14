@@ -60,6 +60,7 @@
     <Compile Include="WordSetTests.fs" />
     <Compile Include="WordLoadTests.fs" />
     <Compile Include="ScrabbleGameTests.fs" />
+    <Compile Include="GameMoveProviderTests.fs" />
     <Compile Include="ExampleTests.fs" />
   </ItemGroup>
   <ItemGroup>

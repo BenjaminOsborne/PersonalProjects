@@ -120,12 +120,3 @@ let ``Game has limited tiles - e and a only``() =
     let first = result.PlayerStates |> List.index 0
     let second = result.PlayerStates |> List.index 1
     (List.append first.Tiles second.Tiles) |> should equal [bagTile_a]
-
-[<Test>]
-let ``Game has blank tiles``() =
-    failwith "impl missing" |> ignore
-
-
-[<Test>]
-let ``Tests for computer impl of interface``() =
-    failwith "add tests in new file" |> ignore
