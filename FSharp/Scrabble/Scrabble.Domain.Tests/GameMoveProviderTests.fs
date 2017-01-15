@@ -5,19 +5,15 @@ open FsUnit
 open Scrabble.Domain
 
 let tileBag = TileBagCreator.Default
-let letterOf char =
-    let (_, t) = tileBag.DrawFromLetter (Letter(char))
-    t
 
-let blank = { TileLetter = Blank; Value = 0 }
-let (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z) =
-    ((letterOf 'a'), (letterOf 'b'), (letterOf 'c'), (letterOf 'd'), (letterOf 'e'), (letterOf 'f'),
-     (letterOf 'g'), (letterOf 'h'), (letterOf 'i'), (letterOf 'j'), (letterOf 'k'), (letterOf 'l'),
-     (letterOf 'm'), (letterOf 'n'), (letterOf 'o'), (letterOf 'p'), (letterOf 'q'), (letterOf 'r'),
-     (letterOf 's'), (letterOf 't'), (letterOf 'u'), (letterOf 'v'), (letterOf 'w'), (letterOf 'x'),
-     (letterOf 'y'), (letterOf 'z'))
+let getTile char = match char with
+                   | '_' -> { TileLetter = Blank; Value = 0 }
+                   | _ -> let (_, t) = tileBag.DrawFromLetter (Letter(char))
+                          t
 
-let isExpected words board tiles finalWord finalScore usedTiles =
+let isExpected words board (tileChars : char list) finalWord finalScore (usedTileChars: char list) =
+    let tiles = tileChars |> List.map getTile
+    let usedTiles = usedTileChars |> List.map getTile
     let data = { WordSet = new WordSet(words |> Set); Board = board; Player = { Name = "Test" }; Tiles = tiles }
     let gmp = new GameMoveProvider() :> IGameMoveProvider
     let result = gmp.GetNextMove data
@@ -30,19 +26,19 @@ let isExpected words board tiles finalWord finalScore usedTiles =
 
 [<Test>]
 let ``Game has letter tiles only``() =
-    isExpected ["bad"] (Board.Empty 3 3) [a;d;b]
-               "bad" 6 [b;a;d]
+    isExpected ["bad"] (Board.Empty 3 3) ['a';'d';'b']
+               "bad" 6 ['b';'a';'d']
 
-    isExpected ["poo"; "zoo"; "pod"] (Board.Empty 3 3) [p;o;o;z]
-               "zoo" 12 [z;o;o]
+    isExpected ["poo"; "zoo"; "pod"] (Board.Empty 3 3) ['p';'o';'o';'z']
+               "zoo" 12 ['z';'o';'o']
 
 [<Test>]
 let ``Game has blank tiles``() =
-    isExpected ["bad"] (Board.Empty 3 3) [blank;d;b]
-               "bad" 5 [b;blank;d]
+    isExpected ["bad"] (Board.Empty 3 3) ['_';'d';'b']
+               "bad" 5 ['b';'_';'d']
     
-    isExpected ["bad"] (Board.Empty 3 3) [blank;blank;b]
-               "bad" 2 [b;blank;blank]
+    isExpected ["bad"] (Board.Empty 3 3) ['_';'_';'b']
+               "bad" 2 ['b';'_';'_']
     
-    isExpected ["bad"] (Board.Empty 3 3) [blank;blank;blank]
-               "bad" 2 [blank;blank;blank]
+    isExpected ["bad"] (Board.Empty 3 3) ['_';'_';'_']
+               "bad" 2 ['_';'_';'_']
