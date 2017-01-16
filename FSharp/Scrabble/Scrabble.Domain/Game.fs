@@ -79,7 +79,7 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
         gameStates |> Seq.last
 
 
-type GameMoveProvider() =
+type GameMoveProvider (onNextMove : GameMoveData -> unit) =
     let buildNext (current:(BagTile * Tile) list list) (bagTile : BagTile) =
         let popLetterOnCurrent c =
             let nxtPair = (bagTile, { Letter = c; Value = bagTile.Value })
@@ -108,6 +108,7 @@ type GameMoveProvider() =
 
     interface IGameMoveProvider with
         member this.GetNextMove data =
+            onNextMove data
             let allSets = getAllTileSets data.Tiles
             match allSets with
             | [] -> Complete

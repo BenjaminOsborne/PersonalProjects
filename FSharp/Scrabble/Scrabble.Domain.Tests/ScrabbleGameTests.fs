@@ -22,6 +22,8 @@ let emptyBag = new TileBag([])
 let bagTile_a = { TileLetter = Letter('a'); Value = 1 };
 let bagTile_e = { TileLetter = Letter('e'); Value = 1 };
 
+let playGame (game : ScrabbleGame) provider = game.PlayGame provider
+
 [<Test>]
 let ``Game has no plays different player count``() =
     let assertPlayerCount playerCount =
@@ -30,7 +32,7 @@ let ``Game has no plays different player count``() =
         let game = new ScrabbleGame(emptyWords, 3, initial)
     
         let testProvider = new TestProvider (fun count gmd -> Complete)
-        let result = game.PlayGame testProvider
+        let result = playGame game testProvider
     
         result.PlayerStates.Length |> should equal playerCount
         result.PlayerStates |> Seq.iter (fun x ->
@@ -50,7 +52,7 @@ let ``Game has 4 plays``() =
                            Play(emptyPlay)
         | _             -> Complete)
 
-    let result = game.PlayGame testProvider
+    let result = playGame game testProvider
     
     result.PlayerStates.Length |> should equal 2
     result.PlayerStates |> Seq.iter (fun x ->
@@ -80,7 +82,7 @@ let playGameWith1Word bagTiles =
                       let emptyPlay = { WordScore = { Word = "eee"; Locations = locs; Score = 0 }; UsedTiles = usedTiles }
                       Play(emptyPlay))
     
-    game.PlayGame testProvider
+    playGame game testProvider
 
 [<Test>]
 let ``Game has limited tiles - e only``() =

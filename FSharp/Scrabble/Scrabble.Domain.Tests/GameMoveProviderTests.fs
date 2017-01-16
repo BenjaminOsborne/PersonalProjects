@@ -17,7 +17,7 @@ let isExpected words board (tileChars : char list) finalWord finalScore (usedTil
     let tiles = tileChars |> List.map getTile
     let usedTiles = usedTileChars |> List.map getTile
     let data = { WordSet = new WordSet(words |> Set); Board = board; Player = { Name = "Test" }; Tiles = tiles }
-    let gmp = new GameMoveProvider() :> IGameMoveProvider
+    let gmp = new GameMoveProvider(fun x -> x |> ignore) :> IGameMoveProvider
     let result = gmp.GetNextMove data
 
     match result with
