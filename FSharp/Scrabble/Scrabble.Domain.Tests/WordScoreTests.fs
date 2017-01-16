@@ -62,6 +62,11 @@ let ``With default board``() =
     assertScoreSingleWord board "farces" 30 //((4*2) + 1 + 1 + 3 + 1 + 1) * 2 -> 30
 
 [<Test>]
+let ``With 7 tiles used score extra 50``() =
+    let board = Board.Empty 7 7
+    assertScoreSingleWord board "tempora" (11+50)
+
+[<Test>]
 let ``Puzzle 1``() =
     let array = [[' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
