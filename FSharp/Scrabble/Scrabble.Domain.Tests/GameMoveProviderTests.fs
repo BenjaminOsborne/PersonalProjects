@@ -4,6 +4,8 @@ open NUnit.Framework
 open FsUnit
 open Scrabble.Domain
 
+let empty3_3 = Board.Empty 3 3
+
 let tileBag = TileBagCreator.Default
 
 let getTile char = match char with
@@ -26,19 +28,34 @@ let isExpected words board (tileChars : char list) finalWord finalScore (usedTil
 
 [<Test>]
 let ``Game has letter tiles only``() =
-    isExpected ["bad"] (Board.Empty 3 3) ['a';'d';'b']
+    isExpected ["bad"] empty3_3 ['a';'d';'b']
                "bad" 6 ['b';'a';'d']
 
-    isExpected ["poo"; "zoo"; "pod"] (Board.Empty 3 3) ['p';'o';'o';'z']
+    isExpected ["poo"; "zoo"; "pod"] empty3_3 ['p';'o';'o';'z']
                "zoo" 12 ['z';'o';'o']
 
 [<Test>]
 let ``Game has blank tiles``() =
-    isExpected ["bad"] (Board.Empty 3 3) ['b';'_';'a']
+    //1 blank
+    isExpected ["bad"] empty3_3 ['_';'d';'a']
+               "bad" 3 ['_';'a';'d']
+    
+    isExpected ["bad"] empty3_3 ['b';'_';'a']
                "bad" 4 ['b';'a';'_']
     
-    isExpected ["bad"] (Board.Empty 3 3) ['_';'b';'_']
-               "bad" 3 ['b';'_';'_']
+    isExpected ["bad"] empty3_3 ['b';'d';'_']
+               "bad" 5 ['b';'_';'d']
     
-    isExpected ["bad"] (Board.Empty 3 3) ['_';'_';'_']
+    //2 blank
+    isExpected ["bad"] empty3_3 ['_';'_';'a']
+               "bad" 1 ['_';'a';'_']
+
+    isExpected ["bad"] empty3_3 ['_';'b';'_']
+               "bad" 3 ['b';'_';'_']
+
+    isExpected ["bad"] empty3_3 ['d';'_';'_']
+               "bad" 2 ['_';'_';'d']
+    
+    //3 blanks
+    isExpected ["bad"] empty3_3 ['_';'_';'_']
                "bad" 0 ['_';'_';'_']
