@@ -34,11 +34,11 @@ let ``Game has letter tiles only``() =
 
 [<Test>]
 let ``Game has blank tiles``() =
-    isExpected ["bad"] (Board.Empty 3 3) ['_';'d';'b']
-               "bad" 5 ['b';'_';'d']
+    isExpected ["bad"] (Board.Empty 3 3) ['b';'_';'a']
+               "bad" 4 ['b';'a';'_']
     
-    isExpected ["bad"] (Board.Empty 3 3) ['_';'_';'b']
-               "bad" 2 ['b';'_';'_']
+    isExpected ["bad"] (Board.Empty 3 3) ['_';'b';'_']
+               "bad" 3 ['b';'_';'_']
     
     isExpected ["bad"] (Board.Empty 3 3) ['_';'_';'_']
-               "bad" 2 ['_';'_';'_']
+               "bad" 0 ['_';'_';'_']

@@ -80,18 +80,17 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
 
 
 type GameMoveProvider() =
-    let getTiles bagTile =
+    let buildNext (current:(BagTile * Tile) list list) (bagTile : BagTile) =
+        let popLetterOnCurrent c =
+            let nxtPair = (bagTile, { Letter = c; Value = bagTile.Value })
+            match current with
+            | [] -> [[nxtPair]]
+            | _  -> current |> List.map (fun cur -> (nxtPair :: cur))
+        
         match bagTile.TileLetter with
-        | Letter(c) -> [{ Letter = c; Value = bagTile.Value }]
-        | Blank -> ['a'..'z'] |> List.map (fun c -> { Letter = c; Value = 0 })
-    
-    let buildNext (current:(BagTile * Tile) list list) bagTile =
-        let nextSet = getTiles bagTile
-        nextSet |> List.map (fun x -> let nxtPair = (bagTile, x)
-                                      match current with
-                                      | [] -> [nxtPair]
-                                      | _ -> let branches = current |> List.map (fun cur -> (nxtPair :: cur))
-                                             branches |> Seq.collect (fun x -> x) |> Seq.toList)
+        | Letter(c) -> popLetterOnCurrent c
+        | Blank     -> ['a'..'z'] |> List.map (fun c -> popLetterOnCurrent c)
+                                  |> Seq.collect (fun x -> x) |> Seq.toList
 
     let getAllTileSets (tiles:BagTile list) =
         tiles |> List.fold (fun agg bt -> buildNext agg bt) []
@@ -108,7 +107,7 @@ type GameMoveProvider() =
            | _ -> Complete
 
     interface IGameMoveProvider with
-        member this.GetNextMove (data:GameMoveData) =
+        member this.GetNextMove data =
             let allSets = getAllTileSets data.Tiles
             match allSets with
             | [] -> Complete
