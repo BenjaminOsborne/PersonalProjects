@@ -30,15 +30,20 @@ and WordBranch (length:int, words: (string * string) list) =
                         | Branch(branch) -> walkIfBranch branch
         | None -> Seq.empty
 
-    let rec walkWith (chrs: BagTileLetter list) (pinned : Map<int,char>) (currentIndex : int) (tree: Map<char, Lazy<WordNode>>) =
+    let rec walkWith (tiles: BagTileLetter list) (pinned : Map<int,char>) (currentIndex : int) (tree: Map<char, Lazy<WordNode>>) =
         
         let walkWithNexChars nextChars (branch:WordBranch) = walkWith nextChars pinned (currentIndex+1) branch.treeMember
         
+        let walkForCharAtIndex chr index = tryWalkNode tree chr (fun branch -> let nextTiles = tiles |> List.removeIndex index
+                                                                               walkWithNexChars nextTiles branch)
+
         match pinned.TryFind currentIndex with
-        | Some(c) -> tryWalkNode tree c (fun branch -> walkWithNexChars chrs branch)
-        | None ->    chrs |> Seq.mapi (fun nx c -> tryWalkNode tree c (fun branch -> let nextChrs = chrs |> List.removeIndex nx
-                                                                                     walkWithNexChars nextChrs branch))
-                          |> Seq.collect (fun x -> x)
+        | Some(c) -> tryWalkNode tree c (fun branch -> walkWithNexChars tiles branch)
+        | None ->    tiles |> Seq.mapi (fun nx t -> match t with
+                                                    | Letter(c) -> walkForCharAtIndex c nx
+                                                    | Blank -> ['a'..'z'] |> Seq.map (fun c -> walkForCharAtIndex c nx)
+                                                                          |> Seq.collect (fun x -> x))
+                           |> Seq.collect (fun x -> x)
         
     let makeNode (grp: seq<string*string>) =
         match length with 
