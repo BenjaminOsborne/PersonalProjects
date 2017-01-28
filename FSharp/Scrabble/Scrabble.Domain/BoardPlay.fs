@@ -112,7 +112,7 @@ type BoardSpaceAnalyser() =
     member this.GetPossibleScoredPlays (board:Board) (tileHand:TileHand) (wordSet: WordSet) =
         
         let getPossibleWords (play:BoardPlayTileData) =
-            let wordsLen = wordSet.WordsForLengthWithLetters play.TotalLength (tileHand.Letters |> Seq.toList) play.PinnedIndexLetters
+            let wordsLen = wordSet.WordsForLengthWithLetters play.TotalLength tileHand.Letters play.PinnedIndexLetters
             wordsLen
 
         let getWordValidData (location:Location) (letter:char) (direction:Direction) =

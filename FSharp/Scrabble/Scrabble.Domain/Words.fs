@@ -30,7 +30,7 @@ and WordBranch (length:int, words: (string * string) list) =
                         | Branch(branch) -> walkIfBranch branch
         | None -> Seq.empty
 
-    let rec walkWith (chrs: char list) (pinned : Map<int,char>) (currentIndex : int) (tree: Map<char, Lazy<WordNode>>) =
+    let rec walkWith (chrs: BagTileLetter list) (pinned : Map<int,char>) (currentIndex : int) (tree: Map<char, Lazy<WordNode>>) =
         
         let walkWithNexChars nextChars (branch:WordBranch) = walkWith nextChars pinned (currentIndex+1) branch.treeMember
         
@@ -53,7 +53,7 @@ and WordBranch (length:int, words: (string * string) list) =
     
     member private this.treeMember = treeField
 
-    member this.WalkWith (chars: char list) (pinned : Map<int,char>) =
+    member this.WalkWith (chars: BagTileLetter list) (pinned : Map<int,char>) =
         (walkWith chars pinned 0 this.treeMember) |> Seq.distinct
 
 type WordSet(words : Set<string>) = 
@@ -66,7 +66,7 @@ type WordSet(words : Set<string>) =
 
     member this.AllWords = words
 
-    member this.WordsForLengthWithLetters wordLength (letters: char list) (pinned: Map<int,char>) =
+    member this.WordsForLengthWithLetters wordLength (letters: BagTileLetter list) (pinned: Map<int,char>) =
         match wordsByLength.TryFind wordLength with
         | Some(wb) -> wb.Value.WalkWith letters pinned
         | None -> Seq.empty
