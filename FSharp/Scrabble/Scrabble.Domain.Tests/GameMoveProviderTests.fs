@@ -21,7 +21,7 @@ let isExpected words board (tileChars : char list) finalWord finalScore (usedTil
     let result = gmp.GetNextMove data
 
     match result with
-    | Play(p) -> p.WordScore.Word |> should equal finalWord
+    | Play(p) -> p.WordScore.Word.Word |> should equal finalWord
                  p.WordScore.Score |> should equal finalScore
                  p.UsedTiles |> should equal usedTiles
     | _ -> failwith "add tests in new file" |> ignore

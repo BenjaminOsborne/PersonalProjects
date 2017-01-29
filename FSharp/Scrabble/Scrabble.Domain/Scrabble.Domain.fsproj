@@ -54,6 +54,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Exception.fs" />
     <Compile Include="Seq.fs" />
     <Compile Include="List.fs" />
     <Compile Include="EqualitySet.fs" />

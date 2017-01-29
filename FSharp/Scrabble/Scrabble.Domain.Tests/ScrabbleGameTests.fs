@@ -24,6 +24,8 @@ let bagTile_e = { TileLetter = Letter('e'); Value = 1 };
 
 let playGame (game : ScrabbleGame) provider = game.PlayGame provider
 
+let createResult word = { Word = word; UsedTiles = [] }
+
 [<Test>]
 let ``Game has no plays different player count``() =
     let assertPlayerCount playerCount =
@@ -48,7 +50,7 @@ let ``Game has 4 plays``() =
     
     let testProvider = new TestProvider (fun count gmd -> 
         match count with
-        | c when c <= 8 -> let emptyPlay = { WordScore = { Word = ""; Locations = []; Score = 0 }; UsedTiles = [] }
+        | c when c <= 8 -> let emptyPlay = { WordScore = { Word = createResult ""; Locations = []; Score = 0 }; UsedTiles = [] }
                            Play(emptyPlay)
         | _             -> Complete)
 
@@ -79,7 +81,7 @@ let playGameWith1Word bagTiles =
                | _ -> let max = System.Math.Min(2, eCount-1)
                       let locs = [0..max] |> List.map (fun w -> ({ Width = w; Height = 0 }, { Letter = 'e'; Value = 1 }))
                       let usedTiles = locs |> List.map (fun _ -> bagTile_e)
-                      let emptyPlay = { WordScore = { Word = "eee"; Locations = locs; Score = 0 }; UsedTiles = usedTiles }
+                      let emptyPlay = { WordScore = { Word = createResult "eee"; Locations = locs; Score = 0 }; UsedTiles = usedTiles }
                       Play(emptyPlay))
     
     playGame game testProvider

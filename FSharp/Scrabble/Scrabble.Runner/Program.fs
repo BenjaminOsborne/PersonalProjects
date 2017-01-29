@@ -33,7 +33,7 @@ let gameRoutine () =
         Console.WriteLine("\n" + ps.Player.Name)
         ps.Plays |> List.rev
                  |> Seq.iter (fun p -> let print = match p with
-                                                   | Play(a) -> let w = a.WordScore.Word
+                                                   | Play(a) -> let w = a.WordScore.Word.Word
                                                                 let s = a.WordScore.Score
                                                                 let space = LetterHelpers.CharListToString ([w.Length..15] |> List.map (fun _ -> ' '))
                                                                 w + space + s.ToString()

@@ -7,7 +7,7 @@ open Scrabble.Domain
 let getPossible board tileHand wordSet = (new BoardSpaceAnalyser()).GetPossibleScoredPlays board tileHand wordSet
 
 let assertPossible board words letters (assertData: int list) =
-    let tiles = letters |> Seq.map (fun c -> { Letter = c; Value = 0}) |> Seq.toList
+    let tiles = letters |> Seq.map (fun c -> { TileLetter = Letter(c); Value = 0}) |> Seq.toList
     let tileHand = new TileHand(tiles)
     let wordSet = new WordSet(words |> Set)
     let possible = getPossible board tileHand wordSet |> Seq.toArray

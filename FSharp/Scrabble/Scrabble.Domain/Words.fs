@@ -7,41 +7,48 @@ type LetterHelpers =
             builder.ToString()
     static member CharListToString (chars: char list) = LetterHelpers.CharsToString chars chars.Length
 
-type TileHand(tiles : Tile list) =
+type TileHand(tiles : BagTile list) =
     
-    let orderTiles = Lazy.Create (fun _ -> tiles |> Seq.sortBy (fun x -> x.Letter, -x.Value) |> Seq.toList)
-    let letters = Lazy.Create (fun _ -> tiles |> Seq.map (fun x -> x.Letter) |> Seq.toList)
+    let orderTiles = Lazy.Create (fun _ -> tiles |> Seq.sortBy (fun x -> x.TileLetter, -x.Value) |> Seq.toList)
+    let letters = Lazy.Create (fun _ -> tiles |> Seq.map (fun x -> x.TileLetter) |> Seq.toList)
     
-    member this.Tiles = tiles
+    member this.Length = tiles.Length
     member this.Letters = letters.Value
-    member this.PopNextTileFor c =
-        let (tile, remaining) = orderTiles.Value |> List.removeFirstWith (fun x -> x.Letter = c)
+    member this.PopNextTileFor tileLetter =
+        let (tile, remaining) = orderTiles.Value |> List.removeFirstWith (fun x -> x.TileLetter = tileLetter)
         (tile, new TileHand(remaining))
+
+type BagTileLetterMap = { BagTileLetter : BagTileLetter; Letter : char; WordLetterIndex : int }
+
+type WordWalkResult = { Word : string; UsedTiles : BagTileLetterMap list }
 
 type WordNode = | Leaf of string
                 | Branch of WordBranch
 
 and WordBranch (length:int, words: (string * string) list) =
     
-    let tryWalkNode (tree: Map<char, Lazy<WordNode>>) c walkIfBranch = 
+    let tryWalkNode (tree: Map<char, Lazy<WordNode>>) c usedTiles walkIfBranch = 
         match tree.TryFind c with
         | Some(node) -> match node.Value with
-                        | Leaf(word) -> Seq.single word
+                        | Leaf(word) -> Seq.single { Word = word; UsedTiles = usedTiles }
                         | Branch(branch) -> walkIfBranch branch
         | None -> Seq.empty
 
-    let rec walkWith (tiles: BagTileLetter list) (pinned : Map<int,char>) (currentIndex : int) (tree: Map<char, Lazy<WordNode>>) =
+    let rec walkWith (tiles: BagTileLetter list) (pinned : Map<int,char>) (currentIndex : int) (tree: Map<char, Lazy<WordNode>>) (usedTiles: BagTileLetterMap list) =
         
-        let walkWithNexChars nextChars (branch:WordBranch) = walkWith nextChars pinned (currentIndex+1) branch.treeMember
+        let walkWithNexChars nextTiles used (branch:WordBranch) =
+            walkWith nextTiles pinned (currentIndex+1) branch.treeMember used
         
-        let walkForCharAtIndex chr index = tryWalkNode tree chr (fun branch -> let nextTiles = tiles |> List.removeIndex index
-                                                                               walkWithNexChars nextTiles branch)
+        let walkForCharAtIndex chr tile index =
+            let used = { BagTileLetter = tile; Letter = chr; WordLetterIndex = currentIndex } :: usedTiles
+            tryWalkNode tree chr used (fun branch -> let nextTiles = tiles |> List.removeIndex index
+                                                     walkWithNexChars nextTiles used branch)
 
         match pinned.TryFind currentIndex with
-        | Some(c) -> tryWalkNode tree c (fun branch -> walkWithNexChars tiles branch)
+        | Some(c) -> tryWalkNode tree c usedTiles (fun branch -> walkWithNexChars tiles usedTiles branch)
         | None ->    tiles |> Seq.mapi (fun nx t -> match t with
-                                                    | Letter(c) -> walkForCharAtIndex c nx
-                                                    | Blank -> ['a'..'z'] |> Seq.map (fun c -> walkForCharAtIndex c nx)
+                                                    | Letter(c) -> walkForCharAtIndex c t nx
+                                                    | Blank -> ['a'..'z'] |> Seq.map (fun c -> walkForCharAtIndex c t nx)
                                                                           |> Seq.collect (fun x -> x))
                            |> Seq.collect (fun x -> x)
         
@@ -59,7 +66,7 @@ and WordBranch (length:int, words: (string * string) list) =
     member private this.treeMember = treeField
 
     member this.WalkWith (chars: BagTileLetter list) (pinned : Map<int,char>) =
-        (walkWith chars pinned 0 this.treeMember) |> Seq.distinct
+        (walkWith chars pinned 0 this.treeMember []) |> Seq.distinct
 
 type WordSet(words : Set<string>) = 
     

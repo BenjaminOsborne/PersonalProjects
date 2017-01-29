@@ -96,7 +96,7 @@ type GameMoveProvider (onNextMove : GameMoveData -> unit) =
         tiles |> List.fold (fun agg bt -> buildNext agg bt) []
     
     let getBestPlay (data:GameMoveData) (bagTilePairs:(BagTile * Tile) list) =
-        let tileHand = new TileHand(bagTilePairs |> List.map (fun (_,t) -> t))
+        let tileHand = new TileHand(bagTilePairs |> List.map (fun (bt,t) -> bt))
         let possible = (new BoardSpaceAnalyser()).GetPossibleScoredPlays data.Board tileHand data.WordSet
         match possible with
            | head :: tail -> let topScore = head.WordScores.Head

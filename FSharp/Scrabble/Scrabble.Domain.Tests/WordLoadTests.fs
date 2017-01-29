@@ -21,8 +21,10 @@ let ``Load all words``() =
     let count9 = wordsForLength map 9 |> Seq.length
     let count25 = wordsForLength map 25 |> Seq.length
 
-    let count_add = words.WordsForLengthWithLetters 3 ['a'; 'd'; 'd'] Map.empty |> Seq.length
-    let count_add_pin = words.WordsForLengthWithLetters 3 ['a'; 'd'; 'd'] ([(1,'a')] |> Map) |> Seq.length
+    let fromLetters chars = chars |> List.map (fun c -> Letter(c))
+
+    let count_add = words.WordsForLengthWithLetters 3 (fromLetters ['a'; 'd'; 'd']) Map.empty |> Seq.length
+    let count_add_pin = words.WordsForLengthWithLetters 3 (fromLetters ['a'; 'd'; 'd']) ([(1,'a')] |> Map) |> Seq.length
 
     words.Count |> should equal 267752
     isWord |> should equal true
