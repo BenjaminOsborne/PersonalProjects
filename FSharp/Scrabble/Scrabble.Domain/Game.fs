@@ -95,24 +95,14 @@ type GameMoveProvider (onNextMove : GameMoveData -> unit) =
     let getAllTileSets (tiles:BagTile list) =
         tiles |> List.fold (fun agg bt -> buildNext agg bt) []
     
-    let getBestPlay (data:GameMoveData) (bagTilePairs:(BagTile * Tile) list) =
-        let tileHand = new TileHand(bagTilePairs |> List.map (fun (bt,t) -> bt))
-        let possible = (new BoardSpaceAnalyser()).GetPossibleScoredPlays data.Board tileHand data.WordSet
-        match possible with
-           | head :: tail -> let topScore = head.WordScores.Head
-                             let usedTiles = topScore.Locations |> List.map (fun (loc,tle) -> tle)
-                             let usedBagTiles = usedTiles |> List.map (fun ut -> bagTilePairs |> List.find (fun (_,tl) -> ut = tl))
-                                                          |> List.map (fun (bt,_) -> bt)
-                             Play({ WordScore = topScore; UsedTiles = usedBagTiles })
-           | _ -> Complete
-
     interface IGameMoveProvider with
         member this.GetNextMove data =
             onNextMove data
-            let allSets = getAllTileSets data.Tiles
-            match allSets with
-            | [] -> Complete
-            | _ -> allSets |> List.map (fun set -> getBestPlay data set)
-                           |> Seq.sortBy (fun x -> match x with | Play(a) -> -a.WordScore.Score | _ -> 1)
-                           |> Seq.head
-            
+            let tileHand = new TileHand(data.Tiles)
+            let possible = (new BoardSpaceAnalyser()).GetPossibleScoredPlays data.Board tileHand data.WordSet
+            match possible with
+            | head :: tail -> let topScore = head.WordScores.Head
+                              let usedBagTiles = topScore.Word.UsedTiles |> List.map (fun ut -> let (bt,_) = tileHand.PopNextTileFor ut.BagTileLetter
+                                                                                                bt)
+                              Play({ WordScore = topScore; UsedTiles = usedBagTiles })
+            | _ -> Complete

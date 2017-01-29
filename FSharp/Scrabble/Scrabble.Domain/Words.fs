@@ -30,7 +30,7 @@ and WordBranch (length:int, words: (string * string) list) =
     let tryWalkNode (tree: Map<char, Lazy<WordNode>>) c usedTiles walkIfBranch = 
         match tree.TryFind c with
         | Some(node) -> match node.Value with
-                        | Leaf(word) -> Seq.single { Word = word; UsedTiles = usedTiles }
+                        | Leaf(word) -> Seq.single { Word = word; UsedTiles = usedTiles |> List.rev } //Reverse as built by appending head to tail on walk
                         | Branch(branch) -> walkIfBranch branch
         | None -> Seq.empty
 
