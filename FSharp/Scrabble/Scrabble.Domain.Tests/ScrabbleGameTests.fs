@@ -79,7 +79,7 @@ let playGameWith1Word bagTiles =
                match eCount with
                | 0 -> Complete
                | _ -> let max = System.Math.Min(2, eCount-1)
-                      let locs = [0..max] |> List.map (fun w -> ({ Width = w; Height = 0 }, { Letter = 'e'; Value = 1 }))
+                      let locs = [0..max] |> List.map (fun w -> { Location = { Width = w; Height = 0 }; Piece = { Letter = 'e'; Value = 1 } })
                       let usedTiles = locs |> List.map (fun _ -> bagTile_e)
                       let emptyPlay = { WordScore = { Word = createResult "eee"; Locations = locs; Score = 0 }; UsedTiles = usedTiles }
                       Play(emptyPlay))

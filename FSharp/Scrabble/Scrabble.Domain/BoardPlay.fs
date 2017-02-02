@@ -20,11 +20,11 @@ type BoardPlay(locations : BoardLocation list, direction : Direction) =
                locations.Head.Location.ToString() + " - " + last.Location.ToString()
 
 [<System.Diagnostics.DebuggerDisplayAttribute("{Word.Word} - {Score}")>]
-type WordScore = { Word : WordWalkResult; Locations: (Location*Tile) list; Score : int }
+type WordScore = { Word : WordWalkResult; Locations: TilePlay list; Score : int }
 type ValidWordPlays = { BoardPlay : BoardPlay; WordScores : WordScore list }
 
 type ScoreData =
-    { MainScore : int; MainScoreMultiplier : int; SideScores : int; RemainingTileHand : TileHand;  Locations: (Location*Tile) list }
+    { MainScore : int; MainScoreMultiplier : int; SideScores : int; RemainingTileHand : TileHand;  Locations: TilePlay list }
 
     static member Create ms msm ss th lcs = { MainScore = ms; MainScoreMultiplier = msm; SideScores = ss; RemainingTileHand = th; Locations = lcs; }
     
@@ -46,7 +46,7 @@ type ScoreData =
                                                 let (lm,wm) = (bs.GetLetterMultiply, bs.GetWordMultiply)
                                                 let sideScore = getSideScore tiles t.Value lm wm
                                                 let tile = { Letter = chr; Value = t.Value }
-                                                (t.Value * lm, wm, sideScore, th, [(location.Location, tile)])
+                                                (t.Value * lm, wm, sideScore, th, [{ Location = location.Location; Piece = tile }])
         ScoreData.Create (this.MainScore + ms) (this.MainScoreMultiplier * msm) (this.SideScores + ss) th (List.append this.Locations lcs)
 
 [<CustomEqualityAttribute>]
@@ -167,7 +167,11 @@ type BoardSpaceAnalyser() =
                                                                   key, (tileMap.BagTileLetter, chr, tiLst)) |> Map
             let getItem = (fun (w,h) -> mapData.Item (w,h))
             let aggData = boardPlay.Locations|> Seq.fold (fun (agg : ScoreData) location -> agg.WithNextLocationScore location getItem) (ScoreData.Initial tileHand)
-            { Word = word; Locations = aggData.Locations; Score = aggData.CalcScore }
+            
+            let bonusScore = match boardPlay.Spaces.Length >= board.Rules.HandSize with
+                             | true -> board.Rules.UseAllTileScore | false -> 0
+
+            { Word = word; Locations = aggData.Locations; Score = aggData.CalcScore + bonusScore }
 
         let getPossibleWordScore (words : seq<WordWalkResult>) (play:BoardPlay) =
             let scoredWords = words |> Seq.map (fun w -> (w, (getSecondaryWordsValidScore w.Word play)))

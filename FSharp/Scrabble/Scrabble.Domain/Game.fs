@@ -45,8 +45,7 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
         let moveData = { WordSet = words; Board = board; Player = player; Tiles = fullTileList}
         let moveResult = moveProvider.GetNextMove moveData
         let nextData = match moveResult with
-                       | Play(move) ->      let plays = move.WordScore.Locations |> List.map (fun (loc, tile) -> { Location = loc; Piece = tile })
-                                            let updateBoard = board.Play plays
+                       | Play(move) ->      let updateBoard = board.Play move.WordScore.Locations
                                             let remaining = removeFrom fullTileList move.UsedTiles
                                             (updateBoard, remaining)
                        | Switch(switch) ->  let remaining = removeFrom fullTileList switch

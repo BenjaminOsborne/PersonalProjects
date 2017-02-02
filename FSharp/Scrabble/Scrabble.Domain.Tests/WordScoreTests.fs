@@ -10,8 +10,14 @@ let getPossible board tileHand wordSet = (new BoardSpaceAnalyser()).GetPossibleS
 
 let assertScoreTiles board wordSet (word:string) (letters:seq<char>) score =
     let tileBag = TileBagCreator.Default
-    let tiles = letters |> Seq.map (fun c -> let (_,t) = tileBag.DrawFromLetter(BagTileLetter.Letter(c))
-                                             { TileLetter = Letter(c); Value = t.Value })
+
+    let drawTile c =
+        match c with
+        | '_' -> { TileLetter = BagTileLetter.Blank; Value = 0 }
+        | _ ->   let (_,t) = tileBag.DrawFromLetter(BagTileLetter.Letter(c))
+                 t
+
+    let tiles = letters |> Seq.map (fun c -> drawTile c)
                         |> Seq.toList
     let tileHand = new TileHand(tiles)
     let sw = System.Diagnostics.Stopwatch.StartNew();
@@ -58,12 +64,12 @@ let ``With default board``() =
     
     assertScoreSingleWord board "a" 2 //(1*2)
     assertScoreSingleWord board "avise" 18 //((1*2) + 4 + 1 + 1 + 1) * 2
-    assertScoreSingleWord board "aaeeiioo" 54 //(7 + 1*2) * 2 * 3 -> 54
+    assertScoreSingleWord board "aaeeiioo" 104 //(7 + 1*2) * 2 * 3 + 50 (bonus) -> 104
     assertScoreSingleWord board "farces" 30 //((4*2) + 1 + 1 + 3 + 1 + 1) * 2 -> 30
 
 [<Test>]
 let ``With 7 tiles used score extra 50``() =
-    let board = Board.Empty 7 7
+    let board = Board.EmptyWithRules 7 7 { HandSize = 7; UseAllTileScore = 50 }
     assertScoreSingleWord board "tempora" (11+50)
 
 [<Test>]
@@ -141,4 +147,15 @@ let ``Puzzle 4``() =
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' ']]
     assertPlayArray array "gook" "koolcig" 40 [("livestock", 34); ("clockwise", 33)]
+
+[<Test>]
+let ``Play sequence 1``() =
+    let wordSet = loadedWordSet.Value
+    let assertData = [("bribed","beudbir",28)
+                      ("mairehau", "amha_ie", 98)]
+
+    let final = assertData |> Seq.fold (fun agg (w, t, s) -> let possible = assertScoreTiles agg wordSet w t s
+                                                             let first = possible.Head.WordScores.Head
+                                                             agg.Play first.Locations) BoardCreator.Default
     
+    final |> ignore
