@@ -62,6 +62,7 @@
     <Compile Include="ScrabbleGameTests.fs" />
     <Compile Include="GameMoveProviderTests.fs" />
     <Compile Include="ExampleTests.fs" />
+    <Compile Include="ReactiveExtensions.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Control.Reactive">
@@ -72,6 +73,7 @@
       <HintPath>..\packages\FSharp.Core.3.1.2.5\lib\net40\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FSharp.Data.TypeProviders" />
     <Reference Include="FsUnit.NUnit">
       <HintPath>..\packages\FsUnit.2.3.2\lib\net45\FsUnit.NUnit.dll</HintPath>
       <Private>True</Private>
@@ -87,6 +89,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Numerics" />
     <ProjectReference Include="..\Scrabble.Domain\Scrabble.Domain.fsproj">
       <Name>Scrabble.Domain</Name>
