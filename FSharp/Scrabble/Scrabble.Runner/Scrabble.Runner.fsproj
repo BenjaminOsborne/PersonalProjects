@@ -80,6 +80,11 @@
       <HintPath>..\packages\System.Reactive.Interfaces.3.0.0\lib\net45\System.Reactive.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <ProjectReference Include="..\Scrabble.Domain.Tests\Scrabble.Domain.Tests.fsproj">
+      <Name>Scrabble.Domain.Tests</Name>
+      <Project>{4f839831-2514-4179-b23b-7002b61f052a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Scrabble.Domain\Scrabble.Domain.fsproj">
       <Name>Scrabble.Domain</Name>
       <Project>{7d36a17f-ec9a-4743-9e9a-5ac4e567530c}</Project>

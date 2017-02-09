@@ -1,4 +1,5 @@
 ﻿open Scrabble.Domain;
+open Scrabble.Domain.Tests;
 open System;
 
 let play w h c v = { Location = { Width = w; Height = h }; Piece = { Letter = c; Value = v } };
@@ -52,6 +53,12 @@ let gameRoutine () =
     let ignore = Console.ReadLine()
     0 // return an integer exit code
 
+let testRoutine() =
+    let test = WordScoreTests.playSequence [("bribed","beudbir",28)
+                                            ("mairehau", "amha_ie", 98)]
+    0
+
 [<EntryPoint>]
 let main argv = 
-    gameRoutine()
+    //gameRoutine()
+    testRoutine()

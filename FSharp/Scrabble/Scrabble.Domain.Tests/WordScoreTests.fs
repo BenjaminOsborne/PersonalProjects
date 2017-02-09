@@ -148,14 +148,14 @@ let ``Puzzle 4``() =
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' ']]
     assertPlayArray array "gook" "koolcig" 40 [("livestock", 34); ("clockwise", 33)]
 
-[<Test>]
-let ``Play sequence 1``() =
+let playSequence assertData = 
     let wordSet = loadedWordSet.Value
-    let assertData = [("bribed","beudbir",28)
-                      ("mairehau", "amha_ie", 98)]
-
     let final = assertData |> Seq.fold (fun agg (w, t, s) -> let possible = assertScoreTiles agg wordSet w t s
                                                              let first = possible.Head.WordScores.Head
                                                              agg.Play first.Locations) BoardCreator.Default
-    
     final |> ignore
+
+[<Test>]
+let ``Play sequence 1``() =
+    playSequence [("bribed","beudbir",28)
+                  ("mairehau", "amha_ie", 98)]
