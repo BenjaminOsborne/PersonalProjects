@@ -64,8 +64,8 @@ type BoardCreator =
         let dubLet = createFromRange dubLetSeq (LetterMultiply 2)
         
         apply ([trpLet; dubLet; tripWrd; dubWrd; start] |> Seq.collect (fun x -> x))
-        
-        new Board(array, size, size);
+        let rules = { HandSize = 7; UseAllTileScore = 50 }
+        new Board(array, size, size, rules);
 
     static member PlayArray (startBoard:Board) (items: char list list) = 
         let chars = items |> Seq.mapi (fun h wList -> wList |> Seq.mapi (fun w c -> (w, h, c)))

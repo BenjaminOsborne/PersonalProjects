@@ -1,4 +1,5 @@
 ﻿open Scrabble.Domain;
+open Scrabble.Domain.Tests;
 open System;
 
 let play w h c v = { Location = { Width = w; Height = h }; Piece = { Letter = c; Value = v } };
@@ -33,7 +34,7 @@ let gameRoutine () =
         Console.WriteLine("\n" + ps.Player.Name)
         ps.Plays |> List.rev
                  |> Seq.iter (fun p -> let print = match p with
-                                                   | Play(a) -> let w = a.WordScore.Word
+                                                   | Play(a) -> let w = a.WordScore.Word.Word
                                                                 let s = a.WordScore.Score
                                                                 let space = LetterHelpers.CharListToString ([w.Length..15] |> List.map (fun _ -> ' '))
                                                                 w + space + s.ToString()
@@ -52,6 +53,12 @@ let gameRoutine () =
     let ignore = Console.ReadLine()
     0 // return an integer exit code
 
+let testRoutine() =
+    let test = WordScoreTests.playSequence [("bribed","beudbir",28)
+                                            ("mairehau", "amha_ie", 98)]
+    0
+
 [<EntryPoint>]
 let main argv = 
-    gameRoutine()
+    //gameRoutine()
+    testRoutine()

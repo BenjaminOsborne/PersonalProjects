@@ -10,8 +10,14 @@ let getPossible board tileHand wordSet = (new BoardSpaceAnalyser()).GetPossibleS
 
 let assertScoreTiles board wordSet (word:string) (letters:seq<char>) score =
     let tileBag = TileBagCreator.Default
-    let tiles = letters |> Seq.map (fun c -> let (_,t) = tileBag.DrawFromLetter(BagTileLetter.Letter(c))
-                                             { Letter = c; Value = t.Value })
+
+    let drawTile c =
+        match c with
+        | '_' -> { TileLetter = BagTileLetter.Blank; Value = 0 }
+        | _ ->   let (_,t) = tileBag.DrawFromLetter(BagTileLetter.Letter(c))
+                 t
+
+    let tiles = letters |> Seq.map (fun c -> drawTile c)
                         |> Seq.toList
     let tileHand = new TileHand(tiles)
     let sw = System.Diagnostics.Stopwatch.StartNew();
@@ -22,7 +28,7 @@ let assertScoreTiles board wordSet (word:string) (letters:seq<char>) score =
     possible.Length |> should greaterThanOrEqualTo 1
     
     let best = possible.Head.WordScores.Head
-    best.Word |> should equal word
+    best.Word.Word |> should equal word
     best.Score |> should equal score
     possible
 
@@ -40,7 +46,7 @@ let assertPlayArray array word tiles score (extraAssert: (string*int) list) =
     let possible = assertScoreTiles board wordSet word tiles score
 
     let assertExtra w sc =
-        let found = possible |> Seq.map (fun x -> x.WordScores |> Seq.filter (fun ws -> ws.Word = w))
+        let found = possible |> Seq.map (fun x -> x.WordScores |> Seq.filter (fun ws -> ws.Word.Word = w))
                              |> Seq.collect (fun x -> x) |> Seq.toList
         found.Length |> should greaterThanOrEqualTo 1
         found.Head.Score |> should equal sc
@@ -58,12 +64,12 @@ let ``With default board``() =
     
     assertScoreSingleWord board "a" 2 //(1*2)
     assertScoreSingleWord board "avise" 18 //((1*2) + 4 + 1 + 1 + 1) * 2
-    assertScoreSingleWord board "aaeeiioo" 54 //(7 + 1*2) * 2 * 3 -> 54
+    assertScoreSingleWord board "aaeeiioo" 104 //(7 + 1*2) * 2 * 3 + 50 (bonus) -> 104
     assertScoreSingleWord board "farces" 30 //((4*2) + 1 + 1 + 3 + 1 + 1) * 2 -> 30
 
 [<Test>]
 let ``With 7 tiles used score extra 50``() =
-    let board = Board.Empty 7 7
+    let board = Board.EmptyWithRules 7 7 { HandSize = 7; UseAllTileScore = 50 }
     assertScoreSingleWord board "tempora" (11+50)
 
 [<Test>]
@@ -141,4 +147,15 @@ let ``Puzzle 4``() =
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '];
                  [' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' '; ' ']]
     assertPlayArray array "gook" "koolcig" 40 [("livestock", 34); ("clockwise", 33)]
-    
+
+let playSequence assertData = 
+    let wordSet = loadedWordSet.Value
+    let final = assertData |> Seq.fold (fun agg (w, t, s) -> let possible = assertScoreTiles agg wordSet w t s
+                                                             let first = possible.Head.WordScores.Head
+                                                             agg.Play first.Locations) BoardCreator.Default
+    final |> ignore
+
+[<Test>]
+let ``Play sequence 1``() =
+    playSequence [("bribed","beudbir",28)
+                  ("mairehau", "amha_ie", 98)]

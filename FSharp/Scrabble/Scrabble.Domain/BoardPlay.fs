@@ -1,11 +1,16 @@
 ﻿namespace Scrabble.Domain
 
 type BoardPlay(locations : BoardLocation list, direction : Direction) =
-    let lazySpaces = new System.Lazy<BoardLocation list>(fun _ -> locations |> Seq.filter (fun x -> x.State.IsSpace) |> Seq.toList)
+    let lazySpaces = Lazy.Create (fun _ -> locations |> List.filter (fun x -> x.State.IsSpace))
     member this.Locations = locations
     member this.Spaces = lazySpaces.Value
     member this.AnySpaces = this.Spaces.Length > 0
     member this.Direction = direction
+
+    member this.StartLocation = 
+        match locations.Length with
+        | 0 -> { Width = -1; Height = -1 }
+        | _ -> locations.Head.Location
 
     override this.ToString() =
         match locations.Length with
@@ -15,15 +20,18 @@ type BoardPlay(locations : BoardLocation list, direction : Direction) =
                locations.Head.Location.ToString() + " - " + last.Location.ToString()
 
 [<System.Diagnostics.DebuggerDisplayAttribute("{Word.Word} - {Score}")>]
-type WordScore = { Word : string; Locations: (Location*Tile) list; Score : int }
+type WordScore = { Word : WordWalkResult; Locations: TilePlay list; Score : int }
 type ValidWordPlays = { BoardPlay : BoardPlay; WordScores : WordScore list }
 
 type ScoreData =
-    { MainScore : int; MainScoreMultiplier : int; SideScores : int; RemainingTileHand : TileHand;  Locations: (Location*Tile) list }
+    { MainScore : int; MainScoreMultiplier : int; SideScores : int; RemainingTileHand : TileHand;  Locations: TilePlay list }
 
     static member Create ms msm ss th lcs = { MainScore = ms; MainScoreMultiplier = msm; SideScores = ss; RemainingTileHand = th; Locations = lcs; }
+    
     static member Initial th = ScoreData.Create 0 1 0 th []
+    
     member this.CalcScore = this.MainScore * this.MainScoreMultiplier + this.SideScores
+    
     member this.WithNextLocationScore location getItem =
         let getSideScore (tiles : Tile list) tileValue letterMult wordMult =
             match tiles.Length with
@@ -32,12 +40,13 @@ type ScoreData =
                    (incomingScore + (tileValue * letterMult)) * wordMult
         
         let (ms,msm,ss,th,lcs) = match location.State with
-                                 | Played(t) ->  (t.Value, 1, 0, this.RemainingTileHand, [])
-                                 | Free(bs) ->   let (c,tiles) = getItem (location.Location.Width, location.Location.Height)
-                                                 let (t,th) = this.RemainingTileHand.PopNextTileFor c
-                                                 let (lm,wm) = (bs.GetLetterMultiply, bs.GetWordMultiply)
-                                                 let sideScore = getSideScore tiles t.Value lm wm
-                                                 (t.Value * lm, wm, sideScore, th, [(location.Location, t)])
+                                 | Played(t) -> (t.Value, 1, 0, this.RemainingTileHand, [])
+                                 | Free(bs) ->  let (btl,chr,tiles) = getItem (location.Location.Width, location.Location.Height)
+                                                let (t,th) = this.RemainingTileHand.PopNextTileFor btl
+                                                let (lm,wm) = (bs.GetLetterMultiply, bs.GetWordMultiply)
+                                                let sideScore = getSideScore tiles t.Value lm wm
+                                                let tile = { Letter = chr; Value = t.Value }
+                                                (t.Value * lm, wm, sideScore, th, [{ Location = location.Location; Piece = tile }])
         ScoreData.Create (this.MainScore + ms) (this.MainScoreMultiplier * msm) (this.SideScores + ss) th (List.append this.Locations lcs)
 
 [<CustomEqualityAttribute>]
@@ -112,7 +121,7 @@ type BoardSpaceAnalyser() =
     member this.GetPossibleScoredPlays (board:Board) (tileHand:TileHand) (wordSet: WordSet) =
         
         let getPossibleWords (play:BoardPlayTileData) =
-            let wordsLen = wordSet.WordsForLengthWithLetters play.TotalLength (tileHand.Letters |> Seq.toList) play.PinnedIndexLetters
+            let wordsLen = wordSet.WordsForLengthWithLetters play.TotalLength tileHand.Letters play.PinnedIndexLetters
             wordsLen
 
         let getWordValidData (location:Location) (letter:char) (direction:Direction) =
@@ -145,17 +154,27 @@ type BoardSpaceAnalyser() =
                            |> Seq.map (fun (c, bp) -> getWordValidData bp.Location c play.Direction.Flip)
                            |> Seq.toList
         
-        let scoreWordPlay (boardPlay:BoardPlay) (word:string) (data: (Location*char*(Tile list)) list) = 
-            let orderedLocs = boardPlay.Locations |> Seq.sortBy (fun x -> match x.State with //Biggest letter then biggest word
-                                                                          | Free(t) -> -t.GetLetterMultiply, -t.GetWordMultiply
-                                                                          | _ -> 0,0) |> Seq.toList
-            let mapData = data |> Seq.map (fun (a,b,c) -> (a.Width, a.Height), (b,c)) |> Map
+        let scoreWordPlay (boardPlay:BoardPlay) (word:WordWalkResult) (data: (Location*char*(Tile list)) list) = 
+            let startLoc = boardPlay.StartLocation
+            let getLocation index = match boardPlay.Direction with
+                                    | Across -> (startLoc.Width + index, startLoc.Height)
+                                    | Down -> (startLoc.Width, startLoc.Height + index)
+                
+            let mapBagTiles = word.UsedTiles |> Seq.map (fun ut -> getLocation ut.WordLetterIndex, ut) |> Map
+            let mapData = data |> Seq.map (fun (loc,chr,tiLst) -> let key = (loc.Width, loc.Height)
+                                                                  let tileMap = mapBagTiles.Item key
+                                                                  Exception.failIf (tileMap.Letter <> chr) "Expecting char to match"
+                                                                  key, (tileMap.BagTileLetter, chr, tiLst)) |> Map
             let getItem = (fun (w,h) -> mapData.Item (w,h))
-            let aggData = orderedLocs|> Seq.fold (fun (agg : ScoreData) location -> agg.WithNextLocationScore location getItem) (ScoreData.Initial tileHand)
-            { Word = word; Locations = aggData.Locations; Score = aggData.CalcScore }
+            let aggData = boardPlay.Locations|> Seq.fold (fun (agg : ScoreData) location -> agg.WithNextLocationScore location getItem) (ScoreData.Initial tileHand)
+            
+            let bonusScore = match boardPlay.Spaces.Length >= board.Rules.HandSize with
+                             | true -> board.Rules.UseAllTileScore | false -> 0
 
-        let getPossibleWordScore words (play:BoardPlay) =
-            let scoredWords = words |> Seq.map (fun w -> (w, (getSecondaryWordsValidScore w play)))
+            { Word = word; Locations = aggData.Locations; Score = aggData.CalcScore + bonusScore }
+
+        let getPossibleWordScore (words : seq<WordWalkResult>) (play:BoardPlay) =
+            let scoredWords = words |> Seq.map (fun w -> (w, (getSecondaryWordsValidScore w.Word play)))
                                     |> Seq.filter (fun (_, data) -> data |> Seq.forall (fun (valid, _) -> valid))
                                     |> Seq.map (fun (wrd, data) -> let scoreData = data |> Seq.map (fun (_,x) -> x) |> Seq.toList
                                                                    scoreWordPlay play wrd scoreData)
@@ -165,7 +184,7 @@ type BoardSpaceAnalyser() =
         
         let boardPlays = this.GenerateSpaces board
         let groupPlayData = boardPlays |> Seq.map (fun bp -> (bp, BoardPlayTileData.FromPlay bp))
-                                       |> Seq.filter (fun (_, td) -> td.FreeSpaces <= tileHand.Tiles.Length)
+                                       |> Seq.filter (fun (_, td) -> td.FreeSpaces <= tileHand.Length)
                                        |> Seq.groupBy (fun (_, td) -> td)
         let possiblePlays = groupPlayData |> Seq.map (fun (key, items) -> let words = getPossibleWords key
                                                                           items |> Seq.map (fun (bp, _) -> { BoardPlay = bp; WordScores = getPossibleWordScore words bp }))

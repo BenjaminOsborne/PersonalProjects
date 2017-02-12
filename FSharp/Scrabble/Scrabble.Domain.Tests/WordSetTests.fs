@@ -8,7 +8,9 @@ let createWordSet strings = new WordSet(strings |> Set)
 let wordSet = createWordSet ["a"; "big"; "hello"; "to"; "my"; "friends"; "again"; "bin"; "gib"; "bag"]
 
 let findWords length letters map =
-    wordSet.WordsForLengthWithLetters length letters (map |> Map) |> Seq.toList
+    let bagTiles = letters |> List.map (fun c -> Letter(c))
+    wordSet.WordsForLengthWithLetters length bagTiles (map |> Map) |> Seq.map (fun w -> w.Word)
+                                                                   |> Seq.toList
 
 [<Test>]
 let ``Word Walking 1 letter``() =

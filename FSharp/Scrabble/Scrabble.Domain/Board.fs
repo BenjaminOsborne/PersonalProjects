@@ -42,20 +42,27 @@ type BoardLocation = { Location : Location; State : BoardState }
 
 type TilePlay = { Location : Location; Piece : Tile }
 
-type Board(tileLocations : BoardLocation[,], width:int, height:int) = 
+type BoardRules = { HandSize : int; UseAllTileScore : int }
+
+type Board(tileLocations : BoardLocation[,], width:int, height:int, boardRules : BoardRules) = 
     
-    static member Empty wdth hght =
+    static member EmptyWithRules wdth hght rules =
         let array = Array2D.init wdth hght (fun w h -> { Location = { Width = w; Height = h }; State = BoardState.Free(Normal) })
-        new Board(array, wdth, hght)
+        new Board(array, wdth, hght, rules)
+
+    static member Empty wdth hght =
+        let emptyRules = { HandSize = System.Int32.MaxValue; UseAllTileScore = 0 }
+        Board.EmptyWithRules wdth hght emptyRules
 
     member this.Width = width
     member this.Height = height
+    member this.Rules = boardRules
 
     member this.Play(tiles : TilePlay list) =
         let state = tileLocations |> Array2D.copy
         for tile in tiles do
             state.[tile.Location.Width, tile.Location.Height] <- { Location = tile.Location; State = BoardState.Played tile.Piece }
-        new Board(state, width, height)
+        new Board(state, width, height, boardRules)
 
     member this.TileAt wght hght = tileLocations.[wght, hght]
     
