@@ -1,5 +1,10 @@
 ﻿namespace Scrabble.Domain
 
+open System;
+open System.Reactive.Concurrency;
+open System.Reactive.Linq;
+open System.Reactive.Subjects;
+
 type Player = { Name : string }
 
 type GameMoveData = { WordSet : WordSet; Board : Board; Player : Player; Tiles : BagTile list }
@@ -73,6 +78,8 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
                                                                 | Complete -> true)
                 (shouldStop = false)
         
+        let a = Observable.Create (fun (obs : IObserver<int>) -> NewThreadScheduler.Default.Schedule(new Action(fun _ -> obs.OnCompleted())))
+
         let states = Seq.initInfinite (fun x -> x) |> Seq.scan (fun state _ -> getNextState state moveProvider) initialState
         let gameStates = states |> Seq.takeWhileAndNext shouldContinue |> Seq.toList
         gameStates |> Seq.last
