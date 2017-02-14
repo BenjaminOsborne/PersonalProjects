@@ -4,6 +4,9 @@ open NUnit.Framework
 open FsUnit
 open System
 open System.Threading
+open System.Reactive.Concurrency;
+open System.Reactive.Linq;
+open System.Reactive.Subjects;
 
 /// create a timer and register an event handler, then run the timer for five seconds
 let createTimer timerInterval eventHandler =
@@ -98,3 +101,21 @@ let ``Fizz Buzz``() =
 
     let u = [timer3;timer5] |> Async.Parallel |> Async.RunSynchronously // run the two timers at the same time
     u |> ignore
+
+[<Test>]
+let ``Manual Observer``() =
+
+    let schedule (obs : IObserver<int>) =
+        obs.OnNext(1);
+        obs.OnNext(3);
+        obs.OnNext(5);
+        obs.OnCompleted();
+
+    let observable = Observable.Create (fun (obs : IObserver<int>) -> CurrentThreadScheduler.Instance.Schedule(new Action(fun _ -> schedule obs)))
+    
+    let list = new System.Collections.Generic.List<int>();
+    observable.Subscribe((fun n -> list.Add(n)), new Action(fun _ -> printfn "finished" |> ignore)) |> ignore;
+
+    list |> Seq.iter (fun x -> printfn "%i" x)
+
+    0 |> ignore

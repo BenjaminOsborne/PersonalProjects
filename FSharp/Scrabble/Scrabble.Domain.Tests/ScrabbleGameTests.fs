@@ -22,7 +22,11 @@ let emptyBag = new TileBag([])
 let bagTile_a = { TileLetter = Letter('a'); Value = 1 };
 let bagTile_e = { TileLetter = Letter('e'); Value = 1 };
 
-let playGame (game : ScrabbleGame) provider = game.PlayGame provider
+let playGame (game : ScrabbleGame) provider =
+    let observer = game.PlayGame provider
+    let mutable results = [];
+    observer.Subscribe(fun x -> results <- x :: results) |> ignore
+    results.Head
 
 let createResult word = { Word = word; UsedTiles = [] }
 

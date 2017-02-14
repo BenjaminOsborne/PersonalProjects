@@ -78,14 +78,12 @@ type ScrabbleGame (words : WordSet, handSize:int, initialState : GameState ) =
                                                                 | Complete -> true)
                 (shouldStop = false)
         
-        let a = Observable.Create (fun (obs : IObserver<int>) -> NewThreadScheduler.Default.Schedule(new Action(fun _ -> obs.OnCompleted())))
-
         let states = Seq.initInfinite (fun x -> x) |> Seq.scan (fun state _ -> getNextState state moveProvider) initialState
-        let gameStates = states |> Seq.takeWhileAndNext shouldContinue |> Seq.toList
-        gameStates |> Seq.last
+        let gameStates = states |> Seq.takeWhileAndNext shouldContinue
+                                |> Observable.ToObservable
+        gameStates
 
-
-type GameMoveProvider (onNextMove : GameMoveData -> unit) =
+type GameMoveProvider () =
     let buildNext (current:(BagTile * Tile) list list) (bagTile : BagTile) =
         let popLetterOnCurrent c =
             let nxtPair = (bagTile, { Letter = c; Value = bagTile.Value })
@@ -103,7 +101,6 @@ type GameMoveProvider (onNextMove : GameMoveData -> unit) =
     
     interface IGameMoveProvider with
         member this.GetNextMove data =
-            onNextMove data
             let tileHand = new TileHand(data.Tiles)
             let possible = (new BoardSpaceAnalyser()).GetPossibleScoredPlays data.Board tileHand data.WordSet
             match possible with

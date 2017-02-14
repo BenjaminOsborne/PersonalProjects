@@ -1,6 +1,10 @@
 ﻿open Scrabble.Domain;
 open Scrabble.Domain.Tests;
+
 open System;
+open System.Reactive.Concurrency;
+open System.Reactive.Linq;
+open System.Reactive.Subjects;
 
 let play w h c v = { Location = { Width = w; Height = h }; Piece = { Letter = c; Value = v } };
 
@@ -20,13 +24,23 @@ let gameRoutine () =
     let game = new ScrabbleGame(words, 7, initial)
     
     let sw = System.Diagnostics.Stopwatch.StartNew();
-    let moveProvider = new GameMoveProvider (fun state -> Console.WriteLine(sw.Elapsed.TotalSeconds.ToString())
-                                                          sw.Reset(); sw.Start()
-                                                          Console.WriteLine("\n" + state.Board.ToString())
-                                                          printTiles "" state.Tiles
-                                                          )
-    let result = game.PlayGame (moveProvider :> IGameMoveProvider)
+    let moveProvider = new GameMoveProvider();
+    let observable = game.PlayGame (moveProvider :> IGameMoveProvider)
     
+    let mutable results = [];
+    let onNextState (state : GameState) = 
+        results <- (state :: results)
+        Console.WriteLine(sw.Elapsed.TotalSeconds.ToString())
+        sw.Reset(); sw.Start()
+        Console.WriteLine("\n" + state.Board.ToString())
+        let lastPlay = (state.PlayerStates |> Seq.last).Plays.Head;
+        match lastPlay with
+        | Play(m) -> printTiles "" m.UsedTiles
+        | _ -> 0 |> ignore
+
+    observable.Subscribe((fun state -> onNextState state)) |> ignore
+
+    let result = results.Head
     Console.WriteLine(result.Board.ToString())
     Console.WriteLine("\nFinal Scores...")
     
@@ -60,5 +74,5 @@ let testRoutine() =
 
 [<EntryPoint>]
 let main argv = 
-    //gameRoutine()
-    testRoutine()
+    gameRoutine()
+    //testRoutine()
