@@ -1,6 +1,7 @@
 ﻿namespace JSONTypeProvider
 
 open FSharp.Data;
+open System
 
 type Simple = JsonProvider<""" { "name":"John", "age":94 } """>
 
@@ -15,7 +16,7 @@ type People = JsonProvider<"""
 type Tweet = JsonProvider<"../JSONTypeProvider/data/TwitterStream.json", SampleIsList=true, EmbeddedResource="MyLib, TwitterStream.json">
 
 type JSONExperiment () =
-
+        
     member this.TestThis () =
         //Simple
         let simple = Simple.Parse(""" { "name":"Tomas", "age":4 } """)
@@ -44,7 +45,11 @@ type JSONExperiment () =
         let tweet = Tweet.Parse(text)
 
         printfn "%s (retweeted %d times)\n:%s"
-          tweet.User.Value.Name tweet.RetweetCount.Value tweet.Text.Value
+            tweet.User.Value.Name tweet.RetweetCount.Value tweet.Text.Value
+
+        let ca = match tweet.CreatedAt with | Some(d) -> d | _ -> ""
+        
+        //tweet.JsonValue.Request
 
         0
 

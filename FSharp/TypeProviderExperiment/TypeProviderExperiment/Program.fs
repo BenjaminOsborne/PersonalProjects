@@ -7,5 +7,4 @@
 let main argv = 
     let a = new JSONExperiment();
     let b = a.TestThis();
-    let c = a.Guff();
     0 // return an integer exit code
