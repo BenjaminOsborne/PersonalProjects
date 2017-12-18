@@ -31,7 +31,7 @@ namespace CSharpClient
                 var response = await httpClient.GetAsync(loginUrl);
                 var content = await response.Content.ReadAsStringAsync();
                 var requestVerificationToken = ParseRequestVerificationToken(content);
-                content = requestVerificationToken + "&UserName=user&Password=password&RememberMe=false";
+                content = requestVerificationToken + "&UserName=Ben&Password=Tester&RememberMe=false";
 
                 _traceWriter.WriteLine("Sending http POST to {0}", loginUrl);
 
