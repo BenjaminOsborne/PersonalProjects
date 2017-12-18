@@ -22,7 +22,7 @@ namespace Common.Hubs
     {
         public override Task OnConnected()
         {
-            return Clients.Caller.hubReceived($"{nameof(ChatHub)} Welcome {Context.User.Identity.Name}!");
+            return Clients.All.hubReceived($"{nameof(ChatHub)} Welcome {Context.User.Identity.Name}!");
         }
 
         public void Echo(string value)

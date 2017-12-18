@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
@@ -17,7 +20,7 @@ namespace CSharpClient
             _traceWriter = traceWriter;
         }
 
-        public async Task RunAsync(string url)
+        public async Task RunAsync(string url, string username, string password)
         {
             var handler = new HttpClientHandler();
             handler.CookieContainer = new CookieContainer();
@@ -31,7 +34,7 @@ namespace CSharpClient
                 var response = await httpClient.GetAsync(loginUrl);
                 var content = await response.Content.ReadAsStringAsync();
                 var requestVerificationToken = ParseRequestVerificationToken(content);
-                content = requestVerificationToken + "&UserName=Ben&Password=Tester&RememberMe=false";
+                content = $"{requestVerificationToken}&UserName={username}&Password={password}&RememberMe=false";
 
                 _traceWriter.WriteLine("Sending http POST to {0}", loginUrl);
 
@@ -40,7 +43,7 @@ namespace CSharpClient
                 requestVerificationToken = ParseRequestVerificationToken(content);
 
                 await RunPersistentConnection(url, handler.CookieContainer);
-                await RunHub(url, handler.CookieContainer);
+                await RunHub(url, handler.CookieContainer, username);
 
                 _traceWriter.WriteLine();
                 _traceWriter.WriteLine("Sending http POST to {0}", url + "Account/LogOff");
@@ -76,7 +79,7 @@ namespace CSharpClient
             }
         }
 
-        private async Task RunHub(string url, CookieContainer cookieContainer)
+        private async Task RunHub(string url, CookieContainer cookieContainer, string username)
         {
             _traceWriter.WriteLine();
             _traceWriter.WriteLine("*** Hub ***");
@@ -103,15 +106,25 @@ namespace CSharpClient
 
                 await connection.Start();
                 await authorizeEchoHub.Invoke("echo", "sending to AuthorizeEchoHub");
-                
+                await chatHub.Invoke("echo", "sending to ChatHub");
+
+                _ReadConsole().ToObservable().SubscribeOn(NewThreadScheduler.Default)
+                    .Subscribe(async text =>
+                {
+                    await chatHub.Invoke("broadcast", username, text);
+                });
+
                 while (true)
                 {
-                    var text = Console.ReadLine();
-                    await chatHub.Invoke("broadcast", "Ben", text);
-
-                    await Task.Delay(TimeSpan.FromSeconds(0.1));
+                    await Task.Delay(TimeSpan.FromSeconds(100));
                 }
             }
+        }
+
+        private IEnumerable<string> _ReadConsole()
+        {
+            while (true)
+                yield return Console.ReadLine();
         }
 
         private string ParseRequestVerificationToken(string content)
