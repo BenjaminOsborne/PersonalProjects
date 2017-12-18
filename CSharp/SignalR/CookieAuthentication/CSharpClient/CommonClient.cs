@@ -59,21 +59,20 @@ namespace CSharpClient
             using (var connection = new Connection(url + "echo"))
             {
                 connection.CookieContainer = cookieContainer;
-                connection.TraceWriter = _traceWriter;
-
+                
                 connection.Received += data =>
                 {
-                    connection.TraceWriter.WriteLine("Received: " + data);
+                    _traceWriter.WriteLine("Received: " + data);
                 };
 
                 connection.Error += exception =>
                 {
-                    connection.TraceWriter.WriteLine("Error: {0}: {1}" + exception.GetType(), exception.Message);
+                    _traceWriter.WriteLine("Error: {0}: {1}" + exception.GetType(), exception.Message);
                 };
 
                 await connection.Start();
                 await connection.Send("sending to AuthorizeEchoConnection");
-                await Task.Delay(TimeSpan.FromSeconds(2));
+                await Task.Delay(TimeSpan.FromSeconds(0.1));
             }
         }
 
@@ -85,24 +84,33 @@ namespace CSharpClient
             using (var connection = new HubConnection(url))
             {
                 connection.CookieContainer = cookieContainer;
-                connection.TraceWriter = _traceWriter;
-
+                
                 connection.Error += exception =>
                 {
-                    connection.TraceWriter.WriteLine("Error: {0}: {1}" + exception.GetType(), exception.Message);
+                    _traceWriter.WriteLine("Error: {0}: {1}" + exception.GetType(), exception.Message);
                 };
 
                 var authorizeEchoHub = connection.CreateHubProxy("AuthorizeEchoHub");
 
                 authorizeEchoHub.On<string>("hubReceived", data =>
                 {
-                    connection.TraceWriter.WriteLine("HubReceived: " + data);
+                    _traceWriter.WriteLine("HubReceived: " + data);
                 });
+
+                var chatHub = connection.CreateHubProxy("ChatHub");
+                chatHub.On<string>("hubReceived", data => _traceWriter.WriteLine("ChatHubReceived: " + data));
+                chatHub.On<string, string>("addMessage", (s1, s2) => _traceWriter.WriteLine(s1 + ": " + s2));
 
                 await connection.Start();
                 await authorizeEchoHub.Invoke("echo", "sending to AuthorizeEchoHub");
+                
+                while (true)
+                {
+                    var text = Console.ReadLine();
+                    await chatHub.Invoke("broadcast", "Ben", text);
 
-                await Task.Delay(TimeSpan.FromSeconds(2));
+                    await Task.Delay(TimeSpan.FromSeconds(0.1));
+                }
             }
         }
 

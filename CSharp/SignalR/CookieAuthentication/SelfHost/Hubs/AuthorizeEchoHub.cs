@@ -8,12 +8,31 @@ namespace Common.Hubs
     {
         public override Task OnConnected()
         {
-            return Clients.Caller.hubReceived("Welcome " + Context.User.Identity.Name + "!");
+            return Clients.Caller.hubReceived($"{nameof(AuthorizeEchoHub)} Welcome {Context.User.Identity.Name}!");
         }
 
         public void Echo(string value)
         {
             Clients.Caller.hubReceived(value);
+        }
+    }
+
+    [Authorize]
+    public class ChatHub : Hub
+    {
+        public override Task OnConnected()
+        {
+            return Clients.Caller.hubReceived($"{nameof(ChatHub)} Welcome {Context.User.Identity.Name}!");
+        }
+
+        public void Echo(string value)
+        {
+            Clients.Caller.hubReceived(value);
+        }
+
+        public void Broadcast(string name, string message)
+        {
+            Clients.All.addMessage(name, message);
         }
     }
 }
