@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using ConsoleAppServer;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -18,6 +19,14 @@ namespace ConsoleAppServer
         {
             string url = "http://127.0.0.1:8088";
             SignalR = WebApp.Start(url);
+
+            while (true) //Message clients on loop
+            {
+                var context = GlobalHost.ConnectionManager.GetHubContext<MyHub>();
+                context.Clients.All.addMessage("Test Name", "Test Message");
+
+                Thread.Sleep(5000);
+            }
 
             Console.ReadKey();
         }
