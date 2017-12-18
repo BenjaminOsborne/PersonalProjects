@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using ConsoleAppServer;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
 using Microsoft.Owin.Hosting;
+using Microsoft.Owin.Security.Cookies;
 using Owin;
 
 [assembly: OwinStartup(typeof(Program.Startup))]
@@ -36,11 +39,12 @@ namespace ConsoleAppServer
             public void Configuration(IAppBuilder app)
             {
                 app.UseCors(CorsOptions.AllowAll);
+
                 app.MapSignalR();
             }
         }
 
-        [HubName("MyHub")]
+        [HubName("MyHubName")]
         public class MyHub : Hub
         {
             public void Send(string name, string message)

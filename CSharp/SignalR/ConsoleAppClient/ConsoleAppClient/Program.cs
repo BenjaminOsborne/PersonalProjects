@@ -11,7 +11,7 @@ namespace ConsoleAppClient
 
             //Set connection
             var connection = new HubConnection(url);
-            var hub = "MyHub";// "MyHub";
+            var hub = "MyHubName";// "MyHub";
             var myHub = connection.CreateHubProxy(hub);
 
             Console.WriteLine("Enter your name");
