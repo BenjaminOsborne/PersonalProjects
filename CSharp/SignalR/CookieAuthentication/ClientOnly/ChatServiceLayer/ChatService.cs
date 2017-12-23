@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Immutable;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace ChatServiceLayer
 {
@@ -6,9 +9,12 @@ namespace ChatServiceLayer
     {
         public async Task<bool> Login(string userName, string password)
         {
-            await Task.Delay(3000);
-
             return true;
+        }
+
+        public IObservable<ImmutableList<User>> GetObservableUsers()
+        {
+            return Observable.Empty<ImmutableList<User>>();
         }
     }
 }

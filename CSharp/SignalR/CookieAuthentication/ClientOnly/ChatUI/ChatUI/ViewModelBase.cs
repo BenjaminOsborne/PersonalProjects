@@ -1,11 +1,23 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using ChatServiceLayer;
 
 namespace ChatUI
 {
+    public interface IDesktopSchedulerProvider : ISchedulerProvider
+    {
+        IScheduler Dispatcher { get; }
+    }
+
+    public class DesktopSchedulerProvider : SchedulerProvider, IDesktopSchedulerProvider
+    {
+        public IScheduler Dispatcher { get; } = DispatcherScheduler.Current;
+    }
+
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged = delegate { };

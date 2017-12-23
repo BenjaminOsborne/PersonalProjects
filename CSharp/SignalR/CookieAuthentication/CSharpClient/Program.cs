@@ -16,9 +16,11 @@ namespace CSharpClient
             Console.WriteLine("Enter Password:");
             var password = Console.ReadLine();
 
-            var writer = Console.Out;
-            var client = new CommonClient(writer);
-            client.RunAsync("http://localhost:8080/", username, password).Wait();
+            var url = "http://localhost:8080/";
+
+            var logger = new WritterLogger(Console.Out);
+            var client = new ChatClient(logger);
+            client.RunAsync(url, username, password).Wait();
 
             Console.ReadKey();
         }

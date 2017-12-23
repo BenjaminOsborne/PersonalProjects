@@ -1,4 +1,8 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Reactive.Linq;
+using System.Windows.Input;
 using ChatServiceLayer;
 
 namespace ChatUI
@@ -48,5 +52,25 @@ namespace ChatUI
             get => _isLoggingIn;
             private set => SetProperty(ref _isLoggingIn, value);
         }
+    }
+
+    public class UsersViewModel : ViewModelBase
+    {
+        private ObservableCollection<User> _users = new ObservableCollection<User>();
+
+        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService)
+        {
+            chatService.GetObservableUsers().ObserveOn(schedulerProvider.Dispatcher).Subscribe(u =>
+            {
+
+            });
+        }
+
+        public IEnumerable<User> Users => _users;
+    }
+
+    public class ConversationViewModel : ViewModelBase
+    {
+        
     }
 }

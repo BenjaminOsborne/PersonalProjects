@@ -11,11 +11,33 @@ using Microsoft.AspNet.SignalR.Client;
 
 namespace CSharpClient
 {
-    class CommonClient
+    public interface IOutputLogger
     {
-        private readonly TextWriter _traceWriter;
+        void WriteLine();
+        void WriteLine(string log);
+        void WriteLine(string log, params object[] logParams);
+    }
 
-        public CommonClient(TextWriter traceWriter)
+    public class WritterLogger : IOutputLogger
+    {
+        private readonly TextWriter _writer;
+
+        public WritterLogger(TextWriter writer)
+        {
+            _writer = writer;
+        }
+
+        public void WriteLine() => _writer.WriteLine();
+        public void WriteLine(string log) => _writer.WriteLine(log);
+        public void WriteLine(string log, params object[] logParams) => _writer.WriteLine(log, logParams);
+
+    }
+
+    public class ChatClient
+    {
+        private readonly IOutputLogger _traceWriter;
+
+        public ChatClient(IOutputLogger traceWriter)
         {
             _traceWriter = traceWriter;
         }
@@ -42,8 +64,8 @@ namespace CSharpClient
                 content = await response.Content.ReadAsStringAsync();
                 requestVerificationToken = ParseRequestVerificationToken(content);
 
-                await RunPersistentConnection(url, handler.CookieContainer);
-                await RunHub(url, handler.CookieContainer, username);
+                await _RunPersistentConnection(url, handler.CookieContainer);
+                await _RunHub(url, handler.CookieContainer, username);
 
                 _traceWriter.WriteLine();
                 _traceWriter.WriteLine("Sending http POST to {0}", url + "Account/LogOff");
@@ -54,7 +76,7 @@ namespace CSharpClient
             }
         }
 
-        private async Task RunPersistentConnection(string url, CookieContainer cookieContainer)
+        private async Task _RunPersistentConnection(string url, CookieContainer cookieContainer)
         {
             _traceWriter.WriteLine();
             _traceWriter.WriteLine("*** Persistent Connection ***");
@@ -79,7 +101,7 @@ namespace CSharpClient
             }
         }
 
-        private async Task RunHub(string url, CookieContainer cookieContainer, string username)
+        private async Task _RunHub(string url, CookieContainer cookieContainer, string username)
         {
             _traceWriter.WriteLine();
             _traceWriter.WriteLine("*** Hub ***");
@@ -88,17 +110,11 @@ namespace CSharpClient
             {
                 connection.CookieContainer = cookieContainer;
                 
-                connection.Error += exception =>
-                {
-                    _traceWriter.WriteLine("Error: {0}: {1}" + exception.GetType(), exception.Message);
-                };
+                connection.Error += exception => _traceWriter.WriteLine("Error: {0}: {1}" + exception.GetType(), exception.Message);
 
                 var authorizeEchoHub = connection.CreateHubProxy("AuthorizeEchoHub");
 
-                authorizeEchoHub.On<string>("hubReceived", data =>
-                {
-                    _traceWriter.WriteLine("HubReceived: " + data);
-                });
+                authorizeEchoHub.On<string>("hubReceived", data => _traceWriter.WriteLine("HubReceived: " + data));
 
                 var chatHub = connection.CreateHubProxy("ChatHub");
                 chatHub.On<string>("hubReceived", data => _traceWriter.WriteLine("ChatHubReceived: " + data));
@@ -108,7 +124,8 @@ namespace CSharpClient
                 await authorizeEchoHub.Invoke("echo", "sending to AuthorizeEchoHub");
                 await chatHub.Invoke("echo", "sending to ChatHub");
 
-                _ReadConsole().ToObservable().SubscribeOn(NewThreadScheduler.Default)
+                _ReadConsole().ToObservable()
+                    .SubscribeOn(NewThreadScheduler.Default)
                     .Subscribe(async text =>
                 {
                     await chatHub.Invoke("broadcast", username, text);
