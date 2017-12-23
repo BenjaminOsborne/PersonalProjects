@@ -1,0 +1,32 @@
+﻿<Window x:Class="ChatUI.ChatHostWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ChatUI"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:ChatHostViewModel, IsDesignTimeCreatable=True}"
+        Height="300" Width="300"
+        >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="12" FontWeight="DemiBold" Text="Username"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="12" Text="{Binding Login.UserName, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="12" FontWeight="DemiBold" Text="Password"/>
+        <PasswordBox Grid.Row="1" Grid.Column="1" Name="Password" Margin="5" VerticalAlignment="Center" FontSize="12"/>
+
+        <Button Grid.Row="2" Grid.Column="1" Margin="5" Command="{Binding Login.Login}" HorizontalAlignment="Right" FontSize="11" VerticalAlignment="Center" Height="20" Width="80" Content="Login"/>
+        <controls:ProgressRing Grid.Row="2" Grid.Column="1" IsActive="{Binding Login.IsLoggingIn}" Margin="35,0" Height="15" Width="15" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+    </Grid>
+</Window>
