@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CSharpClient
+namespace ChatServiceLayer
 {
     public static class ChatRoutine
     {
@@ -15,8 +15,8 @@ namespace CSharpClient
             var url = "http://localhost:8080/";
 
             var logger = new WritterLogger(Console.Out);
-            var client = new ChatClient(logger);
-            client.RunAsync(url, username, password).Wait();
+            var client = new ChatClient(url, logger);
+            client.InitialiseConnection(username, password).Wait();
 
             Console.ReadKey();
         }

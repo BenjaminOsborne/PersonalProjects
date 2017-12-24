@@ -7,9 +7,10 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNet.SignalR.Client;
 
-namespace CSharpClient
+namespace ChatServiceLayer
 {
     public interface IOutputLogger
     {
@@ -30,89 +31,83 @@ namespace CSharpClient
         public void WriteLine() => _writer.WriteLine();
         public void WriteLine(string log) => _writer.WriteLine(log);
         public void WriteLine(string log, params object[] logParams) => _writer.WriteLine(log, logParams);
-
     }
 
-    public class ChatClient
+    public class ChatClient : IDisposable
     {
-        private readonly IOutputLogger _traceWriter;
+        private readonly string _url;
+        private readonly IOutputLogger _logger;
+        private readonly CookieContainer _cookieContainer;
+        private readonly HttpClient _httpClient;
 
-        public ChatClient(IOutputLogger traceWriter)
+        public ChatClient(string url, IOutputLogger logger)
         {
-            _traceWriter = traceWriter;
+            _url = url;
+            _logger = logger;
+
+            _cookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler { CookieContainer = _cookieContainer };
+            _httpClient = new HttpClient(handler);
         }
 
-        public async Task RunAsync(string url, string username, string password)
+        public void Dispose() => _httpClient.Dispose();
+
+        public async Task InitialiseConnection(string username, string password)
         {
-            var handler = new HttpClientHandler();
-            handler.CookieContainer = new CookieContainer();
+            var loginUrl = _url + "Account/Login";
+            _logger.WriteLine("Sending http GET to {0}", loginUrl);
 
-            using (var httpClient = new HttpClient(handler))
-            {
-                var loginUrl = url + "Account/Login";
+            var loginGet = await _httpClient.GetAsync(loginUrl);
+            var loginGetContent = await loginGet.Content.ReadAsStringAsync();
 
-                _traceWriter.WriteLine("Sending http GET to {0}", loginUrl);
+            var initialToken = _ParseRequestVerificationToken(loginGetContent);
+            var authContent = $"{initialToken}&UserName={username}&Password={password}&RememberMe=false";
 
-                var response = await httpClient.GetAsync(loginUrl);
-                var content = await response.Content.ReadAsStringAsync();
-                var requestVerificationToken = ParseRequestVerificationToken(content);
-                content = $"{requestVerificationToken}&UserName={username}&Password={password}&RememberMe=false";
+            _logger.WriteLine("Sending http POST to {0}", loginUrl);
 
-                _traceWriter.WriteLine("Sending http POST to {0}", loginUrl);
+            var loginPost = await _httpClient.PostAsync(loginUrl, new StringContent(authContent, Encoding.UTF8, "application/x-www-form-urlencoded"));
+            var loginPostContent = await loginPost.Content.ReadAsStringAsync();
 
-                response = await httpClient.PostAsync(loginUrl, new StringContent(content, Encoding.UTF8, "application/x-www-form-urlencoded"));
-                content = await response.Content.ReadAsStringAsync();
-                requestVerificationToken = ParseRequestVerificationToken(content);
+            await _RunPersistentConnection();
+            await _RunHub(username);
 
-                await _RunPersistentConnection(url, handler.CookieContainer);
-                await _RunHub(url, handler.CookieContainer, username);
-
-                _traceWriter.WriteLine();
-                _traceWriter.WriteLine("Sending http POST to {0}", url + "Account/LogOff");
-                response = await httpClient.PostAsync(url + "Account/LogOff", CreateContent(requestVerificationToken));
-
-                _traceWriter.WriteLine("Sending http POST to {0}", url + "Account/Logout");
-                response = await httpClient.PostAsync(url + "Account/Logout", CreateContent(requestVerificationToken));
-            }
+            var token = _ParseRequestVerificationToken(loginPostContent);
+            await _RunAccountLogout(token);
         }
-
-        private async Task _RunPersistentConnection(string url, CookieContainer cookieContainer)
+        
+        private async Task _RunPersistentConnection()
         {
-            _traceWriter.WriteLine();
-            _traceWriter.WriteLine("*** Persistent Connection ***");
+            _logger.WriteLine("Begin SignalR Connection");
 
-            using (var connection = new Connection(url + "echo"))
+            using (var connection = new Connection(_url + "echo"))
             {
-                connection.CookieContainer = cookieContainer;
-
-                connection.Error += ex => _traceWriter.WriteLine($"Error: {ex.GetType()}: {ex.Message}");
-                connection.Received += data => _traceWriter.WriteLine($"Received: {data}");
+                connection.CookieContainer = _cookieContainer;
+                connection.Error += ex => _logger.WriteLine($"Error: {ex.GetType()}: {ex.Message}");
+                connection.Received += data => _logger.WriteLine($"Received: {data}");
 
                 await connection.Start();
-                await connection.Send("sending to AuthorizeEchoConnection");
-
-                await Task.Delay(TimeSpan.FromSeconds(0.1));
+                await connection.Send("Sending to AuthorizeEchoConnection");
             }
         }
 
-        private async Task _RunHub(string url, CookieContainer cookieContainer, string username)
+        private async Task _RunHub(string username)
         {
-            _traceWriter.WriteLine();
-            _traceWriter.WriteLine("*** Hub ***");
+            _logger.WriteLine("Begin Hub");
 
-            using (var connection = new HubConnection(url))
+            using (var connection = new HubConnection(_url))
             {
-                connection.CookieContainer = cookieContainer;
+                connection.CookieContainer = _cookieContainer;
                 
-                connection.Error += exception => _traceWriter.WriteLine("Error: {0}: {1}" + exception.GetType(), exception.Message);
+                connection.Error += exception => _logger.WriteLine("Error: {0}: {1}" + exception.GetType(), exception.Message);
 
                 var authorizeEchoHub = connection.CreateHubProxy("AuthorizeEchoHub");
 
-                authorizeEchoHub.On<string>("hubReceived", data => _traceWriter.WriteLine("HubReceived: " + data));
+                authorizeEchoHub.On<string>("hubReceived", data => _logger.WriteLine("HubReceived: " + data));
 
                 var chatHub = connection.CreateHubProxy("ChatHub");
-                chatHub.On<string>("hubReceived", data => _traceWriter.WriteLine("ChatHubReceived: " + data));
-                chatHub.On<string, string>("addMessage", (s1, s2) => _traceWriter.WriteLine(s1 + ": " + s2));
+
+                chatHub.On<string>("hubReceived", data => _logger.WriteLine($"ChatHubReceived: {data}"));
+                chatHub.On<string, string>("addMessage", (s1, s2) => _logger.WriteLine($"{s1}: {s2}"));
 
                 await connection.Start();
                 await authorizeEchoHub.Invoke("echo", "sending to AuthorizeEchoHub");
@@ -138,29 +133,32 @@ namespace CSharpClient
                 yield return Console.ReadLine();
         }
 
-        private string ParseRequestVerificationToken(string content)
+        private async Task _RunAccountLogout(string token)
+        {
+            var encoding = "application/x-www-form-urlencoded";
+            var content = token.IsNullOrEmpty() ? new StringContent("", Encoding.UTF8, encoding)
+                : new StringContent(token, Encoding.UTF8, encoding);
+
+            _logger.WriteLine();
+            _logger.WriteLine("Sending http POST to {0}", _url + "Account/LogOff");
+            var logOff = await _httpClient.PostAsync(_url + "Account/LogOff", content);
+
+            _logger.WriteLine("Sending http POST to {0}", _url + "Account/Logout");
+            var logOut = await _httpClient.PostAsync(_url + "Account/Logout", content);
+        }
+
+        [CanBeNull]
+        private string _ParseRequestVerificationToken(string content)
         {
             var startIndex = content.IndexOf("__RequestVerificationToken");
-
-            if (startIndex == -1)
+            if (startIndex < 0)
             {
                 return null;
             }
 
-            content = content.Substring(startIndex, content.IndexOf("\" />", startIndex) - startIndex);
-            content = content.Replace("\" type=\"hidden\" value=\"", "=");
-            return content;
-        }
-
-        private StringContent CreateContent(string requestVerificationToken)
-        {
-            var content = new StringContent("", Encoding.UTF8, "application/x-www-form-urlencoded");
-            if (!string.IsNullOrEmpty(requestVerificationToken))
-            {
-                content = new StringContent(requestVerificationToken, Encoding.UTF8, "application/x-www-form-urlencoded");
-            }
-
-            return content;
+            var substring = content.Substring(startIndex, content.IndexOf("\" />", startIndex) - startIndex);
+            var token = substring.Replace("\" type=\"hidden\" value=\"", "=");
+            return token;
         }
     }
 }

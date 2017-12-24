@@ -6,7 +6,7 @@ namespace ChatServiceLayer
 {
     public interface IChatService
     {
-        Task<bool> Login(string userName, string password);
+        Task<bool> Login(string username, string password);
         IObservable<ImmutableList<User>> GetObservableUsers();
     }
 }
