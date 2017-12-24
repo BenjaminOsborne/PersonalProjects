@@ -16,7 +16,6 @@ namespace ChatServiceLayer
     {
         void WriteLine();
         void WriteLine(string log);
-        void WriteLine(string log, params object[] logParams);
     }
 
     public class WritterLogger : IOutputLogger
@@ -30,7 +29,6 @@ namespace ChatServiceLayer
 
         public void WriteLine() => _writer.WriteLine();
         public void WriteLine(string log) => _writer.WriteLine(log);
-        public void WriteLine(string log, params object[] logParams) => _writer.WriteLine(log, logParams);
     }
 
     public class ChatClient : IDisposable
@@ -55,7 +53,7 @@ namespace ChatServiceLayer
         public async Task InitialiseConnection(string username, string password)
         {
             var loginUrl = _url + "Account/Login";
-            _logger.WriteLine("Sending http GET to {0}", loginUrl);
+            _logger.WriteLine($"Sending http GET to {loginUrl}");
 
             var loginGet = await _httpClient.GetAsync(loginUrl);
             var loginGetContent = await loginGet.Content.ReadAsStringAsync();
@@ -63,15 +61,15 @@ namespace ChatServiceLayer
             var initialToken = _ParseRequestVerificationToken(loginGetContent);
             var authContent = $"{initialToken}&UserName={username}&Password={password}&RememberMe=false";
 
-            _logger.WriteLine("Sending http POST to {0}", loginUrl);
+            _logger.WriteLine($"Sending http POST to {loginUrl}");
 
             var loginPost = await _httpClient.PostAsync(loginUrl, new StringContent(authContent, Encoding.UTF8, "application/x-www-form-urlencoded"));
             var loginPostContent = await loginPost.Content.ReadAsStringAsync();
+            var token = _ParseRequestVerificationToken(loginPostContent);
 
             await _RunPersistentConnection();
             await _RunHub(username);
 
-            var token = _ParseRequestVerificationToken(loginPostContent);
             await _RunAccountLogout(token);
         }
         
@@ -98,7 +96,7 @@ namespace ChatServiceLayer
             {
                 connection.CookieContainer = _cookieContainer;
                 
-                connection.Error += exception => _logger.WriteLine("Error: {0}: {1}" + exception.GetType(), exception.Message);
+                connection.Error += exception => _logger.WriteLine($"Error: {exception.GetType()}: {exception.Message}");
 
                 var authorizeEchoHub = connection.CreateHubProxy("AuthorizeEchoHub");
 
@@ -139,12 +137,10 @@ namespace ChatServiceLayer
             var content = token.IsNullOrEmpty() ? new StringContent("", Encoding.UTF8, encoding)
                 : new StringContent(token, Encoding.UTF8, encoding);
 
-            _logger.WriteLine();
-            _logger.WriteLine("Sending http POST to {0}", _url + "Account/LogOff");
+            _logger.WriteLine($"Sending http POST to {_url}/Account/LogOff");
             var logOff = await _httpClient.PostAsync(_url + "Account/LogOff", content);
-
-            _logger.WriteLine("Sending http POST to {0}", _url + "Account/Logout");
-            var logOut = await _httpClient.PostAsync(_url + "Account/Logout", content);
+            
+            //var logOut = await _httpClient.PostAsync(_url + "Account/Logout", content);
         }
 
         [CanBeNull]
@@ -156,7 +152,9 @@ namespace ChatServiceLayer
                 return null;
             }
 
-            var substring = content.Substring(startIndex, content.IndexOf("\" />", startIndex) - startIndex);
+            var endIndex = content.IndexOf("\" />", startIndex);
+            var length = endIndex - startIndex;
+            var substring = content.Substring(startIndex, length);
             var token = substring.Replace("\" type=\"hidden\" value=\"", "=");
             return token;
         }
