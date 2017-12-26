@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
@@ -94,8 +91,16 @@ namespace ChatServiceLayer
         public async Task RunChatHub(string username)
         {
             var chatHubName = "ChatHub";
-            var echoReceive = "hubReceived";
-            var chatReceive = "addMessage";
+
+            var onConnected = "onConnected";
+            var onEcho = "onEcho";
+
+            var onBroadcastAll = "onBroadcastAll";
+            var onBroadcastSpecific = "onBroadcastSpecific";
+
+            var echoMethod = "echo";
+            var broadcastAllMethod = "BroadcastAll";
+            var broadcastSpecificMethod = "BroadcastSpecific";
 
             _logger.WriteLine("Begin Hub");
 
@@ -104,16 +109,17 @@ namespace ChatServiceLayer
 
             _chatHub = _chatConnection.CreateHubProxy(chatHubName);
 
-            _chatHub.On<string>(echoReceive, user => _users.OnNext(user));
-
-            _chatHub.On<string, string>(chatReceive, (user, msg) =>
+            _chatHub.On<string>(onConnected, async s =>
             {
-                _users.OnNext(user);
-                _messages.OnNext(new Message(user, msg));
+                _UserPing(s);
+                await _chatHub.Invoke(echoMethod); //callback
             });
+            _chatHub.On<string>(onEcho, _UserPing);
 
+            _chatHub.On<string, string>(onBroadcastAll, _MessageFromUser);
+            _chatHub.On<string, string>(onBroadcastSpecific, _MessageFromUser);
+            
             await _chatConnection.Start();
-            await _chatHub.Invoke("echo");
         }
 
         public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", message);
@@ -152,6 +158,17 @@ namespace ChatServiceLayer
                 await connection.Start();
                 await connection.Send("Sending to AuthorizeEchoConnection");
             }
+        }
+
+        private void _UserPing(string user)
+        {
+            _users.OnNext(user);
+        }
+
+        private void _MessageFromUser(string user, string msg)
+        {
+            _users.OnNext(user);
+            _messages.OnNext(new Message(user, msg));
         }
 
         [CanBeNull]
