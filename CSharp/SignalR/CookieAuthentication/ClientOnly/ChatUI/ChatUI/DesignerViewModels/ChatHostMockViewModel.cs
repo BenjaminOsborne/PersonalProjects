@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace ChatUI.DesignerViewModels
 {
     public class ChatHostMockViewModel
     {
-        public LoginViewModel Login { get; } = new LoginViewModel(null);
+        public LoginViewModel Login { get; } = new LoginViewModel(null, null);
         public UsersMockViewModel Users { get; } = new UsersMockViewModel();
     }
 
@@ -18,5 +19,11 @@ namespace ChatUI.DesignerViewModels
         };
 
         public string SelectedUser { get; set; } = "Terry";
+
+        public string CurrentChat { get; set; }
+
+        public ICommand SendChat { get; }
+
+        public string ChatHistory { get; }
     }
 }

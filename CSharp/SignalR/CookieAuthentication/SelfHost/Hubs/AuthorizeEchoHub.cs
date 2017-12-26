@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using System;
+using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
 
 namespace Common.Hubs
@@ -24,9 +25,15 @@ namespace Common.Hubs
 
         public void Echo() => Clients.All.onEcho(_CurrentUser());
 
-        public void BroadcastAll(string message) => Clients.All.onBroadcastAll(_CurrentUser(), message);
+        public void BroadcastAll(Guid messageId, string message) => Clients.All.onBroadcastAll(messageId, _CurrentUser(), message);
 
-        public void BroadcastSpecific(string targetUserId, string message) => Clients.User(targetUserId).onBroadcastSpecific(_CurrentUser(), message);
+        public void BroadcastSpecific(Guid messageId, string targetUserId, string message)
+        {
+            var currentUser = _CurrentUser();
+
+            Clients.User(targetUserId).onBroadcastSpecific(messageId, currentUser, targetUserId, message);
+            Clients.User(currentUser).onBroadcastCallBack(messageId, currentUser, targetUserId, message);
+        }
 
         private string _CurrentUser() => Context.User.Identity.Name;
     }

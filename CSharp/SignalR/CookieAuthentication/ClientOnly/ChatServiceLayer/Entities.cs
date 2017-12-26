@@ -14,13 +14,19 @@ namespace ChatServiceLayer
     
     public class Message
     {
-        public Message(string user, string text)
+        public Message(Guid messageId, DateTime messageTime, string sender, string receiver, string text)
         {
-            User = user;
+            MessageId = messageId;
+            MessageTime = messageTime;
+            Sender = sender;
+            Receiver = receiver;
             Text = text;
         }
 
-        public string User { get; }
+        public Guid MessageId { get; }
+        public DateTime MessageTime { get; }
+        public string Sender { get; }
+        public string Receiver { get; }
         public string Text { get; }
     }
 }

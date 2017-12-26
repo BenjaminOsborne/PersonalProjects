@@ -88,6 +88,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DesignerViewModels\ChatHostMockViewModel.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>

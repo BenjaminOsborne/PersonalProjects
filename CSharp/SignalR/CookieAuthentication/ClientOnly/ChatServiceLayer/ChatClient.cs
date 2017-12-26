@@ -97,10 +97,9 @@ namespace ChatServiceLayer
 
             var onBroadcastAll = "onBroadcastAll";
             var onBroadcastSpecific = "onBroadcastSpecific";
+            var onBroadcastCallBack = "onBroadcastCallBack";
 
             var echoMethod = "echo";
-            var broadcastAllMethod = "BroadcastAll";
-            var broadcastSpecificMethod = "BroadcastSpecific";
 
             _logger.WriteLine("Begin Hub");
 
@@ -116,15 +115,16 @@ namespace ChatServiceLayer
             });
             _chatHub.On<string>(onEcho, _UserPing);
 
-            _chatHub.On<string, string>(onBroadcastAll, _MessageFromUser);
-            _chatHub.On<string, string>(onBroadcastSpecific, _MessageFromUser);
+            _chatHub.On<Guid, string, string>(onBroadcastAll, (id, send, msg) => _MessageFromUser(id, send, username, msg));
+            _chatHub.On<Guid, string, string, string>(onBroadcastSpecific, _MessageFromUser);
+            _chatHub.On<Guid, string, string, string>(onBroadcastCallBack, _MessageFromUser);
             
             await _chatConnection.Start();
         }
 
-        public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", message);
+        public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", Guid.NewGuid(), message);
 
-        public async Task SendChat(string user, string message) => await _chatHub.Invoke("broadcastSpecific", user, message);
+        public async Task SendChat(string user, string message) => await _chatHub.Invoke("broadcastSpecific", Guid.NewGuid(), user, message);
 
         public async Task<bool> AccountLogout()
         {
@@ -165,10 +165,11 @@ namespace ChatServiceLayer
             _users.OnNext(user);
         }
 
-        private void _MessageFromUser(string user, string msg)
+        private void _MessageFromUser(Guid messageId, string sender, string receiver, string msg)
         {
-            _users.OnNext(user);
-            _messages.OnNext(new Message(user, msg));
+            _users.OnNext(sender);
+            _users.OnNext(receiver);
+            _messages.OnNext(new Message(messageId, DateTime.Now, sender, receiver, msg));
         }
 
         [CanBeNull]

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace ChatServiceLayer
@@ -9,6 +11,7 @@ namespace ChatServiceLayer
     public class ChatService : IChatService
     {
         private readonly ChatClient _client;
+        private readonly ChatModel _chatModel = new ChatModel();
 
         public ChatService()
         {
@@ -16,6 +19,9 @@ namespace ChatServiceLayer
 
             var logger = new WritterLogger(Console.Out);
             _client = new ChatClient(url, logger);
+
+            _client.GetObservableUsers().Subscribe(u => _chatModel.AddUser(u));
+            _client.GetObservableMessages().Subscribe(m => _chatModel.AddMessage(m));
         }
 
         public void Dispose() => _client.Dispose();
@@ -28,26 +34,63 @@ namespace ChatServiceLayer
 
         public IObservable<ImmutableList<string>> GetObservableUsers()
         {
-            var trackedUsers = new HashSet<string>();
-            return _client.GetObservableUsers().Select(x =>
-            {
-                trackedUsers.Add(x);
-                return trackedUsers.ToImmutableList();
-            });
+            return _chatModel.GetObservableUsers();
         }
 
-        public IObservable<ImmutableList<Message>> GetObservableMessages()
+        public IObservable<ImmutableList<Message>> GetObservableMessages(string sender, string receiver)
         {
-            var trackedMessages = ImmutableList<Message>.Empty;
-            return _client.GetObservableMessages().Select(x =>
-            {
-                trackedMessages = trackedMessages.Add(x);
-                return trackedMessages;
-            });
+            return _chatModel.GetObservableMessages(sender, receiver);
         }
 
         public async Task SendGlobalMessage(string message) => await _client.SendGlobalMessage(message);
 
         public async Task SendChat(string user, string message) => await _client.SendChat(user, message);
+    }
+
+    public class ChatModel
+    {
+        private readonly object _lock = new object();
+
+        private readonly Dictionary<Guid, Message> _messages = new Dictionary<Guid, Message>();
+        private readonly Subject<ImmutableList<Message>> _subjectMessages = new Subject<ImmutableList<Message>>();
+
+        private readonly HashSet<string> _users = new HashSet<string>();
+        private readonly Subject<ImmutableList<string>> _subjectUsers = new Subject<ImmutableList<string>>();
+
+        public void AddUser(string user)
+        {
+            lock (_lock)
+            {
+                _users.Add(user);
+                _subjectUsers.OnNext(_GetUsers());
+            }
+        }
+
+        public IObservable<ImmutableList<string>> GetObservableUsers()
+        {
+            return _subjectUsers.StartWith(_GetUsers());
+        }
+
+        public void AddMessage(Message message)
+        {
+            lock (_lock)
+            {
+                _messages[message.MessageId] = message;
+                _subjectMessages.OnNext(_GetMessages());
+            }
+        }
+
+        public IObservable<ImmutableList<Message>> GetObservableMessages(string sender, string receiver)
+        {
+            return _subjectMessages.StartWith(_GetMessages())
+                .Select(x => x
+                .Where(m =>
+                    (m.Sender == sender && m.Receiver == receiver) ||
+                    (m.Sender == receiver && m.Receiver == sender)).ToImmutableList());
+        }
+
+        private ImmutableList<Message> _GetMessages() => _messages.Values.OrderBy(x => x.MessageTime).ToImmutableList();
+
+        private ImmutableList<string> _GetUsers() => _users.OrderBy(x => x).ToImmutableList();
     }
 }

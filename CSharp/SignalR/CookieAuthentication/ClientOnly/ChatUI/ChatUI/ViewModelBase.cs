@@ -107,4 +107,76 @@ namespace ChatUI
 
         public event EventHandler CanExecuteChanged = delegate { };
     }
+    public class AsyncRelayCommand : ICommand
+    {
+        private readonly Func<Task> _executeMethod;
+        private readonly Func<bool> _canExecuteMethodFunc;
+
+        public AsyncRelayCommand(Func<Task> executeMethod)
+        {
+            _executeMethod = executeMethod;
+        }
+
+        public AsyncRelayCommand(Func<Task> executeMethod, Func<bool> canExecuteMethodFunc)
+        {
+            _executeMethod = executeMethod;
+            _canExecuteMethodFunc = canExecuteMethodFunc;
+        }
+
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged(this, EventArgs.Empty);
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return _canExecuteMethodFunc?.Invoke() ?? _executeMethod != null;
+        }
+
+        public void Execute(object parameter)
+        {
+            _executeMethod?.Invoke();
+        }
+
+        public void ExecuteWait(object parameter)
+        {
+            _executeMethod?.Invoke().Wait();
+        }
+
+        public event EventHandler CanExecuteChanged = delegate { };
+    }
+
+    public class AsyncRelayCommand<T> : ICommand
+    {
+        private readonly Func<T, Task> _executeMethod;
+        private readonly Func<bool> _canExecuteMethodFunc;
+
+        public AsyncRelayCommand(Func<T, Task> executeMethod)
+        {
+            _executeMethod = executeMethod;
+        }
+
+        public AsyncRelayCommand(Func<T, Task> executeMethod, Func<bool> canExecuteMethodFunc)
+        {
+            _executeMethod = executeMethod;
+            _canExecuteMethodFunc = canExecuteMethodFunc;
+        }
+
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged(this, EventArgs.Empty);
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return _canExecuteMethodFunc?.Invoke() ?? _executeMethod != null;
+        }
+
+        public void Execute(object parameter)
+        {
+            _executeMethod?.Invoke((T)parameter);
+        }
+
+        public event EventHandler CanExecuteChanged = delegate { };
+    }
 }

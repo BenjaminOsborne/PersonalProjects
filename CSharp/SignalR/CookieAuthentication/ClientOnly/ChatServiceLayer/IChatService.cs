@@ -9,7 +9,7 @@ namespace ChatServiceLayer
         Task Login(string username, string password);
 
         IObservable<ImmutableList<string>> GetObservableUsers();
-        IObservable<ImmutableList<Message>> GetObservableMessages();
+        IObservable<ImmutableList<Message>> GetObservableMessages(string sender, string receiver);
 
         Task SendGlobalMessage(string message);
         Task SendChat(string user, string message);
