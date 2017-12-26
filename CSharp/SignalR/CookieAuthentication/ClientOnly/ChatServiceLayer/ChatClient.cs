@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNet.SignalR.Client;
+using Newtonsoft.Json;
 
 namespace ChatServiceLayer
 {
@@ -115,16 +116,16 @@ namespace ChatServiceLayer
             });
             _chatHub.On<string>(onEcho, _UserPing);
 
-            _chatHub.On<Guid, string, string>(onBroadcastAll, (id, send, msg) => _MessageFromUser(id, send, username, msg));
-            _chatHub.On<Guid, string, string, string>(onBroadcastSpecific, _MessageFromUser);
-            _chatHub.On<Guid, string, string, string>(onBroadcastCallBack, _MessageFromUser);
+            _chatHub.On<string>(onBroadcastAll, _MessageFromUser);
+            _chatHub.On<string>(onBroadcastSpecific, _MessageFromUser);
+            _chatHub.On<string>(onBroadcastCallBack, _MessageFromUser);
             
             await _chatConnection.Start();
         }
 
-        public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", Guid.NewGuid(), message);
+        public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", message);
 
-        public async Task SendChat(string user, string message) => await _chatHub.Invoke("broadcastSpecific", Guid.NewGuid(), user, message);
+        public async Task SendChat(string receiver, string message) => await _chatHub.Invoke("broadcastSpecific", receiver, message);
 
         public async Task<bool> AccountLogout()
         {
@@ -165,11 +166,14 @@ namespace ChatServiceLayer
             _users.OnNext(user);
         }
 
-        private void _MessageFromUser(Guid messageId, string sender, string receiver, string msg)
+        private void _MessageFromUser(string jsonMessage)
         {
-            _users.OnNext(sender);
-            _users.OnNext(receiver);
-            _messages.OnNext(new Message(messageId, DateTime.Now, sender, receiver, msg));
+            var dto = _Deserialize<Shared.Message>(jsonMessage);
+
+            _users.OnNext(dto.Sender);
+            _users.OnNext(dto.Receiver);
+
+            _messages.OnNext(new Message(dto.MessageId, dto.MessageTime, dto.Sender, dto.Receiver, dto.Text));
         }
 
         [CanBeNull]
@@ -186,6 +190,12 @@ namespace ChatServiceLayer
             var substring = content.Substring(startIndex, length);
             var token = substring.Replace("\" type=\"hidden\" value=\"", "=");
             return token;
+        }
+
+        private static T _Deserialize<T>(string jsonData)
+        {
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects, PreserveReferencesHandling = PreserveReferencesHandling.Objects };
+            return JsonConvert.DeserializeObject<T>(jsonData, settings);
         }
     }
 }

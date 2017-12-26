@@ -76,6 +76,7 @@
     <Compile Include="IChatService.cs" />
     <Compile Include="Entities.cs" />
     <Compile Include="ISchedulerProvider.cs" />
+    <Compile Include="Shared.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

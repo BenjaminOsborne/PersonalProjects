@@ -44,7 +44,7 @@ namespace ChatServiceLayer
 
         public async Task SendGlobalMessage(string message) => await _client.SendGlobalMessage(message);
 
-        public async Task SendChat(string user, string message) => await _client.SendChat(user, message);
+        public async Task SendChat(string receiver, string message) => await _client.SendChat(receiver, message);
     }
 
     public class ChatModel

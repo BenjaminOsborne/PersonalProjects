@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Common.Hubs
 {
@@ -25,16 +26,38 @@ namespace Common.Hubs
 
         public void Echo() => Clients.All.onEcho(_CurrentUser());
 
-        public void BroadcastAll(Guid messageId, string message) => Clients.All.onBroadcastAll(messageId, _CurrentUser(), message);
-
-        public void BroadcastSpecific(Guid messageId, string targetUserId, string message)
+        public void BroadcastAll(string message)
         {
-            var currentUser = _CurrentUser();
+            var sender = _CurrentUser();
+            var json = _CreateMessage(sender, "All", message);
 
-            Clients.User(targetUserId).onBroadcastSpecific(messageId, currentUser, targetUserId, message);
-            Clients.User(currentUser).onBroadcastCallBack(messageId, currentUser, targetUserId, message);
+            Clients.All.onBroadcastAll(json);
+        }
+
+        public void BroadcastSpecific(string receiver, string message)
+        {
+            var sender = _CurrentUser();
+            var json = _CreateMessage(sender, receiver, message);
+            
+            Clients.User(receiver).onBroadcastSpecific(json);
+            Clients.User(sender).onBroadcastCallBack(json);
         }
 
         private string _CurrentUser() => Context.User.Identity.Name;
+
+        private static string _CreateMessage(string sender, string receiver, string message)
+        {
+            var dto = new ChatServiceLayer.Shared.Message
+            {
+                MessageId = Guid.NewGuid(),
+                MessageTime = DateTime.Now,
+                Sender = sender,
+                Receiver = receiver,
+                Text = message
+            };
+            return _Serialze(dto);
+        }
+
+        private static string _Serialze<T>(T dto) => JsonConvert.SerializeObject(dto, Formatting.None);
     }
 }

@@ -12,6 +12,6 @@ namespace ChatServiceLayer
         IObservable<ImmutableList<Message>> GetObservableMessages(string sender, string receiver);
 
         Task SendGlobalMessage(string message);
-        Task SendChat(string user, string message);
+        Task SendChat(string receiver, string message);
     }
 }

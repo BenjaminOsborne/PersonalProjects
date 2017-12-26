@@ -181,6 +181,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\ClientOnly\ChatServiceLayer\Shared.cs">
+      <Link>Hubs\Shared.cs</Link>
+    </Compile>
     <Compile Include="..\SelfHost\Connections\AuthorizeEchoConnection.cs">
       <Link>Connections\AuthorizeEchoConnection.cs</Link>
     </Compile>
