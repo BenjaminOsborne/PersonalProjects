@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -37,6 +38,14 @@ namespace ChatServiceLayer
         private readonly IOutputLogger _logger;
         private readonly CookieContainer _cookieContainer;
         private readonly HttpClient _httpClient;
+        private readonly Subject<string> _users = new Subject<string>();
+        private readonly Subject<Message> _messages = new Subject<Message>();
+
+        [CanBeNull]
+        private string _token;
+
+        private HubConnection _chatConnection;
+        private IHubProxy _chatHub;
 
         public ChatClient(string url, IOutputLogger logger)
         {
@@ -48,7 +57,17 @@ namespace ChatServiceLayer
             _httpClient = new HttpClient(handler);
         }
 
-        public void Dispose() => _httpClient.Dispose();
+        public void Dispose()
+        {
+            _httpClient.Dispose();
+            _chatConnection?.Dispose();
+
+            _users.OnCompleted();
+            _users.Dispose();
+
+            _messages.OnCompleted();
+            _messages.Dispose();
+        }
 
         public async Task InitialiseConnection(string username, string password)
         {
@@ -65,19 +84,66 @@ namespace ChatServiceLayer
 
             var loginPost = await _httpClient.PostAsync(loginUrl, new StringContent(authContent, Encoding.UTF8, "application/x-www-form-urlencoded"));
             var loginPostContent = await loginPost.Content.ReadAsStringAsync();
-            var token = _ParseRequestVerificationToken(loginPostContent);
-
-            await _RunPersistentConnection();
-            await _RunHub(username);
-
-            await _RunAccountLogout(token);
+            _token = _ParseRequestVerificationToken(loginPostContent);
         }
-        
-        private async Task _RunPersistentConnection()
+
+        public IObservable<string> GetObservableUsers() => _users;
+
+        public IObservable<Message> GetObservableMessages() => _messages;
+
+        public async Task RunChatHub(string username)
+        {
+            var chatHubName = "ChatHub";
+            var echoReceive = "hubReceived";
+            var chatReceive = "addMessage";
+
+            _logger.WriteLine("Begin Hub");
+
+            _chatConnection = new HubConnection(_url) { CookieContainer = _cookieContainer };
+            _chatConnection.Error += exception => _logger.WriteLine($"Error: {exception.GetType()}: {exception.Message}");
+
+            _chatHub = _chatConnection.CreateHubProxy(chatHubName);
+
+            _chatHub.On<string>(echoReceive, user => _users.OnNext(user));
+
+            _chatHub.On<string, string>(chatReceive, (user, msg) =>
+            {
+                _users.OnNext(user);
+                _messages.OnNext(new Message(user, msg));
+            });
+
+            await _chatConnection.Start();
+            await _chatHub.Invoke("echo");
+        }
+
+        public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", message);
+
+        public async Task SendChat(string user, string message) => await _chatHub.Invoke("broadcastSpecific", user, message);
+
+        public async Task<bool> AccountLogout()
+        {
+            var token = _token;
+            if (token.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            var encoding = "application/x-www-form-urlencoded";
+            var content = token.IsNullOrEmpty() ? new StringContent("", Encoding.UTF8, encoding)
+                                                : new StringContent(token, Encoding.UTF8, encoding);
+
+            _logger.WriteLine($"Sending http POST to {_url}/Account/LogOff");
+            var logOff = await _httpClient.PostAsync(_url + "Account/LogOff", content);
+            return logOff.IsSuccessStatusCode;
+
+            //var logOut = await _httpClient.PostAsync(_url + "Account/Logout", content);
+        }
+
+        public async Task TestEcho()
         {
             _logger.WriteLine("Begin SignalR Connection");
 
-            using (var connection = new Connection(_url + "echo"))
+            using (var connection = new Connection($"{_url}echo"))
             {
                 connection.CookieContainer = _cookieContainer;
                 connection.Error += ex => _logger.WriteLine($"Error: {ex.GetType()}: {ex.Message}");
@@ -86,61 +152,6 @@ namespace ChatServiceLayer
                 await connection.Start();
                 await connection.Send("Sending to AuthorizeEchoConnection");
             }
-        }
-
-        private async Task _RunHub(string username)
-        {
-            _logger.WriteLine("Begin Hub");
-
-            using (var connection = new HubConnection(_url))
-            {
-                connection.CookieContainer = _cookieContainer;
-                
-                connection.Error += exception => _logger.WriteLine($"Error: {exception.GetType()}: {exception.Message}");
-
-                var authorizeEchoHub = connection.CreateHubProxy("AuthorizeEchoHub");
-
-                authorizeEchoHub.On<string>("hubReceived", data => _logger.WriteLine("HubReceived: " + data));
-
-                var chatHub = connection.CreateHubProxy("ChatHub");
-
-                chatHub.On<string>("hubReceived", data => _logger.WriteLine($"ChatHubReceived: {data}"));
-                chatHub.On<string, string>("addMessage", (s1, s2) => _logger.WriteLine($"{s1}: {s2}"));
-
-                await connection.Start();
-                await authorizeEchoHub.Invoke("echo", "sending to AuthorizeEchoHub");
-                await chatHub.Invoke("echo", "sending to ChatHub");
-
-                _ReadConsole().ToObservable()
-                    .SubscribeOn(NewThreadScheduler.Default)
-                    .Subscribe(async text =>
-                {
-                    await chatHub.Invoke("broadcast", username, text);
-                });
-
-                while (true)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(100));
-                }
-            }
-        }
-
-        private IEnumerable<string> _ReadConsole()
-        {
-            while (true)
-                yield return Console.ReadLine();
-        }
-
-        private async Task _RunAccountLogout(string token)
-        {
-            var encoding = "application/x-www-form-urlencoded";
-            var content = token.IsNullOrEmpty() ? new StringContent("", Encoding.UTF8, encoding)
-                : new StringContent(token, Encoding.UTF8, encoding);
-
-            _logger.WriteLine($"Sending http POST to {_url}/Account/LogOff");
-            var logOff = await _httpClient.PostAsync(_url + "Account/LogOff", content);
-            
-            //var logOut = await _httpClient.PostAsync(_url + "Account/Logout", content);
         }
 
         [CanBeNull]

@@ -9,12 +9,14 @@ namespace ChatUI
 {
     public class ChatHostViewModel : ViewModelBase
     {
-        public ChatHostViewModel(IChatService chatService)
+        public ChatHostViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService)
         {
             Login = new LoginViewModel(chatService);
+            Users = new UsersViewModel(schedulerProvider, chatService);
         }
 
         public LoginViewModel Login { get; }
+        public UsersViewModel Users { get; }
     }
 
     public class LoginViewModel : ViewModelBase
@@ -56,17 +58,18 @@ namespace ChatUI
 
     public class UsersViewModel : ViewModelBase
     {
-        private ObservableCollection<User> _users = new ObservableCollection<User>();
+        private readonly ObservableCollection<string> _users = new ObservableCollection<string>();
 
         public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService)
         {
             chatService.GetObservableUsers().ObserveOn(schedulerProvider.Dispatcher).Subscribe(u =>
             {
-
+                _users.Clear();
+                u.ForEach(_users.Add);
             });
         }
 
-        public IEnumerable<User> Users => _users;
+        public IEnumerable<string> Users => _users;
     }
 
     public class ConversationViewModel : ViewModelBase

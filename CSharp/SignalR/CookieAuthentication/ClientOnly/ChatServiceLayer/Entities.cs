@@ -11,14 +11,16 @@ namespace ChatServiceLayer
 
         public Guid Id { get; }
     }
-
-    public class User
+    
+    public class Message
     {
-        public User(string name)
+        public Message(string user, string text)
         {
-            Name = name;
+            User = user;
+            Text = text;
         }
 
-        public string Name { get; }
+        public string User { get; }
+        public string Text { get; }
     }
 }

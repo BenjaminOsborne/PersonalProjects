@@ -13,10 +13,9 @@ namespace ChatUI
             base.OnStartup(e);
 
             var chatService = new ChatService();
+            var schedulerProvider = new DesktopSchedulerProvider();
 
-            var window = new ChatHostWindow();
-            window.DataContext = new ChatHostViewModel(chatService);
-
+            var window = new ChatHostWindow { DataContext = new ChatHostViewModel(schedulerProvider, chatService) };
             Current.MainWindow = window;
             window.Show();
         }

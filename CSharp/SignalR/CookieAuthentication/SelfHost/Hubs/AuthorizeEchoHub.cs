@@ -20,19 +20,14 @@ namespace Common.Hubs
     [Authorize]
     public class ChatHub : Hub
     {
-        public override Task OnConnected()
-        {
-            return Clients.All.hubReceived($"{nameof(ChatHub)} Welcome {Context.User.Identity.Name}!");
-        }
+        public override Task OnConnected() => Clients.All.hubReceived(_CurrentUser());
 
-        public void Echo(string value)
-        {
-            Clients.Caller.hubReceived(value);
-        }
+        public void Echo() => Clients.All.hubReceived(_CurrentUser());
 
-        public void Broadcast(string name, string message)
-        {
-            Clients.All.addMessage(name, message);
-        }
+        public void BroadcastAll(string message) => Clients.All.addMessage(_CurrentUser(), message);
+
+        public void BroadcastSpecific(string targetUserId, string message) => Clients.User(targetUserId).addMessage(_CurrentUser(), message);
+
+        private string _CurrentUser() => Context.User.Identity.Name;
     }
 }

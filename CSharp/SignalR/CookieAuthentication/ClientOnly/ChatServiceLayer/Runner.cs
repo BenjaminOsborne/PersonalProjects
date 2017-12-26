@@ -17,7 +17,7 @@ namespace ChatServiceLayer
             var logger = new WritterLogger(Console.Out);
             var client = new ChatClient(url, logger);
             client.InitialiseConnection(username, password).Wait();
-
+            
             Console.ReadKey();
         }
     }
