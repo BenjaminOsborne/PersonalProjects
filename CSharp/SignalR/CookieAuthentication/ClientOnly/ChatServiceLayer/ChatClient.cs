@@ -36,8 +36,10 @@ namespace ChatServiceLayer
         private readonly IOutputLogger _logger;
         private readonly CookieContainer _cookieContainer;
         private readonly HttpClient _httpClient;
+
         private readonly Subject<string> _users = new Subject<string>();
         private readonly Subject<Message> _messages = new Subject<Message>();
+        private readonly Subject<string> _otherUserTyping = new Subject<string>();
 
         [CanBeNull]
         private string _token;
@@ -87,8 +89,10 @@ namespace ChatServiceLayer
 
         public IObservable<string> GetObservableUsers() => _users;
 
-        public IObservable<Message> GetObservableMessages() => _messages;
+        public IObservable<string> GetObservableUserTyping() => _otherUserTyping;
 
+        public IObservable<Message> GetObservableMessages() => _messages;
+        
         public async Task RunChatHub(string username)
         {
             var chatHubName = "ChatHub";
@@ -99,6 +103,7 @@ namespace ChatServiceLayer
             var onBroadcastAll = "onBroadcastAll";
             var onBroadcastSpecific = "onBroadcastSpecific";
             var onBroadcastCallBack = "onBroadcastCallBack";
+            var onBroadcastTyping = "onBroadcastTyping";
 
             var echoMethod = "echo";
 
@@ -119,6 +124,7 @@ namespace ChatServiceLayer
             _chatHub.On<string>(onBroadcastAll, _MessageFromUser);
             _chatHub.On<string>(onBroadcastSpecific, _MessageFromUser);
             _chatHub.On<string>(onBroadcastCallBack, _MessageFromUser);
+            _chatHub.On<string>(onBroadcastTyping, u => _otherUserTyping.OnNext(u));
             
             await _chatConnection.Start();
         }
@@ -126,6 +132,8 @@ namespace ChatServiceLayer
         public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", message);
 
         public async Task SendChat(string receiver, string message) => await _chatHub.Invoke("broadcastSpecific", receiver, message);
+
+        public async Task SendTyping(string receiver) => await _chatHub.Invoke("broadcastTyping", receiver);
 
         public async Task<bool> AccountLogout()
         {

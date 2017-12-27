@@ -10,8 +10,10 @@ namespace ChatServiceLayer
 
         IObservable<ImmutableList<string>> GetObservableUsers();
         IObservable<ImmutableList<Message>> GetObservableMessages(string sender, string receiver);
+        IObservable<Unit> GetObservableTyping(string sender);
 
         Task SendGlobalMessage(string message);
         Task SendChat(string receiver, string message);
+        Task SendTyping(string receiver);
     }
 }

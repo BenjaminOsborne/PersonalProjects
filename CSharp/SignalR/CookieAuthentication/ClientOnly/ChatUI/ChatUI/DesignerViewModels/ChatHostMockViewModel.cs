@@ -19,7 +19,7 @@ namespace ChatUI.DesignerViewModels
             _CreateUser("Chatty McChatface", 30)
         };
 
-        private static ConversationMockViewModel _CreateUser(string name, int unread) => new ConversationMockViewModel(name, unread);
+        private static ConversationMockViewModel _CreateUser(string name, int unread) => new ConversationMockViewModel { TargetUser = name, Unread = unread };
 
         public IEnumerable<ConversationMockViewModel> Users { get; } = _users;
 
@@ -28,19 +28,15 @@ namespace ChatUI.DesignerViewModels
 
     public class ConversationMockViewModel
     {
-        public ConversationMockViewModel(string targetUser, int unread)
-        {
-            TargetUser = targetUser;
-            Unread = unread;
-        }
+        public string TargetUser { get; set; }
 
-        public string TargetUser { get; }
-
-        public int Unread { get; }
+        public int Unread { get; set; }
 
         public bool ShowUnread => Unread > 0;
 
         public string CurrentChat { get; set; } = "Some chat";
+
+        public string TargetUserTypingText => "Terry is typing...";
 
         public ICommand SendChat { get; }
 

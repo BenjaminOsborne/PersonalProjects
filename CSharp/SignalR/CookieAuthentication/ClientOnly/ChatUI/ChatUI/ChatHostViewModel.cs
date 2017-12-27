@@ -79,13 +79,41 @@ namespace ChatUI
                 missing.ForEach(targetUser =>
                 {
                     var obsMessages = chatService.GetObservableMessages(targetUser, currentUserName)
-                        .ObserveOn(schedulerProvider.Dispatcher);
+                        .ObserveOn(schedulerProvider.Dispatcher).Publish();
 
                     var model = new ConversationViewModel(
                         obsMessages,
                         c => chatService.SendChat(targetUser, c),
+                        () => chatService.SendTyping(targetUser),
                         targetUser);
                     _users.Add(model);
+
+                    var span = TimeSpan.FromSeconds(2);
+                    var obsMessageTicks = obsMessages.Select(_ => DateTime.Now).StartWith(DateTime.Now);
+                    var obsTyping = chatService.GetObservableTyping(targetUser).Select(x => DateTime.Now);
+                    var obsTimer = Observable.Interval(span).Select(_ => Unit.Instance).StartWith(Unit.Instance);
+
+                    obsMessageTicks.CombineLatest(obsTyping, obsTimer, Tuple.Create)
+                        .ObserveOn(schedulerProvider.Dispatcher)
+                        .Subscribe(tup =>
+                        {
+                            var sendTime = tup.Item1;
+                            var typingTime = tup.Item2;
+
+                            var sentAfterType = sendTime > typingTime;
+                            var isTypingInRange = typingTime > DateTime.Now.Add(-span);
+
+                            if (sentAfterType == false && isTypingInRange)
+                            {
+                                model.TargetUserTypingText = $"{targetUser} is typing...";
+                            }
+                            else
+                            {
+                                model.TargetUserTypingText = "";
+                            }
+                        });
+
+                    obsMessages.Connect();
                 });
             });
         }
@@ -111,15 +139,18 @@ namespace ChatUI
 
     public class ConversationViewModel : ViewModelBase
     {
+        private readonly Action _onTyping;
         private readonly ObservableCollection<ChatItem> _chatHistory = new ObservableCollection<ChatItem>();
         private ImmutableHashSet<Guid> _previousRead = ImmutableHashSet<Guid>.Empty;
 
         private int _unread;
         private string _currentChat;
         private bool _isSelected;
+        private string _targetUserTypingText;
 
-        public ConversationViewModel(IObservable<ImmutableList<Message>> obsMessages, Func<string, Task> onSendChat, string targetUser)
+        public ConversationViewModel(IObservable<ImmutableList<Message>> obsMessages, Func<string, Task> onSendChat, Action onTyping, string targetUser)
         {
+            _onTyping = onTyping;
             TargetUser = targetUser;
             SendChat = new AsyncRelayCommand(async () =>
             {
@@ -160,10 +191,16 @@ namespace ChatUI
         public string CurrentChat
         {
             get => _currentChat;
-            set => SetProperty(ref _currentChat, value);
+            set => SetPropertyWithAction(ref _currentChat, value, _ => _onTyping());
         }
 
-        public ICommand SendChat { get; }
+        public string TargetUserTypingText
+        {
+            get => _targetUserTypingText;
+            set => SetProperty(ref _targetUserTypingText, value);
+        }
+
+    public ICommand SendChat { get; }
 
         public IEnumerable<ChatItem> ChatHistory => _chatHistory;
         

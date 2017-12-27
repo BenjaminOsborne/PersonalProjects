@@ -42,9 +42,16 @@ namespace ChatServiceLayer
             return _chatModel.GetObservableMessages(sender, receiver);
         }
 
+        public IObservable<Unit> GetObservableTyping(string sender)
+        {
+            return _client.GetObservableUserTyping().Where(x => x == sender).Select(_ => Unit.Instance);
+        }
+
         public async Task SendGlobalMessage(string message) => await _client.SendGlobalMessage(message);
 
         public async Task SendChat(string receiver, string message) => await _client.SendChat(receiver, message);
+
+        public async Task SendTyping(string receiver) => await _client.SendTyping(receiver);
     }
 
     public class ChatModel

@@ -43,6 +43,12 @@ namespace Common.Hubs
             Clients.User(sender).onBroadcastCallBack(json);
         }
 
+        public void BroadcastTyping(string receiver)
+        {
+            var sender = _CurrentUser();
+            Clients.User(receiver).onBroadcastTyping(sender);
+        }
+
         private string _CurrentUser() => Context.User.Identity.Name;
 
         private static string _CreateMessage(string sender, string receiver, string message)
