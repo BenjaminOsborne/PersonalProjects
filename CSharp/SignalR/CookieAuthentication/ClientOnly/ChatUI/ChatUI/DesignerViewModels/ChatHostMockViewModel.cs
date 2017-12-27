@@ -12,24 +12,34 @@ namespace ChatUI.DesignerViewModels
 
     public class UsersMockViewModel
     {
-        private static readonly UserViewModel[] _users = new[]
+        private static readonly ConversationMockViewModel[] _users = new[]
         {
             _CreateUser("Ben", 0),
             _CreateUser("Terry", 2),
             _CreateUser("Chatty McChatface", 30)
         };
 
-        private static UserViewModel _CreateUser(string name, int unread) => new UserViewModel(name) { Unread = unread };
+        private static ConversationMockViewModel _CreateUser(string name, int unread) => new ConversationMockViewModel(name, unread);
 
-        public IEnumerable<UserViewModel> Users { get; } = _users;
+        public IEnumerable<ConversationMockViewModel> Users { get; } = _users;
 
-        public UserViewModel SelectedUser { get; set; } = _users[1];
-
-        public ConversationMockViewModel CurrentConversation { get; } = new ConversationMockViewModel();
+        public ConversationMockViewModel SelectedUser { get; set; } = _users[1];
     }
 
     public class ConversationMockViewModel
     {
+        public ConversationMockViewModel(string targetUser, int unread)
+        {
+            TargetUser = targetUser;
+            Unread = unread;
+        }
+
+        public string TargetUser { get; }
+
+        public int Unread { get; }
+
+        public bool ShowUnread => Unread > 0;
+
         public string CurrentChat { get; set; } = "Some chat";
 
         public ICommand SendChat { get; }

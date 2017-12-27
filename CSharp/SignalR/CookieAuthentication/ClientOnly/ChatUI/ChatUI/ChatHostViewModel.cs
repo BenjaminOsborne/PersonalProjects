@@ -65,65 +65,58 @@ namespace ChatUI
 
     public class UsersViewModel : ViewModelBase
     {
-        private readonly ObservableCollection<UserViewModel> _users = new ObservableCollection<UserViewModel>();
-        private readonly Dictionary<string, ConversationViewModel> _conversations = new Dictionary<string, ConversationViewModel>();
+        private readonly ObservableCollection<ConversationViewModel> _users = new ObservableCollection<ConversationViewModel>();
 
-        private UserViewModel _selectedUser;
-        private ConversationViewModel _currentConversation;
+        private ConversationViewModel _selectedUser;
 
         public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
             chatService.GetObservableUsers()
                 .ObserveOn(schedulerProvider.Dispatcher).Subscribe(users =>
             {
-                var userModels = users.Select(x => new UserViewModel(x)).ToImmutableList();
-                _users.SetState(userModels, (a,b) => a.UserName == b.UserName);
-
-                var missing = userModels.Where(u => _conversations.ContainsKey(u.UserName) == false).ToImmutableList();
-                missing.ForEach(model =>
+                var existing = _users.Select(x => x.TargetUser).ToImmutableHashSet();
+                var missing = users.Where(u => existing.Contains(u) == false).ToImmutableList();
+                missing.ForEach(targetUser =>
                 {
-                    var targetUser = model.UserName;
                     var obsMessages = chatService.GetObservableMessages(targetUser, currentUserName)
-                        .ObserveOn(schedulerProvider.Dispatcher).Publish();
+                        .ObserveOn(schedulerProvider.Dispatcher);
 
-                    _conversations[targetUser] = new ConversationViewModel(
+                    var model = new ConversationViewModel(
                         obsMessages,
                         c => chatService.SendChat(targetUser, c),
                         targetUser);
-
-                    obsMessages.Subscribe(m =>
-                    {
-                        model.Unread = m.Count;
-                    });
-
-                    obsMessages.Connect();
+                    _users.Add(model);
                 });
             });
         }
 
-        public IEnumerable<UserViewModel> Users => _users;
+        public IEnumerable<ConversationViewModel> Users => _users;
 
-        public UserViewModel SelectedUser
+        public ConversationViewModel SelectedUser
         {
             get => _selectedUser;
             set => SetPropertyWithAction(ref _selectedUser, value, _ =>
             {
-                var user = _selectedUser?.UserName;
-                CurrentConversation = user != null ? _conversations[user] : null;
-            });
-        }
+                var selected = _selectedUser;
 
-        public ConversationViewModel CurrentConversation
-        {
-            get => _currentConversation;
-            private set => SetProperty(ref _currentConversation, value);
+                var others = _users.Where(x => x != selected).ToImmutableList();
+                others.ForEach(x => x.IsSelected = false);
+                if (selected != null)
+                {
+                    selected.IsSelected = true;
+                }
+            });
         }
     }
 
     public class ConversationViewModel : ViewModelBase
     {
         private readonly ObservableCollection<ChatItem> _chatHistory = new ObservableCollection<ChatItem>();
+        private ImmutableHashSet<Guid> _previousRead = ImmutableHashSet<Guid>.Empty;
+
+        private int _unread;
         private string _currentChat;
+        private bool _isSelected;
 
         public ConversationViewModel(IObservable<ImmutableList<Message>> obsMessages, Func<string, Task> onSendChat, string targetUser)
         {
@@ -136,17 +129,33 @@ namespace ChatUI
             });
 
             obsMessages.Subscribe(msgs =>
+            {
+                var chats = msgs.Select(m =>
                 {
-                    var chats = msgs.Select(m =>
-                    {
-                        var fromThem = m.Sender == targetUser;
-                        return new ChatItem(m.MessageId, m.Text, fromThem, !fromThem);
-                    }).ToImmutableList();
-                    _chatHistory.SetState(chats, (a,b) => a.Id == b.Id);
-                });
+                    var fromThem = m.Sender == targetUser;
+                    return new ChatItem(m.MessageId, m.Text, fromThem, !fromThem);
+                }).ToImmutableList();
+                _chatHistory.SetState(chats, (a,b) => a.Id == b.Id);
+
+                _AnalyseUnread();
+            });
         }
 
         public string TargetUser { get; }
+
+        public int Unread
+        {
+            get => _unread;
+            set => SetPropertyWithAction(ref _unread, value, _ => OnPropertyChangedExplicit(nameof(ShowUnread)));
+        }
+
+        public bool ShowUnread => Unread > 0;
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetPropertyWithAction(ref _isSelected, value, _ => _AnalyseUnread());
+        }
 
         public string CurrentChat
         {
@@ -157,26 +166,19 @@ namespace ChatUI
         public ICommand SendChat { get; }
 
         public IEnumerable<ChatItem> ChatHistory => _chatHistory;
-    }
-
-    public class UserViewModel : ViewModelBase
-    {
-        private int _unread;
-
-        public UserViewModel(string userName)
+        
+        private void _AnalyseUnread()
         {
-            UserName = userName;
+            if (IsSelected)
+            {
+                _previousRead = _chatHistory.Select(x => x.Id).ToImmutableHashSet();
+                Unread = 0;
+            }
+            else
+            {
+                Unread = _chatHistory.Count(x => _previousRead.Contains(x.Id) == false);
+            }
         }
-
-        public string UserName { get; }
-
-        public int Unread
-        {
-            get => _unread;
-            set => SetPropertyWithAction(ref _unread, value, _ => OnPropertyChangedExplicit(nameof(ShowUnread)));
-        }
-
-        public bool ShowUnread => Unread > 0;
     }
 
     public class ChatItem

@@ -57,7 +57,7 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding UserName}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="0" Text="{Binding TargetUser}" VerticalAlignment="Center"/>
                                         <Border Grid.Column="1" CornerRadius="0.5" BorderThickness="2" BorderBrush="{DynamicResource AccentColorBrush}"
                                                 Visibility="{Binding ShowUnread, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <TextBlock Text="{Binding Unread}" Margin="4,1" HorizontalAlignment="Center"/>
@@ -69,7 +69,7 @@
                     </ScrollViewer>
                 </Grid>
                 <GridSplitter Grid.Column="1" Margin="0" HorizontalAlignment="Center" Width="5"/>
-                <local:ConversationView Grid.Column="2" Margin="3" DataContext="{Binding Users.CurrentConversation}"/>
+                <local:ConversationView Grid.Column="2" Margin="3" DataContext="{Binding Users.SelectedUser}"/>
             </Grid>
         </Grid>
     </Grid>
