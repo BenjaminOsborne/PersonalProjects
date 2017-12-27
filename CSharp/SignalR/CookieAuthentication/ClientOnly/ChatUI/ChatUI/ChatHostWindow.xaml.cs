@@ -23,15 +23,6 @@ namespace ChatUI
                         login.Password = pw;
                     }
                 };
-
-                CurrentChat.PreviewKeyDown += (sender, args) =>
-                {
-                    if (args.Key == Key.Return && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) == false)
-                    {
-                        SendChat.Command.Execute(null);
-                        args.Handled = true;
-                    }
-                };
             };
         }
     }

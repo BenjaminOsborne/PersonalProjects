@@ -66,32 +66,25 @@ namespace ChatUI
     {
         private readonly IDesktopSchedulerProvider _schedulerProvider;
         private readonly IChatService _chatService;
-        private readonly string _userName;
 
         private readonly ObservableCollection<string> _users = new ObservableCollection<string>();
+        private readonly Dictionary<string, ConversationViewModel> _conversations = new Dictionary<string, ConversationViewModel>();
 
         private string _selectedUser;
-        private string _currentChat;
-        private string _chatHistory;
-        private IDisposable _obsMessages;
+        private ConversationViewModel _currentConversation;
 
-        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string userName)
+        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
             _schedulerProvider = schedulerProvider;
             _chatService = chatService;
-            _userName = userName;
-
+            
             _chatService.GetObservableUsers()
-                .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(u =>
+                .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(users =>
             {
-                _users.SetState(u);
-            });
+                _users.SetState(users);
 
-            SendChat = new AsyncRelayCommand(async () =>
-            {
-                var chat = CurrentChat;
-                CurrentChat = string.Empty; //Clear on send
-                await chatService.SendChat(SelectedUser, chat);
+                var missing = _users.Where(u => _conversations.ContainsKey(u) == false).ToImmutableList();
+                missing.ForEach(u => _conversations[u] = new ConversationViewModel(schedulerProvider, chatService, u, currentUserName));
             });
         }
 
@@ -100,8 +93,47 @@ namespace ChatUI
         public string SelectedUser
         {
             get => _selectedUser;
-            set => SetPropertyWithAction(ref _selectedUser, value, _ => _ObserveMessages());
+            set => SetPropertyWithAction(ref _selectedUser, value, _ =>
+            {
+                CurrentConversation = _conversations[_selectedUser];
+            });
         }
+
+        public ConversationViewModel CurrentConversation
+        {
+            get => _currentConversation;
+            private set => SetProperty(ref _currentConversation, value);
+        }
+    }
+
+    public class ConversationViewModel : ViewModelBase
+    {
+        private readonly ObservableCollection<ChatItem> _chatHistory = new ObservableCollection<ChatItem>();
+        private string _currentChat;
+
+        public ConversationViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string targetUser, string currentUserName)
+        {
+            TargetUser = targetUser;
+            SendChat = new AsyncRelayCommand(async () =>
+            {
+                var chat = CurrentChat;
+                CurrentChat = string.Empty; //Clear on send
+                await chatService.SendChat(targetUser, chat);
+            });
+
+            chatService.GetObservableMessages(targetUser, currentUserName)
+                .ObserveOn(schedulerProvider.Dispatcher).Subscribe(msgs =>
+                {
+                    var chats = msgs.Select(m =>
+                    {
+                        var fromThem = m.Sender == targetUser;
+                        return new ChatItem(m.MessageId, m.Text, fromThem, !fromThem);
+                    }).ToImmutableList();
+                    _chatHistory.SetState(chats, (a,b) => a.Id == b.Id);
+                });
+        }
+
+        public string TargetUser { get; }
 
         public string CurrentChat
         {
@@ -111,33 +143,22 @@ namespace ChatUI
 
         public ICommand SendChat { get; }
 
-        public string ChatHistory
-        {
-            get => _chatHistory;
-            private set => SetProperty(ref _chatHistory, value);
-        }
-
-        private void _ObserveMessages()
-        {
-            _obsMessages?.Dispose();
-            ChatHistory = "";
-
-            var sender = SelectedUser;
-            if (sender == null)
-            {
-                return;
-            }
-
-            _obsMessages = _chatService.GetObservableMessages(sender, _userName)
-                .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(m =>
-                {
-                    ChatHistory = string.Join("\n", m.Select(x => $"{x.Sender}: {x.Text}"));
-                });
-        }
+        public IEnumerable<ChatItem> ChatHistory => _chatHistory;
     }
 
-    public class ConversationViewModel : ViewModelBase
+    public class ChatItem
     {
-        
+        public ChatItem(Guid id, string message, bool fromThem, bool fromUs)
+        {
+            Id = id;
+            Message = message;
+            FromThem = fromThem;
+            FromUs = fromUs;
+        }
+
+        public Guid Id { get; }
+        public string Message { get; }
+        public bool FromThem { get; }
+        public bool FromUs { get; }
     }
 }
