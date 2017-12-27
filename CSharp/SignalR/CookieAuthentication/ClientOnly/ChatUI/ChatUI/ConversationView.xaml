@@ -23,12 +23,12 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <Border BorderThickness="1" CornerRadius="5" BorderBrush="DarkGray" Background="SandyBrown" Margin="0,3,20,3"
+                            <Border BorderThickness="3" CornerRadius="5" BorderBrush="SandyBrown" Margin="0,3,20,3"
                                     Visibility="{Binding FromThem, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <TextBlock Text="{Binding Message}" Margin="10,3" FontWeight="DemiBold"/>
                             </Border>
 
-                            <Border BorderThickness="1" CornerRadius="5" BorderBrush="DarkGray" Background="{DynamicResource AccentColorBrush}" Margin="20,3,0,3"
+                            <Border BorderThickness="3" CornerRadius="5" BorderBrush="{DynamicResource AccentColorBrush}" Margin="20,3,0,3"
                                     Visibility="{Binding FromUs, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <TextBlock Text="{Binding Message}" TextAlignment="Right" Margin="10,3" FontWeight="DemiBold"/>
                             </Border>
