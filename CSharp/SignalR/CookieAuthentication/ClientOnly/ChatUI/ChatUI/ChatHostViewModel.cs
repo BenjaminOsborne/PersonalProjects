@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using ChatServiceLayer;
 
@@ -64,38 +65,51 @@ namespace ChatUI
 
     public class UsersViewModel : ViewModelBase
     {
-        private readonly IDesktopSchedulerProvider _schedulerProvider;
-        private readonly IChatService _chatService;
-
-        private readonly ObservableCollection<string> _users = new ObservableCollection<string>();
+        private readonly ObservableCollection<UserViewModel> _users = new ObservableCollection<UserViewModel>();
         private readonly Dictionary<string, ConversationViewModel> _conversations = new Dictionary<string, ConversationViewModel>();
 
-        private string _selectedUser;
+        private UserViewModel _selectedUser;
         private ConversationViewModel _currentConversation;
 
         public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
-            _schedulerProvider = schedulerProvider;
-            _chatService = chatService;
-            
-            _chatService.GetObservableUsers()
-                .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(users =>
+            chatService.GetObservableUsers()
+                .ObserveOn(schedulerProvider.Dispatcher).Subscribe(users =>
             {
-                _users.SetState(users);
+                var userModels = users.Select(x => new UserViewModel(x)).ToImmutableList();
+                _users.SetState(userModels, (a,b) => a.UserName == b.UserName);
 
-                var missing = _users.Where(u => _conversations.ContainsKey(u) == false).ToImmutableList();
-                missing.ForEach(u => _conversations[u] = new ConversationViewModel(schedulerProvider, chatService, u, currentUserName));
+                var missing = userModels.Where(u => _conversations.ContainsKey(u.UserName) == false).ToImmutableList();
+                missing.ForEach(model =>
+                {
+                    var targetUser = model.UserName;
+                    var obsMessages = chatService.GetObservableMessages(targetUser, currentUserName)
+                        .ObserveOn(schedulerProvider.Dispatcher).Publish();
+
+                    _conversations[targetUser] = new ConversationViewModel(
+                        obsMessages,
+                        c => chatService.SendChat(targetUser, c),
+                        targetUser);
+
+                    obsMessages.Subscribe(m =>
+                    {
+                        model.Unread = m.Count;
+                    });
+
+                    obsMessages.Connect();
+                });
             });
         }
 
-        public IEnumerable<string> Users => _users;
+        public IEnumerable<UserViewModel> Users => _users;
 
-        public string SelectedUser
+        public UserViewModel SelectedUser
         {
             get => _selectedUser;
             set => SetPropertyWithAction(ref _selectedUser, value, _ =>
             {
-                CurrentConversation = _conversations[_selectedUser];
+                var user = _selectedUser?.UserName;
+                CurrentConversation = user != null ? _conversations[user] : null;
             });
         }
 
@@ -111,18 +125,17 @@ namespace ChatUI
         private readonly ObservableCollection<ChatItem> _chatHistory = new ObservableCollection<ChatItem>();
         private string _currentChat;
 
-        public ConversationViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string targetUser, string currentUserName)
+        public ConversationViewModel(IObservable<ImmutableList<Message>> obsMessages, Func<string, Task> onSendChat, string targetUser)
         {
             TargetUser = targetUser;
             SendChat = new AsyncRelayCommand(async () =>
             {
                 var chat = CurrentChat;
                 CurrentChat = string.Empty; //Clear on send
-                await chatService.SendChat(targetUser, chat);
+                await onSendChat(chat);
             });
 
-            chatService.GetObservableMessages(targetUser, currentUserName)
-                .ObserveOn(schedulerProvider.Dispatcher).Subscribe(msgs =>
+            obsMessages.Subscribe(msgs =>
                 {
                     var chats = msgs.Select(m =>
                     {
@@ -144,6 +157,26 @@ namespace ChatUI
         public ICommand SendChat { get; }
 
         public IEnumerable<ChatItem> ChatHistory => _chatHistory;
+    }
+
+    public class UserViewModel : ViewModelBase
+    {
+        private int _unread;
+
+        public UserViewModel(string userName)
+        {
+            UserName = userName;
+        }
+
+        public string UserName { get; }
+
+        public int Unread
+        {
+            get => _unread;
+            set => SetPropertyWithAction(ref _unread, value, _ => OnPropertyChangedExplicit(nameof(ShowUnread)));
+        }
+
+        public bool ShowUnread => Unread > 0;
     }
 
     public class ChatItem
