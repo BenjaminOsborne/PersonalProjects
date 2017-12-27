@@ -65,44 +65,28 @@ namespace ChatUI
 
     public class UsersViewModel : ViewModelBase
     {
+        private readonly IDesktopSchedulerProvider _schedulerProvider;
+        private readonly IChatService _chatService;
+        private readonly string _currentUserName;
         private readonly ObservableCollection<ConversationViewModel> _users = new ObservableCollection<ConversationViewModel>();
 
         private ConversationViewModel _selectedUser;
         
         public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
-            chatService.GetObservableUsers()
-                .ObserveOn(schedulerProvider.Dispatcher).Subscribe(users =>
+            _schedulerProvider = schedulerProvider;
+            _chatService = chatService;
+            _currentUserName = currentUserName;
+
+            _chatService.GetObservableUsers()
+                .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(users =>
             {
                 var existing = _users.Select(x => x.TargetUser).ToImmutableHashSet();
                 var missing = users.Where(u => existing.Contains(u) == false).ToImmutableList();
                 missing.ForEach(targetUser =>
                 {
-                    var obsMessages = chatService.GetObservableMessages(targetUser, currentUserName)
-                        .ObserveOn(schedulerProvider.Dispatcher).Publish();
-
-                    var model = new ConversationViewModel(
-                        obsMessages,
-                        c => chatService.SendChat(targetUser, c),
-                        () => chatService.SendTyping(targetUser),
-                        targetUser);
+                    var model = _CreateModelForTargetUser(targetUser);
                     _users.Add(model);
-
-                    var span = TimeSpan.FromSeconds(2);
-                    var sample = TimeSpan.FromSeconds(0.5); //sample at a higher rate than the cut off
-                    var obsMessageTicks = obsMessages.Select(_ => DateTime.Now).StartWith(DateTime.Now);
-                    var obsTyping = chatService.GetObservableTyping(targetUser).Select(x => DateTime.Now);
-                    var obsTimer = Observable.Interval(sample).Select(_ => Unit.Instance).StartWith(Unit.Instance);
-
-                    obsMessageTicks.CombineLatest(obsTyping, obsTimer, (a, b, _) => new { sendTime = a, typeTime = b })
-                        .ObserveOn(schedulerProvider.Dispatcher)
-                        .Subscribe(data =>
-                        {
-                            var isTypingInRange = data.typeTime > DateTime.Now.Add(-span);
-                            model.TargetUserTypingText = data.sendTime < data.typeTime && isTypingInRange ? $"{targetUser} is typing..." : "";
-                        });
-
-                    obsMessages.Connect();
                 });
             });
         }
@@ -123,6 +107,40 @@ namespace ChatUI
                     selected.IsSelected = true;
                 }
             });
+        }
+
+        private ConversationViewModel _CreateModelForTargetUser(string targetUser)
+        {
+            var obsMessages = _chatService.GetObservableMessages(targetUser, _currentUserName)
+                .ObserveOn(_schedulerProvider.Dispatcher).Publish();
+
+            var model = new ConversationViewModel(
+                obsMessages,
+                c => _chatService.SendChat(targetUser, c),
+                () => _chatService.SendTyping(targetUser),
+                targetUser);
+
+            //Handle typing text
+            obsMessages.Subscribe(_ => model.TargetUserTypingText = ""); //Clear whenever message comes in
+
+            IDisposable runningClear = null;
+            _chatService.GetObservableTyping(targetUser)
+                .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(_ =>
+                {
+                    runningClear?.Dispose(); //Dispose existing running clear
+
+                    model.TargetUserTypingText = $"{targetUser} is typing..."; //Set typing
+
+                    var clearSpan = TimeSpan.FromSeconds(2);
+                    runningClear = Observable.Timer(clearSpan).ObserveOn(_schedulerProvider.Dispatcher).Subscribe(__ =>
+                    {
+                        model.TargetUserTypingText = ""; //Reset typing after span
+                    });
+                });
+
+            obsMessages.Connect();
+
+            return model;
         }
     }
 
