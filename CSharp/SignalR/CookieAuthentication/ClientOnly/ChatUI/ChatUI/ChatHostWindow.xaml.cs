@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 
 namespace ChatUI
 {
@@ -20,6 +21,15 @@ namespace ChatUI
                     if (login != null)
                     {
                         login.Password = pw;
+                    }
+                };
+
+                CurrentChat.PreviewKeyDown += (sender, args) =>
+                {
+                    if (args.Key == Key.Return && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) == false)
+                    {
+                        SendChat.Command.Execute(null);
+                        args.Handled = true;
                     }
                 };
             };
