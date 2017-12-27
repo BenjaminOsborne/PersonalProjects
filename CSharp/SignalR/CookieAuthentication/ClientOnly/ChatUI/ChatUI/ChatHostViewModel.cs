@@ -68,7 +68,7 @@ namespace ChatUI
         private readonly ObservableCollection<ConversationViewModel> _users = new ObservableCollection<ConversationViewModel>();
 
         private ConversationViewModel _selectedUser;
-
+        
         public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
             chatService.GetObservableUsers()
@@ -89,28 +89,17 @@ namespace ChatUI
                     _users.Add(model);
 
                     var span = TimeSpan.FromSeconds(2);
+                    var sample = TimeSpan.FromSeconds(0.5); //sample at a higher rate than the cut off
                     var obsMessageTicks = obsMessages.Select(_ => DateTime.Now).StartWith(DateTime.Now);
                     var obsTyping = chatService.GetObservableTyping(targetUser).Select(x => DateTime.Now);
-                    var obsTimer = Observable.Interval(span).Select(_ => Unit.Instance).StartWith(Unit.Instance);
+                    var obsTimer = Observable.Interval(sample).Select(_ => Unit.Instance).StartWith(Unit.Instance);
 
-                    obsMessageTicks.CombineLatest(obsTyping, obsTimer, Tuple.Create)
+                    obsMessageTicks.CombineLatest(obsTyping, obsTimer, (a, b, _) => new { sendTime = a, typeTime = b })
                         .ObserveOn(schedulerProvider.Dispatcher)
-                        .Subscribe(tup =>
+                        .Subscribe(data =>
                         {
-                            var sendTime = tup.Item1;
-                            var typingTime = tup.Item2;
-
-                            var sentAfterType = sendTime > typingTime;
-                            var isTypingInRange = typingTime > DateTime.Now.Add(-span);
-
-                            if (sentAfterType == false && isTypingInRange)
-                            {
-                                model.TargetUserTypingText = $"{targetUser} is typing...";
-                            }
-                            else
-                            {
-                                model.TargetUserTypingText = "";
-                            }
+                            var isTypingInRange = data.typeTime > DateTime.Now.Add(-span);
+                            model.TargetUserTypingText = data.sendTime < data.typeTime && isTypingInRange ? $"{targetUser} is typing..." : "";
                         });
 
                     obsMessages.Connect();
