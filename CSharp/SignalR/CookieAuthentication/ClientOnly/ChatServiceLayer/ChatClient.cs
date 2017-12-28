@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
+using ChatServiceLayer.Shared;
 using JetBrains.Annotations;
 using Microsoft.AspNet.SignalR.Client;
 
@@ -36,15 +38,16 @@ namespace ChatServiceLayer
         private readonly CookieContainer _cookieContainer;
         private readonly HttpClient _httpClient;
 
-        private readonly Subject<string> _users = new Subject<string>();
+        private readonly Subject<ConverationGroup> _users = new Subject<ConverationGroup>();
         private readonly Subject<Message> _messages = new Subject<Message>();
-        private readonly Subject<string> _otherUserTyping = new Subject<string>();
+        private readonly Subject<MessageRoute> _otherUserTyping = new Subject<MessageRoute>();
 
         [CanBeNull]
         private string _token;
 
         private HubConnection _chatConnection;
         private IHubProxy _chatHub;
+        private string _userName;
 
         public ChatClient(string url, IOutputLogger logger)
         {
@@ -86,22 +89,21 @@ namespace ChatServiceLayer
             _token = _ParseRequestVerificationToken(loginPostContent);
         }
 
-        public IObservable<string> GetObservableUsers() => _users;
+        public IObservable<ConverationGroup> GetObservableUsers() => _users;
 
-        public IObservable<string> GetObservableUserTyping() => _otherUserTyping;
+        public IObservable<MessageRoute> GetObservableUserTyping() => _otherUserTyping;
 
         public IObservable<Message> GetObservableMessages() => _messages;
         
         public async Task RunChatHub(string username)
         {
+            _userName = username;
             var chatHubName = "ChatHub";
-
             var onConnected = "onConnected";
             var onEcho = "onEcho";
 
             var onBroadcastAll = "onBroadcastAll";
             var onBroadcastSpecific = "onBroadcastSpecific";
-            var onBroadcastCallBack = "onBroadcastCallBack";
             var onBroadcastTyping = "onBroadcastTyping";
 
             var echoMethod = "echo";
@@ -122,17 +124,16 @@ namespace ChatServiceLayer
 
             _chatHub.On<Shared.Message>(onBroadcastAll, _MessageFromUser);
             _chatHub.On<Shared.Message>(onBroadcastSpecific, _MessageFromUser);
-            _chatHub.On<Shared.Message>(onBroadcastCallBack, _MessageFromUser);
-            _chatHub.On<string>(onBroadcastTyping, u => _otherUserTyping.OnNext(u));
+            _chatHub.On<Shared.MessageRoute>(onBroadcastTyping, _OnTyping);
             
             await _chatConnection.Start();
         }
-
+        
         public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", message);
 
-        public async Task SendChat(string receiver, string message) => await _chatHub.Invoke("broadcastSpecific", receiver, message);
+        public async Task SendChat(MessageSendInfo sendInfo) => await _chatHub.Invoke("broadcastSpecific", sendInfo);
 
-        public async Task SendTyping(string receiver) => await _chatHub.Invoke("broadcastTyping", receiver);
+        public async Task SendTyping(MessageRoute route) => await _chatHub.Invoke("broadcastTyping", route);
 
         public async Task<bool> AccountLogout()
         {
@@ -168,17 +169,34 @@ namespace ChatServiceLayer
             }
         }
 
-        private void _UserPing(string user)
+        private void _UserPing(string sender)
         {
-            _users.OnNext(user);
+            var group = new ConverationGroup("", ImmutableList.Create(_userName, sender));
+            _users.OnNext(group);
         }
 
         private void _MessageFromUser(Shared.Message dto)
         {
-            _users.OnNext(dto.Sender);
-            _users.OnNext(dto.Receiver);
+            var dtoRoute = dto.Route;
+            var route = _CreateMessageRoute(dtoRoute);
 
-            _messages.OnNext(new Message(dto.MessageId, dto.MessageTime, dto.Sender, dto.Receiver, dto.Text));
+            _users.OnNext(route.Group);
+
+            var message = new Message(dto.MessageId, dto.MessageTime, route, dto.Content);
+            _messages.OnNext(message);
+        }
+
+        private void _OnTyping(Shared.MessageRoute dto)
+        {
+            var route = _CreateMessageRoute(dto);
+            _otherUserTyping.OnNext(route);
+        }
+
+        private static MessageRoute _CreateMessageRoute(Shared.MessageRoute dtoRoute)
+        {
+            var dtoGroup = dtoRoute.Group;
+            var group = new ConverationGroup(dtoGroup.GroupName, dtoGroup.Users.ToImmutableList());
+            return new MessageRoute(@group, dtoRoute.Sender);
         }
 
         [CanBeNull]
