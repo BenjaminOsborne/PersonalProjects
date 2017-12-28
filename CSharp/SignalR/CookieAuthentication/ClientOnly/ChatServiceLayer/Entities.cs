@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace ChatServiceLayer
 {
@@ -13,16 +14,45 @@ namespace ChatServiceLayer
         public Guid Id { get; }
     }
 
-    public class ConverationGroup
+    public class ConverationGroup : IEquatable<ConverationGroup>
     {
-        public ConverationGroup(string groupName, ImmutableList<string> users)
+        #region Equality
+
+        public bool Equals(ConverationGroup other)
         {
-            GroupName = groupName;
-            Users = users;
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Key, other.Key);
         }
 
-        public string GroupName { get; }
-        public ImmutableList<string> Users { get; }
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ConverationGroup)obj);
+        }
+
+        public override int GetHashCode() => Key.GetHashCode();
+
+        public static bool operator ==(ConverationGroup left, ConverationGroup right) => Equals(left, right);
+
+        public static bool operator !=(ConverationGroup left, ConverationGroup right) => !Equals(left, right);
+
+        #endregion
+
+        public static ConverationGroup Create(params string[] users) => new ConverationGroup(CollectionKey.CreateDistinctAndOrder(users));
+
+        private ConverationGroup(CollectionKey<string> key)
+        {
+            Key = key;
+            UsersFlat = string.Join(", ", key.Items);
+        }
+
+        public CollectionKey<string> Key { get; }
+
+        public ImmutableList<string> Users => Key.Items;
+        public string UsersFlat { get; }
     }
 
     public class MessageRoute

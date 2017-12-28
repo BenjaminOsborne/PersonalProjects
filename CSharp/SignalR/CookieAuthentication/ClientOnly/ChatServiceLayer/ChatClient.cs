@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
-using ChatServiceLayer.Shared;
 using JetBrains.Annotations;
 using Microsoft.AspNet.SignalR.Client;
 
@@ -131,9 +131,9 @@ namespace ChatServiceLayer
         
         public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", message);
 
-        public async Task SendChat(MessageSendInfo sendInfo) => await _chatHub.Invoke("broadcastSpecific", sendInfo);
+        public async Task SendChat(Shared.MessageSendInfo sendInfo) => await _chatHub.Invoke("broadcastSpecific", sendInfo);
 
-        public async Task SendTyping(MessageRoute route) => await _chatHub.Invoke("broadcastTyping", route);
+        public async Task SendTyping(Shared.MessageRoute route) => await _chatHub.Invoke("broadcastTyping", route);
 
         public async Task<bool> AccountLogout()
         {
@@ -171,7 +171,7 @@ namespace ChatServiceLayer
 
         private void _UserPing(string sender)
         {
-            var group = new ConverationGroup("", ImmutableList.Create(_userName, sender));
+            var group = ConverationGroup.Create("", _userName, sender);
             _users.OnNext(group);
         }
 
@@ -195,10 +195,10 @@ namespace ChatServiceLayer
         private static MessageRoute _CreateMessageRoute(Shared.MessageRoute dtoRoute)
         {
             var dtoGroup = dtoRoute.Group;
-            var group = new ConverationGroup(dtoGroup.GroupName, dtoGroup.Users.ToImmutableList());
-            return new MessageRoute(@group, dtoRoute.Sender);
+            var group = ConverationGroup.Create(dtoGroup.Users);
+            return new MessageRoute(group, dtoRoute.Sender);
         }
-
+        
         [CanBeNull]
         private string _ParseRequestVerificationToken(string content)
         {

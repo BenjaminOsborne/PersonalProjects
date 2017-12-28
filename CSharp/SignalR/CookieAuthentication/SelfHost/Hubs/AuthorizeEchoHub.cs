@@ -31,11 +31,11 @@ namespace Common.Hubs
         public void BroadcastAll(string message)
         {
             var sender = _GetSender();
-            var allGroup = new ConversationGroup { GroupName = "All", Users = new string[] { }};
+            var allGroup = new ConversationGroup { Users = new string[] { }};
             var route = new MessageRoute { Group = allGroup, Sender = sender };
 
-            var dto = _CreateMessage(route, message);
-            Clients.All.onBroadcastAll(dto);
+            var msg = _CreateMessage(route, message);
+            Clients.All.onBroadcastAll(msg);
         }
 
         public void BroadcastSpecific(MessageSendInfo info)

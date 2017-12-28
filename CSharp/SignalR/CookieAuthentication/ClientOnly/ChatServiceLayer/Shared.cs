@@ -4,7 +4,6 @@ namespace ChatServiceLayer.Shared
 {
     public class ConversationGroup
     {
-        public string GroupName { get; set; }
         public string[] Users { get; set; }
     }
 
