@@ -1,8 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using ChatServiceLayer;
 
@@ -178,5 +181,19 @@ namespace ChatUI
         }
 
         public event EventHandler CanExecuteChanged = delegate { };
+    }
+
+    public sealed class NullToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value != null ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var visibility = ValueExtensions.TryCastStruct<Visibility>(value);
+            return visibility == Visibility.Visible ? value : null;
+        }
     }
 }

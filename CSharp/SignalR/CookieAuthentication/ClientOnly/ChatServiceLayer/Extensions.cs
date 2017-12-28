@@ -15,8 +15,21 @@ namespace ChatServiceLayer
         }
     }
 
+    public static class ValueExtensions
+    {
+        public static T? AsNullable<T>(this T item) where T : struct
+        {
+            return item;
+        }
+
+        public static T? TryCastStruct<T>(object item) where T : struct
+        {
+            return item is T ? (T?) item : null;
+        }
+    }
+
     /// <summary> Explicit representation of return type where data has no value. More explicit than object or bool. </summary>
-    public class Unit : IEquatable<Unit>
+        public class Unit : IEquatable<Unit>
     {
         #region Equality
 

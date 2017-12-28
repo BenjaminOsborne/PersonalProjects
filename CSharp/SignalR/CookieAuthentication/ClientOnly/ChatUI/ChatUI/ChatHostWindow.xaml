@@ -12,6 +12,7 @@
         >
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
+        <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -40,7 +41,7 @@
                 <controls:ProgressRing Grid.Row="2" Grid.Column="1" IsActive="{Binding Login.IsLoggingIn}" Margin="35,0" Height="15" Width="15" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </Grid>
         </Border>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Visibility="{Binding Users, Converter={StaticResource NullToVisibilityConverter}}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30*" />
@@ -69,7 +70,9 @@
                     </ScrollViewer>
                 </Grid>
                 <GridSplitter Grid.Column="1" Margin="0" HorizontalAlignment="Center" Width="5"/>
-                <local:ConversationView Grid.Column="2" Margin="3" DataContext="{Binding Users.SelectedUser}"/>
+                <Grid Grid.Column="2" Visibility="{Binding Users.SelectedUser, Converter={StaticResource NullToVisibilityConverter}}">
+                    <local:ConversationView Margin="3" DataContext="{Binding Users.SelectedUser}"/>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>
