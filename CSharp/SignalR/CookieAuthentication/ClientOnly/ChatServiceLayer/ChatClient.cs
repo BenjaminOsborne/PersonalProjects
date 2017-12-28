@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNet.SignalR.Client;
-using Newtonsoft.Json;
 
 namespace ChatServiceLayer
 {
@@ -121,9 +120,9 @@ namespace ChatServiceLayer
             });
             _chatHub.On<string>(onEcho, _UserPing);
 
-            _chatHub.On<string>(onBroadcastAll, _MessageFromUser);
-            _chatHub.On<string>(onBroadcastSpecific, _MessageFromUser);
-            _chatHub.On<string>(onBroadcastCallBack, _MessageFromUser);
+            _chatHub.On<Shared.Message>(onBroadcastAll, _MessageFromUser);
+            _chatHub.On<Shared.Message>(onBroadcastSpecific, _MessageFromUser);
+            _chatHub.On<Shared.Message>(onBroadcastCallBack, _MessageFromUser);
             _chatHub.On<string>(onBroadcastTyping, u => _otherUserTyping.OnNext(u));
             
             await _chatConnection.Start();
@@ -174,10 +173,8 @@ namespace ChatServiceLayer
             _users.OnNext(user);
         }
 
-        private void _MessageFromUser(string jsonMessage)
+        private void _MessageFromUser(Shared.Message dto)
         {
-            var dto = _Deserialize<Shared.Message>(jsonMessage);
-
             _users.OnNext(dto.Sender);
             _users.OnNext(dto.Receiver);
 
@@ -198,12 +195,6 @@ namespace ChatServiceLayer
             var substring = content.Substring(startIndex, length);
             var token = substring.Replace("\" type=\"hidden\" value=\"", "=");
             return token;
-        }
-
-        private static T _Deserialize<T>(string jsonData)
-        {
-            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects, PreserveReferencesHandling = PreserveReferencesHandling.Objects };
-            return JsonConvert.DeserializeObject<T>(jsonData, settings);
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Message = ChatServiceLayer.Shared.Message;
 
 namespace Common.Hubs
 {
@@ -22,38 +23,38 @@ namespace Common.Hubs
     [Authorize]
     public class ChatHub : Hub
     {
-        public override Task OnConnected() => Clients.All.onConnected(_CurrentUser());
+        public override Task OnConnected() => Clients.All.onConnected(_GetSender());
 
-        public void Echo() => Clients.All.onEcho(_CurrentUser());
+        public void Echo() => Clients.All.onEcho(_GetSender());
 
         public void BroadcastAll(string message)
         {
-            var sender = _CurrentUser();
-            var json = _CreateMessage(sender, "All", message);
+            var sender = _GetSender();
+            var dto = _CreateMessage(sender, "All", message);
 
-            Clients.All.onBroadcastAll(json);
+            Clients.All.onBroadcastAll(dto);
         }
 
         public void BroadcastSpecific(string receiver, string message)
         {
-            var sender = _CurrentUser();
-            var json = _CreateMessage(sender, receiver, message);
+            var sender = _GetSender();
+            var dto = _CreateMessage(sender, receiver, message);
             
-            Clients.User(receiver).onBroadcastSpecific(json);
-            Clients.User(sender).onBroadcastCallBack(json);
+            Clients.User(receiver).onBroadcastSpecific(dto);
+            Clients.User(sender).onBroadcastCallBack(dto);
         }
 
         public void BroadcastTyping(string receiver)
         {
-            var sender = _CurrentUser();
+            var sender = _GetSender();
             Clients.User(receiver).onBroadcastTyping(sender);
         }
 
-        private string _CurrentUser() => Context.User.Identity.Name;
+        private string _GetSender() => Context.User.Identity.Name;
 
-        private static string _CreateMessage(string sender, string receiver, string message)
+        private static Message _CreateMessage(string sender, string receiver, string message)
         {
-            var dto = new ChatServiceLayer.Shared.Message
+            return new Message
             {
                 MessageId = Guid.NewGuid(),
                 MessageTime = DateTime.Now,
@@ -61,9 +62,6 @@ namespace Common.Hubs
                 Receiver = receiver,
                 Text = message
             };
-            return _Serialze(dto);
         }
-
-        private static string _Serialze<T>(T dto) => JsonConvert.SerializeObject(dto, Formatting.None);
     }
 }
