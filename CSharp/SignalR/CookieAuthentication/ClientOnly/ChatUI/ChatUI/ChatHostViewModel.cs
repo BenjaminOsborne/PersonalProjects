@@ -127,6 +127,7 @@ namespace ChatUI
 
             IDisposable runningClear = null;
             _chatService.GetObservableTyping(targetUser)
+                .Where(x => x != currentUserName) //Filter out current user typing
                 .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(sender =>
                 {
                     runningClear?.Dispose(); //Dispose existing running clear
