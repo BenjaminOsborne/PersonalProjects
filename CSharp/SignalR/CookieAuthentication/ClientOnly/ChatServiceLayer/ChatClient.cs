@@ -171,7 +171,7 @@ namespace ChatServiceLayer
 
         private void _UserPing(string sender)
         {
-            var group = ConverationGroup.Create("", _userName, sender);
+            var group = ConverationGroup.Create(_userName, sender);
             _users.OnNext(group);
         }
 

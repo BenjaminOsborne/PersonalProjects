@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+using ChatServiceLayer;
 
 namespace ChatUI.DesignerViewModels
 {
@@ -19,7 +20,7 @@ namespace ChatUI.DesignerViewModels
             _CreateUser("Chatty McChatface", 30)
         };
 
-        private static ConversationMockViewModel _CreateUser(string name, int unread) => new ConversationMockViewModel { TargetUser = name, Unread = unread };
+        private static ConversationMockViewModel _CreateUser(string name, int unread) => new ConversationMockViewModel { ConversationTitle = name, Unread = unread };
 
         public IEnumerable<ConversationMockViewModel> Users { get; } = _users;
 
@@ -28,7 +29,9 @@ namespace ChatUI.DesignerViewModels
 
     public class ConversationMockViewModel
     {
-        public string TargetUser { get; set; }
+        public string ConversationTitle { get; set; }
+
+        public ConverationGroup TargetUser { get; set; }
 
         public int Unread { get; set; }
 

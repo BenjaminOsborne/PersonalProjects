@@ -43,9 +43,9 @@ namespace ChatServiceLayer
             return _chatModel.GetObservableMessages(group);
         }
 
-        public IObservable<Unit> GetObservableTyping(ConverationGroup group)
+        public IObservable<string> GetObservableTyping(ConverationGroup group)
         {
-            return _client.GetObservableUserTyping().Where(x => x.Group == group).Select(_ => Unit.Instance);
+            return _client.GetObservableUserTyping().Where(x => x.Group == group).Select(x => x.Sender);
         }
 
         public async Task SendGlobalMessage(string message) => await _client.SendGlobalMessage(message);

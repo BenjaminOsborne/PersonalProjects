@@ -58,7 +58,7 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding TargetUser}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="0" Text="{Binding ConversationTitle}" VerticalAlignment="Center"/>
                                         <Border Grid.Column="1" CornerRadius="0.5" BorderThickness="2" BorderBrush="{DynamicResource AccentColorBrush}"
                                                 Visibility="{Binding ShowUnread, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <TextBlock Text="{Binding Unread}" Margin="4,1" HorizontalAlignment="Center"/>

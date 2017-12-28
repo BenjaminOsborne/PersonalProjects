@@ -10,7 +10,7 @@ namespace ChatServiceLayer
 
         IObservable<ImmutableList<ConverationGroup>> GetObservableUsers();
         IObservable<ImmutableList<Message>> GetObservableMessages(ConverationGroup group);
-        IObservable<Unit> GetObservableTyping(ConverationGroup group);
+        IObservable<string> GetObservableTyping(ConverationGroup group);
 
         Task SendGlobalMessage(string message);
         Task SendChat(MessageRoute route, string content);
