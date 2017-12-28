@@ -31,7 +31,7 @@ namespace ChatUI.DesignerViewModels
     {
         public string ConversationTitle { get; set; }
 
-        public ConverationGroup TargetUser { get; set; }
+        public ConverationGroup Conversation { get; set; }
 
         public int Unread { get; set; }
 
@@ -39,7 +39,7 @@ namespace ChatUI.DesignerViewModels
 
         public string CurrentChat { get; set; } = "Some chat";
 
-        public string TargetUserTypingText => "Terry is typing...";
+        public string ConversationTypingText => "Terry is typing...";
 
         public ICommand SendChat { get; }
 

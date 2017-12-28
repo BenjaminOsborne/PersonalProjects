@@ -81,11 +81,11 @@ namespace ChatUI
             _chatService.GetObservableUsers()
                 .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(users =>
             {
-                var existing = _users.Select(x => x.TargetUser).ToImmutableHashSet();
+                var existing = _users.Select(x => x.Conversation).ToImmutableHashSet();
                 var missing = users.Where(u => existing.Contains(u) == false).ToImmutableList();
-                missing.ForEach(targetUser =>
+                missing.ForEach(conversation =>
                 {
-                    var model = _CreateModelForTargetUser(targetUser, currentUserName);
+                    var model = _CreateModelForConversation(conversation, currentUserName);
                     _users.Add(model);
                 });
             });
@@ -109,35 +109,35 @@ namespace ChatUI
             });
         }
 
-        private ConversationViewModel _CreateModelForTargetUser(ConverationGroup targetUser, string currentUserName)
+        private ConversationViewModel _CreateModelForConversation(ConverationGroup conversation, string currentUserName)
         {
-            var route = new MessageRoute(targetUser, currentUserName);
+            var route = new MessageRoute(conversation, currentUserName);
 
-            var obsMessages = _chatService.GetObservableMessages(targetUser)
+            var obsMessages = _chatService.GetObservableMessages(conversation)
                 .ObserveOn(_schedulerProvider.Dispatcher).Publish();
 
             var model = new ConversationViewModel(
                 obsMessages,
                 c => _chatService.SendChat(route, c),
                 () => _chatService.SendTyping(route),
-                targetUser, currentUserName);
+                conversation, currentUserName);
 
             //Handle typing text
-            obsMessages.Subscribe(_ => model.TargetUserTypingText = ""); //Clear whenever message comes in
+            obsMessages.Subscribe(_ => model.ConversationTypingText = ""); //Clear whenever message comes in
 
             IDisposable runningClear = null;
-            _chatService.GetObservableTyping(targetUser)
+            _chatService.GetObservableTyping(conversation)
                 .Where(x => x != currentUserName) //Filter out current user typing
                 .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(sender =>
                 {
                     runningClear?.Dispose(); //Dispose existing running clear
 
-                    model.TargetUserTypingText = $"{sender} is typing..."; //Set typing
+                    model.ConversationTypingText = $"{sender} is typing..."; //Set typing
 
                     var clearSpan = TimeSpan.FromSeconds(2);
                     runningClear = Observable.Timer(clearSpan).ObserveOn(_schedulerProvider.Dispatcher).Subscribe(__ =>
                     {
-                        model.TargetUserTypingText = ""; //Reset typing after span
+                        model.ConversationTypingText = ""; //Reset typing after span
                     });
                 });
 
@@ -158,15 +158,15 @@ namespace ChatUI
         private int _unread;
         private string _currentChat;
         private bool _isSelected;
-        private string _targetUserTypingText;
+        private string _conversationTypingText;
 
         #endregion
 
-        public ConversationViewModel(IObservable<ImmutableList<Message>> obsMessages, Func<string, Task> onSendChat, Action onTyping, ConverationGroup targetUser, string currentUser)
+        public ConversationViewModel(IObservable<ImmutableList<Message>> obsMessages, Func<string, Task> onSendChat, Action onTyping, ConverationGroup conversation, string currentUser)
         {
             _onTyping = onTyping;
-            ConversationTitle = _GetTitle(targetUser, currentUser);
-            TargetUser = targetUser;
+            ConversationTitle = _GetTitle(conversation, currentUser);
+            Conversation = conversation;
             SendChat = new AsyncRelayCommand(async () =>
             {
                 var chat = CurrentChat;
@@ -191,7 +191,7 @@ namespace ChatUI
 
         public string ConversationTitle { get; }
 
-        public ConverationGroup TargetUser { get; }
+        public ConverationGroup Conversation { get; }
 
         public int Unread
         {
@@ -213,24 +213,24 @@ namespace ChatUI
             set => SetPropertyWithAction(ref _currentChat, value, _ => _onTyping());
         }
 
-        public string TargetUserTypingText
+        public string ConversationTypingText
         {
-            get => _targetUserTypingText;
-            set => SetProperty(ref _targetUserTypingText, value);
+            get => _conversationTypingText;
+            set => SetProperty(ref _conversationTypingText, value);
         }
 
         public ICommand SendChat { get; }
 
         public IEnumerable<ChatItem> ChatHistory => _chatHistory;
 
-        private string _GetTitle(ConverationGroup targetUser, string currentUser)
+        private string _GetTitle(ConverationGroup conversation, string currentUser)
         {
-            if (targetUser.Users.Count == 1 && targetUser.Users[0] == currentUser)
+            if (conversation.Users.Count == 1 && conversation.Users[0] == currentUser)
             {
                 return currentUser;
             }
 
-            var otherUsers = targetUser.Users.Where(x => x != currentUser);
+            var otherUsers = conversation.Users.Where(x => x != currentUser);
             return string.Join(", ", otherUsers);
         }
 

@@ -45,7 +45,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-        <TextBlock Grid.Row="1" Margin="2,0" Text="{Binding TargetUserTypingText}" Foreground="SandyBrown"/>
+        <TextBlock Grid.Row="1" Margin="2,0" Text="{Binding ConversationTypingText}" Foreground="SandyBrown"/>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
