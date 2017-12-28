@@ -26,12 +26,18 @@
                         <StackPanel>
                             <Border BorderThickness="3" CornerRadius="5" BorderBrush="SandyBrown" Margin="0,3,30,3"
                                     Visibility="{Binding FromThem, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <TextBlock Text="{Binding Message}" Margin="10,3" FontWeight="DemiBold"/>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Sender}" Foreground="SandyBrown" FontSize="10" Margin="3,0"/>
+                                    <TextBlock Text="{Binding Message}" Margin="10,-2,10,3" FontWeight="DemiBold"/>
+                                </StackPanel>
                             </Border>
 
                             <Border BorderThickness="3" CornerRadius="5" BorderBrush="{DynamicResource AccentColorBrush}" Margin="30,3,0,3"
                                     Visibility="{Binding FromUs, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <TextBlock Text="{Binding Message}" TextAlignment="Right" Margin="10,3" FontWeight="DemiBold"/>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Sender}" Foreground="{DynamicResource AccentColorBrush}" FontSize="10" Margin="3,0"/>
+                                    <TextBlock Text="{Binding Message}" TextAlignment="Right" Margin="10,-2,10,3" FontWeight="DemiBold"/>
+                                </StackPanel>
                             </Border>
                         </StackPanel>
                     </DataTemplate>

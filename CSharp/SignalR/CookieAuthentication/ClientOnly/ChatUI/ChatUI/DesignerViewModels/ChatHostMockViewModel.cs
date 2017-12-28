@@ -42,11 +42,11 @@ namespace ChatUI.DesignerViewModels
 
         public IEnumerable<ChatItem> ChatHistory { get; } = new[]
         {
-            _CreateChat("Hello!", true),
-            _CreateChat("Hi!", false),
-            _CreateChat("What a lovely message...\nPlease send another\nto\tme!", true),
+            _CreateChat("Ben", "Hello!", true),
+            _CreateChat("Terry", "Hi!", false),
+            _CreateChat("Ben", "What a lovely message...\nPlease send another\nto\tme!", true),
         };
 
-        private static ChatItem _CreateChat(string message, bool fromThem) => new ChatItem(Guid.NewGuid(), message, fromThem, !fromThem);
+        private static ChatItem _CreateChat(string sender, string message, bool fromThem) => new ChatItem(Guid.NewGuid(), sender, message, fromThem, !fromThem);
     }
 }

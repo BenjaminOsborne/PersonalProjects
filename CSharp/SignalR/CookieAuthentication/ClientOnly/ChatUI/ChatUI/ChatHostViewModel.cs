@@ -171,7 +171,7 @@ namespace ChatUI
                 var chats = msgs.Select(m =>
                 {
                     var fromThem = m.Sender == targetUser;
-                    return new ChatItem(m.MessageId, m.Text, fromThem, !fromThem);
+                    return new ChatItem(m.MessageId, m.Sender, m.Text, fromThem, !fromThem);
                 }).ToImmutableList();
                 _chatHistory.SetState(chats, (a,b) => a.Id == b.Id);
 
@@ -227,15 +227,17 @@ namespace ChatUI
 
     public class ChatItem
     {
-        public ChatItem(Guid id, string message, bool fromThem, bool fromUs)
+        public ChatItem(Guid id, string sender, string message, bool fromThem, bool fromUs)
         {
             Id = id;
+            Sender = sender;
             Message = message;
             FromThem = fromThem;
             FromUs = fromUs;
         }
 
         public Guid Id { get; }
+        public string Sender { get; }
         public string Message { get; }
         public bool FromThem { get; }
         public bool FromUs { get; }
