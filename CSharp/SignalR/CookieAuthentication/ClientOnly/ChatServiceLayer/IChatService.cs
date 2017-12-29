@@ -6,7 +6,7 @@ namespace ChatServiceLayer
 {
     public interface IChatService
     {
-        Task Login(string username, string password);
+        Task<bool> Login(string username, string password);
 
         IObservable<ImmutableList<ConverationGroup>> GetObservableConversations();
         IObservable<ImmutableList<Message>> GetObservableMessages(ConverationGroup group);
@@ -18,6 +18,6 @@ namespace ChatServiceLayer
         Task SendChat(MessageRoute route, string content);
         Task SendTyping(MessageRoute route);
 
-        Task<bool> CreateGroup(ImmutableList<string> users);
+        Task<ConverationGroup> CreateGroup(ImmutableList<string> users);
     }
 }

@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using ChatServiceLayer.Shared;
+using JetBrains.Annotations;
 
 namespace ChatServiceLayer
 {
@@ -27,10 +28,18 @@ namespace ChatServiceLayer
 
         public void Dispose() => _client.Dispose();
 
-        public async Task Login(string username, string password)
+        public async Task<bool> Login(string username, string password)
         {
-            await _client.InitialiseConnection(username, password);
-            await _client.RunChatHub(username);
+            try
+            {
+                await _client.InitialiseConnection(username, password);
+                await _client.RunChatHub(username);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public IObservable<ImmutableList<ConverationGroup>> GetObservableConversations()
@@ -71,21 +80,21 @@ namespace ChatServiceLayer
             await _client.SendTyping(dto);
         }
 
-        public async Task<bool> CreateGroup(ImmutableList<string> users)
+        [CanBeNull]
+        public async Task<ConverationGroup> CreateGroup(ImmutableList<string> users)
         {
             if (users.Any() == false)
             {
-                return false;
+                return null;
             }
 
             var group = ConverationGroup.Create(users);
             var added = _chatModel.AddUser(group);
-            if (added == false)
+            if (added)
             {
-                return false;
+                await _client.CreateGroup(group);
             }
-            await _client.CreateGroup(group);
-            return true;
+            return group;
         }
 
         private static Shared.MessageRoute _CreateRouteDTO(MessageRoute route)

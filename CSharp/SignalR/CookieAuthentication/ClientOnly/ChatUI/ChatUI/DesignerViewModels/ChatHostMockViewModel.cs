@@ -7,6 +7,7 @@ namespace ChatUI.DesignerViewModels
 {
     public class ChatHostMockViewModel
     {
+        public string Title { get; } = "Chat for Terry";
         public LoginViewModel Login { get; } = new LoginViewModel(null, null);
         public UsersMockViewModel Users { get; } = new UsersMockViewModel();
         public ChatsMockViewModel Chats { get; } = new ChatsMockViewModel();
@@ -15,6 +16,8 @@ namespace ChatUI.DesignerViewModels
     public class UsersMockViewModel
     {
         public ICommand FlickVisible { get; }
+
+        public string FlickDisplay { get; } = "+";
 
         public bool CreateConversation { get; } = true;
 

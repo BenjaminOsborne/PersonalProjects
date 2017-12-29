@@ -12,11 +12,17 @@ namespace ChatUI
 {
     public class ChatHostViewModel : ViewModelBase
     {
+        private string _title;
+
         public ChatHostViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService)
         {
+            _title = "Login";
+
             Login = new LoginViewModel(chatService, currentUserName =>
             {
-                Users = new UsersViewModel(schedulerProvider, chatService, currentUserName);
+                Title = $"Chat for {currentUserName}";
+
+                Users = new UsersViewModel(schedulerProvider, chatService, _OnCreatedGroup, currentUserName);
                 OnPropertyChanged(nameof(Users));
 
                 Chats = new ChatsViewModel(schedulerProvider, chatService, currentUserName);
@@ -24,26 +30,50 @@ namespace ChatUI
             });
         }
 
+        public string Title
+        {
+            get => _title;
+            private set => SetProperty(ref _title, value);
+        }
+
         public LoginViewModel Login { get; }
         public UsersViewModel Users { get; private set; }
         public ChatsViewModel Chats { get; private set; }
+
+        private void _OnCreatedGroup(ConverationGroup group)
+        {
+            var chats = Chats;
+            var found = chats?.Users?.FirstOrDefault(x => x.Conversation == group);
+            if (found != null)
+            {
+                chats.SelectedUser = found;
+            }
+        }
     }
 
     public class LoginViewModel : ViewModelBase
     {
+        private readonly IChatService _chatService;
+        private readonly Action<string> _onLogin;
+
+        private bool _showLogin;
         private string _userName;
         private string _password;
         private bool _isLoggingIn;
 
         public LoginViewModel(IChatService chatService, Action<string> onLogin)
         {
-            Login = new RelayCommand(async () =>
-            {
-                IsLoggingIn = true;
-                await chatService.Login(UserName, Password);
-                onLogin(UserName);
-                IsLoggingIn = false;
-            });
+            _chatService = chatService;
+            _onLogin = onLogin;
+            _showLogin = true;
+
+            Login = new AsyncRelayCommand(_Login);
+        }
+
+        public bool ShowLogin
+        {
+            get => _showLogin;
+            private set => SetProperty(ref _showLogin, value);
         }
 
         public string UserName
@@ -65,19 +95,35 @@ namespace ChatUI
             get => _isLoggingIn;
             private set => SetProperty(ref _isLoggingIn, value);
         }
+
+        private async Task _Login()
+        {
+            IsLoggingIn = true;
+
+            var success = await _chatService.Login(UserName, Password);
+            IsLoggingIn = false;
+
+            if (success)
+            {
+                _onLogin(UserName);
+                ShowLogin = false;
+            }
+        }
     }
 
     public class UsersViewModel : ViewModelBase
     {
         private readonly IChatService _chatService;
+        private readonly Action<ConverationGroup> _onCreatedGroup;
         private readonly string _currentUserName;
         private readonly ObservableCollection<CheckUserViewModel> _users = new ObservableCollection<CheckUserViewModel>();
 
         private bool _createConversation;
         
-        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
+        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, Action<ConverationGroup> onCreatedGroup, string currentUserName)
         {
             _chatService = chatService;
+            _onCreatedGroup = onCreatedGroup;
             _currentUserName = currentUserName;
 
             FlickVisible = new RelayCommand(() => CreateConversation = !CreateConversation);
@@ -89,12 +135,18 @@ namespace ChatUI
         public bool CreateConversation
         {
             get => _createConversation;
-            private set => SetPropertyWithAction(ref _createConversation, value, _ => OnPropertyChangedExplicit(nameof(ShowExistingConversations)));
+            private set => SetPropertyWithAction(ref _createConversation, value, _ =>
+            {
+                OnPropertyChangedExplicit(nameof(ShowExistingConversations));
+                OnPropertyChangedExplicit(nameof(FlickDisplay));
+            });
         }
 
         public bool ShowExistingConversations => !CreateConversation;
 
         public ICommand FlickVisible { get; }
+
+        public string FlickDisplay => CreateConversation ? "-" : "+";
 
         public IEnumerable<CheckUserViewModel> Users => _users;
 
@@ -104,8 +156,8 @@ namespace ChatUI
         {
             var otherUsers = _users.Where(x => x.IsChecked).Select(x => x.User).ToImmutableList();
             var groupUsers = otherUsers.Add(_currentUserName);
-            var success = await _chatService.CreateGroup(groupUsers);
-            if (success == false)
+            var created = await _chatService.CreateGroup(groupUsers);
+            if (created == null)
             {
                 return;
             }
@@ -115,6 +167,8 @@ namespace ChatUI
             {
                 item.IsChecked = false;
             }
+
+            _onCreatedGroup(created);
         }
 
         private void _OnNextUsers(ImmutableList<string> users)
