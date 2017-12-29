@@ -69,36 +69,21 @@ namespace ChatUI
 
     public class UsersViewModel : ViewModelBase
     {
+        private readonly IChatService _chatService;
+        private readonly string _currentUserName;
         private readonly ObservableCollection<CheckUserViewModel> _users = new ObservableCollection<CheckUserViewModel>();
-        private bool _isVisible;
 
+        private bool _isVisible;
+        
         public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
+            _chatService = chatService;
+            _currentUserName = currentUserName;
+
             FlickVisible = new RelayCommand(() => IsVisible = !IsVisible);
+            CreateGroup = new AsyncRelayCommand(_CreateGroup);
 
-            CreateGroup = new AsyncRelayCommand(async () =>
-            {
-                var otherUsers = _users.Where(x => x.IsChecked).Select(x => x.User).ToImmutableList();
-                var groupUsers = otherUsers.Add(currentUserName);
-                var success = await chatService.CreateGroup(groupUsers);
-                if (success == false)
-                {
-                    return;
-                }
-
-                IsVisible = false;
-                foreach (var item in _users)
-                {
-                    item.IsChecked = false;
-                }
-            });
-
-            chatService.GetObservableAllUsers().ObserveOn(schedulerProvider.Dispatcher).Subscribe(users =>
-            {
-                var filtered = users.Where(x => x != currentUserName)
-                    .Select(x => new CheckUserViewModel(x)).ToImmutableList();
-                _users.SetState(filtered, (a,b) => a.User == b.User);
-            });
+            _chatService.GetObservableAllUsers().ObserveOn(schedulerProvider.Dispatcher).Subscribe(_OnNextUsers);
         }
 
         public bool IsVisible
@@ -112,6 +97,30 @@ namespace ChatUI
         public IEnumerable<CheckUserViewModel> Users => _users;
 
         public ICommand CreateGroup { get; }
+
+        private async Task _CreateGroup()
+        {
+            var otherUsers = _users.Where(x => x.IsChecked).Select(x => x.User).ToImmutableList();
+            var groupUsers = otherUsers.Add(_currentUserName);
+            var success = await _chatService.CreateGroup(groupUsers);
+            if (success == false)
+            {
+                return;
+            }
+
+            IsVisible = false;
+            foreach (var item in _users)
+            {
+                item.IsChecked = false;
+            }
+        }
+
+        private void _OnNextUsers(ImmutableList<string> users)
+        {
+            var filtered = users.Where(x => x != _currentUserName)
+                .Select(x => new CheckUserViewModel(x)).ToImmutableList();
+            _users.SetState(filtered, (a, b) => a.User == b.User);
+        }
     }
 
     public class CheckUserViewModel : ViewModelBase
