@@ -33,7 +33,7 @@ namespace ChatServiceLayer
             await _client.RunChatHub(username);
         }
 
-        public IObservable<ImmutableList<ConverationGroup>> GetObservableUsers()
+        public IObservable<ImmutableList<ConverationGroup>> GetObservableConversations()
         {
             return _chatModel.GetObservableUsers();
         }

@@ -8,7 +8,7 @@ namespace ChatServiceLayer
     {
         Task Login(string username, string password);
 
-        IObservable<ImmutableList<ConverationGroup>> GetObservableUsers();
+        IObservable<ImmutableList<ConverationGroup>> GetObservableConversations();
         IObservable<ImmutableList<Message>> GetObservableMessages(ConverationGroup group);
         IObservable<string> GetObservableTyping(ConverationGroup group);
 

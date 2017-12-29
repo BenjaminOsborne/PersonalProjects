@@ -16,13 +16,14 @@ namespace ChatUI
         {
             Login = new LoginViewModel(chatService, userName =>
             {
-                Users = new UsersViewModel(schedulerProvider, chatService, userName);
-                OnPropertyChanged(nameof(Users));
+                Chats = new ChatsViewModel(schedulerProvider, chatService, userName);
+                OnPropertyChanged(nameof(Chats));
             });
         }
 
         public LoginViewModel Login { get; }
         public UsersViewModel Users { get; private set; }
+        public ChatsViewModel Chats { get; private set; }
     }
 
     public class LoginViewModel : ViewModelBase
@@ -65,6 +66,34 @@ namespace ChatUI
 
     public class UsersViewModel : ViewModelBase
     {
+        private readonly ObservableCollection<string> _users = new ObservableCollection<string>();
+        private bool _isVisible;
+
+        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService)
+        {
+            FlickVisible = new RelayCommand(() => IsVisible = !IsVisible);
+            CreateGroup = new RelayCommand(() =>
+            {
+                //TODO: Make group...
+                IsVisible = false;
+            });
+        }
+
+        public bool IsVisible
+        {
+            get => _isVisible;
+            private set => SetProperty(ref _isVisible, value);
+        }
+
+        public ICommand FlickVisible { get; }
+
+        public IEnumerable<string> Users => _users;
+
+        public ICommand CreateGroup { get; }
+    }
+
+    public class ChatsViewModel : ViewModelBase
+    {
         private readonly IDesktopSchedulerProvider _schedulerProvider;
         private readonly IChatService _chatService;
         private readonly string _currentUserName;
@@ -72,20 +101,20 @@ namespace ChatUI
 
         private ConversationViewModel _selectedUser;
         
-        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
+        public ChatsViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
             _schedulerProvider = schedulerProvider;
             _chatService = chatService;
             _currentUserName = currentUserName;
 
-            _chatService.GetObservableUsers()
+            _chatService.GetObservableConversations()
                 .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(users =>
             {
                 var existing = _users.Select(x => x.Conversation).ToImmutableHashSet();
                 var missing = users.Where(u => existing.Contains(u) == false).ToImmutableList();
                 missing.ForEach(conversation =>
                 {
-                    var model = _CreateModelForConversation(conversation, currentUserName);
+                    var model = _CreateModelForConversation(conversation);
                     _users.Add(model);
                 });
             });
@@ -109,9 +138,9 @@ namespace ChatUI
             });
         }
 
-        private ConversationViewModel _CreateModelForConversation(ConverationGroup conversation, string currentUserName)
+        private ConversationViewModel _CreateModelForConversation(ConverationGroup conversation)
         {
-            var route = new MessageRoute(conversation, currentUserName);
+            var route = new MessageRoute(conversation, _currentUserName);
 
             var obsMessages = _chatService.GetObservableMessages(conversation)
                 .ObserveOn(_schedulerProvider.Dispatcher).Publish();
@@ -120,14 +149,14 @@ namespace ChatUI
                 obsMessages,
                 c => _chatService.SendChat(route, c),
                 () => _chatService.SendTyping(route),
-                conversation, currentUserName);
+                conversation, _currentUserName);
 
             //Handle typing text
             obsMessages.Subscribe(_ => model.ConversationTypingText = ""); //Clear whenever message comes in
 
             IDisposable runningClear = null;
             _chatService.GetObservableTyping(conversation)
-                .Where(x => x != currentUserName) //Filter out current user typing
+                .Where(x => x != _currentUserName) //Filter out current user typing
                 .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(sender =>
                 {
                     runningClear?.Dispose(); //Dispose existing running clear

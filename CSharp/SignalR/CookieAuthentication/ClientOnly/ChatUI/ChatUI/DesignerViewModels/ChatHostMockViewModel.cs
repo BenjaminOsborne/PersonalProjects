@@ -8,15 +8,15 @@ namespace ChatUI.DesignerViewModels
     public class ChatHostMockViewModel
     {
         public LoginViewModel Login { get; } = new LoginViewModel(null, null);
-        public UsersMockViewModel Users { get; } = new UsersMockViewModel();
+        public ChatsMockViewModel Chats { get; } = new ChatsMockViewModel();
     }
 
-    public class UsersMockViewModel
+    public class ChatsMockViewModel
     {
         private static readonly ConversationMockViewModel[] _users = new[]
         {
-            _CreateUser("Ben", 0),
-            _CreateUser("Terry", 2),
+            _CreateUser("Ben", 2),
+            _CreateUser("Terry", 0),
             _CreateUser("Chatty McChatface", 30)
         };
 
