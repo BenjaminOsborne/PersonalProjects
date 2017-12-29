@@ -8,7 +8,7 @@
         xmlns:designerViewModels="clr-namespace:ChatUI.DesignerViewModels"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=designerViewModels:ChatHostMockViewModel, IsDesignTimeCreatable=True}"
-        Height="400" Width="500"
+        Height="600" Width="500"
         >
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
@@ -17,7 +17,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="DarkGray">
@@ -38,12 +38,33 @@
                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="12" FontWeight="DemiBold" Text="Password"/>
                 <PasswordBox Grid.Row="1" Grid.Column="1" Name="Password" Margin="5" VerticalAlignment="Center" FontSize="12"/>
 
-                <Button Grid.Row="2" Grid.Column="1" Margin="5" Command="{Binding Login.Login}" HorizontalAlignment="Right" FontSize="11" VerticalAlignment="Center" Height="20" Width="80" Content="Login"/>
+                <Button Grid.Row="2" Grid.Column="1" Margin="5" Command="{Binding Login.Login}" HorizontalAlignment="Right" FontSize="11" VerticalAlignment="Center" Height="28" Width="80" Content="Login"
+                        controls:ControlsHelper.ContentCharacterCasing="Normal"/>
                 <controls:ProgressRing Grid.Row="2" Grid.Column="1" IsActive="{Binding Login.IsLoggingIn}" Margin="35,0" Height="15" Width="15" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </Grid>
         </Border>
         <Grid Grid.Row="1">
-            
+            <StackPanel>
+                <Button Margin="5" Command="{Binding Users.FlickVisible}" HorizontalAlignment="Left" FontSize="11" VerticalAlignment="Center" Height="25" Width="25" Content="+"/>
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding Users.Users}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="5,1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                   <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked}"/>
+                                   <TextBlock Grid.Column="1" Text="{Binding User}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <Button Margin="5" Command="{Binding Users.CreateGroup}" HorizontalAlignment="Left" FontSize="11" VerticalAlignment="Center" Height="25" Width="60" Content="Create"
+                        controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+            </StackPanel>
         </Grid>
         <Grid Grid.Row="2" Visibility="{Binding Chats, Converter={StaticResource NullToVisibilityConverter}}">
             <Grid>

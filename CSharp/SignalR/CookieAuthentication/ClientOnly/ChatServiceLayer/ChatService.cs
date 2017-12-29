@@ -48,6 +48,15 @@ namespace ChatServiceLayer
             return _client.GetObservableUserTyping().Where(x => x.Group == group).Select(x => x.Sender);
         }
 
+        public IObservable<ImmutableList<string>> GetObservableAllUsers()
+        {
+            return _chatModel.GetObservableUsers().Select(g =>
+            {
+                var users = g.SelectMany(x => x.Users).Distinct();
+                return users.OrderBy(x => x).ToImmutableList();
+            });
+        }
+
         public async Task SendGlobalMessage(string message) => await _client.SendGlobalMessage(message);
 
         public async Task SendChat(MessageRoute route, string content)
@@ -60,6 +69,23 @@ namespace ChatServiceLayer
         {
             var dto = _CreateRouteDTO(route);
             await _client.SendTyping(dto);
+        }
+
+        public async Task<bool> CreateGroup(ImmutableList<string> users)
+        {
+            if (users.Any() == false)
+            {
+                return false;
+            }
+
+            var group = ConverationGroup.Create(users);
+            var added = _chatModel.AddUser(group);
+            if (added == false)
+            {
+                return false;
+            }
+            await _client.CreateGroup(group);
+            return true;
         }
 
         private static Shared.MessageRoute _CreateRouteDTO(MessageRoute route)
@@ -80,12 +106,17 @@ namespace ChatServiceLayer
         private readonly HashSet<ConverationGroup> _users = new HashSet<ConverationGroup>();
         private readonly Subject<ImmutableList<ConverationGroup>> _subjectUsers = new Subject<ImmutableList<ConverationGroup>>();
 
-        public void AddUser(ConverationGroup user)
+        public bool AddUser(ConverationGroup user)
         {
             lock (_lock)
             {
-                _users.Add(user);
+                var added = _users.Add(user);
+                if (added == false)
+                {
+                    return false;
+                }
                 _subjectUsers.OnNext(_GetUsers());
+                return true;
             }
         }
 

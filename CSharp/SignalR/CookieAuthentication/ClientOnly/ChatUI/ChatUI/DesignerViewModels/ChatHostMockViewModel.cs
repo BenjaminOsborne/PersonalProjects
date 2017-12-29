@@ -8,7 +8,26 @@ namespace ChatUI.DesignerViewModels
     public class ChatHostMockViewModel
     {
         public LoginViewModel Login { get; } = new LoginViewModel(null, null);
+        public UsersMockViewModel Users { get; } = new UsersMockViewModel();
         public ChatsMockViewModel Chats { get; } = new ChatsMockViewModel();
+    }
+
+    public class UsersMockViewModel
+    {
+        public bool IsVisible { get; } = true;
+
+        public ICommand FlickVisible { get; }
+
+        public IEnumerable<CheckUserViewModel> Users { get; } = new[]
+        {
+            _Create("Ben", true),
+            _Create("Terry", false),
+            _Create("Frank", true),
+        };
+
+        private static CheckUserViewModel _Create(string name, bool isChecked) => new CheckUserViewModel(name) { IsChecked = isChecked};
+
+        public ICommand CreateGroup { get; }
     }
 
     public class ChatsMockViewModel

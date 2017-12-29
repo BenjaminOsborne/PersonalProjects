@@ -26,7 +26,16 @@ namespace Common.Hubs
     {
         public override Task OnConnected() => Clients.All.onConnected(_GetSender());
 
-        public void Echo() => Clients.All.onEcho(_GetSender());
+        public void Echo()
+        {
+            var sender = _GetSender();
+            Clients.All.onEcho(sender);
+        }
+
+        public void EchoGroup(ConversationGroup group)
+        {
+            group.Users.ForEach(u => Clients.User(u).onEchoGroup(group));
+        }
 
         public void BroadcastAll(string message)
         {

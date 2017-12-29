@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
+using ChatServiceLayer.Shared;
 using JetBrains.Annotations;
 using Microsoft.AspNet.SignalR.Client;
 
@@ -101,13 +102,12 @@ namespace ChatServiceLayer
             var chatHubName = "ChatHub";
             var onConnected = "onConnected";
             var onEcho = "onEcho";
+            var onEchoGroup = "onEchoGroup";
 
             var onBroadcastAll = "onBroadcastAll";
             var onBroadcastSpecific = "onBroadcastSpecific";
             var onBroadcastTyping = "onBroadcastTyping";
-
-            var echoMethod = "echo";
-
+            
             _logger.WriteLine("Begin Hub");
 
             _chatConnection = new HubConnection(_url) { CookieContainer = _cookieContainer };
@@ -115,12 +115,9 @@ namespace ChatServiceLayer
 
             _chatHub = _chatConnection.CreateHubProxy(chatHubName);
 
-            _chatHub.On<string>(onConnected, async s =>
-            {
-                _UserPing(s);
-                await _chatHub.Invoke(echoMethod); //callback
-            });
+            _chatHub.On<string>(onConnected, _OnConnected);
             _chatHub.On<string>(onEcho, _UserPing);
+            _chatHub.On<Shared.ConversationGroup>(onEchoGroup, _GroupPing);
 
             _chatHub.On<Shared.Message>(onBroadcastAll, _MessageFromUser);
             _chatHub.On<Shared.Message>(onBroadcastSpecific, _MessageFromUser);
@@ -129,11 +126,15 @@ namespace ChatServiceLayer
             await _chatConnection.Start();
         }
         
+        public async Task Echo() => await _chatHub.Invoke("echo");
+
         public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", message);
 
         public async Task SendChat(Shared.MessageSendInfo sendInfo) => await _chatHub.Invoke("broadcastSpecific", sendInfo);
 
         public async Task SendTyping(Shared.MessageRoute route) => await _chatHub.Invoke("broadcastTyping", route);
+
+        public async Task CreateGroup(ConverationGroup group) => await _chatHub.Invoke("echoGroup", group);
 
         public async Task<bool> AccountLogout()
         {
@@ -169,9 +170,21 @@ namespace ChatServiceLayer
             }
         }
 
+        private async void _OnConnected(string sender)
+        {
+            _UserPing(sender);
+            await Echo(); //Invoke call back to notify all other users
+        }
+
         private void _UserPing(string sender)
         {
-            var group = ConverationGroup.Create(_userName, sender);
+            var group = ConverationGroup.Create(new [] { _userName, sender });
+            _users.OnNext(group);
+        }
+
+        private void _GroupPing(ConversationGroup dto)
+        {
+            var group = ConverationGroup.Create(dto.Users);
             _users.OnNext(group);
         }
 

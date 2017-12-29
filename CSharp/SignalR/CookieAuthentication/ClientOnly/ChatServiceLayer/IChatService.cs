@@ -12,8 +12,12 @@ namespace ChatServiceLayer
         IObservable<ImmutableList<Message>> GetObservableMessages(ConverationGroup group);
         IObservable<string> GetObservableTyping(ConverationGroup group);
 
+        IObservable<ImmutableList<string>> GetObservableAllUsers();
+
         Task SendGlobalMessage(string message);
         Task SendChat(MessageRoute route, string content);
         Task SendTyping(MessageRoute route);
+
+        Task<bool> CreateGroup(ImmutableList<string> users);
     }
 }

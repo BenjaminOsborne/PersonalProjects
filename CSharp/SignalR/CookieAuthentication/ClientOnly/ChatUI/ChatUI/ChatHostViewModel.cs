@@ -14,9 +14,12 @@ namespace ChatUI
     {
         public ChatHostViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService)
         {
-            Login = new LoginViewModel(chatService, userName =>
+            Login = new LoginViewModel(chatService, currentUserName =>
             {
-                Chats = new ChatsViewModel(schedulerProvider, chatService, userName);
+                Users = new UsersViewModel(schedulerProvider, chatService, currentUserName);
+                OnPropertyChanged(nameof(Users));
+
+                Chats = new ChatsViewModel(schedulerProvider, chatService, currentUserName);
                 OnPropertyChanged(nameof(Chats));
             });
         }
@@ -66,16 +69,35 @@ namespace ChatUI
 
     public class UsersViewModel : ViewModelBase
     {
-        private readonly ObservableCollection<string> _users = new ObservableCollection<string>();
+        private readonly ObservableCollection<CheckUserViewModel> _users = new ObservableCollection<CheckUserViewModel>();
         private bool _isVisible;
 
-        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService)
+        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
             FlickVisible = new RelayCommand(() => IsVisible = !IsVisible);
-            CreateGroup = new RelayCommand(() =>
+
+            CreateGroup = new AsyncRelayCommand(async () =>
             {
-                //TODO: Make group...
+                var otherUsers = _users.Where(x => x.IsChecked).Select(x => x.User).ToImmutableList();
+                var groupUsers = otherUsers.Add(currentUserName);
+                var success = await chatService.CreateGroup(groupUsers);
+                if (success == false)
+                {
+                    return;
+                }
+
                 IsVisible = false;
+                foreach (var item in _users)
+                {
+                    item.IsChecked = false;
+                }
+            });
+
+            chatService.GetObservableAllUsers().ObserveOn(schedulerProvider.Dispatcher).Subscribe(users =>
+            {
+                var filtered = users.Where(x => x != currentUserName)
+                    .Select(x => new CheckUserViewModel(x)).ToImmutableList();
+                _users.SetState(filtered, (a,b) => a.User == b.User);
             });
         }
 
@@ -87,9 +109,27 @@ namespace ChatUI
 
         public ICommand FlickVisible { get; }
 
-        public IEnumerable<string> Users => _users;
+        public IEnumerable<CheckUserViewModel> Users => _users;
 
         public ICommand CreateGroup { get; }
+    }
+
+    public class CheckUserViewModel : ViewModelBase
+    {
+        private bool _isChecked;
+
+        public CheckUserViewModel(string user)
+        {
+            User = user;
+        }
+
+        public string User { get; }
+
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set => SetProperty(ref _isChecked, value);
+        }
     }
 
     public class ChatsViewModel : ViewModelBase

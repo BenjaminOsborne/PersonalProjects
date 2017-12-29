@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -41,7 +42,7 @@ namespace ChatServiceLayer
 
         #endregion
 
-        public static ConverationGroup Create(params string[] users) => new ConverationGroup(CollectionKey.CreateDistinctAndOrder(users));
+        public static ConverationGroup Create(IEnumerable<string> users) => new ConverationGroup(CollectionKey.CreateDistinctAndOrder(users));
 
         private ConverationGroup(CollectionKey<string> key)
         {
