@@ -53,6 +53,8 @@ namespace ChatUI
 
     public class LoginViewModel : ViewModelBase
     {
+        #region Fields
+
         private readonly IChatService _chatService;
         private readonly Action<string> _onLogin;
 
@@ -60,6 +62,8 @@ namespace ChatUI
         private string _userName;
         private string _password;
         private bool _isLoggingIn;
+
+        #endregion
 
         public LoginViewModel(IChatService chatService, Action<string> onLogin)
         {
@@ -113,12 +117,16 @@ namespace ChatUI
 
     public class UsersViewModel : ViewModelBase
     {
+        #region Fields
+
         private readonly IChatService _chatService;
         private readonly Action<ConverationGroup> _onCreatedGroup;
         private readonly string _currentUserName;
         private readonly ObservableCollection<CheckUserViewModel> _users = new ObservableCollection<CheckUserViewModel>();
 
         private bool _createConversation;
+
+        #endregion
         
         public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, Action<ConverationGroup> onCreatedGroup, string currentUserName)
         {
