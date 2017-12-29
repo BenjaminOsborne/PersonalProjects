@@ -14,9 +14,11 @@ namespace ChatUI.DesignerViewModels
 
     public class UsersMockViewModel
     {
-        public bool IsVisible { get; } = true;
-
         public ICommand FlickVisible { get; }
+
+        public bool CreateConversation { get; } = true;
+
+        public bool ShowExistingConversations { get; } = true;
 
         public IEnumerable<CheckUserViewModel> Users { get; } = new[]
         {

@@ -73,24 +73,26 @@ namespace ChatUI
         private readonly string _currentUserName;
         private readonly ObservableCollection<CheckUserViewModel> _users = new ObservableCollection<CheckUserViewModel>();
 
-        private bool _isVisible;
+        private bool _createConversation;
         
         public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
             _chatService = chatService;
             _currentUserName = currentUserName;
 
-            FlickVisible = new RelayCommand(() => IsVisible = !IsVisible);
+            FlickVisible = new RelayCommand(() => CreateConversation = !CreateConversation);
             CreateGroup = new AsyncRelayCommand(_CreateGroup);
 
             _chatService.GetObservableAllUsers().ObserveOn(schedulerProvider.Dispatcher).Subscribe(_OnNextUsers);
         }
 
-        public bool IsVisible
+        public bool CreateConversation
         {
-            get => _isVisible;
-            private set => SetProperty(ref _isVisible, value);
+            get => _createConversation;
+            private set => SetPropertyWithAction(ref _createConversation, value, _ => OnPropertyChangedExplicit(nameof(ShowExistingConversations)));
         }
+
+        public bool ShowExistingConversations => !CreateConversation;
 
         public ICommand FlickVisible { get; }
 
@@ -108,7 +110,7 @@ namespace ChatUI
                 return;
             }
 
-            IsVisible = false;
+            CreateConversation = false;
             foreach (var item in _users)
             {
                 item.IsChecked = false;
