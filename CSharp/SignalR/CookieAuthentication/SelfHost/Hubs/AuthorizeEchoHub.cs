@@ -1,7 +1,8 @@
 ﻿using System;
 using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using ChatServiceLayer.Shared;
+using WebGrease.Css.Extensions;
 using Message = ChatServiceLayer.Shared.Message;
 
 namespace Common.Hubs
@@ -25,42 +26,49 @@ namespace Common.Hubs
     {
         public override Task OnConnected() => Clients.All.onConnected(_GetSender());
 
-        public void Echo() => Clients.All.onEcho(_GetSender());
+        public void Echo()
+        {
+            var sender = _GetSender();
+            Clients.All.onEcho(sender);
+        }
+
+        public void EchoGroup(ConversationGroup group)
+        {
+            group.Users.ForEach(u => Clients.User(u).onEchoGroup(group));
+        }
 
         public void BroadcastAll(string message)
         {
             var sender = _GetSender();
-            var dto = _CreateMessage(sender, "All", message);
+            var allGroup = new ConversationGroup { Users = new string[] { }};
+            var route = new MessageRoute { Group = allGroup, Sender = sender };
 
-            Clients.All.onBroadcastAll(dto);
+            var msg = _CreateMessage(route, message);
+            Clients.All.onBroadcastAll(msg);
         }
 
-        public void BroadcastSpecific(string receiver, string message)
+        public void BroadcastSpecific(MessageSendInfo info)
         {
-            var sender = _GetSender();
-            var dto = _CreateMessage(sender, receiver, message);
-            
-            Clients.User(receiver).onBroadcastSpecific(dto);
-            Clients.User(sender).onBroadcastCallBack(dto);
+            var route = info.Route;
+            var dto = _CreateMessage(route, info.Content);
+            route.Group.Users.ForEach(u => Clients.User(u).onBroadcastSpecific(dto));
         }
 
-        public void BroadcastTyping(string receiver)
+        public void BroadcastTyping(MessageRoute route)
         {
-            var sender = _GetSender();
-            Clients.User(receiver).onBroadcastTyping(sender);
+            route.Group.Users.ForEach(u => Clients.User(u).onBroadcastTyping(route));
         }
 
         private string _GetSender() => Context.User.Identity.Name;
 
-        private static Message _CreateMessage(string sender, string receiver, string message)
+        private static Message _CreateMessage(MessageRoute route, string content)
         {
             return new Message
             {
                 MessageId = Guid.NewGuid(),
                 MessageTime = DateTime.Now,
-                Sender = sender,
-                Receiver = receiver,
-                Text = message
+                Route = route,
+                Content = content
             };
         }
     }

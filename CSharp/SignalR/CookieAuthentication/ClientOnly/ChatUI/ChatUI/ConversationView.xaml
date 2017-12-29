@@ -25,7 +25,7 @@
                     <DataTemplate>
                         <StackPanel>
                             <Border BorderThickness="3" CornerRadius="5" BorderBrush="SandyBrown" Margin="0,3,30,3"
-                                    Visibility="{Binding FromThem, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    Visibility="{Binding FromOther, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <StackPanel>
                                     <TextBlock Text="{Binding Sender}" Foreground="SandyBrown" FontSize="10" Margin="3,0"/>
                                     <TextBlock Text="{Binding Message}" Margin="10,-2,10,3" FontWeight="DemiBold"/>
@@ -33,7 +33,7 @@
                             </Border>
 
                             <Border BorderThickness="3" CornerRadius="5" BorderBrush="{DynamicResource AccentColorBrush}" Margin="30,3,0,3"
-                                    Visibility="{Binding FromUs, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    Visibility="{Binding FromCurrent, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <StackPanel>
                                     <TextBlock Text="{Binding Sender}" Foreground="{DynamicResource AccentColorBrush}" FontSize="10" Margin="3,0"/>
                                     <TextBlock Text="{Binding Message}" TextAlignment="Right" Margin="10,-2,10,3" FontWeight="DemiBold"/>
@@ -45,7 +45,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-        <TextBlock Grid.Row="1" Margin="2,0" Text="{Binding TargetUserTypingText}" Foreground="SandyBrown"/>
+        <TextBlock Grid.Row="1" Margin="2,0" Text="{Binding ConversationTypingText}" Foreground="SandyBrown"/>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -53,7 +53,7 @@
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" Name="CurrentChat" Text="{Binding CurrentChat, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" VerticalAlignment="Center"/>
             <Button Grid.Column="1" Name="SendChat" Margin="5" Command="{Binding SendChat}" Content="Send" HorizontalAlignment="Right" FontSize="11"
-                    VerticalAlignment="Center" Height="20" Width="50" controls:ControlsHelper.ContentCharacterCasing="Normal" />
+                    VerticalAlignment="Center" Height="20" Width="50" controls:ControlsHelper.ContentCharacterCasing="Normal"/>
         </Grid>
     </Grid>
 </UserControl>
