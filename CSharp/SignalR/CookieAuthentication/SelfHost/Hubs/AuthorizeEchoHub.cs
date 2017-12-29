@@ -3,6 +3,8 @@ using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
 using ChatServiceLayer.Shared;
 using WebGrease.Css.Extensions;
+using WebHost.Persistence;
+using ConversationGroup = ChatServiceLayer.Shared.ConversationGroup;
 using Message = ChatServiceLayer.Shared.Message;
 
 namespace Common.Hubs
@@ -51,6 +53,25 @@ namespace Common.Hubs
         {
             var route = info.Route;
             var dto = _CreateMessage(route, info.Content);
+
+            using (var chats = new ChatsContext())
+            {
+                var found = chats.ConversationGroups.Add(new WebHost.Persistence.ConversationGroup()
+                {
+                    Users = dto.Route.Group.Users
+                });
+                chats.SaveChanges();
+
+                var found2 = chats.Messages.Add(new WebHost.Persistence.Message
+                {
+                    MessageTime = DateTimeOffset.Now,
+                    ConversationGroupId = found.Id,
+                    Sender = dto.Route.Sender,
+                    Content = dto.Content
+                });
+                chats.SaveChanges();
+            }
+
             route.Group.Users.ForEach(u => Clients.User(u).onBroadcastSpecific(dto));
         }
 
