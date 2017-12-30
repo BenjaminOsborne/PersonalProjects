@@ -20,10 +20,7 @@ namespace ChatServiceLayer
             var url = "http://localhost:8080/";
 
             var logger = new WritterLogger(Console.Out);
-            _client = new ChatClient(url, logger, fnGroupExistsWithUsers: u =>
-            {
-                return _chatModel.ConversationExists(u);
-            });
+            _client = new ChatClient(url, logger, fnGroupExistsWithUsers: users => _chatModel.ConversationExists(users));
 
             _client.GetObservableUsers().Subscribe(u => _chatModel.AddConversation(u));
             _client.GetObservableMessages().Subscribe(m => _chatModel.AddMessage(m));
@@ -105,7 +102,7 @@ namespace ChatServiceLayer
         private static Shared.MessageRoute _CreateRouteDTO(MessageRoute route)
         {
             var group = route.Group;
-            var groupDTO = new Shared.ConversationGroup { Users = group.Users.ToArray() };
+            var groupDTO = new Shared.ConversationGroup { Id = group.Id, Name = group.Name, Users = group.Users.ToArray() };
             return new Shared.MessageRoute { Group = groupDTO, Sender = route.Sender };
         }
     }
