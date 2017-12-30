@@ -26,7 +26,14 @@ namespace Common.Hubs
     [Authorize]
     public class ChatHub : Hub
     {
-        public override Task OnConnected() => Clients.All.onConnected(_GetSender());
+        public override async Task OnConnected()
+        {
+            var histories = new ChatHistory[] { }; //TODO: Pull from database
+            var history = new ChatHistories { Histories = histories };
+            Clients.Caller.onConnectedHistory(history);
+
+            await Clients.All.onConnected(_GetSender());
+        }
 
         public void Echo()
         {
@@ -34,22 +41,27 @@ namespace Common.Hubs
             Clients.All.onEcho(sender);
         }
 
-        public void EchoGroup(ConversationGroup group)
+        public void CreateGroup(ConversationGroup dto)
         {
-            group.Users.ForEach(u => Clients.User(u).onEchoGroup(group));
+            var groupWithId = dto; //TODO: Create/Add group and push round with Id...
+
+            foreach (var id in dto.Users)
+            {
+                Clients.User(id).onCreatedGroup(groupWithId);
+            }
         }
 
-        public void BroadcastAll(string message)
+        public void SendChatAll(string message)
         {
             var sender = _GetSender();
-            var allGroup = new ConversationGroup { Users = new string[] { }};
+            var allGroup = new ConversationGroup { Id = null, Users = new string[] { }};
             var route = new MessageRoute { Group = allGroup, Sender = sender };
 
             var msg = _CreateMessage(route, message);
-            Clients.All.onBroadcastAll(msg);
+            Clients.All.onSendChatAll(msg);
         }
 
-        public void BroadcastSpecific(MessageSendInfo info)
+        public void SendChat(MessageSendInfo info)
         {
             var route = info.Route;
             var dto = _CreateMessage(route, info.Content);
@@ -72,12 +84,18 @@ namespace Common.Hubs
                 chats.SaveChanges();
             }
 
-            route.Group.Users.ForEach(u => Clients.User(u).onBroadcastSpecific(dto));
+            foreach (var u in route.Group.Users)
+            {
+                Clients.User(u).onSendChat(dto);
+            }
         }
 
-        public void BroadcastTyping(MessageRoute route)
+        public void SendTyping(MessageRoute route)
         {
-            route.Group.Users.ForEach(u => Clients.User(u).onBroadcastTyping(route));
+            foreach (var id in route.Group.Users)
+            {
+                Clients.User(id).onSendTyping(route);
+            }
         }
 
         private string _GetSender() => Context.User.Identity.Name;

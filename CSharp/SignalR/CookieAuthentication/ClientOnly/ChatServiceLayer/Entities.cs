@@ -15,56 +15,41 @@ namespace ChatServiceLayer
         public Guid Id { get; }
     }
 
-    public class ConverationGroup : IEquatable<ConverationGroup>
+    public class ConversationGroup
     {
-        #region Equality
-
-        public bool Equals(ConverationGroup other)
+        public static CollectionKey<string> CreateUsersKey(IEnumerable<string> users)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(Key, other.Key);
+            return CollectionKey.CreateDistinctAndOrder(users);
         }
 
-        public override bool Equals(object obj)
+        public static ConversationGroup CreateFromExisting(int id, string name, IEnumerable<string> users)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ConverationGroup)obj);
+            var key = CreateUsersKey(users);
+            return new ConversationGroup(id, name, key);
+        }
+        
+        private ConversationGroup(int id, string name, CollectionKey<string> usersKey)
+        {
+            Id = id;
+            Name = name;
+            UsersKey = usersKey;
         }
 
-        public override int GetHashCode() => Key.GetHashCode();
-
-        public static bool operator ==(ConverationGroup left, ConverationGroup right) => Equals(left, right);
-
-        public static bool operator !=(ConverationGroup left, ConverationGroup right) => !Equals(left, right);
-
-        #endregion
-
-        public static ConverationGroup Create(IEnumerable<string> users) => new ConverationGroup(CollectionKey.CreateDistinctAndOrder(users));
-
-        private ConverationGroup(CollectionKey<string> key)
-        {
-            Key = key;
-            UsersFlat = string.Join(", ", key.Items);
-        }
-
-        public CollectionKey<string> Key { get; }
-
-        public ImmutableList<string> Users => Key.Items;
-        public string UsersFlat { get; }
+        public int Id { get; }
+        public string Name { get; }
+        public CollectionKey<string> UsersKey { get; }
+        public ImmutableList<string> Users => UsersKey.Items;
     }
 
     public class MessageRoute
     {
-        public MessageRoute(ConverationGroup group, string sender)
+        public MessageRoute(ConversationGroup group, string sender)
         {
             Group = group;
             Sender = sender;
         }
 
-        public ConverationGroup Group { get; }
+        public ConversationGroup Group { get; }
         public string Sender { get; }
     }
 

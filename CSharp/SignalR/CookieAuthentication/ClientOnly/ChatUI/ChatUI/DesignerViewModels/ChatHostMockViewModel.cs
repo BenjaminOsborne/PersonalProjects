@@ -55,7 +55,7 @@ namespace ChatUI.DesignerViewModels
     {
         public string ConversationTitle { get; set; }
 
-        public ConverationGroup Conversation { get; set; }
+        public ConversationGroup Conversation { get; set; }
 
         public int Unread { get; set; }
 

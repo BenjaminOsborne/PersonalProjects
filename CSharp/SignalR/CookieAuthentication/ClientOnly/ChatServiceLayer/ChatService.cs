@@ -20,9 +20,12 @@ namespace ChatServiceLayer
             var url = "http://localhost:8080/";
 
             var logger = new WritterLogger(Console.Out);
-            _client = new ChatClient(url, logger);
+            _client = new ChatClient(url, logger, fnGroupExistsWithUsers: u =>
+            {
+                return _chatModel.ConversationExists(u);
+            });
 
-            _client.GetObservableUsers().Subscribe(u => _chatModel.AddUser(u));
+            _client.GetObservableUsers().Subscribe(u => _chatModel.AddConversation(u));
             _client.GetObservableMessages().Subscribe(m => _chatModel.AddMessage(m));
         }
 
@@ -42,24 +45,24 @@ namespace ChatServiceLayer
             }
         }
 
-        public IObservable<ImmutableList<ConverationGroup>> GetObservableConversations()
+        public IObservable<ImmutableList<ConversationGroup>> GetObservableConversations()
         {
-            return _chatModel.GetObservableUsers();
+            return _chatModel.GetObservableConversations();
         }
 
-        public IObservable<ImmutableList<Message>> GetObservableMessages(ConverationGroup group)
+        public IObservable<ImmutableList<Message>> GetObservableMessages(ConversationGroup group)
         {
             return _chatModel.GetObservableMessages(group);
         }
 
-        public IObservable<string> GetObservableTyping(ConverationGroup group)
+        public IObservable<string> GetObservableTyping(ConversationGroup group)
         {
             return _client.GetObservableUserTyping().Where(x => x.Group == group).Select(x => x.Sender);
         }
 
         public IObservable<ImmutableList<string>> GetObservableAllUsers()
         {
-            return _chatModel.GetObservableUsers().Select(g =>
+            return _chatModel.GetObservableConversations().Select(g =>
             {
                 var users = g.SelectMany(x => x.Users).Distinct();
                 return users.OrderBy(x => x).ToImmutableList();
@@ -81,26 +84,28 @@ namespace ChatServiceLayer
         }
 
         [CanBeNull]
-        public async Task<ConverationGroup> CreateGroup(ImmutableList<string> users)
+        public async Task<bool> CreateGroup(string name, ImmutableList<string> users)
         {
             if (users.Any() == false)
             {
-                return null;
+                return false;
             }
 
-            var group = ConverationGroup.Create(users);
-            var added = _chatModel.AddUser(group);
-            if (added)
+            var added = _chatModel.ConversationExists(users);
+            if (added == false)
             {
-                await _client.CreateGroup(group);
+                return false;
             }
-            return group;
+
+            var dto = new Shared.ConversationGroup { Id = null, Name = name, Users = users.ToArray() };
+            await _client.CreateGroup(dto);
+            return true;
         }
 
         private static Shared.MessageRoute _CreateRouteDTO(MessageRoute route)
         {
             var group = route.Group;
-            var groupDTO = new ConversationGroup { Users = group.Users.ToArray() };
+            var groupDTO = new Shared.ConversationGroup { Users = group.Users.ToArray() };
             return new Shared.MessageRoute { Group = groupDTO, Sender = route.Sender };
         }
     }
@@ -112,10 +117,19 @@ namespace ChatServiceLayer
         private readonly Dictionary<Guid, Message> _messages = new Dictionary<Guid, Message>();
         private readonly Subject<ImmutableList<Message>> _subjectMessages = new Subject<ImmutableList<Message>>();
 
-        private readonly HashSet<ConverationGroup> _users = new HashSet<ConverationGroup>();
-        private readonly Subject<ImmutableList<ConverationGroup>> _subjectUsers = new Subject<ImmutableList<ConverationGroup>>();
+        private readonly HashSet<ConversationGroup> _users = new HashSet<ConversationGroup>();
+        private readonly Subject<ImmutableList<ConversationGroup>> _subjectConversations = new Subject<ImmutableList<ConversationGroup>>();
 
-        public bool AddUser(ConverationGroup user)
+        public bool ConversationExists(IEnumerable<string> users)
+        {
+            var key = ConversationGroup.CreateUsersKey(users);
+            lock (_lock)
+            {
+                return _users.Any(x => x.UsersKey.Equals(key));
+            }
+        }
+
+        public bool AddConversation(ConversationGroup user)
         {
             lock (_lock)
             {
@@ -124,14 +138,14 @@ namespace ChatServiceLayer
                 {
                     return false;
                 }
-                _subjectUsers.OnNext(_GetUsers());
+                _subjectConversations.OnNext(_GetUsers());
                 return true;
             }
         }
 
-        public IObservable<ImmutableList<ConverationGroup>> GetObservableUsers()
+        public IObservable<ImmutableList<ConversationGroup>> GetObservableConversations()
         {
-            return _subjectUsers.StartWith(_GetUsers());
+            return _subjectConversations.StartWith(_GetUsers());
         }
 
         public void AddMessage(Message message)
@@ -143,7 +157,7 @@ namespace ChatServiceLayer
             }
         }
 
-        public IObservable<ImmutableList<Message>> GetObservableMessages(ConverationGroup group)
+        public IObservable<ImmutableList<Message>> GetObservableMessages(ConversationGroup group)
         {
             return _subjectMessages.StartWith(_GetMessages())
                 .Select(x => x.Where(m => m.Route.Group == group).ToImmutableList());
@@ -151,6 +165,6 @@ namespace ChatServiceLayer
 
         private ImmutableList<Message> _GetMessages() => _messages.Values.OrderBy(x => x.MessageTime).ToImmutableList();
 
-        private ImmutableList<ConverationGroup> _GetUsers() => _users.OrderBy(x => x.UsersFlat).ToImmutableList();
+        private ImmutableList<ConversationGroup> _GetUsers() => _users.OrderBy(x => x.Name).ToImmutableList();
     }
 }

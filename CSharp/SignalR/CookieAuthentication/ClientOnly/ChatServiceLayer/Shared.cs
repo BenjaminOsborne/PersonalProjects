@@ -4,6 +4,8 @@ namespace ChatServiceLayer.Shared
 {
     public class ConversationGroup
     {
+        public int? Id { get; set; }
+        public string Name { get; set; }
         public string[] Users { get; set; }
     }
 
@@ -26,5 +28,16 @@ namespace ChatServiceLayer.Shared
     {
         public MessageRoute Route { get; set; }
         public string Content { get; set; }
+    }
+
+    public class ChatHistories
+    {
+        public ChatHistory[] Histories { get; set; }
+    }
+
+    public class ChatHistory
+    {
+        public ConversationGroup ConversationGroup { get; set; }
+        public Message[] Messages { get; set; }
     }
 }
