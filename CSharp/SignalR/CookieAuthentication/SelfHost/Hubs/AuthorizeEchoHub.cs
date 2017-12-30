@@ -2,7 +2,6 @@
 using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
 using ChatServiceLayer.Shared;
-using WebGrease.Css.Extensions;
 using WebHost.Persistence;
 using ConversationGroup = ChatServiceLayer.Shared.ConversationGroup;
 using Message = ChatServiceLayer.Shared.Message;
