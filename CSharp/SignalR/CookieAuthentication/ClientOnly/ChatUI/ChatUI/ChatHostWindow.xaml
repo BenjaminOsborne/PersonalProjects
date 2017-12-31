@@ -61,7 +61,7 @@
                         <Button Grid.Row="0" Margin="5" Command="{Binding Users.FlickVisible}" HorizontalAlignment="Left" FontSize="11" VerticalAlignment="Center" Height="25" Width="25" Content="{Binding Users.FlickDisplay}"/>
                         <ScrollViewer Grid.Row="1" Margin="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                                       Visibility="{Binding Users.ShowExistingConversations, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <ListBox x:Name="UserList" ItemsSource="{Binding Chats.Users}" SelectedItem="{Binding Chats.SelectedUser}">
+                            <ListBox x:Name="UserList" ItemsSource="{Binding Chats.Conversations}" SelectedItem="{Binding Chats.SelectedConversation}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Margin="2">
@@ -96,14 +96,17 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
-                        <Button Grid.Row="2" Margin="5" Command="{Binding Users.CreateGroup}" HorizontalAlignment="Stretch" FontSize="11" VerticalAlignment="Center" Height="25" Width="70" Content="Create"
-                                controls:ControlsHelper.ContentCharacterCasing="Normal"
-                                Visibility="{Binding Users.CreateConversation, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <StackPanel Grid.Row="2" Margin="2" Visibility="{Binding Users.CreateConversation, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Margin="0,2" Text="Custom Group Name:" FontWeight="DemiBold"/>
+                            <TextBox Margin="0,2" Text="{Binding Users.CustomName, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Margin="5" Command="{Binding Users.CreateGroup}" HorizontalAlignment="Stretch" FontSize="11" VerticalAlignment="Center" Height="25" Width="70" Content="Create"
+                                    controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+                        </StackPanel>
                     </Grid>
                 </Grid>
                 <GridSplitter Grid.Column="1" Margin="0" HorizontalAlignment="Center" Width="5"/>
-                <Grid Grid.Column="2" Visibility="{Binding Chats.SelectedUser, Converter={StaticResource NullToVisibilityConverter}}">
-                    <local:ConversationView Margin="3" DataContext="{Binding Chats.SelectedUser}"/>
+                <Grid Grid.Column="2" Visibility="{Binding Chats.SelectedConversation, Converter={StaticResource NullToVisibilityConverter}}">
+                    <local:ConversationView Margin="3" DataContext="{Binding Chats.SelectedConversation}"/>
                 </Grid>
             </Grid>
         </Grid>

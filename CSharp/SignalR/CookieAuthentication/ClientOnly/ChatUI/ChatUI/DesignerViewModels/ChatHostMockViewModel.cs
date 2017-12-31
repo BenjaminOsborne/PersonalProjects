@@ -23,6 +23,8 @@ namespace ChatUI.DesignerViewModels
 
         public bool ShowExistingConversations { get; } = true;
 
+        public string CustomName { get; set; } = "Some name";
+
         public IEnumerable<CheckUserViewModel> Users { get; } = new[]
         {
             _Create("Ben", true),
@@ -46,16 +48,16 @@ namespace ChatUI.DesignerViewModels
 
         private static ConversationMockViewModel _CreateUser(string name, int unread) => new ConversationMockViewModel { ConversationTitle = name, Unread = unread };
 
-        public IEnumerable<ConversationMockViewModel> Users { get; } = _users;
+        public IEnumerable<ConversationMockViewModel> Conversations { get; } = _users;
 
-        public ConversationMockViewModel SelectedUser { get; set; } = _users[1];
+        public ConversationMockViewModel SelectedConversation { get; set; } = _users[1];
     }
 
     public class ConversationMockViewModel
     {
         public string ConversationTitle { get; set; }
 
-        public ConverationGroup Conversation { get; set; }
+        public ConversationGroup Conversation { get; set; }
 
         public int Unread { get; set; }
 
@@ -74,6 +76,6 @@ namespace ChatUI.DesignerViewModels
             _CreateChat("Ben", "What a lovely message...\nPlease send another\nto\tme!", false),
         };
 
-        private static ChatItem _CreateChat(string sender, string message, bool fromUs) => new ChatItem(Guid.NewGuid(), sender, message, fromUs);
+        private static ChatItem _CreateChat(string sender, string message, bool fromUs) => new ChatItem(12, sender, message, fromUs, true);
     }
 }

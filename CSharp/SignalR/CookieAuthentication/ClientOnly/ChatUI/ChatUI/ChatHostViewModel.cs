@@ -40,13 +40,13 @@ namespace ChatUI
         public UsersViewModel Users { get; private set; }
         public ChatsViewModel Chats { get; private set; }
 
-        private void _OnCreatedGroup(ConverationGroup group)
+        private void _OnCreatedGroup(ConversationGroup group)
         {
             var chats = Chats;
-            var found = chats?.Users?.FirstOrDefault(x => x.Conversation == group);
+            var found = chats?.Conversations?.FirstOrDefault(x => x.Conversation == group);
             if (found != null)
             {
-                chats.SelectedUser = found;
+                chats.SelectedConversation = found;
             }
         }
     }
@@ -120,15 +120,16 @@ namespace ChatUI
         #region Fields
 
         private readonly IChatService _chatService;
-        private readonly Action<ConverationGroup> _onCreatedGroup;
+        private readonly Action<ConversationGroup> _onCreatedGroup;
         private readonly string _currentUserName;
         private readonly ObservableCollection<CheckUserViewModel> _users = new ObservableCollection<CheckUserViewModel>();
 
         private bool _createConversation;
+        private string _customName;
 
         #endregion
         
-        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, Action<ConverationGroup> onCreatedGroup, string currentUserName)
+        public UsersViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, Action<ConversationGroup> onCreatedGroup, string currentUserName)
         {
             _chatService = chatService;
             _onCreatedGroup = onCreatedGroup;
@@ -156,27 +157,33 @@ namespace ChatUI
 
         public string FlickDisplay => CreateConversation ? "-" : "+";
 
+        public string CustomName
+        {
+            get => _customName;
+            set => SetProperty(ref _customName, value);
+        }
+
         public IEnumerable<CheckUserViewModel> Users => _users;
 
         public ICommand CreateGroup { get; }
 
         private async Task _CreateGroup()
         {
-            var otherUsers = _users.Where(x => x.IsChecked).Select(x => x.User).ToImmutableList();
+            var otherUsers = _users.Where(x => x.IsChecked).Select(x => x.User).ToImmutableHashSet();
             var groupUsers = otherUsers.Add(_currentUserName);
-            var created = await _chatService.CreateGroup(groupUsers);
-            if (created == null)
+            var createdGroup = await _chatService.CreateGroup(CustomName, groupUsers.ToImmutableList());
+            if (createdGroup == null)
             {
                 return;
             }
 
-            CreateConversation = false;
+            CustomName = ""; //Reset to empty after create
+            CreateConversation = false; //Reset to hidden after create
             foreach (var item in _users)
             {
                 item.IsChecked = false;
             }
-
-            _onCreatedGroup(created);
+            _onCreatedGroup(createdGroup);
         }
 
         private void _OnNextUsers(ImmutableList<string> users)
@@ -210,9 +217,9 @@ namespace ChatUI
         private readonly IDesktopSchedulerProvider _schedulerProvider;
         private readonly IChatService _chatService;
         private readonly string _currentUserName;
-        private readonly ObservableCollection<ConversationViewModel> _users = new ObservableCollection<ConversationViewModel>();
+        private readonly ObservableCollection<ConversationViewModel> _conversations = new ObservableCollection<ConversationViewModel>();
 
-        private ConversationViewModel _selectedUser;
+        private ConversationViewModel _selectedConversation;
         
         public ChatsViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
@@ -223,26 +230,37 @@ namespace ChatUI
             _chatService.GetObservableConversations()
                 .ObserveOn(_schedulerProvider.Dispatcher).Subscribe(users =>
             {
-                var existing = _users.Select(x => x.Conversation).ToImmutableHashSet();
+                var existing = _conversations.Select(x => x.Conversation).ToImmutableHashSet();
                 var missing = users.Where(u => existing.Contains(u) == false).ToImmutableList();
-                missing.ForEach(conversation =>
+
+                if (missing.Any())
                 {
-                    var model = _CreateModelForConversation(conversation);
-                    _users.Add(model);
-                });
+                    foreach (var conversation in missing)
+                    {
+                        var model = _CreateModelForConversation(conversation);
+                        _conversations.Add(model);
+                    }
+
+                    //Order by name
+                    var ordered = _conversations
+                        .OrderBy(x => x.ConverstionIsCurrentUserOnly == false)
+                        .ThenBy(x => x.ConversationTitle)
+                        .ToImmutableList();
+                    _conversations.SetState(ordered);
+                }
             });
         }
 
-        public IEnumerable<ConversationViewModel> Users => _users;
+        public IEnumerable<ConversationViewModel> Conversations => _conversations;
 
-        public ConversationViewModel SelectedUser
+        public ConversationViewModel SelectedConversation
         {
-            get => _selectedUser;
-            set => SetPropertyWithAction(ref _selectedUser, value, _ =>
+            get => _selectedConversation;
+            set => SetPropertyWithAction(ref _selectedConversation, value, _ =>
             {
-                var selected = _selectedUser;
+                var selected = _selectedConversation;
 
-                var others = _users.Where(x => x != selected).ToImmutableList();
+                var others = _conversations.Where(x => x != selected).ToImmutableList();
                 others.ForEach(x => x.IsSelected = false);
                 if (selected != null)
                 {
@@ -251,7 +269,7 @@ namespace ChatUI
             });
         }
 
-        private ConversationViewModel _CreateModelForConversation(ConverationGroup conversation)
+        private ConversationViewModel _CreateModelForConversation(ConversationGroup conversation)
         {
             var route = new MessageRoute(conversation, _currentUserName);
 
@@ -260,9 +278,11 @@ namespace ChatUI
 
             var model = new ConversationViewModel(
                 obsMessages,
-                c => _chatService.SendChat(route, c),
-                () => _chatService.SendTyping(route),
-                conversation, _currentUserName);
+                onSendChat: c => _chatService.SendChat(route, c),
+                onTyping: () => _chatService.SendTyping(route),
+                fnMarkRead: id => _chatService.MarkChatRead(id, _currentUserName),
+                conversation: conversation,
+                currentUser: _currentUserName);
 
             //Handle typing text
             obsMessages.Subscribe(_ => model.ConversationTypingText = ""); //Clear whenever message comes in
@@ -294,8 +314,8 @@ namespace ChatUI
         #region Fields
 
         private readonly Action _onTyping;
+        private readonly Action<int> _fnMarkRead;
         private readonly ObservableCollection<ChatItem> _chatHistory = new ObservableCollection<ChatItem>();
-        private ImmutableHashSet<Guid> _previousRead = ImmutableHashSet<Guid>.Empty;
 
         private int _unread;
         private string _currentChat;
@@ -304,11 +324,15 @@ namespace ChatUI
 
         #endregion
 
-        public ConversationViewModel(IObservable<ImmutableList<Message>> obsMessages, Func<string, Task> onSendChat, Action onTyping, ConverationGroup conversation, string currentUser)
+        public ConversationViewModel(IObservable<ImmutableList<Message>> obsMessages, Func<string, Task> onSendChat, Action onTyping, Action<int> fnMarkRead, ConversationGroup conversation, string currentUser)
         {
             _onTyping = onTyping;
-            ConversationTitle = _GetTitle(conversation, currentUser);
+            _fnMarkRead = fnMarkRead;
+
             Conversation = conversation;
+            ConverstionIsCurrentUserOnly = conversation.Users.Count == 1 && conversation.Users[0] == currentUser;
+            ConversationTitle = _GetTitle(conversation, ConverstionIsCurrentUserOnly, currentUser);
+            
             SendChat = new AsyncRelayCommand(async () =>
             {
                 var chat = CurrentChat;
@@ -321,17 +345,20 @@ namespace ChatUI
                 var chats = msgs.Select(m =>
                 {
                     var sender = m.Route.Sender;
-                    return new ChatItem(m.MessageId, sender, m.Content, fromCurrent: sender == currentUser);
+                    var hasRead = m.ReadStates.FirstOrDefault(s => s.User == currentUser)?.HasRead ?? false;
+                    return new ChatItem(m.Id, sender, m.Content, fromCurrent: sender == currentUser, hasRead: hasRead);
                 }).ToImmutableList();
-                _chatHistory.SetState(chats, (a,b) => a.Id == b.Id);
+                _chatHistory.SetState(chats);
 
                 _AnalyseUnread();
             });
         }
 
+        public bool ConverstionIsCurrentUserOnly { get; }
+
         public string ConversationTitle { get; }
 
-        public ConverationGroup Conversation { get; }
+        public ConversationGroup Conversation { get; }
 
         public int Unread
         {
@@ -363,45 +390,56 @@ namespace ChatUI
 
         public IEnumerable<ChatItem> ChatHistory => _chatHistory;
 
-        private string _GetTitle(ConverationGroup conversation, string currentUser)
+        private static string _GetTitle(ConversationGroup conversation, bool converstionIsCurretUserOnly, string currentUser)
         {
-            if (conversation.Users.Count == 1 && conversation.Users[0] == currentUser)
+            if (conversation.Name.IsNullOrEmpty() == false)
             {
-                return currentUser;
+                return conversation.Name;
+            }
+
+            if (converstionIsCurretUserOnly)
+            {
+                return $"{currentUser} (you)";
             }
 
             var otherUsers = conversation.Users.Where(x => x != currentUser);
             return string.Join(", ", otherUsers);
         }
-
+        
         private void _AnalyseUnread()
         {
             if (IsSelected)
             {
-                _previousRead = _chatHistory.Select(x => x.Id).ToImmutableHashSet();
+                var unread = _chatHistory.Where(x => x.HasRead == false).ToImmutableList();
+                foreach (var item in unread)
+                {
+                    _fnMarkRead(item.Id);
+                }
                 Unread = 0;
             }
             else
             {
-                Unread = _chatHistory.Count(x => _previousRead.Contains(x.Id) == false);
+                Unread = _chatHistory.Count(x => x.HasRead == false);
             }
         }
     }
 
     public class ChatItem
     {
-        public ChatItem(Guid id, string sender, string message, bool fromCurrent)
+        public ChatItem(int id, string sender, string message, bool fromCurrent, bool hasRead)
         {
             Id = id;
             Sender = sender;
             Message = message;
             FromCurrent = fromCurrent;
+            HasRead = hasRead;
         }
 
-        public Guid Id { get; }
+        public int Id { get; }
         public string Sender { get; }
         public string Message { get; }
         public bool FromCurrent { get; }
         public bool FromOther => !FromCurrent;
+        public bool HasRead { get; }
     }
 }

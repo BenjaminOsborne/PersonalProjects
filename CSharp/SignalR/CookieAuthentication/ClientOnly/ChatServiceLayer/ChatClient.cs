@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -34,14 +35,17 @@ namespace ChatServiceLayer
 
     public class ChatClient : IDisposable
     {
+        #region Fields
+
         private readonly string _url;
         private readonly IOutputLogger _logger;
+        private readonly Func<string, IEnumerable<string>, bool> _fnGroupExistsWithUsers;
         private readonly CookieContainer _cookieContainer;
         private readonly HttpClient _httpClient;
 
-        private readonly Subject<ConverationGroup> _users = new Subject<ConverationGroup>();
+        private readonly Subject<ConversationGroup> _conversationGroups = new Subject<ConversationGroup>();
         private readonly Subject<Message> _messages = new Subject<Message>();
-        private readonly Subject<MessageRoute> _otherUserTyping = new Subject<MessageRoute>();
+        private readonly Subject<MessageRoute> _conversationTyping = new Subject<MessageRoute>();
 
         [CanBeNull]
         private string _token;
@@ -50,10 +54,13 @@ namespace ChatServiceLayer
         private IHubProxy _chatHub;
         private string _userName;
 
-        public ChatClient(string url, IOutputLogger logger)
+        #endregion
+
+        public ChatClient(string url, IOutputLogger logger, Func<string, IEnumerable<string>, bool> fnGroupExistsWithUsers)
         {
             _url = url;
             _logger = logger;
+            _fnGroupExistsWithUsers = fnGroupExistsWithUsers;
 
             _cookieContainer = new CookieContainer();
             var handler = new HttpClientHandler { CookieContainer = _cookieContainer };
@@ -65,8 +72,8 @@ namespace ChatServiceLayer
             _httpClient.Dispose();
             _chatConnection?.Dispose();
 
-            _users.OnCompleted();
-            _users.Dispose();
+            _conversationGroups.OnCompleted();
+            _conversationGroups.Dispose();
 
             _messages.OnCompleted();
             _messages.Dispose();
@@ -90,9 +97,9 @@ namespace ChatServiceLayer
             _token = _ParseRequestVerificationToken(loginPostContent);
         }
 
-        public IObservable<ConverationGroup> GetObservableUsers() => _users;
+        public IObservable<ConversationGroup> GetObservableConversations() => _conversationGroups;
 
-        public IObservable<MessageRoute> GetObservableUserTyping() => _otherUserTyping;
+        public IObservable<MessageRoute> GetObservableTyping() => _conversationTyping;
 
         public IObservable<Message> GetObservableMessages() => _messages;
         
@@ -100,13 +107,16 @@ namespace ChatServiceLayer
         {
             _userName = username;
             var chatHubName = "ChatHub";
-            var onConnected = "onConnected";
-            var onEcho = "onEcho";
-            var onEchoGroup = "onEchoGroup";
 
-            var onBroadcastAll = "onBroadcastAll";
-            var onBroadcastSpecific = "onBroadcastSpecific";
-            var onBroadcastTyping = "onBroadcastTyping";
+            var onConnected = "onConnected";
+            var onConnectedHistory = "onConnectedHistory";
+
+            var onEcho = "onEcho";
+            var onCreatedGroup = "onCreatedGroup";
+
+            var onSendChatAll = "onSendChatAll";
+            var onSendChat = "onSendChat";
+            var onSendTyping = "onSendTyping";
             
             _logger.WriteLine("Begin Hub");
 
@@ -116,25 +126,28 @@ namespace ChatServiceLayer
             _chatHub = _chatConnection.CreateHubProxy(chatHubName);
 
             _chatHub.On<string>(onConnected, _OnConnected);
-            _chatHub.On<string>(onEcho, _UserPing);
-            _chatHub.On<Shared.ConversationGroup>(onEchoGroup, _GroupPing);
+            _chatHub.On<Shared.ChatHistories>(onConnectedHistory, _OnConnectedHistory);
+            _chatHub.On<string>(onEcho, _OnEcho);
+            _chatHub.On<Shared.ConversationGroup>(onCreatedGroup, _OnCreatedGroup);
 
-            _chatHub.On<Shared.Message>(onBroadcastAll, _MessageFromUser);
-            _chatHub.On<Shared.Message>(onBroadcastSpecific, _MessageFromUser);
-            _chatHub.On<Shared.MessageRoute>(onBroadcastTyping, _OnTyping);
+            _chatHub.On<Shared.Message>(onSendChatAll, _MessageFromUser);
+            _chatHub.On<Shared.Message>(onSendChat, _MessageFromUser);
+            _chatHub.On<Shared.MessageRoute>(onSendTyping, _OnTyping);
             
             await _chatConnection.Start();
         }
-        
+
         public async Task Echo() => await _chatHub.Invoke("echo");
 
-        public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("broadcastAll", message);
+        public async Task SendGlobalMessage(string message) => await _chatHub.Invoke("sendChatAll", message);
 
-        public async Task SendChat(Shared.MessageSendInfo sendInfo) => await _chatHub.Invoke("broadcastSpecific", sendInfo);
+        public async Task SendChat(Shared.MessageSendInfo sendInfo) => await _chatHub.Invoke("sendChat", sendInfo);
 
-        public async Task SendTyping(Shared.MessageRoute route) => await _chatHub.Invoke("broadcastTyping", route);
+        public async Task SendTyping(Shared.MessageRoute route) => await _chatHub.Invoke("sendTyping", route);
 
-        public async Task CreateGroup(ConverationGroup group) => await _chatHub.Invoke("echoGroup", group);
+        public async Task MarkChatRead(MessageReadInfo info) => await _chatHub.Invoke("markChatRead", info);
+
+        public async Task<Shared.ConversationGroup> CreateGroup(Shared.ConversationGroup group) => await _chatHub.Invoke<Shared.ConversationGroup>("createGroup", group);
 
         public async Task<bool> AccountLogout()
         {
@@ -172,46 +185,111 @@ namespace ChatServiceLayer
 
         private async void _OnConnected(string sender)
         {
-            _UserPing(sender);
+            _OnEcho(sender);
             await Echo(); //Invoke call back to notify all other users
         }
 
-        private void _UserPing(string sender)
+        private void _OnConnectedHistory(ChatHistories dto)
         {
-            var group = ConverationGroup.Create(new [] { _userName, sender });
-            _users.OnNext(group);
+            foreach (var history in dto.Histories)
+            {
+                var group = _MapGroup(history.ConversationGroup);
+                if (group == null)
+                {
+                    continue;
+                }
+
+                _conversationGroups.OnNext(group);
+
+                foreach (var msg in history.Messages)
+                {
+                    var message = _MapMessage(msg);
+                    if (message == null)
+                    {
+                        continue;
+                    }
+                    _messages.OnNext(message);
+                }
+            }
         }
 
-        private void _GroupPing(ConversationGroup dto)
+        private async void _OnEcho(string sender)
         {
-            var group = ConverationGroup.Create(dto.Users);
-            _users.OnNext(group);
+            var users = new [] { _userName, sender }.Distinct().OrderBy(x => x).ToArray();
+            var customName = ""; //Default to empty
+            var exits = _fnGroupExistsWithUsers(customName, users);
+            if (exits)
+            {
+                return;
+            }
+            var dto = new Shared.ConversationGroup { Id = null, Name = "", Users = users};
+            await CreateGroup(dto);
+        }
+
+        private void _OnCreatedGroup(Shared.ConversationGroup dto)
+        {
+            var group = _MapGroup(dto);
+            if (group == null)
+            {
+                return;
+            }
+            _conversationGroups.OnNext(group);
         }
 
         private void _MessageFromUser(Shared.Message dto)
         {
-            var dtoRoute = dto.Route;
-            var route = _CreateMessageRoute(dtoRoute);
-
-            _users.OnNext(route.Group);
-
-            var message = new Message(dto.MessageId, dto.MessageTime, route, dto.Content);
+            var message = _MapMessage(dto);
+            if (message == null)
+            {
+                return;
+            }
+            _conversationGroups.OnNext(message.Route.Group);
             _messages.OnNext(message);
         }
 
         private void _OnTyping(Shared.MessageRoute dto)
         {
-            var route = _CreateMessageRoute(dto);
-            _otherUserTyping.OnNext(route);
+            var route = _MapMessageRoute(dto);
+            if (route == null)
+            {
+                return;
+            }
+            _conversationTyping.OnNext(route);
         }
 
-        private static MessageRoute _CreateMessageRoute(Shared.MessageRoute dtoRoute)
+        [CanBeNull]
+        private static ConversationGroup _MapGroup(Shared.ConversationGroup dto)
         {
-            var dtoGroup = dtoRoute.Group;
-            var group = ConverationGroup.Create(dtoGroup.Users);
+            if (dto.Id.HasValue == false)
+            {
+                return null;
+            }
+            return ConversationGroup.CreateFromExisting(dto.Id.Value, dto.Name, dto.Users);
+        }
+
+        [CanBeNull]
+        private static Message _MapMessage(Shared.Message dto)
+        {
+            var route = _MapMessageRoute(dto.Route);
+            if (route == null)
+            {
+                return null;
+            }
+            var readStates = dto.ReadStates.Select(x => new ReadState(x.User, x.HasRead)).ToImmutableList();
+            return new Message(dto.Id, dto.MessageTime, route, dto.Content, readStates);
+        }
+
+        [CanBeNull]
+        private static MessageRoute _MapMessageRoute(Shared.MessageRoute dtoRoute)
+        {
+            var group = _MapGroup(dtoRoute.Group);
+            if (group == null)
+            {
+                return null;
+            }
             return new MessageRoute(group, dtoRoute.Sender);
         }
-        
+
         [CanBeNull]
         private string _ParseRequestVerificationToken(string content)
         {
