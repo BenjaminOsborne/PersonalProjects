@@ -427,7 +427,6 @@ namespace ChatUI
         public string Message { get; }
         public bool FromCurrent { get; }
         public bool FromOther => !FromCurrent;
-
-        public bool HasRead { get; set; }
+        public bool HasRead { get; }
     }
 }
