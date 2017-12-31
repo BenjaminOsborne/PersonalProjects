@@ -141,6 +141,8 @@ namespace ChatServiceLayer
 
         public async Task SendTyping(Shared.MessageRoute route) => await _chatHub.Invoke("sendTyping", route);
 
+        public async Task MarkChatRead(MessageReadInfo info) => await _chatHub.Invoke("markChatRead", info);
+
         public async Task CreateGroup(Shared.ConversationGroup group) => await _chatHub.Invoke("createGroup", group);
 
         public async Task<bool> AccountLogout()
@@ -268,7 +270,8 @@ namespace ChatServiceLayer
             {
                 return null;
             }
-            return new Message(dto.Id.Value, dto.MessageTime, route, dto.Content);
+            var readStates = dto.ReadStates.Select(x => new ReadState(x.User, x.HasRead)).ToImmutableList();
+            return new Message(dto.Id, dto.MessageTime, route, dto.Content, readStates);
         }
 
         [CanBeNull]

@@ -269,9 +269,11 @@ namespace ChatUI
 
             var model = new ConversationViewModel(
                 obsMessages,
-                c => _chatService.SendChat(route, c),
-                () => _chatService.SendTyping(route),
-                conversation, _currentUserName);
+                onSendChat: c => _chatService.SendChat(route, c),
+                onTyping: () => _chatService.SendTyping(route),
+                fnMarkRead: id => _chatService.MarkChatRead(id, _currentUserName),
+                conversation: conversation,
+                currentUser: _currentUserName);
 
             //Handle typing text
             obsMessages.Subscribe(_ => model.ConversationTypingText = ""); //Clear whenever message comes in
@@ -303,8 +305,8 @@ namespace ChatUI
         #region Fields
 
         private readonly Action _onTyping;
+        private readonly Action<int> _fnMarkRead;
         private readonly ObservableCollection<ChatItem> _chatHistory = new ObservableCollection<ChatItem>();
-        private ImmutableHashSet<int> _previousRead = ImmutableHashSet<int>.Empty;
 
         private int _unread;
         private string _currentChat;
@@ -313,9 +315,11 @@ namespace ChatUI
 
         #endregion
 
-        public ConversationViewModel(IObservable<ImmutableList<Message>> obsMessages, Func<string, Task> onSendChat, Action onTyping, ConversationGroup conversation, string currentUser)
+        public ConversationViewModel(IObservable<ImmutableList<Message>> obsMessages, Func<string, Task> onSendChat, Action onTyping, Action<int> fnMarkRead, ConversationGroup conversation, string currentUser)
         {
             _onTyping = onTyping;
+            _fnMarkRead = fnMarkRead;
+
             ConversationTitle = _GetTitle(conversation, currentUser);
             Conversation = conversation;
             SendChat = new AsyncRelayCommand(async () =>
@@ -330,9 +334,10 @@ namespace ChatUI
                 var chats = msgs.Select(m =>
                 {
                     var sender = m.Route.Sender;
-                    return new ChatItem(m.Id, sender, m.Content, fromCurrent: sender == currentUser);
+                    var hasRead = m.ReadStates.FirstOrDefault(s => s.User == currentUser)?.HasRead ?? false;
+                    return new ChatItem(m.Id, sender, m.Content, fromCurrent: sender == currentUser, hasRead: hasRead);
                 }).ToImmutableList();
-                _chatHistory.SetState(chats, (a,b) => a.Id == b.Id);
+                _chatHistory.SetState(chats);
 
                 _AnalyseUnread();
             });
@@ -392,24 +397,29 @@ namespace ChatUI
         {
             if (IsSelected)
             {
-                _previousRead = _chatHistory.Select(x => x.Id).ToImmutableHashSet();
+                var unread = _chatHistory.Where(x => x.HasRead == false).ToImmutableList();
+                foreach (var item in unread)
+                {
+                    _fnMarkRead(item.Id);
+                }
                 Unread = 0;
             }
             else
             {
-                Unread = _chatHistory.Count(x => _previousRead.Contains(x.Id) == false);
+                Unread = _chatHistory.Count(x => x.HasRead == false);
             }
         }
     }
 
     public class ChatItem
     {
-        public ChatItem(int id, string sender, string message, bool fromCurrent)
+        public ChatItem(int id, string sender, string message, bool fromCurrent, bool hasRead)
         {
             Id = id;
             Sender = sender;
             Message = message;
             FromCurrent = fromCurrent;
+            HasRead = hasRead;
         }
 
         public int Id { get; }
@@ -417,5 +427,7 @@ namespace ChatUI
         public string Message { get; }
         public bool FromCurrent { get; }
         public bool FromOther => !FromCurrent;
+
+        public bool HasRead { get; set; }
     }
 }

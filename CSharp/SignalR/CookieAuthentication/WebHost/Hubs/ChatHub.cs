@@ -58,6 +58,11 @@ namespace WebHost.Hubs
             }
         }
 
+        public void MarkChatRead(MessageReadInfo readInfo)
+        {
+            _SaveMessageAsRead(readInfo.MessageId, _GetSender());
+        }
+        
         public void SendTyping(MessageRoute route)
         {
             foreach (var id in route.Group.Users)
@@ -78,6 +83,29 @@ namespace WebHost.Hubs
                 Content = content,
                 ReadStates = readStates
             };
+        }
+
+        private void _SaveMessageAsRead(int messageId, string sender)
+        {
+            using (var chats = new ChatsContext())
+            {
+                var message = chats.Messages.Include(x => x.MessageReads).FirstOrDefault(x => x.Id == messageId);
+                if (message == null)
+                {
+                    return;
+                }
+                var existing = message.MessageReads.FirstOrDefault(x => x.User == sender);
+                if (existing != null)
+                {
+                    chats.MessageReads.Attach(existing);
+                    existing.HasRead = true;
+                }
+                else
+                {
+                    chats.MessageReads.Add(new MessageReads { User = sender, HasRead = true, MessageId = message.Id });
+                }
+                chats.SaveChanges();
+            }
         }
 
         private Message _SaveMessage(MessageRoute route, string content, MessageReadState[] readStates)
@@ -176,7 +204,6 @@ namespace WebHost.Hubs
                         Users = convGrp.UserConversations.Select(x => x.User).ToArray()
                     };
 
-                    //TODO: add Msg read status
                     var msgs = convGrp.Messages.Select(m =>
                     {
                         var readStates = context.MessageReads

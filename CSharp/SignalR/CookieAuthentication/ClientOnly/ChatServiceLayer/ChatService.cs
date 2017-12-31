@@ -80,6 +80,12 @@ namespace ChatServiceLayer
             await _client.SendTyping(dto);
         }
 
+        public async Task MarkChatRead(int messageId, string currentUserName)
+        {
+            _chatModel.MarkChatRead(messageId, currentUserName);
+            await _client.MarkChatRead(new MessageReadInfo { MessageId = messageId });
+        }
+
         [CanBeNull]
         public async Task<bool> CreateGroup(string customName, ImmutableList<string> users)
         {
@@ -150,6 +156,16 @@ namespace ChatServiceLayer
             lock (_lock)
             {
                 _messages[message.Id] = message;
+                _subjectMessages.OnNext(_GetMessages());
+            }
+        }
+
+        public void MarkChatRead(int messageId, string currentUserName)
+        {
+            lock (_lock)
+            {
+                var existing = _messages[messageId];
+                _messages[messageId] = existing.CloneAsReadFor(currentUserName);
                 _subjectMessages.OnNext(_GetMessages());
             }
         }

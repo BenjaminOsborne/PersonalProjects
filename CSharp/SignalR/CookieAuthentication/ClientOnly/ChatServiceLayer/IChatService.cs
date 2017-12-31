@@ -17,7 +17,9 @@ namespace ChatServiceLayer
         Task SendGlobalMessage(string message);
         Task SendChat(MessageRoute route, string content);
         Task SendTyping(MessageRoute route);
+        Task MarkChatRead(int messageId, string currentUserName);
 
         Task<bool> CreateGroup(string customName, ImmutableList<string> users);
+        
     }
 }

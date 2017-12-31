@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace ChatServiceLayer
 {
@@ -88,17 +89,39 @@ namespace ChatServiceLayer
 
     public class Message
     {
-        public Message(int id, DateTime messageTime, MessageRoute route, string content)
+        public Message(int id, DateTime messageTime, MessageRoute route, string content, ImmutableList<ReadState> readStates)
         {
             Id = id;
             MessageTime = messageTime;
             Route = route;
             Content = content;
+            ReadStates = readStates;
         }
 
         public int Id { get; }
         public DateTime MessageTime { get; }
         public MessageRoute Route { get; }
         public string Content { get; }
+        public ImmutableList<ReadState> ReadStates { get; }
+
+        public Message CloneAsReadFor(string user)
+        {
+            var updated = new ReadState(user, true);
+            var exist = ReadStates.FirstOrDefault(x => x.User == user);
+            var states = exist != null ? ReadStates.Replace(exist, updated) : ReadStates.Add(updated);
+            return new Message(Id, MessageTime, Route, Content, states);
+        }
+    }
+
+    public class ReadState
+    {
+        public ReadState(string user, bool hasRead)
+        {
+            User = user;
+            HasRead = hasRead;
+        }
+
+        public string User { get; }
+        public bool HasRead { get; }
     }
 }

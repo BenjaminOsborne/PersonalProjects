@@ -74,6 +74,6 @@ namespace ChatUI.DesignerViewModels
             _CreateChat("Ben", "What a lovely message...\nPlease send another\nto\tme!", false),
         };
 
-        private static ChatItem _CreateChat(string sender, string message, bool fromUs) => new ChatItem(12, sender, message, fromUs);
+        private static ChatItem _CreateChat(string sender, string message, bool fromUs) => new ChatItem(12, sender, message, fromUs, true);
     }
 }
