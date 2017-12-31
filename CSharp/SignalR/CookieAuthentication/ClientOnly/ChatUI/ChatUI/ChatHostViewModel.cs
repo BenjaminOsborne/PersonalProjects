@@ -43,10 +43,10 @@ namespace ChatUI
         private void _OnCreatedGroup(ConversationGroup group)
         {
             var chats = Chats;
-            var found = chats?.Users?.FirstOrDefault(x => x.Conversation == group);
+            var found = chats?.Conversations?.FirstOrDefault(x => x.Conversation == group);
             if (found != null)
             {
-                chats.SelectedUser = found;
+                chats.SelectedConversation = found;
             }
         }
     }
@@ -214,7 +214,7 @@ namespace ChatUI
         private readonly string _currentUserName;
         private readonly ObservableCollection<ConversationViewModel> _conversations = new ObservableCollection<ConversationViewModel>();
 
-        private ConversationViewModel _selectedUser;
+        private ConversationViewModel _selectedConversation;
         
         public ChatsViewModel(IDesktopSchedulerProvider schedulerProvider, IChatService chatService, string currentUserName)
         {
@@ -242,14 +242,14 @@ namespace ChatUI
             });
         }
 
-        public IEnumerable<ConversationViewModel> Users => _conversations;
+        public IEnumerable<ConversationViewModel> Conversations => _conversations;
 
-        public ConversationViewModel SelectedUser
+        public ConversationViewModel SelectedConversation
         {
-            get => _selectedUser;
-            set => SetPropertyWithAction(ref _selectedUser, value, _ =>
+            get => _selectedConversation;
+            set => SetPropertyWithAction(ref _selectedConversation, value, _ =>
             {
-                var selected = _selectedUser;
+                var selected = _selectedConversation;
 
                 var others = _conversations.Where(x => x != selected).ToImmutableList();
                 others.ForEach(x => x.IsSelected = false);

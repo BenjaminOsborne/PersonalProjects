@@ -46,9 +46,9 @@ namespace ChatUI.DesignerViewModels
 
         private static ConversationMockViewModel _CreateUser(string name, int unread) => new ConversationMockViewModel { ConversationTitle = name, Unread = unread };
 
-        public IEnumerable<ConversationMockViewModel> Users { get; } = _users;
+        public IEnumerable<ConversationMockViewModel> Conversations { get; } = _users;
 
-        public ConversationMockViewModel SelectedUser { get; set; } = _users[1];
+        public ConversationMockViewModel SelectedConversation { get; set; } = _users[1];
     }
 
     public class ConversationMockViewModel
