@@ -11,10 +11,14 @@ namespace WebHost.Persistence
         }
 
         public DbSet<ConversationGroup> ConversationGroups { get; set; }
+
         public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ConversationGroup>()
+                .HasKey(u => u.Id);
+
             modelBuilder.Entity<ConversationGroup>()
                 .HasKey(u => u.Id);
 
@@ -30,14 +34,11 @@ namespace WebHost.Persistence
 
     public class ConversationGroup
     {
-        public ConversationGroup()
-        {
-            Users = new HashSet<string>();
-        }
-
         public int Id { get; set; }
 
-        public ICollection<string> Users { get; set; }
+        public string Name { get; set; }
+
+        public string UsersJson { get; set; }
 
         public virtual ICollection<Message> Messages { get; set; }
     }

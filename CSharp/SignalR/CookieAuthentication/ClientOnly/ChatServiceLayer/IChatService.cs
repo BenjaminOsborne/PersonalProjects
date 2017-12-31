@@ -18,6 +18,6 @@ namespace ChatServiceLayer
         Task SendChat(MessageRoute route, string content);
         Task SendTyping(MessageRoute route);
 
-        Task<bool> CreateGroup(string name, ImmutableList<string> users);
+        Task<bool> CreateGroup(string customName, ImmutableList<string> users);
     }
 }

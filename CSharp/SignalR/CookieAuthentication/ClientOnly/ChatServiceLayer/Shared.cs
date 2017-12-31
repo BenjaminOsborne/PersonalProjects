@@ -17,7 +17,7 @@ namespace ChatServiceLayer.Shared
 
     public class Message
     {
-        public Guid MessageId { get; set; }
+        public int? Id { get; set; }
         public DateTime MessageTime { get; set; }
 
         public MessageRoute Route { get; set; }

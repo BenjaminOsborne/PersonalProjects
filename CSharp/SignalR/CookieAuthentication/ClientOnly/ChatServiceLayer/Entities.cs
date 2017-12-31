@@ -14,8 +14,42 @@ namespace ChatServiceLayer
         public Guid Id { get; }
     }
 
-    public class ConversationGroup
+    public class ConversationGroup : IEquatable<ConversationGroup>
     {
+        #region Equality
+
+        public bool Equals(ConversationGroup other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Id == other.Id && string.Equals(Name, other.Name) && Equals(UsersKey, other.UsersKey);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ConversationGroup) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Id;
+                hashCode = (hashCode * 397) ^ Name.GetHashCode();
+                hashCode = (hashCode * 397) ^ UsersKey.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(ConversationGroup left, ConversationGroup right) => Equals(left, right);
+
+        public static bool operator !=(ConversationGroup left, ConversationGroup right) => !Equals(left, right);
+
+        #endregion
+
         public static CollectionKey<string> CreateUsersKey(IEnumerable<string> users)
         {
             return CollectionKey.CreateDistinctAndOrder(users);
@@ -54,15 +88,15 @@ namespace ChatServiceLayer
 
     public class Message
     {
-        public Message(Guid messageId, DateTime messageTime, MessageRoute route, string content)
+        public Message(int id, DateTime messageTime, MessageRoute route, string content)
         {
-            MessageId = messageId;
+            Id = id;
             MessageTime = messageTime;
             Route = route;
             Content = content;
         }
 
-        public Guid MessageId { get; }
+        public int Id { get; }
         public DateTime MessageTime { get; }
         public MessageRoute Route { get; }
         public string Content { get; }

@@ -22,7 +22,7 @@ namespace ChatServiceLayer
             var logger = new WritterLogger(Console.Out);
             _client = new ChatClient(url, logger, fnGroupExistsWithUsers: users => _chatModel.ConversationExists(users));
 
-            _client.GetObservableUsers().Subscribe(u => _chatModel.AddConversation(u));
+            _client.GetObservableConversations().Subscribe(u => _chatModel.AddConversation(u));
             _client.GetObservableMessages().Subscribe(m => _chatModel.AddMessage(m));
         }
 
@@ -54,7 +54,7 @@ namespace ChatServiceLayer
 
         public IObservable<string> GetObservableTyping(ConversationGroup group)
         {
-            return _client.GetObservableUserTyping().Where(x => x.Group == group).Select(x => x.Sender);
+            return _client.GetObservableTyping().Where(x => x.Group == group).Select(x => x.Sender);
         }
 
         public IObservable<ImmutableList<string>> GetObservableAllUsers()
@@ -81,20 +81,20 @@ namespace ChatServiceLayer
         }
 
         [CanBeNull]
-        public async Task<bool> CreateGroup(string name, ImmutableList<string> users)
+        public async Task<bool> CreateGroup(string customName, ImmutableList<string> users)
         {
             if (users.Any() == false)
             {
                 return false;
             }
 
-            var added = _chatModel.ConversationExists(users);
-            if (added == false)
+            var exists = _chatModel.ConversationExists(users);
+            if (exists)
             {
                 return false;
             }
 
-            var dto = new Shared.ConversationGroup { Id = null, Name = name, Users = users.ToArray() };
+            var dto = new Shared.ConversationGroup { Id = null, Name = customName, Users = users.ToArray() };
             await _client.CreateGroup(dto);
             return true;
         }
@@ -111,10 +111,10 @@ namespace ChatServiceLayer
     {
         private readonly object _lock = new object();
 
-        private readonly Dictionary<Guid, Message> _messages = new Dictionary<Guid, Message>();
+        private readonly Dictionary<int, Message> _messages = new Dictionary<int, Message>();
         private readonly Subject<ImmutableList<Message>> _subjectMessages = new Subject<ImmutableList<Message>>();
 
-        private readonly HashSet<ConversationGroup> _users = new HashSet<ConversationGroup>();
+        private readonly HashSet<ConversationGroup> _conversationGroups = new HashSet<ConversationGroup>();
         private readonly Subject<ImmutableList<ConversationGroup>> _subjectConversations = new Subject<ImmutableList<ConversationGroup>>();
 
         public bool ConversationExists(IEnumerable<string> users)
@@ -122,7 +122,7 @@ namespace ChatServiceLayer
             var key = ConversationGroup.CreateUsersKey(users);
             lock (_lock)
             {
-                return _users.Any(x => x.UsersKey.Equals(key));
+                return _conversationGroups.Any(x => x.UsersKey.Equals(key));
             }
         }
 
@@ -130,26 +130,26 @@ namespace ChatServiceLayer
         {
             lock (_lock)
             {
-                var added = _users.Add(user);
+                var added = _conversationGroups.Add(user);
                 if (added == false)
                 {
                     return false;
                 }
-                _subjectConversations.OnNext(_GetUsers());
+                _subjectConversations.OnNext(_GetConversationGroups());
                 return true;
             }
         }
 
         public IObservable<ImmutableList<ConversationGroup>> GetObservableConversations()
         {
-            return _subjectConversations.StartWith(_GetUsers());
+            return _subjectConversations.StartWith(_GetConversationGroups());
         }
 
         public void AddMessage(Message message)
         {
             lock (_lock)
             {
-                _messages[message.MessageId] = message;
+                _messages[message.Id] = message;
                 _subjectMessages.OnNext(_GetMessages());
             }
         }
@@ -162,6 +162,6 @@ namespace ChatServiceLayer
 
         private ImmutableList<Message> _GetMessages() => _messages.Values.OrderBy(x => x.MessageTime).ToImmutableList();
 
-        private ImmutableList<ConversationGroup> _GetUsers() => _users.OrderBy(x => x.Name).ToImmutableList();
+        private ImmutableList<ConversationGroup> _GetConversationGroups() => _conversationGroups.OrderBy(x => x.Name).ToImmutableList();
     }
 }

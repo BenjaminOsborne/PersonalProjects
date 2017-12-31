@@ -93,9 +93,9 @@ namespace ChatServiceLayer
             _token = _ParseRequestVerificationToken(loginPostContent);
         }
 
-        public IObservable<ConversationGroup> GetObservableUsers() => _conversationGroups;
+        public IObservable<ConversationGroup> GetObservableConversations() => _conversationGroups;
 
-        public IObservable<MessageRoute> GetObservableUserTyping() => _conversationTyping;
+        public IObservable<MessageRoute> GetObservableTyping() => _conversationTyping;
 
         public IObservable<Message> GetObservableMessages() => _messages;
         
@@ -215,9 +215,7 @@ namespace ChatServiceLayer
             {
                 return;
             }
-
-            var defaultName = string.Join(", ", users);
-            var dto = new Shared.ConversationGroup { Id = null, Name = defaultName, Users = users};
+            var dto = new Shared.ConversationGroup { Id = null, Name = "", Users = users};
             await CreateGroup(dto);
         }
 
@@ -270,7 +268,7 @@ namespace ChatServiceLayer
             {
                 return null;
             }
-            return new Message(dto.MessageId, dto.MessageTime, route, dto.Content);
+            return new Message(dto.Id.Value, dto.MessageTime, route, dto.Content);
         }
 
         [CanBeNull]

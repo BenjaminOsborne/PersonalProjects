@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
 using ChatServiceLayer.Shared;
+using Newtonsoft.Json;
 using WebHost.Persistence;
 using ConversationGroup = ChatServiceLayer.Shared.ConversationGroup;
 using Message = ChatServiceLayer.Shared.Message;
@@ -27,8 +30,7 @@ namespace Common.Hubs
     {
         public override async Task OnConnected()
         {
-            var histories = new ChatHistory[] { }; //TODO: Pull from database
-            var history = new ChatHistories { Histories = histories };
+            var history = _GetChatHistory();
             Clients.Caller.onConnectedHistory(history);
 
             await Clients.All.onConnected(_GetSender());
@@ -42,50 +44,31 @@ namespace Common.Hubs
 
         public void CreateGroup(ConversationGroup dto)
         {
-            var groupWithId = dto; //TODO: Create/Add group and push round with Id...
+            var withId = _GetOrAddConversationGroup(dto);
 
-            foreach (var id in dto.Users)
+            foreach (var id in withId.Users)
             {
-                Clients.User(id).onCreatedGroup(groupWithId);
+                Clients.User(id).onCreatedGroup(withId);
             }
         }
 
         public void SendChatAll(string message)
         {
+            //Protoype: Needs persistence and general updated handling...
             var sender = _GetSender();
-            var allGroup = new ConversationGroup { Id = null, Users = new string[] { }};
+            var allGroup = new ConversationGroup { Id = null, Users = new string[] { } };
             var route = new MessageRoute { Group = allGroup, Sender = sender };
-
-            var msg = _CreateMessage(route, message);
+            var msg = _MapMessage(-1, route, message);
             Clients.All.onSendChatAll(msg);
         }
 
         public void SendChat(MessageSendInfo info)
         {
-            var route = info.Route;
-            var dto = _CreateMessage(route, info.Content);
-
-            using (var chats = new ChatsContext())
+            var withId = _SaveMessage(info.Route, info.Content);
+            var users = withId.Route.Group.Users;
+            foreach (var u in users)
             {
-                var found = chats.ConversationGroups.Add(new WebHost.Persistence.ConversationGroup()
-                {
-                    Users = dto.Route.Group.Users
-                });
-                chats.SaveChanges();
-
-                var found2 = chats.Messages.Add(new WebHost.Persistence.Message
-                {
-                    MessageTime = DateTimeOffset.Now,
-                    ConversationGroupId = found.Id,
-                    Sender = dto.Route.Sender,
-                    Content = dto.Content
-                });
-                chats.SaveChanges();
-            }
-
-            foreach (var u in route.Group.Users)
-            {
-                Clients.User(u).onSendChat(dto);
+                Clients.User(u).onSendChat(withId);
             }
         }
 
@@ -99,15 +82,112 @@ namespace Common.Hubs
 
         private string _GetSender() => Context.User.Identity.Name;
 
-        private static Message _CreateMessage(MessageRoute route, string content)
+        private static Message _MapMessage(int id, MessageRoute route, string content)
         {
             return new Message
             {
-                MessageId = Guid.NewGuid(),
+                Id = id,
                 MessageTime = DateTime.Now,
                 Route = route,
                 Content = content
             };
+        }
+
+        private Message _SaveMessage(MessageRoute route, string content)
+        {
+            using (var chats = new ChatsContext())
+            {
+                var added = chats.Messages.Add(new WebHost.Persistence.Message
+                {
+                    MessageTime = DateTimeOffset.Now,
+                    ConversationGroupId = route.Group.Id.Value,
+                    Sender = route.Sender,
+                    Content = content
+                });
+                chats.SaveChanges();
+
+                return _MapMessage(added.Id, route, content);
+            }
+        }
+
+        private static ConversationGroup _GetOrAddConversationGroup(ConversationGroup dto)
+        {
+            using (var context = new ChatsContext())
+            {
+                var usersJson = _Serialize(dto.Users);
+                var found = context.ConversationGroups.FirstOrDefault(x => x.Name == dto.Name && x.UsersJson == usersJson);
+                if (found != null)
+                {
+                    dto.Id = found.Id;
+                }
+                else
+                {
+                    var added = context.ConversationGroups.Add(new WebHost.Persistence.ConversationGroup
+                    {
+                        Name = dto.Name,
+                        UsersJson = usersJson
+                    });
+                    context.SaveChanges();
+
+                    dto.Id = added.Id;
+                }
+            }
+
+            return dto;
+        }
+
+        private ChatHistories _GetChatHistory()
+        {
+            var sender = _GetSender();
+            using (var context = new ChatsContext())
+            {
+                var conversations = context.ConversationGroups
+                    .ToList()
+                    .Select(x => new ChatServiceLayer.Shared.ConversationGroup
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Users = _Deserialize<string[]>(x.UsersJson)
+                    })
+                    .Where(x => x.Users.Contains(sender))
+                    .ToList();
+
+                var mapGroups = conversations.ToDictionary(x => x.Id);
+                var messages = context.Messages
+                    .ToList()
+                    .Where(x => mapGroups.ContainsKey(x.ConversationGroupId))
+                    .Select(m =>
+                    new ChatServiceLayer.Shared.Message
+                    {
+                        Id = m.Id,
+                        Route = new MessageRoute
+                        {
+                            Group = mapGroups[m.ConversationGroupId],
+                            Sender = m.Sender
+                        },
+                        MessageTime = m.MessageTime.DateTime,
+                        Content = m.Content
+                    }).ToList();
+
+
+                var mapMessages = messages.GroupBy(x => x.Route.Group).ToDictionary(x => x.Key);
+
+                var histories = mapGroups.Values.Select(grp =>
+                {
+                    var found = mapMessages.TryGetValue(grp, out var msgsRaw);
+                    var msgs = found ? msgsRaw.OrderBy(m => m.MessageTime).ToArray() : new Message[0];
+                    return new ChatHistory { ConversationGroup = grp, Messages = msgs };
+                }).ToArray();
+                return new ChatHistories { Histories = histories };
+            }
+        }
+
+        private static string _Serialize<T>(T data) => JsonConvert.SerializeObject(data, Formatting.None);
+        
+        private static T _Deserialize<T>(string jsonData)
+        {
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects, PreserveReferencesHandling = PreserveReferencesHandling.Objects };
+            return JsonConvert.DeserializeObject<T>(jsonData, settings);
         }
     }
 }
