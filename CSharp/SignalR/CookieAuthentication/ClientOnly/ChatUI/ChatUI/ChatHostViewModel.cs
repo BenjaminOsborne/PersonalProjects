@@ -235,7 +235,11 @@ namespace ChatUI
                     }
 
                     //Order by name
-                    _conversations.SetState(_conversations.OrderBy(x => x.ConversationTitle).ToImmutableList());
+                    var ordered = _conversations
+                        .OrderBy(x => x.ConverstionIsCurrentUserOnly == false)
+                        .ThenBy(x => x.ConversationTitle)
+                        .ToImmutableList();
+                    _conversations.SetState(ordered);
                 }
             });
         }
@@ -318,8 +322,10 @@ namespace ChatUI
             _onTyping = onTyping;
             _fnMarkRead = fnMarkRead;
 
-            ConversationTitle = _GetTitle(conversation, currentUser);
             Conversation = conversation;
+            ConverstionIsCurrentUserOnly = conversation.Users.Count == 1 && conversation.Users[0] == currentUser;
+            ConversationTitle = _GetTitle(conversation, ConverstionIsCurrentUserOnly, currentUser);
+            
             SendChat = new AsyncRelayCommand(async () =>
             {
                 var chat = CurrentChat;
@@ -340,6 +346,8 @@ namespace ChatUI
                 _AnalyseUnread();
             });
         }
+
+        public bool ConverstionIsCurrentUserOnly { get; }
 
         public string ConversationTitle { get; }
 
@@ -375,22 +383,22 @@ namespace ChatUI
 
         public IEnumerable<ChatItem> ChatHistory => _chatHistory;
 
-        private string _GetTitle(ConversationGroup conversation, string currentUser)
+        private static string _GetTitle(ConversationGroup conversation, bool converstionIsCurretUserOnly, string currentUser)
         {
             if (conversation.Name.IsNullOrEmpty() == false)
             {
                 return conversation.Name;
             }
 
-            if (conversation.Users.Count == 1 && conversation.Users[0] == currentUser)
+            if (converstionIsCurretUserOnly)
             {
-                return currentUser;
+                return $"{currentUser} (you)";
             }
 
             var otherUsers = conversation.Users.Where(x => x != currentUser);
             return string.Join(", ", otherUsers);
         }
-
+        
         private void _AnalyseUnread()
         {
             if (IsSelected)
