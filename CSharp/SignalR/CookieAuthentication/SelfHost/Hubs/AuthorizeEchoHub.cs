@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
@@ -141,43 +142,31 @@ namespace Common.Hubs
             var sender = _GetSender();
             using (var context = new ChatsContext())
             {
-                var conversations = context.ConversationGroups
-                    .ToList()
-                    .Select(x => new ChatServiceLayer.Shared.ConversationGroup
-                    {
-                        Id = x.Id,
-                        Name = x.Name,
-                        Users = _Deserialize<string[]>(x.UsersJson)
-                    })
-                    .Where(x => x.Users.Contains(sender))
-                    .ToList();
+                var userConversations = context.ConversationUsers.Where(x => x.User == sender).ToList();
+                var histories = userConversations.Select(uc =>
+                {
+                    var convGrp = context.ConversationGroups
+                        .Include(x => x.Messages)
+                        .Include(x => x.UserConversations)
+                        .First(x => x.Id == uc.ConversationGroupId);
 
-                var mapGroups = conversations.ToDictionary(x => x.Id);
-                var messages = context.Messages
-                    .ToList()
-                    .Where(x => mapGroups.ContainsKey(x.ConversationGroupId))
-                    .Select(m =>
-                    new ChatServiceLayer.Shared.Message
+                    var grp = new ChatServiceLayer.Shared.ConversationGroup
+                    {
+                        Id = convGrp.Id,
+                        Name = convGrp.Name,
+                        Users = convGrp.UserConversations.Select(x => x.User).ToArray()
+                    };
+
+                    var msgs = convGrp.Messages.Select(m => new ChatServiceLayer.Shared.Message
                     {
                         Id = m.Id,
-                        Route = new MessageRoute
-                        {
-                            Group = mapGroups[m.ConversationGroupId],
-                            Sender = m.Sender
-                        },
+                        Route = new MessageRoute { Group = grp, Sender = m.Sender },
                         MessageTime = m.MessageTime.DateTime,
                         Content = m.Content
-                    }).ToList();
-
-
-                var mapMessages = messages.GroupBy(x => x.Route.Group).ToDictionary(x => x.Key);
-
-                var histories = mapGroups.Values.Select(grp =>
-                {
-                    var found = mapMessages.TryGetValue(grp, out var msgsRaw);
-                    var msgs = found ? msgsRaw.OrderBy(m => m.MessageTime).ToArray() : new Message[0];
+                    }).ToArray();
                     return new ChatHistory { ConversationGroup = grp, Messages = msgs };
                 }).ToArray();
+
                 return new ChatHistories { Histories = histories };
             }
         }
