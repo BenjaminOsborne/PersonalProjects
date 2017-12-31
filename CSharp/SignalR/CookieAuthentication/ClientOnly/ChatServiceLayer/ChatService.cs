@@ -20,7 +20,7 @@ namespace ChatServiceLayer
             var url = "http://localhost:8080/";
 
             var logger = new WritterLogger(Console.Out);
-            _client = new ChatClient(url, logger, fnGroupExistsWithUsers: users => _chatModel.ConversationExists(users));
+            _client = new ChatClient(url, logger, fnGroupExistsWithUsers: _chatModel.ConversationExists);
 
             _client.GetObservableConversations().Subscribe(u => _chatModel.AddConversation(u));
             _client.GetObservableMessages().Subscribe(m => _chatModel.AddMessage(m));
@@ -94,19 +94,21 @@ namespace ChatServiceLayer
                 return null;
             }
 
-            var exists = _chatModel.ConversationExists(users);
+            var exists = _chatModel.ConversationExists(customName, users);
             if (exists)
             {
                 return null;
             }
 
-            var dto = new Shared.ConversationGroup { Id = null, Name = customName, Users = users.ToArray() };
-            var result = await _client.CreateGroup(dto);
-            if (result?.Id == null)
+            var input = new Shared.ConversationGroup { Id = null, Name = customName, Users = users.ToArray() };
+            var output = await _client.CreateGroup(input);
+            if (output?.Id == null)
             {
                 return null;
             }
-            return ConversationGroup.CreateFromExisting(result.Id.Value, result.Name, result.Users);
+            var domain = ConversationGroup.CreateFromExisting(output.Id.Value, output.Name, output.Users);
+            _chatModel.AddConversation(domain);
+            return domain;
         }
 
         private static Shared.MessageRoute _CreateRouteDTO(MessageRoute route)
@@ -127,12 +129,12 @@ namespace ChatServiceLayer
         private readonly HashSet<ConversationGroup> _conversationGroups = new HashSet<ConversationGroup>();
         private readonly Subject<ImmutableList<ConversationGroup>> _subjectConversations = new Subject<ImmutableList<ConversationGroup>>();
 
-        public bool ConversationExists(IEnumerable<string> users)
+        public bool ConversationExists(string customName, IEnumerable<string> users)
         {
             var key = ConversationGroup.CreateUsersKey(users);
             lock (_lock)
             {
-                return _conversationGroups.Any(x => x.UsersKey.Equals(key));
+                return _conversationGroups.Any(x => x.Name == customName && x.UsersKey.Equals(key));
             }
         }
 

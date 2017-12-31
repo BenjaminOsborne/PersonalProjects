@@ -23,6 +23,8 @@ namespace ChatUI.DesignerViewModels
 
         public bool ShowExistingConversations { get; } = true;
 
+        public string CustomName { get; set; } = "Some name";
+
         public IEnumerable<CheckUserViewModel> Users { get; } = new[]
         {
             _Create("Ben", true),

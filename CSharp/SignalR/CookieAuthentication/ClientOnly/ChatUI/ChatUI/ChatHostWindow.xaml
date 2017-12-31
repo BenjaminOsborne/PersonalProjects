@@ -96,9 +96,12 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
-                        <Button Grid.Row="2" Margin="5" Command="{Binding Users.CreateGroup}" HorizontalAlignment="Stretch" FontSize="11" VerticalAlignment="Center" Height="25" Width="70" Content="Create"
-                                controls:ControlsHelper.ContentCharacterCasing="Normal"
-                                Visibility="{Binding Users.CreateConversation, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <StackPanel Grid.Row="2" Margin="2" Visibility="{Binding Users.CreateConversation, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Margin="0,2" Text="Custom Group Name:" FontWeight="DemiBold"/>
+                            <TextBox Margin="0,2" Text="{Binding Users.CustomName, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Margin="5" Command="{Binding Users.CreateGroup}" HorizontalAlignment="Stretch" FontSize="11" VerticalAlignment="Center" Height="25" Width="70" Content="Create"
+                                    controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+                        </StackPanel>
                     </Grid>
                 </Grid>
                 <GridSplitter Grid.Column="1" Margin="0" HorizontalAlignment="Center" Width="5"/>

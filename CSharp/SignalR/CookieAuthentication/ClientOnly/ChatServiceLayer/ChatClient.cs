@@ -35,9 +35,11 @@ namespace ChatServiceLayer
 
     public class ChatClient : IDisposable
     {
+        #region Fields
+
         private readonly string _url;
         private readonly IOutputLogger _logger;
-        private readonly Func<IEnumerable<string>, bool> _fnGroupExistsWithUsers;
+        private readonly Func<string, IEnumerable<string>, bool> _fnGroupExistsWithUsers;
         private readonly CookieContainer _cookieContainer;
         private readonly HttpClient _httpClient;
 
@@ -52,7 +54,9 @@ namespace ChatServiceLayer
         private IHubProxy _chatHub;
         private string _userName;
 
-        public ChatClient(string url, IOutputLogger logger, Func<IEnumerable<string>, bool> fnGroupExistsWithUsers)
+        #endregion
+
+        public ChatClient(string url, IOutputLogger logger, Func<string, IEnumerable<string>, bool> fnGroupExistsWithUsers)
         {
             _url = url;
             _logger = logger;
@@ -212,7 +216,8 @@ namespace ChatServiceLayer
         private async void _OnEcho(string sender)
         {
             var users = new [] { _userName, sender }.Distinct().OrderBy(x => x).ToArray();
-            var exits = _fnGroupExistsWithUsers(users);
+            var customName = ""; //Default to empty
+            var exits = _fnGroupExistsWithUsers(customName, users);
             if (exits)
             {
                 return;

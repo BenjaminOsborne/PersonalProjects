@@ -20,6 +20,5 @@ namespace ChatServiceLayer
         Task MarkChatRead(int messageId, string currentUserName);
 
         Task<ConversationGroup> CreateGroup(string customName, ImmutableList<string> users);
-        
     }
 }

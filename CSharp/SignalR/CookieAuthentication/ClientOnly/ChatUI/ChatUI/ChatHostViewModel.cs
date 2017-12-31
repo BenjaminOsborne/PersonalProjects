@@ -125,6 +125,7 @@ namespace ChatUI
         private readonly ObservableCollection<CheckUserViewModel> _users = new ObservableCollection<CheckUserViewModel>();
 
         private bool _createConversation;
+        private string _customName;
 
         #endregion
         
@@ -156,6 +157,12 @@ namespace ChatUI
 
         public string FlickDisplay => CreateConversation ? "-" : "+";
 
+        public string CustomName
+        {
+            get => _customName;
+            set => SetProperty(ref _customName, value);
+        }
+
         public IEnumerable<CheckUserViewModel> Users => _users;
 
         public ICommand CreateGroup { get; }
@@ -163,15 +170,15 @@ namespace ChatUI
         private async Task _CreateGroup()
         {
             var otherUsers = _users.Where(x => x.IsChecked).Select(x => x.User).ToImmutableHashSet();
-            var customName = "";
             var groupUsers = otherUsers.Add(_currentUserName);
-            var createdGroup = await _chatService.CreateGroup(customName, groupUsers.ToImmutableList());
+            var createdGroup = await _chatService.CreateGroup(CustomName, groupUsers.ToImmutableList());
             if (createdGroup == null)
             {
                 return;
             }
 
-            CreateConversation = false;
+            CustomName = ""; //Reset to empty after create
+            CreateConversation = false; //Reset to hidden after create
             foreach (var item in _users)
             {
                 item.IsChecked = false;
