@@ -87,22 +87,26 @@ namespace ChatServiceLayer
         }
 
         [CanBeNull]
-        public async Task<bool> CreateGroup(string customName, ImmutableList<string> users)
+        public async Task<ConversationGroup> CreateGroup(string customName, ImmutableList<string> users)
         {
             if (users.Any() == false)
             {
-                return false;
+                return null;
             }
 
             var exists = _chatModel.ConversationExists(users);
             if (exists)
             {
-                return false;
+                return null;
             }
 
             var dto = new Shared.ConversationGroup { Id = null, Name = customName, Users = users.ToArray() };
-            await _client.CreateGroup(dto);
-            return true;
+            var result = await _client.CreateGroup(dto);
+            if (result?.Id == null)
+            {
+                return null;
+            }
+            return ConversationGroup.CreateFromExisting(result.Id.Value, result.Name, result.Users);
         }
 
         private static Shared.MessageRoute _CreateRouteDTO(MessageRoute route)

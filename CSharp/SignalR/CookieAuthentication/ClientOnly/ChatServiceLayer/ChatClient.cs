@@ -143,7 +143,7 @@ namespace ChatServiceLayer
 
         public async Task MarkChatRead(MessageReadInfo info) => await _chatHub.Invoke("markChatRead", info);
 
-        public async Task CreateGroup(Shared.ConversationGroup group) => await _chatHub.Invoke("createGroup", group);
+        public async Task<Shared.ConversationGroup> CreateGroup(Shared.ConversationGroup group) => await _chatHub.Invoke<Shared.ConversationGroup>("createGroup", group);
 
         public async Task<bool> AccountLogout()
         {

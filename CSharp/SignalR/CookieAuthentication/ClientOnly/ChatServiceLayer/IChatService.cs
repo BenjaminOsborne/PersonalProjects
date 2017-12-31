@@ -19,7 +19,7 @@ namespace ChatServiceLayer
         Task SendTyping(MessageRoute route);
         Task MarkChatRead(int messageId, string currentUserName);
 
-        Task<bool> CreateGroup(string customName, ImmutableList<string> users);
+        Task<ConversationGroup> CreateGroup(string customName, ImmutableList<string> users);
         
     }
 }

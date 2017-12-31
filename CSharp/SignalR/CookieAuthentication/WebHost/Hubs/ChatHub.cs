@@ -28,7 +28,7 @@ namespace WebHost.Hubs
             Clients.All.onEcho(sender);
         }
 
-        public void CreateGroup(ConversationGroup dto)
+        public ConversationGroup CreateGroup(ConversationGroup dto)
         {
             var withId = _GetOrAddConversationGroup(dto);
 
@@ -36,6 +36,8 @@ namespace WebHost.Hubs
             {
                 Clients.User(id).onCreatedGroup(withId);
             }
+
+            return withId;
         }
 
         public void SendChatAll(string message)

@@ -165,8 +165,8 @@ namespace ChatUI
             var otherUsers = _users.Where(x => x.IsChecked).Select(x => x.User).ToImmutableHashSet();
             var customName = "";
             var groupUsers = otherUsers.Add(_currentUserName);
-            var created = await _chatService.CreateGroup(customName, groupUsers.ToImmutableList());
-            if (created == false)
+            var createdGroup = await _chatService.CreateGroup(customName, groupUsers.ToImmutableList());
+            if (createdGroup == null)
             {
                 return;
             }
@@ -176,9 +176,7 @@ namespace ChatUI
             {
                 item.IsChecked = false;
             }
-
-            //TODO: return group from method above?
-            //_onCreatedGroup(created);
+            _onCreatedGroup(createdGroup);
         }
 
         private void _OnNextUsers(ImmutableList<string> users)
