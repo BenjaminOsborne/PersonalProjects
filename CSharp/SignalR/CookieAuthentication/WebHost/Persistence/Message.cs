@@ -94,6 +94,6 @@ namespace WebHost.Persistence
         public virtual Message Message { get; set; }
 
         public string User { get; set; }
-        public string HasRead { get; set; }
+        public bool HasRead { get; set; }
     }
 }

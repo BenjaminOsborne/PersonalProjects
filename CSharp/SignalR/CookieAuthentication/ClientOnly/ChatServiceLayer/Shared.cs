@@ -22,6 +22,14 @@ namespace ChatServiceLayer.Shared
 
         public MessageRoute Route { get; set; }
         public string Content { get; set; }
+
+        public MessageReadState[] ReadStates { get; set; }
+    }
+
+    public class MessageReadState
+    {
+        public string User { get; set; }
+        public bool HasRead { get; set; }
     }
 
     public class MessageSendInfo

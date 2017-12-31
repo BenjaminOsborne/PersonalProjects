@@ -59,13 +59,13 @@ namespace Common.Hubs
             var sender = _GetSender();
             var allGroup = new ConversationGroup { Id = null, Users = new string[] { } };
             var route = new MessageRoute { Group = allGroup, Sender = sender };
-            var msg = _MapMessage(-1, route, message);
+            var msg = _MapMessage(-1, route, message, new MessageReadState[0]);
             Clients.All.onSendChatAll(msg);
         }
 
         public void SendChat(MessageSendInfo info)
         {
-            var withId = _SaveMessage(info.Route, info.Content);
+            var withId = _SaveMessage(info.Route, info.Content, new [] { new MessageReadState { User = _GetSender(), HasRead = true } });
             var users = withId.Route.Group.Users;
             foreach (var u in users)
             {
@@ -83,18 +83,19 @@ namespace Common.Hubs
 
         private string _GetSender() => Context.User.Identity.Name;
 
-        private static Message _MapMessage(int id, MessageRoute route, string content)
+        private static Message _MapMessage(int id, MessageRoute route, string content, MessageReadState[] readStates)
         {
             return new Message
             {
                 Id = id,
                 MessageTime = DateTime.Now,
                 Route = route,
-                Content = content
+                Content = content,
+                ReadStates = readStates
             };
         }
 
-        private Message _SaveMessage(MessageRoute route, string content)
+        private Message _SaveMessage(MessageRoute route, string content, MessageReadState[] readStates)
         {
             using (var chats = new ChatsContext())
             {
@@ -107,7 +108,18 @@ namespace Common.Hubs
                 });
                 chats.SaveChanges();
 
-                return _MapMessage(added.Id, route, content);
+                foreach (var state in readStates)
+                {
+                    chats.MessageReads.Add(new MessageReads
+                    {
+                        User = state.User,
+                        HasRead = state.HasRead,
+                        MessageId = added.Id
+                    });
+                    chats.SaveChanges();
+                }
+
+                return _MapMessage(added.Id, route, content, readStates);
             }
         }
 
@@ -115,26 +127,48 @@ namespace Common.Hubs
         {
             using (var context = new ChatsContext())
             {
-                var usersJson = _Serialize(dto.Users);
-                var found = context.ConversationGroups.FirstOrDefault(x => x.Name == dto.Name && x.UsersJson == usersJson);
+                var found = _FindExistingMatchedConversation(dto, context);
                 if (found != null)
                 {
                     dto.Id = found.Id;
+                    return dto;
                 }
-                else
-                {
-                    var added = context.ConversationGroups.Add(new WebHost.Persistence.ConversationGroup
-                    {
-                        Name = dto.Name,
-                        UsersJson = usersJson
-                    });
-                    context.SaveChanges();
 
-                    dto.Id = added.Id;
+
+                var added = context.ConversationGroups.Add(new WebHost.Persistence.ConversationGroup { Name = dto.Name });
+                context.SaveChanges();
+
+                foreach (var user in dto.Users)
+                {
+                    context.ConversationUsers.Add(new ConversationUser { User = user, ConversationGroupId = added.Id });
+                    context.SaveChanges();
                 }
+
+                dto.Id = added.Id;
+                return dto;
+            }
+        }
+
+        private static WebHost.Persistence.ConversationGroup _FindExistingMatchedConversation(ConversationGroup dto, ChatsContext context)
+        {
+            if (dto.Users.Any() == false)
+            {
+                return context.ConversationGroups
+                    .Where(x => x.Name == dto.Name)
+                    .Include(x => x.UserConversations)
+                    .FirstOrDefault(x => x.UserConversations.Count == 0);
             }
 
-            return dto;
+            var userData = dto.Users.Select(user =>
+            {
+                var matches = context.ConversationUsers.Where(x => x.User == user).Select(x => x.ConversationGroupId);
+                return new {user, matches = new HashSet<int>(matches)};
+            }).ToArray();
+
+            var foundInAll = userData[0].matches.Where(m => userData.Skip(1).All(s => s.matches.Contains(m))).ToArray();
+            var alsoMatchName = foundInAll.Select(p => context.ConversationGroups.First(c => c.Id == p))
+                .FirstOrDefault(x => x.Name == dto.Name);
+            return alsoMatchName;
         }
 
         private ChatHistories _GetChatHistory()
@@ -157,26 +191,27 @@ namespace Common.Hubs
                         Users = convGrp.UserConversations.Select(x => x.User).ToArray()
                     };
 
-                    var msgs = convGrp.Messages.Select(m => new ChatServiceLayer.Shared.Message
+                    //TODO: add Msg read status
+                    var msgs = convGrp.Messages.Select(m =>
                     {
-                        Id = m.Id,
-                        Route = new MessageRoute { Group = grp, Sender = m.Sender },
-                        MessageTime = m.MessageTime.DateTime,
-                        Content = m.Content
+                        var readStates = context.MessageReads
+                            .Where(r => r.MessageId == m.Id)
+                            .Select(x => new MessageReadState { User = x.User, HasRead = x.HasRead })
+                            .ToArray();
+                        return new ChatServiceLayer.Shared.Message
+                        {
+                            Id = m.Id,
+                            Route = new MessageRoute {Group = grp, Sender = m.Sender},
+                            MessageTime = m.MessageTime.DateTime,
+                            Content = m.Content,
+                            ReadStates = readStates
+                        };
                     }).ToArray();
                     return new ChatHistory { ConversationGroup = grp, Messages = msgs };
                 }).ToArray();
 
                 return new ChatHistories { Histories = histories };
             }
-        }
-
-        private static string _Serialize<T>(T data) => JsonConvert.SerializeObject(data, Formatting.None);
-        
-        private static T _Deserialize<T>(string jsonData)
-        {
-            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects, PreserveReferencesHandling = PreserveReferencesHandling.Objects };
-            return JsonConvert.DeserializeObject<T>(jsonData, settings);
         }
     }
 }
