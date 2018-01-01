@@ -77,6 +77,9 @@ namespace ChatServiceLayer
 
             _messages.OnCompleted();
             _messages.Dispose();
+
+            _conversationTyping.OnCompleted();
+            _conversationTyping.Dispose();
         }
 
         public async Task InitialiseConnection(string username, string password)
@@ -120,7 +123,7 @@ namespace ChatServiceLayer
             
             _logger.WriteLine("Begin Hub");
 
-            _chatConnection = new HubConnection(_url) { CookieContainer = _cookieContainer };
+            _chatConnection = new HubConnection(_url) { CookieContainer = _cookieContainer }; //TODO: Investigate adding to hub connection: "Credentials = CredentialCache.DefaultCredentials" ?
             _chatConnection.Error += exception => _logger.WriteLine($"Error: {exception.GetType()}: {exception.Message}");
 
             _chatHub = _chatConnection.CreateHubProxy(chatHubName);

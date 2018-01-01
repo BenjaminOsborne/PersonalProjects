@@ -6,7 +6,7 @@ namespace WebHost.Persistence
 {
     public class ChatsContext : DbContext
     {
-        public ChatsContext() : base("ChatsConnection")
+        public ChatsContext() : base("ChatsDatabase")
         {
         }
 

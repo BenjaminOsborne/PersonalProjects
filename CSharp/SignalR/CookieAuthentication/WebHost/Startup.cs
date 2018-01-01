@@ -1,4 +1,5 @@
 ﻿using Common.Connections;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
 using Owin;
@@ -15,6 +16,8 @@ namespace WebHost
 
             app.MapSignalR<AuthorizeEchoConnection>("/echo");
             app.MapSignalR();
+
+            GlobalHost.HubPipeline.RequireAuthentication();
         }
     }
 }
