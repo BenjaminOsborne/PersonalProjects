@@ -30,11 +30,45 @@ namespace CodeAnalyzer
         {
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
-            context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.NamedType);
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LocalDeclarationStatement);
+            context.RegisterSymbolAction(AnalyzeSymbol_NamedTypeSymbol, SymbolKind.NamedType);
+            context.RegisterSyntaxNodeAction(AnalyzeNode_LocalConst, SyntaxKind.LocalDeclarationStatement);
+
+            _BindFor<PropertyDeclarationSyntax>(context, SyntaxKind.PropertyDeclaration, _DoProperty);
+            _BindFor<FieldDeclarationSyntax>(context, SyntaxKind.FieldDeclaration, _DoField);
         }
 
-        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private void _BindFor<T>(AnalysisContext context, SyntaxKind kind, Action<T> fnDo) where T : SyntaxNode
+        {
+            context.RegisterSyntaxNodeAction(x => fnDo((T)x.Node), kind);
+        }
+
+        private void _DoField(FieldDeclarationSyntax fds)
+        {
+            _ProcessAttributes(fds.AttributeLists);
+        }
+
+        private void _DoProperty(PropertyDeclarationSyntax pds)
+        {
+            _ProcessAttributes(pds.AttributeLists);
+        }
+
+        private static void _ProcessAttributes(SyntaxList<AttributeListSyntax> als)
+        {
+            foreach (var al in als)
+            {
+                foreach (var atSyn in al.Attributes)
+                {
+                    var name = (IdentifierNameSyntax) atSyn.Name;
+                    var text = name.Identifier.Text;
+                    if (text == "Foo")
+                    {
+                        int r = 1;
+                    }
+                }
+            }
+        }
+
+        private static void AnalyzeNode_LocalConst(SyntaxNodeAnalysisContext context)
         {
             var localDeclaration = (LocalDeclarationStatementSyntax)context.Node;
 
@@ -78,7 +112,7 @@ namespace CodeAnalyzer
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
 
-        private static void AnalyzeSymbol(SymbolAnalysisContext context)
+        private static void AnalyzeSymbol_NamedTypeSymbol(SymbolAnalysisContext context)
         {
             // TODO: Replace the following code with your own analysis, generating Diagnostic objects for any issues you find
             var namedTypeSymbol = (INamedTypeSymbol)context.Symbol;

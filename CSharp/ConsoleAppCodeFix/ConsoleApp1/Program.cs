@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
@@ -17,5 +13,20 @@ namespace ConsoleApp1
             int j = 2;
             int k = i + j;
         }
+
+        [Foo("More")]
+        public string Hello { get; }
+
+        [Foo("Yeah")]
+        public int Foo;
+    }
+
+    public class FooAttribute : Attribute
+    {
+        public FooAttribute(string name)
+        {
+            Name = name;
+        }
+        public string Name { get; }
     }
 }
