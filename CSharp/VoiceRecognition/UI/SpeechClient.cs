@@ -26,7 +26,6 @@ namespace UI
 
         public SpeechEventType Type { get; }
         public string Text { get; }
-
         public RecognitionResult Result { get; }
     }
 
@@ -99,5 +98,7 @@ namespace UI
 
         private void _OnConversationErrorHandler(object sender, SpeechErrorEventArgs e)
             => _OnNext(SpeechEventType.Error, $"Code: {e.SpeechErrorCode}\tText: {e.SpeechErrorText}");
+
+        public void Poke() => _OnNext(SpeechEventType.End);
     }
 }

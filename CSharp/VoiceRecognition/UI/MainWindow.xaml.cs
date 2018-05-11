@@ -7,13 +7,9 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private SpeechClient _client;
-
         public MainWindow()
         {
             InitializeComponent();
-
-            _client = new SpeechClient();
         }
     }
 }
