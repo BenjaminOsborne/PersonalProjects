@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Windows;
@@ -23,20 +24,53 @@ namespace UI
             window.DataContext = viewModel;
 
             _client = new SpeechClient();
-            _client
+            var sub = _client
                 .GetObservableEvents()
                 .ObserveOnDispatcher()
                 .Subscribe(item =>
                 {
-                    viewModel.Items.Add($"{item.Type}\t{item.Text}");
+                    viewModel.AddItem($"{item.Type}\t{item.Text}");
                 });
 
             window.Show();
+            window.Closing += (sender, args) =>
+            {
+                sub.Dispose();
+                _client.Dispose();
+            };
         }
     }
 
     public class ScrollingTextViewModel
     {
-        public ObservableCollection<string> Items { get; } = new ObservableCollection<string>();
+        private readonly ObservableCollection<string> _items = new ObservableCollection<string>();
+        private Action _preAction;
+        private Action _postAction;
+
+        public IEnumerable<string> Items => _items;
+
+        public void AddItem(string item)
+        {
+            _preAction?.Invoke();
+            _items.Add(item);
+            _postAction?.Invoke();
+        }
+
+        public void RegisterPreMessageUpdateAction(Action action) => _preAction = action;
+
+        public void RegisterPostMessageUpdateAction(Action action) => _postAction = action;
+    }
+
+    public class ScrollingTextMockViewModel
+    {
+        public ScrollingTextMockViewModel()
+        {
+            Items = new[]
+            {
+                "Test text",
+                "More"
+            };
+        }
+        public IEnumerable<string> Items { get; }
     }
 }

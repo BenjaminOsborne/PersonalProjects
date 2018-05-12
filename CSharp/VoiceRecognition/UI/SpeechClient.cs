@@ -50,7 +50,7 @@ namespace UI
         }
 
         public string DefaultLocale => "en-US";
-        public string SubscriptionKey => "28a9163b363a4626b907f917942de08f";
+        public string SubscriptionKey => "df6083ee0cd84a70b7787b9fea674498";//"28a9163b363a4626b907f917942de08f";
 
         public IObservable<SpeechEvent> GetObservableEvents() => _events;
 
