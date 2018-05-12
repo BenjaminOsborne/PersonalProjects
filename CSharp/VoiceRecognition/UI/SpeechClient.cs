@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Subjects;
-using System.Text;
 using Microsoft.CognitiveServices.SpeechRecognition;
 
 namespace UI
@@ -68,13 +68,8 @@ namespace UI
 
         private void _OnNextDictation(RecognitionResult result)
         {
-            var text = new StringBuilder();
-            text.AppendLine($"Status: {result.RecognitionStatus}");
-            foreach (var phrase in result.Results)
-            {
-                text.AppendLine($"Confidene: {phrase.Confidence}\t{phrase.DisplayText}");
-            }
-            var item = new SpeechEvent(SpeechEventType.DictationResponse, text.ToString(), result);
+            var text = string.Join("\n", result.Results.Select(x => x.DisplayText));
+            var item = new SpeechEvent(SpeechEventType.DictationResponse, text, result);
             _events.OnNext(item);
         }
 
