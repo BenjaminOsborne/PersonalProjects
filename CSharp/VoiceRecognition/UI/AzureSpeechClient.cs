@@ -32,24 +32,25 @@ namespace UI
     public class AzureSpeechClient : IDisposable
     {
         private const string _defaultLocale = "en-US";
-        private const string _key = "<enter here>";
+        private const string _key = "<enter key>";
 
         private readonly MicrophoneRecognitionClient _micClient;
         private readonly Subject<SpeechEvent> _events = new Subject<SpeechEvent>();
         
         public AzureSpeechClient()
         {
-            _micClient = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
+            var client = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
                 SpeechRecognitionMode.LongDictation,
                 _defaultLocale,
                 _key);
+            client.OnMicrophoneStatus += _OnMicrophoneStatus;
+            client.OnPartialResponseReceived += _OnPartialResponseReceivedHandler;
+            client.OnResponseReceived += _OnMicDictationResponseReceivedHandler;
+            client.OnConversationError += _OnConversationErrorHandler;
 
-            _micClient.OnMicrophoneStatus += _OnMicrophoneStatus;
-            _micClient.OnPartialResponseReceived += _OnPartialResponseReceivedHandler;
-            _micClient.OnResponseReceived += _OnMicDictationResponseReceivedHandler;
-            _micClient.OnConversationError += _OnConversationErrorHandler;
+            client.StartMicAndRecognition();
 
-            _micClient.StartMicAndRecognition();
+            _micClient = client;
         }
 
         public IObservable<SpeechEvent> GetObservableEvents() => _events;
