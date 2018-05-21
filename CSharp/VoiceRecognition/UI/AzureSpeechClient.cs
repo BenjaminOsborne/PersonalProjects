@@ -31,15 +31,28 @@ namespace UI
 
     public class AzureSpeechClient : IDisposable
     {
+        private const string _defaultLocale = "en-US";
+        private const string _key1 = "";
+        private const string _key2 = "";
+
         private readonly MicrophoneRecognitionClient _micClient;
         private readonly Subject<SpeechEvent> _events = new Subject<SpeechEvent>();
 
         public AzureSpeechClient()
         {
+            //Initial worked...
+            //_micClient = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
+            //    SpeechRecognitionMode.LongDictation,
+            //    _defaultLocale,
+            //    _key1);
+
             _micClient = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
                 SpeechRecognitionMode.LongDictation,
-                DefaultLocale,
-                SubscriptionKey);
+                _defaultLocale,
+                _key1,
+                _key2,
+                "https://northeurope.stt.speech.microsoft.com/recognition/conversation/cognitiveservices/v1");
+            _micClient.AuthenticationUri = "https://northeurope.api.cognitive.microsoft.com/sts/v1.0/issueToken";
 
             _micClient.OnMicrophoneStatus += _OnMicrophoneStatus;
             _micClient.OnPartialResponseReceived += _OnPartialResponseReceivedHandler;
@@ -48,9 +61,6 @@ namespace UI
 
             _micClient.StartMicAndRecognition();
         }
-
-        public string DefaultLocale => "en-US";
-        public string SubscriptionKey => "df6083ee0cd84a70b7787b9fea674498";//"28a9163b363a4626b907f917942de08f";
 
         public IObservable<SpeechEvent> GetObservableEvents() => _events;
 
