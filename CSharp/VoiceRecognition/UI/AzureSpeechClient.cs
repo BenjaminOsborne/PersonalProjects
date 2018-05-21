@@ -29,12 +29,12 @@ namespace UI
         public RecognitionResult Result { get; }
     }
 
-    public class SpeechClient : IDisposable
+    public class AzureSpeechClient : IDisposable
     {
         private readonly MicrophoneRecognitionClient _micClient;
         private readonly Subject<SpeechEvent> _events = new Subject<SpeechEvent>();
 
-        public SpeechClient()
+        public AzureSpeechClient()
         {
             _micClient = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
                 SpeechRecognitionMode.LongDictation,

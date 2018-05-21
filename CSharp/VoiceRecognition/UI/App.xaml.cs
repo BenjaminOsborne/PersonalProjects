@@ -13,7 +13,7 @@ namespace UI
     /// </summary>
     public partial class App : Application
     {
-        private SpeechClient _client;
+        private AzureSpeechClient _client;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -25,7 +25,7 @@ namespace UI
             var viewModel = new ScrollingTextViewModel();
             window.DataContext = viewModel;
 
-            _client = new SpeechClient();
+            _client = new AzureSpeechClient();
             var sub = _client
                 .GetObservableEvents()
                 .ObserveOnDispatcher()

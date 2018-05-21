@@ -54,7 +54,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="SpeechClient.cs" />
+    <Compile Include="AzureSpeechClient.cs" />
+    <Compile Include="ReactiveHelpers.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -63,6 +64,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GoogleSpeechClient.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -95,8 +97,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Google.Cloud.Speech.V1">
+      <Version>1.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.ProjectOxford.SpeechRecognition-x86">
       <Version>1.0.0.7</Version>
+    </PackageReference>
+    <PackageReference Include="NAudio">
+      <Version>1.8.4</Version>
     </PackageReference>
     <PackageReference Include="System.Collections.Immutable">
       <Version>1.4.0</Version>
