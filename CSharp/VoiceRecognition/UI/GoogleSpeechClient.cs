@@ -29,7 +29,7 @@ namespace UI
             _streamCallReadTask = Task.Run(async () =>
             {
                 var stream = _streamingCall.ResponseStream;
-                while (await stream.MoveNext(_tokenSource.Token))
+                while (_tokenSource.IsCancellationRequested == false && await stream.MoveNext(default(CancellationToken)))
                 {
                     _subjectResponses.OnNext(stream.Current);
                 }
@@ -69,22 +69,16 @@ namespace UI
                 var request = new StreamingRecognizeRequest { AudioContent = content };
                 subjectRequests.OnNext(request);
             };
+            waveIn.RecordingStopped += (sender, args) =>
+            {
+                int i = 5;
+            };
             waveIn.StartRecording();
 
             return new GoogleSpeechClient(waveIn, streamingCall, subjectRequests);
         }
 
-        public IObservable<StreamingRecognizeResponse> ObserveResults()
-        {
-            return _subjectResponses;
-            //foreach (var result in response.Results)
-            //{
-            //    foreach (var alternative in result.Alternatives)
-            //    {
-            //        Console.WriteLine(alternative.Transcript);
-            //    }
-            //}
-        }
+        public IObservable<StreamingRecognizeResponse> GetObserveableEvents() => _subjectResponses;
 
         public async Task StopRecording()
         {

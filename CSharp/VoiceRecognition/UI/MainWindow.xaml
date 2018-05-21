@@ -9,8 +9,23 @@
         d:DataContext="{d:DesignInstance Type=local:ScrollingTextMockViewModel, IsDesignTimeCreatable=True}"
         >
     <Grid>
-        <ScrollViewer Name="Scroll">
-            <ItemsControl ItemsSource="{Binding Items}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <ScrollViewer Name="AzureScroll" Grid.Column="0">
+            <ItemsControl ItemsSource="{Binding AzureItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Display}" Foreground="{Binding Brush}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        
+        <ScrollViewer Name="GoogleScroll" Grid.Column="1">
+            <ItemsControl ItemsSource="{Binding GoogleItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Display}" Foreground="{Binding Brush}"/>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace UI
 {
@@ -14,29 +15,36 @@ namespace UI
 
             DataContextChanged += (sender, args) =>
             {
-                WithDataContextOf<ScrollingTextViewModel>(DataContext, model =>
+                WithDataContextOf<ScrollingTextViewModel>(DataContext, scrollModel =>
                 {
-                    Scroll.ScrollToBottom(); //Start at bottom
+                    AzureScroll.ScrollToBottom(); //Start at bottom
+                    GoogleScroll.ScrollToBottom(); //Start at bottom
 
-                    var isAtBottom = true;
-                    model.RegisterPreMessageUpdateAction(() => //This fires just before messages updated
-                    {
-                        isAtBottom = _IsScrollAtBottom();
-                    });
-                    model.RegisterPostMessageUpdateAction(() => //This fires just after messges updated
-                    {
-                        //Keep at bottom if either scroll already at bottom -OR- this user sent the last changed message to trigger the re-draw
-                        if (isAtBottom)
-                        {
-                            Scroll.ScrollToBottom();
-                        }
-                    });
+                    _HandleScroll(scrollModel.AzureModel, AzureScroll);
+                    _HandleScroll(scrollModel.GoogleModel, GoogleScroll);
                 });
             };
         }
 
-        private bool _IsScrollAtTop() => Scroll.VerticalOffset.Equals(0.0);
-        private bool _IsScrollAtBottom() => Scroll.VerticalOffset.Equals(Scroll.ScrollableHeight);
+        private void _HandleScroll(ItemsViewModelBase model, ScrollViewer scroll)
+        {
+            var isAtBottom = true;
+            model.RegisterPreMessageUpdateAction(() => //This fires just before messages updated
+            {
+                isAtBottom = _IsScrollAtBottom(scroll);
+            });
+            model.RegisterPostMessageUpdateAction(() => //This fires just after messges updated
+            {
+                //Keep at bottom if either scroll already at bottom -OR- this user sent the last changed message to trigger the re-draw
+                if (isAtBottom)
+                {
+                    AzureScroll.ScrollToBottom();
+                }
+            });
+        }
+
+        private static bool _IsScrollAtTop(ScrollViewer scroll) => scroll.VerticalOffset.Equals(0.0);
+        private static bool _IsScrollAtBottom(ScrollViewer scroll) => scroll.VerticalOffset.Equals(scroll.ScrollableHeight);
 
         public static void WithDataContextOf<T>(object dataContext, Action<T> action) where T : class
         {
