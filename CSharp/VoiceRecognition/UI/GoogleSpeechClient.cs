@@ -71,7 +71,6 @@ namespace UI
             };
             waveIn.RecordingStopped += (sender, args) =>
             {
-                int i = 5;
             };
             waveIn.StartRecording();
 

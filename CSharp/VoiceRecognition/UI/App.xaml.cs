@@ -29,26 +29,36 @@ namespace UI
             window.DataContext = new ScrollingTextViewModel(azureModel, googleModel);
 
             _azureClient = new AzureSpeechClient();
-            _googleClient = await GoogleSpeechClient.StartRecording();
-
             var azureSub = _azureClient
                 .GetObservableEvents()
                 .ObserveOnDispatcher()
                 .Subscribe(item => azureModel.AddResult(item));
 
+            _googleClient = await GoogleSpeechClient.StartRecording();
             var googleSub = _googleClient
                 .GetObserveableEvents()
                 .ObserveOnDispatcher()
                 .Subscribe(item => googleModel.AddResult(item));
-            
+
             window.Show();
-            window.Closing += (sender, args) =>
+
+            bool shouldExit = false;
+            window.Closing += async (sender, args) =>
             {
+                if (shouldExit)
+                {
+                    return;
+                }
+
                 azureSub.Dispose();
                 googleSub.Dispose();
 
                 _azureClient.Dispose();
-                _googleClient.StopRecording().Wait();
+
+                args.Cancel = true;
+                await _googleClient.StopRecording();
+                shouldExit = true;
+                window.Close();
             };
         }
     }
