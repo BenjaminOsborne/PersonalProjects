@@ -5,37 +5,13 @@ using Microsoft.CognitiveServices.SpeechRecognition;
 
 namespace UI
 {
-    public enum SpeechEventType
-    {
-        None = 0,
-        Begin,
-        PartialResponse,
-        DictationResponse,
-        End,
-        Error
-    }
-
-    public class SpeechEvent
-    {
-        public SpeechEvent(SpeechEventType type, string text, RecognitionResult result)
-        {
-            Type = type;
-            Text = text;
-            Result = result;
-        }
-
-        public SpeechEventType Type { get; }
-        public string Text { get; }
-        public RecognitionResult Result { get; }
-    }
-
     public class AzureSpeechClient : IDisposable
     {
         private const string _defaultLocale = "en-US";
         private const string _key = "<enter key>";
 
         private readonly MicrophoneRecognitionClient _micClient;
-        private readonly Subject<SpeechEvent> _events = new Subject<SpeechEvent>();
+        private readonly Subject<AzureSpeechEvent> _events = new Subject<AzureSpeechEvent>();
         
         public AzureSpeechClient()
         {
@@ -63,14 +39,16 @@ namespace UI
 
         private void _OnNext(SpeechEventType type, string text = "")
         {
-            var item = new SpeechEvent(type, text, null);
+            var item = new AzureSpeechEvent(type, text, null);
             _events.OnNext(item);
         }
 
         private void _OnNextDictation(RecognitionResult result)
         {
             var text = string.Join("\n", result.Results.Select(x => x.DisplayText));
-            var item = new SpeechEvent(SpeechEventType.DictationResponse, text, result);
+            var item = string.IsNullOrEmpty(text)
+                ? new AzureSpeechEvent(SpeechEventType.Error, result.RecognitionStatus.ToString(), result)
+                : new AzureSpeechEvent(SpeechEventType.DictationResponse, text, result);
             _events.OnNext(item);
         }
 

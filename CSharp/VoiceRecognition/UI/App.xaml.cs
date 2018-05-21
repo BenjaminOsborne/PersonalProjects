@@ -24,8 +24,8 @@ namespace UI
             var window = new MainWindow();
             Current.MainWindow = window;
             
-            var azureModel = new AzureItemsViewModel();
-            var googleModel = new GoogleItemsViewModel();
+            var azureModel = new ItemsViewModel();
+            var googleModel = new ItemsViewModel();
             window.DataContext = new ScrollingTextViewModel(azureModel, googleModel);
 
             _azureClient = new AzureSpeechClient();
@@ -99,7 +99,7 @@ namespace UI
 
     public class ScrollingTextViewModel
     {
-        public ScrollingTextViewModel(AzureItemsViewModel azureModel, GoogleItemsViewModel googleModel)
+        public ScrollingTextViewModel(ItemsViewModel azureModel, ItemsViewModel googleModel)
         {
             AzureModel = azureModel;
             GoogleModel = googleModel;
@@ -108,14 +108,14 @@ namespace UI
         public IEnumerable<ResultItemViewModel> AzureItems => AzureModel.Items;
         public IEnumerable<ResultItemViewModel> GoogleItems => GoogleModel.Items;
 
-        public AzureItemsViewModel AzureModel { get; }
-        public GoogleItemsViewModel GoogleModel { get; }
+        public ItemsViewModel AzureModel { get; }
+        public ItemsViewModel GoogleModel { get; }
 
     }
 
-    public abstract class ItemsViewModelBase
+    public class ItemsViewModel
     {
-        protected readonly ObservableCollection<ResultItemViewModel> _items = new ObservableCollection<ResultItemViewModel>();
+        private readonly ObservableCollection<ResultItemViewModel> _items = new ObservableCollection<ResultItemViewModel>();
         private Action _preAction;
         private Action _postAction;
 
@@ -124,42 +124,7 @@ namespace UI
         public void RegisterPreMessageUpdateAction(Action action) => _preAction = action;
 
         public void RegisterPostMessageUpdateAction(Action action) => _postAction = action;
-
-        protected void _AddItem(ResultItemViewModel viewModel)
-        {
-            _preAction?.Invoke();
-            _items.Add(viewModel);
-            _postAction?.Invoke();
-        }
-    }
-
-    public class GoogleItemsViewModel : ItemsViewModelBase
-    {
-        public void AddResult(StreamingRecognizeResponse item)
-        {
-            if (item.Error != null)
-            {
-                _AddItem(new GoogleResultItemViewModel(item.Error.Message, Brushes.Red, false, item));
-                return;
-            }
-
-            var text = string.Join("\n", item.Results.SelectMany(x => x.Alternatives).Select(x => x.Transcript));
-            var isPartial = item.Results.Any(x => x.IsFinal) == false;
-            var brush = isPartial ? Brushes.Orange : Brushes.Green;
-            var model = new GoogleResultItemViewModel(text, brush, isPartial, item);
-            if (_items.Count == 0 || _items.Last().IsPartial == false)
-            {
-                _AddItem(model);
-            }
-            else
-            {
-                _items[_items.Count - 1] = model;
-            }
-        }
-    }
-
-    public class AzureItemsViewModel : ItemsViewModelBase
-    {
+        
         public void AddResult(SpeechEvent item)
         {
             switch (item.Type)
@@ -171,17 +136,13 @@ namespace UI
                     _ReplacePartialOrAdd(item, Brushes.Orange);
                     break;
                 case SpeechEventType.DictationResponse:
-
-                    if (string.IsNullOrEmpty(item.Text))
-                        _AddItem(item, Brushes.Red, overrideText: $"<{item.Result.RecognitionStatus}>");
-                    else
-                        _ReplacePartialOrAdd(item, Brushes.Green);
+                    _ReplacePartialOrAdd(item, Brushes.Green);
                     break;
                 case SpeechEventType.End:
                     _AddItem(item, Brushes.Black);
                     break;
                 case SpeechEventType.Error:
-                    _AddItem(item, Brushes.Red);
+                    _AddItem(item, Brushes.Red, overrideText: $"<{item.Text}>");
                     break;
                 case SpeechEventType.None:
                 default:
@@ -189,7 +150,7 @@ namespace UI
             }
         }
 
-        private void _ReplacePartialOrAdd(SpeechEvent item, SolidColorBrush brush)
+        private void _ReplacePartialOrAdd(SpeechEvent item, Brush brush)
         {
             if (_items.Count == 0 || _items.Last().IsPartial == false)
             {
@@ -203,11 +164,13 @@ namespace UI
 
         private void _AddItem(SpeechEvent item, Brush brush, string overrideText = null)
         {
-            var model = new AzureResultItemViewModel(overrideText ?? item.Text, brush, item);
-            _AddItem(model);
+            var viewModel = new AzureResultItemViewModel(overrideText ?? item.Text, brush, item);
+            _preAction?.Invoke();
+            _items.Add(viewModel);
+            _postAction?.Invoke();
         }
     }
-
+    
     public class ScrollingTextMockViewModel
     {
         public ScrollingTextMockViewModel()

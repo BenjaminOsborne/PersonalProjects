@@ -26,7 +26,7 @@ namespace UI
             };
         }
 
-        private void _HandleScroll(ItemsViewModelBase model, ScrollViewer scroll)
+        private void _HandleScroll(ItemsViewModel model, ScrollViewer scroll)
         {
             var isAtBottom = true;
             model.RegisterPreMessageUpdateAction(() => //This fires just before messages updated

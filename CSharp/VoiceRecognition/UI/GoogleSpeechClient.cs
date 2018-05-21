@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,7 +79,17 @@ namespace UI
             return new GoogleSpeechClient(waveIn, streamingCall, subjectRequests);
         }
 
-        public IObservable<StreamingRecognizeResponse> GetObserveableEvents() => _subjectResponses;
+        public IObservable<SpeechEvent> GetObserveableEvents() => _subjectResponses.Select(result =>
+        {
+            if (result.Error != null)
+            {
+                return new GoogleSpeechEvent(SpeechEventType.Error, result.Error.Message, result);
+            }
+            var text = string.Join(" ", result.Results.SelectMany(x => x.Alternatives).Select(x => x.Transcript));
+            var isPartial = result.Results.Any(x => x.IsFinal) == false;
+            var type = isPartial ? SpeechEventType.PartialResponse : SpeechEventType.DictationResponse;
+            return new GoogleSpeechEvent(type, text, result);
+        });
 
         public async Task StopRecording()
         {
