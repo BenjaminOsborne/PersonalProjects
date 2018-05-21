@@ -19,7 +19,7 @@ namespace UI
         private readonly IDisposable _dispose;
         private readonly Task _streamCallReadTask;
 
-        public GoogleSpeechClient(WaveInEvent waveIn, SpeechClient.StreamingRecognizeStream streamingCall, Subject<StreamingRecognizeRequest> subjectRequests)
+        private GoogleSpeechClient(WaveInEvent waveIn, SpeechClient.StreamingRecognizeStream streamingCall, Subject<StreamingRecognizeRequest> subjectRequests)
         {
             _waveIn = waveIn;
             _streamingCall = streamingCall;
