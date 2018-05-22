@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
+using System.IO.IsolatedStorage;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using Microsoft.CognitiveServices.SpeechRecognition;
 
@@ -7,35 +10,50 @@ namespace UI
 {
     public class AzureSpeechClient : IDisposable
     {
+        private const string _keyFileName = "AzureKey.txt";
         private const string _defaultLocale = "en-US";
-        private const string _key = "<enter key>";
 
-        private readonly MicrophoneRecognitionClient _micClient;
         private readonly Subject<AzureSpeechEvent> _events = new Subject<AzureSpeechEvent>();
-        
-        public AzureSpeechClient()
+
+        private readonly IDisposable _dispose;
+
+        private AzureSpeechClient(MicrophoneRecognitionClient micClient)
         {
-            var client = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
+            micClient.OnMicrophoneStatus += _OnMicrophoneStatus;
+            micClient.OnPartialResponseReceived += _OnPartialResponseReceivedHandler;
+            micClient.OnResponseReceived += _OnMicDictationResponseReceivedHandler;
+            micClient.OnConversationError += _OnConversationErrorHandler;
+
+            _dispose = Disposable.Create(() =>
+            {
+                micClient.EndMicAndRecognition();
+                micClient.Dispose();
+                _events.OnCompleted();
+                _events.Dispose();
+            });
+        }
+
+        public static AzureSpeechClient Start(string overrideKey = null)
+        {
+            if (overrideKey != null)
+            {
+                _WriteKey(overrideKey);
+            }
+
+            var key = _GetKey();
+            var micClient = SpeechRecognitionServiceFactory.CreateMicrophoneClient(
                 SpeechRecognitionMode.LongDictation,
                 _defaultLocale,
-                _key);
-            client.OnMicrophoneStatus += _OnMicrophoneStatus;
-            client.OnPartialResponseReceived += _OnPartialResponseReceivedHandler;
-            client.OnResponseReceived += _OnMicDictationResponseReceivedHandler;
-            client.OnConversationError += _OnConversationErrorHandler;
+                key);
 
-            client.StartMicAndRecognition();
-
-            _micClient = client;
+            var azureClient = new AzureSpeechClient(micClient);
+            micClient.StartMicAndRecognition();
+            return azureClient;
         }
 
         public IObservable<SpeechEvent> GetObservableEvents() => _events;
 
-        public void Dispose()
-        {
-            _micClient?.Dispose();
-            _events?.Dispose();
-        }
+        public void Dispose() => _dispose.Dispose();
 
         private void _OnNext(SpeechEventType type, string text = "")
         {
@@ -66,13 +84,47 @@ namespace UI
             if (status == RecognitionStatus.EndOfDictation || status == RecognitionStatus.DictationEndSilenceTimeout)
             {
                 _OnNext(SpeechEventType.End);
-                _micClient.EndMicAndRecognition();
             }
         }
 
         private void _OnConversationErrorHandler(object sender, SpeechErrorEventArgs e)
             => _OnNext(SpeechEventType.Error, $"Code: {e.SpeechErrorCode}\tText: {e.SpeechErrorText}");
 
-        public void Poke() => _OnNext(SpeechEventType.End);
+        private static void _WriteKey(string key)
+        {
+            using (var store = _GetStore())
+            {
+                using (var stream = new IsolatedStorageFileStream(_keyFileName, FileMode.Create, store))
+                {
+                    using (var writer = new StreamWriter(stream))
+                    {
+                        writer.WriteLine(key);
+                    }
+                }
+            }
+        }
+
+        private static string _GetKey()
+        {
+            try
+            {
+                using (var store = _GetStore())
+                {
+                    using (var stream = new IsolatedStorageFileStream(_keyFileName, FileMode.Open, store))
+                    {
+                        using (var reader = new StreamReader(stream))
+                        {
+                            return reader.ReadLine();
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static IsolatedStorageFile _GetStore() => IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, (Type)null, (Type)null);
     }
 }

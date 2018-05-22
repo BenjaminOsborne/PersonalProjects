@@ -9,12 +9,19 @@
         d:DataContext="{d:DesignInstance Type=local:ScrollingTextMockViewModel, IsDesignTimeCreatable=True}"
         >
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <ScrollViewer Name="AzureScroll" Grid.Column="0">
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Azure Stream" FontSize="13" FontWeight="DemiBold" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="Google Stream" FontSize="13" FontWeight="DemiBold" HorizontalAlignment="Center"/>
+
+        <ScrollViewer Name="AzureScroll" Grid.Row="1" Grid.Column="0">
             <ItemsControl ItemsSource="{Binding AzureItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -24,7 +31,7 @@
             </ItemsControl>
         </ScrollViewer>
         
-        <ScrollViewer Name="GoogleScroll" Grid.Column="1">
+        <ScrollViewer Name="GoogleScroll" Grid.Row="1" Grid.Column="1">
             <ItemsControl ItemsSource="{Binding GoogleItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

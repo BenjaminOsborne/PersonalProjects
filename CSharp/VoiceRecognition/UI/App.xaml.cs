@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Media;
-using Google.Cloud.Speech.V1;
 
 namespace UI
 {
@@ -28,7 +27,7 @@ namespace UI
             var googleModel = new ItemsViewModel();
             window.DataContext = new ScrollingTextViewModel(azureModel, googleModel);
 
-            _azureClient = new AzureSpeechClient();
+            _azureClient = AzureSpeechClient.Start();
             var azureSub = _azureClient
                 .GetObservableEvents()
                 .ObserveOnDispatcher()
@@ -49,7 +48,7 @@ namespace UI
                 {
                     return;
                 }
-
+                window.Hide();
                 azureSub.Dispose();
                 googleSub.Dispose();
 
@@ -63,38 +62,20 @@ namespace UI
         }
     }
 
-    public class AzureResultItemViewModel : ResultItemViewModel
+    public class ResultItemViewModel
     {
-        public AzureResultItemViewModel(string display, Brush brush, SpeechEvent result)
-            : base(display, brush, result.Type == SpeechEventType.PartialResponse)
-        {
-            Result = result;
-        }
-        public SpeechEvent Result { get; }
-    }
-
-    public class GoogleResultItemViewModel : ResultItemViewModel
-    {
-        public GoogleResultItemViewModel(string display, Brush brush, bool isPartial, StreamingRecognizeResponse result)
-            : base(display, brush, isPartial)
-        {
-            Result = result;
-        }
-        public StreamingRecognizeResponse Result { get; }
-    }
-
-    public abstract class ResultItemViewModel
-    {
-        protected ResultItemViewModel(string display, Brush brush, bool isPartial)
+        public ResultItemViewModel(string display, Brush brush, bool isPartial, SpeechEvent result)
         {
             Display = display;
             Brush = brush;
             IsPartial = isPartial;
+            Result = result;
         }
 
         public string Display { get; }
         public Brush Brush { get; }
         public bool IsPartial { get; }
+        public SpeechEvent Result { get; }
     }
 
     public class ScrollingTextViewModel
@@ -158,13 +139,13 @@ namespace UI
             }
             else
             {
-                _items[_items.Count - 1] = new AzureResultItemViewModel(item.Text, brush, item);
+                _items[_items.Count - 1] = new ResultItemViewModel(item.Text, brush, item.IsPartial, item);
             }
         }
 
         private void _AddItem(SpeechEvent item, Brush brush, string overrideText = null)
         {
-            var viewModel = new AzureResultItemViewModel(overrideText ?? item.Text, brush, item);
+            var viewModel = new ResultItemViewModel(overrideText ?? item.Text, brush, item.IsPartial, item);
             _preAction?.Invoke();
             _items.Add(viewModel);
             _postAction?.Invoke();
@@ -177,8 +158,8 @@ namespace UI
         {
             var items = new[]
             {
-                new AzureResultItemViewModel("Test text", Brushes.Green, null),
-                new AzureResultItemViewModel("More", Brushes.Orange, null),
+                new ResultItemViewModel("Test text", Brushes.Green, false, null),
+                new ResultItemViewModel("More", Brushes.Orange, true, null),
             };
             AzureItems = items;
             GoogleItems = items;

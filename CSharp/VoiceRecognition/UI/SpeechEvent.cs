@@ -23,6 +23,7 @@ namespace UI
 
         public SpeechEventType Type { get; }
         public string Text { get; }
+        public bool IsPartial => Type == SpeechEventType.PartialResponse;
     }
 
     public class AzureSpeechEvent : SpeechEvent
