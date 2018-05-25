@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -83,12 +84,13 @@ namespace UI
         {
             if (result.Error != null)
             {
-                return new GoogleSpeechEvent(SpeechEventType.Error, result.Error.Message, result);
+                return new GoogleSpeechEvent(SpeechEventType.Error, WordConfidence.WordsFromError(result.Error.Message), result);
             }
-            var text = string.Join(" ", result.Results.SelectMany(x => x.Alternatives).Select(x => x.Transcript));
+
+            var words = result.Results.SelectMany(x => x.Alternatives).Select(x => new WordConfidence(x.Transcript, x.Confidence)).ToImmutableList();
             var isPartial = result.Results.Any(x => x.IsFinal) == false;
             var type = isPartial ? SpeechEventType.PartialResponse : SpeechEventType.DictationResponse;
-            return new GoogleSpeechEvent(type, text, result);
+            return new GoogleSpeechEvent(type, words, result);
         });
 
         public async Task StopRecording()

@@ -8,6 +8,24 @@
         Title="MainWindow" Height="450" Width="800"
         d:DataContext="{d:DesignInstance Type=local:ScrollingTextMockViewModel, IsDesignTimeCreatable=True}"
         >
+    <Window.Resources>
+        <ItemsPanelTemplate x:Key="HeaderPanelTemplate">
+            <StackPanel Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+
+        <DataTemplate x:Key="WordsTemplate" DataType="local:ResultItemViewModel">
+            <ItemsControl ItemsSource="{Binding DisplayModels}" ItemsPanel="{StaticResource HeaderPanelTemplate}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="local:WordDisplayViewModel">
+                        <StackPanel Margin="0,0,4,0">
+                            <TextBlock Text="{Binding Word}" Foreground="{Binding Brush}"/>
+                            <TextBlock Text="{Binding Confidence}" FontSize="8" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -22,23 +40,11 @@
         <TextBlock Grid.Row="0" Grid.Column="1" Text="Google Stream" FontSize="13" FontWeight="DemiBold" HorizontalAlignment="Center"/>
 
         <ScrollViewer Name="AzureScroll" Grid.Row="1" Grid.Column="0">
-            <ItemsControl ItemsSource="{Binding AzureItems}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Display}" Foreground="{Binding Brush}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <ItemsControl ItemsSource="{Binding AzureItems}" ItemTemplate="{StaticResource WordsTemplate}"/>
         </ScrollViewer>
         
         <ScrollViewer Name="GoogleScroll" Grid.Row="1" Grid.Column="1">
-            <ItemsControl ItemsSource="{Binding GoogleItems}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Display}" Foreground="{Binding Brush}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <ItemsControl ItemsSource="{Binding GoogleItems}" ItemTemplate="{StaticResource WordsTemplate}"/>
         </ScrollViewer>
     </Grid>
 </Window>

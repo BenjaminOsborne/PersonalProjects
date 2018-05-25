@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -64,18 +65,47 @@ namespace UI
 
     public class ResultItemViewModel
     {
-        public ResultItemViewModel(string display, Brush brush, bool isPartial, SpeechEvent result)
+        public ResultItemViewModel(ImmutableList<WordDisplayViewModel> displayModels, bool isPartial, SpeechEvent result)
         {
-            Display = display;
-            Brush = brush;
+            DisplayModels = displayModels;
             IsPartial = isPartial;
             Result = result;
         }
 
-        public string Display { get; }
-        public Brush Brush { get; }
+        public ImmutableList<WordDisplayViewModel> DisplayModels { get; }
         public bool IsPartial { get; }
         public SpeechEvent Result { get; }
+    }
+
+    public class WordDisplayViewModel
+    {
+        public WordDisplayViewModel(string word, double confidence)
+        {
+            Word = word;
+            Confidence = confidence;
+        }
+
+        public string Word { get; }
+        public double Confidence { get; }
+
+        public Brush Brush => _ToBrush(Confidence);
+
+        private static Brush _ToBrush(double confidence)
+        {
+            if (confidence < 0.33)
+            {
+                return Brushes.Red;
+            }
+            if (confidence < 0.66)
+            {
+                return Brushes.Orange;
+            }
+            if (confidence < 0.1)
+            {
+                return Brushes.Yellow;
+            }
+            return Brushes.Green;
+        }
     }
 
     public class ScrollingTextViewModel
@@ -91,7 +121,6 @@ namespace UI
 
         public ItemsViewModel AzureModel { get; }
         public ItemsViewModel GoogleModel { get; }
-
     }
 
     public class ItemsViewModel
@@ -111,19 +140,19 @@ namespace UI
             switch (item.Type)
             {
                 case SpeechEventType.Begin:
-                    _AddItem(item, Brushes.Blue);
+                    _AddItem(item);
                     break;
                 case SpeechEventType.PartialResponse:
-                    _ReplacePartialOrAdd(item, Brushes.Orange);
+                    _ReplacePartialOrAdd(item);
                     break;
                 case SpeechEventType.DictationResponse:
-                    _ReplacePartialOrAdd(item, Brushes.Green);
+                    _ReplacePartialOrAdd(item);
                     break;
                 case SpeechEventType.End:
-                    _AddItem(item, Brushes.Black);
+                    _AddItem(item);
                     break;
                 case SpeechEventType.Error:
-                    _AddItem(item, Brushes.Red, overrideText: $"<{item.Text}>");
+                    _AddItem(item);
                     break;
                 case SpeechEventType.None:
                 default:
@@ -131,25 +160,31 @@ namespace UI
             }
         }
 
-        private void _ReplacePartialOrAdd(SpeechEvent item, Brush brush)
+        private void _ReplacePartialOrAdd(SpeechEvent item)
         {
             if (_items.Count == 0 || _items.Last().IsPartial == false)
             {
-                _AddItem(item, brush);
+                _AddItem(item);
             }
             else
             {
-                _items[_items.Count - 1] = new ResultItemViewModel(item.Text, brush, item.IsPartial, item);
+                _items[_items.Count - 1] = _ToModel(item);
             }
         }
 
-        private void _AddItem(SpeechEvent item, Brush brush, string overrideText = null)
+        private void _AddItem(SpeechEvent item)
         {
-            var viewModel = new ResultItemViewModel(overrideText ?? item.Text, brush, item.IsPartial, item);
+            var viewModel = _ToModel(item);
             _preAction?.Invoke();
             _items.Add(viewModel);
             _postAction?.Invoke();
         }
+
+        private ResultItemViewModel _ToModel(SpeechEvent item)
+            => new ResultItemViewModel(_ToDisplay(item.Words), item.IsPartial, item);
+
+        private ImmutableList<WordDisplayViewModel> _ToDisplay(ImmutableList<WordConfidence> itemWords)
+            => itemWords.Select(x => new WordDisplayViewModel(x.Word, x.Confidence)).ToImmutableList();
     }
     
     public class ScrollingTextMockViewModel
@@ -158,13 +193,24 @@ namespace UI
         {
             var items = new[]
             {
-                new ResultItemViewModel("Test text", Brushes.Green, false, null),
-                new ResultItemViewModel("More", Brushes.Orange, true, null),
+                new ResultItemViewModel(new []
+                {
+                    _Create("Test", 1),
+                    _Create("text", 0.8),
+                    _Create("bonkers", 0.7),
+                    _Create("yeah", 0.5),
+                    _Create("blahuterf", 0.1),
+                    _Create("!<>", 0),
+                }.ToImmutableList(), false, null),
+                new ResultItemViewModel(ImmutableList.Create(_Create("More", 0.5)), true, null),
             };
             AzureItems = items;
             GoogleItems = items;
         }
+
         public IEnumerable<ResultItemViewModel> AzureItems { get; }
         public IEnumerable<ResultItemViewModel> GoogleItems { get; }
+
+        private static WordDisplayViewModel _Create(string word, double confidence) => new WordDisplayViewModel(word, confidence);
     }
 }

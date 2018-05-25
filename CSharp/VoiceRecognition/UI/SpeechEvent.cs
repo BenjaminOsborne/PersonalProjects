@@ -1,4 +1,5 @@
-﻿using Google.Cloud.Speech.V1;
+﻿using System.Collections.Immutable;
+using Google.Cloud.Speech.V1;
 using Microsoft.CognitiveServices.SpeechRecognition;
 
 namespace UI
@@ -13,22 +14,37 @@ namespace UI
         Error
     }
 
+    public class WordConfidence
+    {
+        public WordConfidence(string word, double confidence)
+        {
+            Word = word;
+            Confidence = confidence;
+        }
+
+        public string Word { get; }
+        public double Confidence { get; }
+
+        public static ImmutableList<WordConfidence> WordsFromError(string error)
+            => ImmutableList.Create(new WordConfidence($"<{error}>", 0.0));
+    }
+
     public abstract class SpeechEvent
     {
-        protected SpeechEvent(SpeechEventType type, string text)
+        protected SpeechEvent(SpeechEventType type, ImmutableList<WordConfidence> words)
         {
             Type = type;
-            Text = text;
+            Words = words;
         }
 
         public SpeechEventType Type { get; }
-        public string Text { get; }
+        public ImmutableList<WordConfidence> Words { get; }
         public bool IsPartial => Type == SpeechEventType.PartialResponse;
     }
 
     public class AzureSpeechEvent : SpeechEvent
     {
-        public AzureSpeechEvent(SpeechEventType type, string text, RecognitionResult result) : base(type, text)
+        public AzureSpeechEvent(SpeechEventType type, ImmutableList<WordConfidence> words, RecognitionResult result) : base(type, words)
         {
             Result = result;
         }
@@ -37,7 +53,7 @@ namespace UI
 
     public class GoogleSpeechEvent : SpeechEvent
     {
-        public GoogleSpeechEvent(SpeechEventType type, string text, StreamingRecognizeResponse result) : base(type, text)
+        public GoogleSpeechEvent(SpeechEventType type, ImmutableList<WordConfidence> words, StreamingRecognizeResponse result) : base(type, words)
         {
             Result = result;
         }
