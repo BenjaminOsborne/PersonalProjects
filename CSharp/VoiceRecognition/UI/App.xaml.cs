@@ -92,19 +92,12 @@ namespace UI
 
         private static Brush _ToBrush(double confidence)
         {
-            if (confidence < 0.33)
-            {
-                return Brushes.Red;
-            }
-            if (confidence < 0.66)
-            {
-                return Brushes.Orange;
-            }
-            if (confidence < 0.1)
-            {
-                return Brushes.Yellow;
-            }
-            return Brushes.Green;
+            var percentage = confidence * 100;
+            var red = (percentage > 50 ? 1 - 2 * (percentage - 50) / 100.0 : 1.0) * 200 + 50;
+            var green = (percentage > 50 ? 1.0 : 2 * percentage / 100.0) * 150 + 50;
+            var blue = 20;
+            var result = Color.FromRgb((byte)red, (byte)green, (byte)blue);
+            return new SolidColorBrush(result);
         }
     }
 
