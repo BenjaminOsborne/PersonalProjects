@@ -105,12 +105,12 @@ namespace UI
             }
         }
 
-        private static double _ToDouble(Confidence confidence)
+        private static double? _ToDouble(Confidence confidence)
         {
             switch (confidence)
             {
                 case Confidence.None:
-                    return 0;
+                    return null;
                 case Confidence.Low:
                     return 0.33;
                 case Confidence.Normal:

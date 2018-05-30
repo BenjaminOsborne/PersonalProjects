@@ -16,14 +16,14 @@ namespace UI
 
     public class WordConfidence
     {
-        public WordConfidence(string word, double confidence)
+        public WordConfidence(string word, double? confidence)
         {
             Word = word;
             Confidence = confidence;
         }
 
         public string Word { get; }
-        public double Confidence { get; }
+        public double? Confidence { get; }
 
         public static ImmutableList<WordConfidence> WordsFromError(string error)
             => ImmutableList.Create(new WordConfidence($"<{error}>", 0.0));

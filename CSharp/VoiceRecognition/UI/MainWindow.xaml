@@ -19,7 +19,7 @@
                     <DataTemplate DataType="local:WordDisplayViewModel">
                         <StackPanel Margin="0,0,4,0">
                             <TextBlock Text="{Binding Word}" Foreground="{Binding Brush}"/>
-                            <TextBlock Text="{Binding Confidence}" FontSize="8" HorizontalAlignment="Center" />
+                            <TextBlock Text="{Binding ConfidenceDisplay}" FontSize="8" HorizontalAlignment="Center" />
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

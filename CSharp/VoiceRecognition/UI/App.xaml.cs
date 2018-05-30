@@ -79,16 +79,18 @@ namespace UI
 
     public class WordDisplayViewModel
     {
-        public WordDisplayViewModel(string word, double confidence)
+        public WordDisplayViewModel(string word, double? confidence)
         {
             Word = word;
             Confidence = confidence;
         }
 
         public string Word { get; }
-        public double Confidence { get; }
+        public double? Confidence { get; }
 
-        public Brush Brush => _ToBrush(Confidence);
+        public string ConfidenceDisplay => Confidence.HasValue ? $"{Confidence.Value:F2}" : "";
+
+        public Brush Brush => Confidence.HasValue ? _ToBrush(Confidence.Value) : Brushes.Black;
 
         private static Brush _ToBrush(double confidence)
         {
@@ -161,7 +163,8 @@ namespace UI
             }
             else
             {
-                _items[_items.Count - 1] = _ToModel(item);
+                var index = _items.Count - 1;
+                _items[index] = _ToModel(item);
             }
         }
 
