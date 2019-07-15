@@ -1,0 +1,31 @@
+﻿<Window x:Class="BananaGrams.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BananaGrams"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Margin="0,5" Text="Words"/>
+        <TextBox Grid.Row="1" Margin="0,5" Name="Words" BorderBrush="Black" AcceptsReturn="True"/>
+
+        <TextBlock Grid.Row="2" Margin="0,5" Text="Letters"/>
+        <TextBox Grid.Row="3" Margin="0,5" Name="Letters" BorderBrush="Black" AcceptsReturn="True"/>
+
+        <Button Grid.Row="4" Margin="0,5" Content="Suggest" Width="75" HorizontalAlignment="Left" Click="PerformSuggest"/>
+
+        <ScrollViewer Grid.Row="5" Margin="0,5" VerticalScrollBarVisibility="Auto">
+            <TextBlock Name="Answers" Text="*results*"/>
+        </ScrollViewer>
+        
+    </Grid>
+</Window>
