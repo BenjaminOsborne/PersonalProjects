@@ -3,14 +3,25 @@
 <h1>Counter</h1>
 
 <p>Current count: @currentCount</p>
+<input for="Name" class="form-control" @bind="@url" />
+<p>Web message: @message</p>
 
 <button class="btn btn-primary" @onclick="@IncrementCount">Click me</button>
 
 @code {
+    HttpClient client = new HttpClient();
     int currentCount = 0;
+    string url = "";
+    string message = "";
 
-    void IncrementCount()
+    async Task IncrementCount()
     {
         currentCount++;
+
+        //var result = client.GetAsync(url).Result;
+        //message = $"{url} - {result.StatusCode}";
+        message = $"Clicked: {DateTime.Now}";
+        await Task.Delay(2000);
+        message = $"Delay: {DateTime.Now}";
     }
 }
