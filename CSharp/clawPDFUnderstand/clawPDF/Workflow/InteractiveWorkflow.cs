@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using clawSoft.clawPDF.Core;
 using clawSoft.clawPDF.Core.Actions;
+using clawSoft.clawPDF.Core.Helper;
 using clawSoft.clawPDF.Core.Jobs;
 using clawSoft.clawPDF.Core.Settings;
 using clawSoft.clawPDF.Core.Settings.Enums;
@@ -44,6 +46,26 @@ namespace clawSoft.clawPDF.Workflow
 
         protected override void QueryTargetFile()
         {
+            try
+            {
+                var logJob = Job;
+                BennyLogger.Log("QueryTargetFile: Job",
+                    new
+                    {
+                        jobType = logJob.GetType(),
+                        outputFiles = string.Join("\r\n", logJob.OutputFiles ?? new string[0]),
+                        logJob.OutputFilenameTemplate,
+                        logJob.JobTempFolder,
+                        logJob.JobTempOutputFolder,
+                        logJob.JobTempFileName,
+                        logJob.JobState,
+                    });
+            }
+            catch(Exception ex)
+            {
+                BennyLogger.Log("QueryTargetFile", ex);
+            }
+
             if (!Job.Profile.SkipPrintDialog)
             {
                 Job.ApplyMetadata();
@@ -86,6 +108,8 @@ namespace clawSoft.clawPDF.Workflow
             }
             else
             {
+                //BIO: Save file options...
+
                 var saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Title =
                     _translator.GetTranslation("InteractiveWorkflow", "SelectDestination", "Select destination");

@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Threading;
 using clawSoft.clawPDF.Assistants;
 using clawSoft.clawPDF.Core.Ghostscript;
+using clawSoft.clawPDF.Core.Helper;
 using clawSoft.clawPDF.Core.Settings.Enums;
 using clawSoft.clawPDF.Helper;
 using clawSoft.clawPDF.Shared.Helper;
@@ -59,6 +60,8 @@ namespace clawSoft.clawPDF
 
         private void RunApplication(string[] commandLineArguments)
         {
+            BennyLogger.Log("RunApplication", string.Join("\r\n", commandLineArguments));
+            
             CheckSpoolerRunning();
 
             // Must be done before the other checks to initialize the translator

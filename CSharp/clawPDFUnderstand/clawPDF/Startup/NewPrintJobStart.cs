@@ -17,6 +17,7 @@ namespace clawSoft.clawPDF.Startup
             NewJobInfoFile = newJobInfoFile;
         }
 
+        /// <summary> BIO: This is the inf file! </summary>
         public string NewJobInfoFile { get; private set; }
 
         internal override string ComposePipeMessage()
