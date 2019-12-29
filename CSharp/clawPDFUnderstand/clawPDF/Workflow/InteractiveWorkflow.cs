@@ -46,25 +46,7 @@ namespace clawSoft.clawPDF.Workflow
 
         protected override void QueryTargetFile()
         {
-            try
-            {
-                var logJob = Job;
-                BennyLogger.Log("QueryTargetFile: Job",
-                    new
-                    {
-                        jobType = logJob.GetType(),
-                        outputFiles = string.Join("\r\n", logJob.OutputFiles ?? new string[0]),
-                        logJob.OutputFilenameTemplate,
-                        logJob.JobTempFolder,
-                        logJob.JobTempOutputFolder,
-                        logJob.JobTempFileName,
-                        logJob.JobState,
-                    });
-            }
-            catch(Exception ex)
-            {
-                BennyLogger.Log("QueryTargetFile", ex);
-            }
+            _LogJob("QueryTargetFile: Pre Dialog", Job);
 
             if (!Job.Profile.SkipPrintDialog)
             {
@@ -160,7 +142,25 @@ namespace clawSoft.clawPDF.Workflow
                 }
 
                 Cancel = !LaunchSaveFileDialog(saveFileDialog);
+
+                _LogJob("QueryTargetFile: Post Dialog", Job);
             }
+        }
+
+        private static void _LogJob(string context, IJob logJob)
+        {
+            BennyLogger.Log(context,
+                new
+                {
+                    jobType = logJob.GetType(),
+                    outputFiles = string.Join("\r\n", logJob.OutputFiles ?? new string[0]),
+                    logJob.OutputFilenameTemplate,
+                    logJob.JobTempFolder,
+                    logJob.JobTempOutputFolder,
+                    logJob.JobTempFileName,
+                    logJob.JobState,
+                    logJob.Profile.OutputFormat
+                });
         }
 
         /// <summary>

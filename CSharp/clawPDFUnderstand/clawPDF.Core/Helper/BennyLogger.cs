@@ -6,7 +6,7 @@ namespace clawSoft.clawPDF.Core.Helper
 {
     public static class BennyLogger
     {
-        private static readonly string _fileName = $@"C:\BennyLogger\Log_{DateTime.Now.ToFileTimeUtc()}.txt";
+        private static readonly string _fileName = $@"C:\BennyLogger\Log_v1_{DateTime.Now.ToFileTimeUtc()}.txt";
 
         public static void Log(string context, params object[] extra) =>
             _Write(_OnNewLines(context, extra));

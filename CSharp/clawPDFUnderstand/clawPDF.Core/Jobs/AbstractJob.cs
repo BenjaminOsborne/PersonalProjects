@@ -13,6 +13,7 @@ using clawSoft.clawPDF.Utilities.Tokens;
 using NLog;
 using SystemInterface.IO;
 using SystemWrapper.IO;
+using clawSoft.clawPDF.Core.Helper;
 
 namespace clawSoft.clawPDF.Core.Jobs
 {
@@ -549,8 +550,12 @@ namespace clawSoft.clawPDF.Core.Jobs
 
         private void CallActions()
         {
+            BennyLogger.Log("Action Count", JobActions.Count);
+
             foreach (var action in JobActions)
             {
+                BennyLogger.Log("Job Action:", action.GetType());
+
                 Logger.Trace("Calling Action {0}", action.GetType().Name);
                 if (OnEvaluateActionResult != null)
                 {
