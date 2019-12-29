@@ -71,7 +71,6 @@
     <Compile Include="Ghostscript\GhostScriptANY.cs" />
     <Compile Include="Ghostscript\NativeMethods.cs" />
     <Compile Include="Ghostscript\OutputDevices\TextDevice.cs" />
-    <Compile Include="Helper\BennyLogger.cs" />
     <Compile Include="Helper\EncodingHelper.cs" />
     <Compile Include="Jobs\ITempPathProvider.cs" />
     <Compile Include="Jobs\JobCleanUp.cs" />
