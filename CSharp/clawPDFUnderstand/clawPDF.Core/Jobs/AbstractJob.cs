@@ -355,9 +355,9 @@ namespace clawSoft.clawPDF.Core.Jobs
                     Logger.Trace("Calling job completed event");
                     CallJobCompleted();
                 }
-            }
 
-            IJobHelper.LogJob("RunJob - final state", this);
+                IJobHelper.LogJob("RunJob - final state", this);
+            }
 
             return JobState;
         }

@@ -8,18 +8,18 @@ namespace clawSoft.clawPDF.Core.Helper
     public static class BennyConfig
     {
         private static int _outputFileCounter = 1;
-        private const string _version = "V4";
+        private const string _version = "V6";
 
         public const string Directory = @"C:\BennyLogger";
         public static readonly string FileTimeStamp = DateTime.Now.ToFileTimeUtc().ToString();
 
-        public static bool Alter => true;
+        public static bool Alter => false;
         
-        public static readonly string LogFileName = _GenerateFile("Log");
+        public static readonly string LogFileName = _GenerateFile("Log", ".txt");
         
-        public static string GenerateOutputFile() => _GenerateFile($"File_{Interlocked.Increment(ref _outputFileCounter)}");
+        public static string GenerateOutputFile() => _GenerateFile($"File_{Interlocked.Increment(ref _outputFileCounter)}", ".pdf");
 
-        private static string _GenerateFile(string fileNamePrefix) => $@"{Directory}\{fileNamePrefix}_{_version}_{FileTimeStamp}.txt";
+        private static string _GenerateFile(string fileNamePrefix, string suffix) => $@"{Directory}\{fileNamePrefix}_{_version}_{FileTimeStamp}{suffix}";
     }
 
     public static class BennyLogger

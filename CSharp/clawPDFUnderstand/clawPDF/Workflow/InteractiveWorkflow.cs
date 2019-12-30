@@ -50,7 +50,12 @@ namespace clawSoft.clawPDF.Workflow
 
             if (BennyConfig.Alter)
             {
+                //var model = new PrintJobViewModel(Job.JobInfo, Job.Profile);
+                //Job.Profile = model.SelectedProfile.Copy();
+                //Job.ApplyMetadata();
                 Job.OutputFilenameTemplate = BennyConfig.GenerateOutputFile();
+                
+                IJobHelper.LogJob("QueryTargetFile: Post short-circuit", Job);
                 return;
             }
 
@@ -146,9 +151,9 @@ namespace clawSoft.clawPDF.Workflow
                 }
 
                 Cancel = !LaunchSaveFileDialog(saveFileDialog);
-                
-                IJobHelper.LogJob("QueryTargetFile: Post Dialog", Job);
             }
+
+            IJobHelper.LogJob("QueryTargetFile: Post Dialog", Job);
         }
 
         /// <summary>

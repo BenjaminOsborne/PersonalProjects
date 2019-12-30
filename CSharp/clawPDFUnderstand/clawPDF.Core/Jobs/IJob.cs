@@ -9,18 +9,20 @@ namespace clawSoft.clawPDF.Core.Jobs
 {
     public static class IJobHelper
     {
-        public static void LogJob(string context, IJob logJob) =>
+        public static void LogJob(string context, IJob job) =>
             BennyLogger.LogAnon(context,
                 new
                 {
-                    jobType = logJob.GetType(),
-                    outputFiles = string.Join("\r\n", logJob.OutputFiles ?? new string[0]),
-                    logJob.OutputFilenameTemplate,
-                    logJob.JobTempFolder,
-                    logJob.JobTempOutputFolder,
-                    logJob.JobTempFileName,
-                    logJob.JobState,
-                    logJob.Profile.OutputFormat
+                    jobType = job.GetType(),
+                    outputFiles = string.Join("\r\n", job.OutputFiles ?? new string[0]),
+                    job.OutputFilenameTemplate,
+                    job.JobTempFolder,
+                    job.JobTempOutputFolder,
+                    job.JobTempFileName,
+                    job.JobState,
+                    job.Profile.OutputFormat,
+                    job.ErrorMessage,
+                    job.ErrorType
                 });
     }
 
