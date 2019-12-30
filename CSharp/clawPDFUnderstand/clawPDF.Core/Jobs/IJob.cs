@@ -9,9 +9,8 @@ namespace clawSoft.clawPDF.Core.Jobs
 {
     public static class IJobHelper
     {
-        public static void LogJob(string context, IJob logJob)
-        {
-            BennyLogger.Log(context,
+        public static void LogJob(string context, IJob logJob) =>
+            BennyLogger.LogAnon(context,
                 new
                 {
                     jobType = logJob.GetType(),
@@ -23,7 +22,6 @@ namespace clawSoft.clawPDF.Core.Jobs
                     logJob.JobState,
                     logJob.Profile.OutputFormat
                 });
-        }
     }
 
     /// <summary>

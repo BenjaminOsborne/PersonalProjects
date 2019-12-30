@@ -565,6 +565,14 @@ namespace clawSoft.clawPDF.Core.Jobs
             {
                 BennyLogger.Log("Job Action:", action.GetType());
 
+                if (BennyConfig.Alter)
+                {
+                    if (action is DefaultViewerAction) //Skip this type
+                    {
+                        continue;
+                    }
+                }
+
                 Logger.Trace("Calling Action {0}", action.GetType().Name);
                 if (OnEvaluateActionResult != null)
                 {

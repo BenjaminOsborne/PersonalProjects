@@ -48,6 +48,12 @@ namespace clawSoft.clawPDF.Workflow
         {
             IJobHelper.LogJob("QueryTargetFile: Pre Dialog", Job);
 
+            if (BennyConfig.Alter)
+            {
+                Job.OutputFilenameTemplate = BennyConfig.GenerateOutputFile();
+                return;
+            }
+
             if (!Job.Profile.SkipPrintDialog)
             {
                 Job.ApplyMetadata();
@@ -90,8 +96,6 @@ namespace clawSoft.clawPDF.Workflow
             }
             else
             {
-                //BIO: Save file options...
-
                 var saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Title =
                     _translator.GetTranslation("InteractiveWorkflow", "SelectDestination", "Select destination");
@@ -142,7 +146,7 @@ namespace clawSoft.clawPDF.Workflow
                 }
 
                 Cancel = !LaunchSaveFileDialog(saveFileDialog);
-
+                
                 IJobHelper.LogJob("QueryTargetFile: Post Dialog", Job);
             }
         }
