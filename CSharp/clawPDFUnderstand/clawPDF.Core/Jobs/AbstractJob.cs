@@ -301,6 +301,9 @@ namespace clawSoft.clawPDF.Core.Jobs
 
             try
             {
+
+                IJobHelper.LogJob("RunJob - initial state", this);
+
                 JobState = RunJobWork();
 
                 if (JobState == JobState.Cancelled)
@@ -353,6 +356,8 @@ namespace clawSoft.clawPDF.Core.Jobs
                     CallJobCompleted();
                 }
             }
+
+            IJobHelper.LogJob("RunJob - final state", this);
 
             return JobState;
         }
@@ -413,6 +418,8 @@ namespace clawSoft.clawPDF.Core.Jobs
             //Ensure the the first file is the first in TempOutputFiles
             TempOutputFiles = TempOutputFiles.OrderBy(x => x).ToList();
 
+            BennyLogger.Log("MoveOutputFiles: initial", extra: TempOutputFiles.ToArray());
+
             _outfilebody = DetermineOutfileBody();
 
             var isFirstFile = true;
@@ -455,6 +462,8 @@ namespace clawSoft.clawPDF.Core.Jobs
             }
 
             OutputFiles = OutputFiles.OrderBy(x => x).ToList();
+
+            BennyLogger.Log("MoveOutputFiles: final", extra: OutputFiles.ToArray());
         }
 
         public event EventHandler FixInvalidOuptputFilename;

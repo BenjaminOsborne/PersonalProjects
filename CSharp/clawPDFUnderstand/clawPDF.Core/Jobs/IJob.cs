@@ -1,11 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using clawSoft.clawPDF.Core.Actions;
+using clawSoft.clawPDF.Core.Helper;
 using clawSoft.clawPDF.Core.Settings;
 using clawSoft.clawPDF.Utilities.Tokens;
 
 namespace clawSoft.clawPDF.Core.Jobs
 {
+    public static class IJobHelper
+    {
+        public static void LogJob(string context, IJob logJob)
+        {
+            BennyLogger.Log(context,
+                new
+                {
+                    jobType = logJob.GetType(),
+                    outputFiles = string.Join("\r\n", logJob.OutputFiles ?? new string[0]),
+                    logJob.OutputFilenameTemplate,
+                    logJob.JobTempFolder,
+                    logJob.JobTempOutputFolder,
+                    logJob.JobTempFileName,
+                    logJob.JobState,
+                    logJob.Profile.OutputFormat
+                });
+        }
+    }
+
     /// <summary>
     ///     A Job is the item to do a conversion from a source format to the final file formats like PDF.
     ///     The Job interface defines the methods a Job has to implement.
