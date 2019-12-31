@@ -295,14 +295,14 @@ namespace clawSoft.clawPDF.Core.Jobs
         /// </summary>
         public JobState RunJob()
         {
+            IJobHelper.LogJob("RunJob - initial state", this);
+
             Logger.Trace("Starting job");
 
             var calledJobCompleted = false;
 
             try
             {
-
-                IJobHelper.LogJob("RunJob - initial state", this);
 
                 JobState = RunJobWork();
 

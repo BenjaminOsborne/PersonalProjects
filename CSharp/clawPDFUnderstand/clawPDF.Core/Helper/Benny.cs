@@ -8,12 +8,12 @@ namespace clawSoft.clawPDF.Core.Helper
     public static class BennyConfig
     {
         private static int _outputFileCounter = 1;
-        private const string _version = "V6";
+        private const string _version = "V7";
 
         public const string Directory = @"C:\BennyLogger";
         public static readonly string FileTimeStamp = DateTime.Now.ToFileTimeUtc().ToString();
 
-        public static bool Alter => false;
+        public static bool Alter => true;
         
         public static readonly string LogFileName = _GenerateFile("Log", ".txt");
         

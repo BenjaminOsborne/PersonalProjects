@@ -20,9 +20,15 @@ namespace clawSoft.clawPDF.Core.Jobs
                     job.JobTempOutputFolder,
                     job.JobTempFileName,
                     job.JobState,
-                    job.Profile.OutputFormat,
+                    profile = new
+                    {
+                        job.Profile.Name,
+                        job.Profile.FileNameTemplate,
+                        job.Profile.OutputFormat,
+                        job.Profile.TitleTemplate,
+                    },
                     job.ErrorMessage,
-                    job.ErrorType
+                    job.ErrorType,
                 });
     }
 
