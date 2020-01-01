@@ -50,7 +50,10 @@ namespace clawSoft.clawPDF.Workflow
 
             if (BennyConfig.Alter)
             {
-                Job.OutputFilenameTemplate = BennyConfig.GenerateOutputFile();
+                Job.Profile = BennyConfig.UseJpeg
+                    ? _CreateJpegProfile()
+                    : Job.Profile; //Default is pdf
+                Job.OutputFilenameTemplate = BennyConfig.GenerateOutputFile(Job.Profile.OutputFormat);
                 IJobHelper.LogJob("QueryTargetFile: Post short-circuit", Job);
                 return;
             }
@@ -151,6 +154,16 @@ namespace clawSoft.clawPDF.Workflow
 
             IJobHelper.LogJob("QueryTargetFile: Post Dialog", Job);
         }
+
+        private ConversionProfile _CreateJpegProfile() =>
+            new ConversionProfile
+            {
+                Name = "JPEG (graphic file)",
+                Guid = ProfileGuids.JPEG_PROFILE_GUID,
+                OutputFormat = OutputFormat.Jpeg,
+                JpegSettings = { Dpi = 150, Color = JpegColor.Color24Bit, Quality = 75 },
+                Properties = { Renamable = false, Deletable = true, Editable = true }
+            };
 
         /// <summary>
         ///     Sets the job's filenametemplate and extension by savefiledialog.

@@ -23,6 +23,7 @@ namespace clawSoft.clawPDF.Core.Jobs
                     profile = new
                     {
                         job.Profile.Name,
+                        job.Profile.Guid,
                         job.Profile.FileNameTemplate,
                         job.Profile.OutputFormat,
                         job.Profile.TitleTemplate,

@@ -19,7 +19,8 @@ namespace clawSoft.clawPDF.Core.Helper
         private const string _parentDirectory = @"C:\BennyLogger";
         
         public static bool Alter => true;
-        
+        public static bool UseJpeg => true;
+
         public static string GetLogFilePath() => _lazyLogPath.Value;
         
         public static string GenerateOutputFile(OutputFormat type) => _GenerateFilePath($"File_{Interlocked.Increment(ref _outputFileCounter)}", $".{_GetType(type)}");
