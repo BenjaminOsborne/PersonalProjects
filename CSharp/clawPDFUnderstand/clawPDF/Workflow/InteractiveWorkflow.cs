@@ -52,7 +52,7 @@ namespace clawSoft.clawPDF.Workflow
             {
                 Job.Profile = BennyConfig.UseJpeg
                     ? _CreateJpegProfile()
-                    : Job.Profile; //Default is pdf
+                    : _CreatePdfHighCompressionProfile();
                 Job.OutputFilenameTemplate = BennyConfig.GenerateOutputFile(Job.Profile.OutputFormat);
                 IJobHelper.LogJob("QueryTargetFile: Post short-circuit", Job);
                 return;
@@ -153,6 +153,47 @@ namespace clawSoft.clawPDF.Workflow
             }
 
             IJobHelper.LogJob("QueryTargetFile: Post Dialog", Job);
+        }
+
+        private ConversionProfile _CreatePdfHighCompressionProfile()
+        {
+            var profile = new ConversionProfile
+            {
+                Name = "High Compression (small files)",
+                Guid = ProfileGuids.HIGH_COMPRESSION_PROFILE_GUID,
+                OutputFormat = OutputFormat.Pdf,
+                JpegSettings = { Dpi = 100, Color = JpegColor.Color24Bit, Quality = 50 },
+                PngSettings = { Dpi = 100, Color = PngColor.Color24Bit },
+                TiffSettings = { Dpi = 100, Color = TiffColor.Color24Bit },
+                Properties = { Renamable = false, Deletable = true, Editable = true }
+            };
+            profile.PdfSettings.CompressColorAndGray.Enabled = true;
+            profile.PdfSettings.CompressColorAndGray.Compression = CompressionColorAndGray.JpegMaximum;
+            profile.PdfSettings.CompressMonochrome.Enabled = true;
+            profile.PdfSettings.CompressMonochrome.Compression = CompressionMonochrome.RunLengthEncoding;
+
+            return profile;
+        }
+
+        private ConversionProfile _CreatePdfHighQualityProfile()
+        {
+            var profile = new ConversionProfile
+            {
+                Name = "High Quality (large files)",
+                Guid = ProfileGuids.HIGH_QUALITY_PROFILE_GUID,
+                OutputFormat = OutputFormat.Pdf,
+                JpegSettings = { Dpi = 300, Quality = 100, Color = JpegColor.Color24Bit },
+                PngSettings = { Dpi = 300, Color = PngColor.Color32BitTransp },
+                TiffSettings = { Dpi = 300, Color = TiffColor.Color24Bit },
+                Properties = { Renamable = false, Deletable = true, Editable = true }
+            };
+
+            profile.PdfSettings.CompressColorAndGray.Enabled = true;
+            profile.PdfSettings.CompressColorAndGray.Compression = CompressionColorAndGray.Zip;
+            profile.PdfSettings.CompressMonochrome.Enabled = true;
+            profile.PdfSettings.CompressMonochrome.Compression = CompressionMonochrome.Zip;
+
+            return profile;
         }
 
         private ConversionProfile _CreateJpegProfile() =>

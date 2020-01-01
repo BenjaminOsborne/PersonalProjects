@@ -14,7 +14,7 @@ namespace clawSoft.clawPDF.Core.Helper
         private static readonly Lazy<string> _lazyLogPath = new Lazy<string>(() => _GenerateFilePath("Log", ".txt"));
 
         private static int _outputFileCounter = 0;
-        private const string _version = "V8";
+        private const string _version = "V9";
 
         private const string _parentDirectory = @"C:\BennyLogger";
         
