@@ -16,8 +16,9 @@ namespace ConsoleApp
                 .WithUrl("https://localhost:44340/chat")
                 .Build();
 
-            connection.On<string, string>("broadcastMessage", OnSend);
             connection.On<string>("onConnected", OnConnected);
+            connection.On<string>("onDisconnected", OnDisconnected);
+            connection.On<string, string>("broadcastMessage", OnSend);
 
             await connection.StartAsync();
 
@@ -28,17 +29,21 @@ namespace ConsoleApp
             }
         }
 
-        private static void OnConnected(string message)
+        private static void OnConnected(string message) => _ConnectedChanged("OnConnected", message);
+
+        private static void OnDisconnected(string message) => _ConnectedChanged("OnDisconnected", message);
+
+        private static void _ConnectedChanged(string context, string message)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"Connected: {message}");
+            Console.WriteLine($"{context}: {message}");
             Console.ResetColor();
         }
 
         private static void OnSend(string name, string message)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Message from {name}\n{message}\n\n");
+            Console.WriteLine($"Message from {name}\n{message}\n");
             Console.ResetColor();
         }
     }
