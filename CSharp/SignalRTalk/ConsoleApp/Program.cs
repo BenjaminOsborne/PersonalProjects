@@ -17,6 +17,7 @@ namespace ConsoleApp
                 .Build();
 
             connection.On<string, string>("broadcastMessage", OnSend);
+            connection.On<string>("onConnected", OnConnected);
 
             await connection.StartAsync();
 
@@ -27,9 +28,18 @@ namespace ConsoleApp
             }
         }
 
+        private static void OnConnected(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Connected: {message}");
+            Console.ResetColor();
+        }
+
         private static void OnSend(string name, string message)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Message from {name}\n{message}\n\n");
+            Console.ResetColor();
         }
     }
 }
