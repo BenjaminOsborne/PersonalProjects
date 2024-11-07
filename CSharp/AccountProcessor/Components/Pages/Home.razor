@@ -1,4 +1,6 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@inject Services.IExcelFileRunner ExcelFileRunner;
 
 <PageTitle>Home</PageTitle>
 
@@ -6,12 +8,13 @@
 
 Welcome to your new app.
 
-<button class="btn btn-primary" @onclick="RunProcess">Run Process</button>
+<li></li>
 
-@code
-{
-    private async Task RunProcess()
+<button class="btn btn-primary" @onclick="RunFile">Run Process</button>
+
+@code {
+    private async Task RunFile()
     {
-        await Task.Delay(10);
+        await ExcelFileRunner.Run();
     }
 }
