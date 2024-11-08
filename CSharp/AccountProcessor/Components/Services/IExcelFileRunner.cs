@@ -16,9 +16,9 @@ namespace AccountProcessor.Components.Services
             [CsvHelper.Configuration.Attributes.Format("dd/MM/yyyy")]
             public DateOnly Date { get; init; }
             
-            public string Description { get; init; }
+            public string? Description { get; init; }
             
-            public string Type { get; init; }
+            public string? Type { get; init; }
             
             [CsvHelper.Configuration.Attributes.Name("Money In")]
             public decimal? MoneyIn { get; init; }
