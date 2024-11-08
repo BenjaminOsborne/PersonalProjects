@@ -8,11 +8,21 @@
 
 Welcome to your new app.
 
-<li></li>
+<br>
+
+<button class="btn btn-primary" @onclick="ReverseFile">Reverse File</button>
+
+<br>
 
 <button class="btn btn-primary" @onclick="RunFile">Run Process</button>
 
-@code {
+@code
+{
+    private async Task ReverseFile()
+    {
+        var result = await ExcelFileRunner.ReverseAndGenerate();
+    }
+
     private async Task RunFile()
     {
         await ExcelFileRunner.Run();
