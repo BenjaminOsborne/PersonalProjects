@@ -35,7 +35,7 @@
         await stream.CopyToAsync(inputStream);
         inputStream.Position = 0;
 
-        var result = await ExcelFileRunner.ReverseAndGenerate(inputStream);
+        var result = await ExcelFileRunner.ReverseCsvTransactions(inputStream);
 
         if (result.IsSuccess)
         {

@@ -7,8 +7,8 @@ namespace AccountProcessor.Components.Services
 {
     public interface IExcelFileRunner
     {
-        Task<WrappedResult<byte[]>> ReverseAndGenerate(Stream stream);
-        Task Run();
+        Task<WrappedResult<byte[]>> ReverseCsvTransactions(Stream inputCsv);
+        Task Categorise(Stream inputExcel);
     }
 
     public class ExcelFileRunner : IExcelFileRunner
@@ -31,48 +31,19 @@ namespace AccountProcessor.Components.Services
             public decimal Balance { get; init; }
         }
 
-        public async Task<WrappedResult<byte[]>> ReverseAndGenerate(Stream stream)
+        public async Task<WrappedResult<byte[]>> ReverseCsvTransactions(Stream inputCsv)
         {
-            var rows = _ExtractRows(stream);
-            if(!rows.IsSuccess)
+            var rows = _ExtractRows(inputCsv);
+            if (!rows.IsSuccess)
             {
                 return rows.MapFail<byte[]>();
             }
-
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            var excel = new ExcelPackage();
-
-            var added = excel.Workbook.Worksheets.Add("Default");
-
-            var col = 0;
-            added.Cells[1, ++col].Value = "Date";
-            added.Cells[1, ++col].Value = "Description";
-            added.Cells[1, ++col].Value = "Type";
-            added.Cells[1, ++col].Value = "Money In";
-            added.Cells[1, ++col].Value = "Money Out";
-            added.Cells[1, ++col].Value = "Balance";
-
             var allRows = rows.Result!.Reverse().ToImmutableArray();
-            for (int r = 0; r < allRows.Length; r++)
-            {
-                var row = allRows[r];
-                var rowNum = r + 2;
-                col = 0;
-                added.Cells[rowNum, ++col].Value = row.Date.ToString("dd/MM/yyyy");
-                added.Cells[rowNum, ++col].Value = row.Description;
-                added.Cells[rowNum, ++col].Value = row.Type;
-                added.Cells[rowNum, ++col].Value = row.MoneyIn;
-                added.Cells[rowNum, ++col].Value = row.MoneyOut;
-                added.Cells[rowNum, ++col].Value = row.Balance;
-            }
-
-            //Autofit
-            added.Columns.ForEach(x => x.AutoFit());
-                       
-            return WrappedResult.Create(excel.GetAsByteArray());
+            var resultBytes = _WriteRowsToExcel(allRows);
+            return WrappedResult.Create(resultBytes);
         }
 
-        private static WrappedResult<ImmutableArray<CsvRow>> _ExtractRows(Stream stream)
+        private static WrappedResult<ImmutableArray<CsvRow>> _ExtractRows(Stream inputCsv)
         {
             try
             {
@@ -81,7 +52,7 @@ namespace AccountProcessor.Components.Services
                     MissingFieldFound = _ => { },
                 };
 
-                using var reader = new StreamReader(stream);
+                using var reader = new StreamReader(inputCsv);
                 using var csv = new CsvReader(reader, config);
                 var records = csv.GetRecords<CsvRow>().ToImmutableArray();
 
@@ -129,14 +100,46 @@ namespace AccountProcessor.Components.Services
                 WrappedResult.Fail<ImmutableArray<CsvRow>>($"{error}. Row: {rowNumber}");
         }
 
-        public async Task Run()
+        private static byte[] _WriteRowsToExcel(ImmutableArray<CsvRow> allRows)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            var excel = new ExcelPackage();
+
+            var added = excel.Workbook.Worksheets.Add("Default");
+
+            var col = 0;
+            added.Cells[1, ++col].Value = "Date";
+            added.Cells[1, ++col].Value = "Description";
+            added.Cells[1, ++col].Value = "Type";
+            added.Cells[1, ++col].Value = "Money In";
+            added.Cells[1, ++col].Value = "Money Out";
+            added.Cells[1, ++col].Value = "Balance";
+
+            for (int r = 0; r < allRows.Length; r++)
+            {
+                var row = allRows[r];
+                var rowNum = r + 2;
+                col = 0;
+                added.Cells[rowNum, ++col].Value = row.Date.ToString("dd/MM/yyyy");
+                added.Cells[rowNum, ++col].Value = row.Description;
+                added.Cells[rowNum, ++col].Value = row.Type;
+                added.Cells[rowNum, ++col].Value = row.MoneyIn;
+                added.Cells[rowNum, ++col].Value = row.MoneyOut;
+                added.Cells[rowNum, ++col].Value = row.Balance;
+            }
+
+            //Autofit for easy viewing
+            added.Columns.ForEach(x => x.AutoFit());
+            return excel.GetAsByteArray();
+        }
+
+        public async Task Categorise(Stream inputExcel)
         {
             try
             {
-                var excelPath = @"C:\Users\Ben\Desktop\TransactionFiles\RawDownloadExcel.xlsx";
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var excel = new ExcelPackage();
-                await excel.LoadAsync(new FileInfo(excelPath));
+                await excel.LoadAsync(inputExcel);
                 
                 var found = excel.Workbook.Worksheets.Single();
                 var rows = found.Rows.ToArray();
