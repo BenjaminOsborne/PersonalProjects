@@ -20,7 +20,7 @@
 
 <p/>
 
-<button class="btn btn-primary" @onclick="RunFile">Run Process</button>
+<InputFile OnChange="@RunFile" accept=".xlsx" />
 
 @code
 {
@@ -30,11 +30,7 @@
     {
         reverseFileResult = "Running...";
 
-        using var inputStream = new MemoryStream();
-        var stream = e.File.OpenReadStream();
-        await stream.CopyToAsync(inputStream);
-        inputStream.Position = 0;
-
+        using var inputStream = await _CopyToMemoryStreamAsync(e);
         var result = await ExcelFileRunner.ReverseCsvTransactions(inputStream);
 
         if (result.IsSuccess)
@@ -52,8 +48,23 @@
         }
     }
 
-    private async Task RunFile()
+    private async Task RunFile(InputFileChangeEventArgs e)
     {
-        await ExcelFileRunner.Run();
+        using var inputStream = await _CopyToMemoryStreamAsync(e);
+        await ExcelFileRunner.Categorise(inputStream);
+    }
+
+    /// <summary>
+    ///  Must copy to memory stream as otherwise can raise:
+    ///  "System.NotSupportedException: Synchronous reads are not supported."
+    ///  when passing to service
+    ///  </summary>
+    private async Task<MemoryStream> _CopyToMemoryStreamAsync(InputFileChangeEventArgs e)
+    {
+        var inputStream = new MemoryStream();
+        var stream = e.File.OpenReadStream();
+        await stream.CopyToAsync(inputStream);
+        inputStream.Position = 0;
+        return inputStream;
     }
 }

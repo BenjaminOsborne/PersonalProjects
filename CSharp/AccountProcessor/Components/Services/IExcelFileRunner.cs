@@ -39,7 +39,7 @@ namespace AccountProcessor.Components.Services
                 return rows.MapFail<byte[]>();
             }
             var allRows = rows.Result!.Reverse().ToImmutableArray();
-            var resultBytes = _WriteRowsToExcel(allRows);
+            var resultBytes = await _WriteRowsToExcel(allRows);
             return WrappedResult.Create(resultBytes);
         }
 
@@ -100,7 +100,7 @@ namespace AccountProcessor.Components.Services
                 WrappedResult.Fail<ImmutableArray<CsvRow>>($"{error}. Row: {rowNumber}");
         }
 
-        private static byte[] _WriteRowsToExcel(ImmutableArray<CsvRow> allRows)
+        private static async Task<byte[]> _WriteRowsToExcel(ImmutableArray<CsvRow> allRows)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             var excel = new ExcelPackage();
@@ -130,7 +130,8 @@ namespace AccountProcessor.Components.Services
 
             //Autofit for easy viewing
             added.Columns.ForEach(x => x.AutoFit());
-            return excel.GetAsByteArray();
+
+            return await excel.GetAsByteArrayAsync();
         }
 
         public async Task Categorise(Stream inputExcel)
