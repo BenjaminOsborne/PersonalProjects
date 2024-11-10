@@ -67,6 +67,9 @@ namespace AccountProcessor.Components.Services
                 added.Cells[rowNum, ++col].Value = row.Balance;
             }
 
+            //Autofit
+            added.Columns.ForEach(x => x.AutoFit());
+
             var excelPath = @"C:\Users\Ben\Desktop\TransactionFiles\RawDownload.xlsx";
             await excel.SaveAsAsync(new FileInfo(excelPath));
 

@@ -28,4 +28,15 @@
     {
         public static bool IsNullOrEmpty(this string s) => string.IsNullOrEmpty(s);
     }
+
+    public static class EnumerableExtensions
+    {
+        public static void ForEach<T>(this IEnumerable<T> items, Action<T> fnPerform)
+        {
+            foreach (var item in items)
+            {
+                fnPerform(item);
+            }
+        }
+    }
 }
