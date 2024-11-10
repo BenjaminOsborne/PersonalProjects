@@ -11,7 +11,10 @@
 <p/>
 <hr/>
 
-<InputFile OnChange="@ReverseFile" accept=".csv" />
+<button class="btn btn-primary">
+    <strong>Reverse File: </strong>
+    <InputFile OnChange="@ReverseFile" accept=".csv" />
+</button>
 <p role="status"><strong>Result</strong>: @reverseFileResult</p>
 
 <p/>
@@ -20,7 +23,10 @@
 
 <p/>
 
-<InputFile OnChange="@RunFile" accept=".xlsx" />
+<button class="btn btn-primary">
+    <strong>Categorise: </strong>
+    <InputFile OnChange="@Categorise" accept=".xlsx" />
+</button>
 
 @code
 {
@@ -48,7 +54,7 @@
         }
     }
 
-    private async Task RunFile(InputFileChangeEventArgs e)
+    private async Task Categorise(InputFileChangeEventArgs e)
     {
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         await ExcelFileRunner.Categorise(inputStream);
