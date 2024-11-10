@@ -1,6 +1,8 @@
-﻿@page "/"
+﻿@using System.IO
+@page "/"
 @rendermode InteractiveServer
 @inject Services.IExcelFileRunner ExcelFileRunner;
+@inject IJSRuntime JS
 
 <PageTitle>Home</PageTitle>
 
@@ -9,7 +11,7 @@
 <p/>
 <hr/>
 
-<button class="btn btn-primary" @onclick="ReverseFile">Reverse File</button>
+<InputFile OnChange="@ReverseFile" accept=".csv" />
 <p role="status"><strong>Result</strong>: @reverseFileResult</p>
 
 <p/>
@@ -24,10 +26,30 @@
 {
     private string? reverseFileResult;
 
-    private async Task ReverseFile()
+    private async Task ReverseFile(InputFileChangeEventArgs e)
     {
         reverseFileResult = "Running...";
-        reverseFileResult = await ExcelFileRunner.ReverseAndGenerate();
+
+        using var inputStream = new MemoryStream();
+        var stream = e.File.OpenReadStream();
+        await stream.CopyToAsync(inputStream);
+        inputStream.Position = 0;
+
+        var result = await ExcelFileRunner.ReverseAndGenerate(inputStream);
+
+        if (result.IsSuccess)
+        {
+            reverseFileResult = "Success!";
+
+            await JS.InvokeAsync<object>(
+                "jsSaveAsFile",
+                $"{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
+                Convert.ToBase64String(result.Result!));
+        }
+        else
+        {
+            reverseFileResult = $"Failed: {result.Error}";
+        }
     }
 
     private async Task RunFile()

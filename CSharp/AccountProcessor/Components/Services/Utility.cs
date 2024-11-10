@@ -14,6 +14,11 @@
         public bool IsSuccess { get; init; }
         public T? Result { get; init; }
         public string? Error { get; init; }
+
+        public WrappedResult<TMap> MapFail<TMap>() =>
+            !IsSuccess
+                ? WrappedResult.Fail<TMap>(Error!)
+                : throw new ArgumentException("MapFail called on Success object");
     }
 
     public static class TypeExtensions
@@ -37,6 +42,16 @@
             {
                 fnPerform(item);
             }
+        }
+    }
+
+    public static class StreamExtensions
+    {
+        public static async Task<byte[]> ReadAllBytesAsync(this Stream input)
+        {
+            using var memory = new MemoryStream();
+            await input.CopyToAsync(memory);
+            return memory.ToArray();
         }
     }
 }

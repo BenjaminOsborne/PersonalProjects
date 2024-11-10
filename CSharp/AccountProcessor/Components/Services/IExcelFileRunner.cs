@@ -7,7 +7,7 @@ namespace AccountProcessor.Components.Services
 {
     public interface IExcelFileRunner
     {
-        Task<string> ReverseAndGenerate();
+        Task<WrappedResult<byte[]>> ReverseAndGenerate(Stream stream);
         Task Run();
     }
 
@@ -31,13 +31,12 @@ namespace AccountProcessor.Components.Services
             public decimal Balance { get; init; }
         }
 
-        public async Task<string> ReverseAndGenerate()
+        public async Task<WrappedResult<byte[]>> ReverseAndGenerate(Stream stream)
         {
-            var csvPath = @"C:\Users\Ben\Desktop\TransactionFiles\RawDownload.csv";
-            var rows = _ExtractRows(csvPath);
+            var rows = _ExtractRows(stream);
             if(!rows.IsSuccess)
             {
-                return rows.Error!;
+                return rows.MapFail<byte[]>();
             }
 
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -69,14 +68,11 @@ namespace AccountProcessor.Components.Services
 
             //Autofit
             added.Columns.ForEach(x => x.AutoFit());
-
-            var excelPath = @"C:\Users\Ben\Desktop\TransactionFiles\RawDownload.xlsx";
-            await excel.SaveAsAsync(new FileInfo(excelPath));
-
-            return "Success!";
+                       
+            return WrappedResult.Create(excel.GetAsByteArray());
         }
 
-        private static WrappedResult<ImmutableArray<CsvRow>> _ExtractRows(string csvPath)
+        private static WrappedResult<ImmutableArray<CsvRow>> _ExtractRows(Stream stream)
         {
             try
             {
@@ -85,7 +81,7 @@ namespace AccountProcessor.Components.Services
                     MissingFieldFound = _ => { },
                 };
 
-                using var reader = new StreamReader(csvPath);
+                using var reader = new StreamReader(stream);
                 using var csv = new CsvReader(reader, config);
                 var records = csv.GetRecords<CsvRow>().ToImmutableArray();
 
