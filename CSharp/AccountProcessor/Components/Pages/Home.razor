@@ -28,8 +28,32 @@
     <InputFile OnChange="@Categorise" accept=".xlsx" />
 </button>
 
+<hr />
+
+<input placeholder="Something todo" />
+<button @onclick="AddItem">Add Item</button>
+<select id="categoryID" value="Initial" @onchange="OnChangeItem">
+    <option value="0" selected>Choose Category</option>
+    <option value="1" selected>Value 1</option>
+    <option value="2" selected>Value 2</option>
+    @* @foreach (Category category in categories)
+    {
+        <option value="@category.Name">@category.Name</option>
+    } *@
+</select>
+
 @code
 {
+    private async Task OnChangeItem(ChangeEventArgs e)
+    {
+        await Task.Delay(10);
+    }
+
+    private void AddItem()
+    {
+        
+    }
+
     private string? reverseFileResult;
 
     private async Task ReverseFile(InputFileChangeEventArgs e)
