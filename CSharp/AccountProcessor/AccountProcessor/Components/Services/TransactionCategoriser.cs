@@ -13,8 +13,9 @@ namespace AccountProcessor.Components.Services
     public class MatchedTransaction
     {
         public Transaction Transaction { get; init; }
-        public Section Section { get; init; }
-        public Match Match { get; init; }
+        
+        /// <summary> Preference ordered matches. Always at least 1 in collection. </summary>
+        public ImmutableArray<(Section Section, Match Match)> SectionMatches { get; init; }
     }
 
     public class CategorisationResult
@@ -25,6 +26,7 @@ namespace AccountProcessor.Components.Services
 
     public interface ITransactionCategoriser
     {
+
     }
 
     public class TransactionCategoriser : ITransactionCategoriser
@@ -35,6 +37,47 @@ namespace AccountProcessor.Components.Services
         /// This would require persistence, client sessions etc.
         /// </summary>
         public static readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(_InitialiseModel);
+
+        public CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly now)
+        {
+            var model = _singleModel.Value;
+            
+            var sections = model.Categories
+                .SelectMany(x => x.Sections)
+                .SelectMany(s => s.Matches.Select(m => new { Section = s, Match = m }))
+                .ToImmutableArray();
+
+            var withMatch = transactions
+                .Select(trans =>
+                {
+                    var matches = sections
+                    .Where(s => s.Match.Matches(trans))
+                    .OrderBy(x => x)
+                    .ToImmutableArray();
+                    return new { Transaction = trans, Matches = matches };
+                })
+                .ToImmutableArray();
+
+            var parition = withMatch.Partition(x => x.Matches.Any());
+            var matched = parition.PredicateTrue
+                .Select(x =>
+                    new MatchedTransaction
+                    {
+                        Transaction = x.Transaction,
+                        SectionMatches = x.Matches
+                            .Select(m => (m.Section, m.Match))
+                            .ToImmutableArray()
+                    })
+                .ToImmutableArray();
+
+            return new CategorisationResult
+            {
+                Matched = matched,
+                UnMatched = parition.PredicateFalse
+                    .Select(x => x.Transaction)
+                    .ToImmutableArray()
+            };
+        }
 
         private static MatchModel _InitialiseModel()
         {
@@ -83,6 +126,20 @@ namespace AccountProcessor.Components.Services
         public string? OverrideDescription { get; init; }
 
         /// <summary> If set - only applies to specific transaction. <see cref="Pattern"/> should be exact Transaction title at this point. </summary>
-        public DateOnly? ExtactDate { get; init; }
+        public DateOnly? ExactDate { get; init; }
+
+        /// <remarks> "False" is before "True" for OrderBy. Prefer overriden dates. </remarks>
+        public IComparable OrderKey => (!ExactDate.HasValue, Pattern.Length);
+
+        public bool Matches(Transaction trans)
+        {
+            if (ExactDate.HasValue && ExactDate != trans.Date)
+            {
+                return false;
+            }
+
+            //TODO: Consider handling "*" wild cards (or similar)
+            return trans.Description.ToLower().Contains(Pattern.ToLower());
+        }
     }
 }

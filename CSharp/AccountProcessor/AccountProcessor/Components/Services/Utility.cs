@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Immutable;
+using System.Text.Json;
 
 namespace AccountProcessor.Components.Services
 {
@@ -23,6 +24,12 @@ namespace AccountProcessor.Components.Services
                 : throw new ArgumentException("MapFail called on Success object");
     }
 
+    public class Partition<T>
+    {
+        public ImmutableList<T> PredicateTrue { get; init; }
+        public ImmutableList<T> PredicateFalse { get; init; }
+    }
+
     public static class TypeExtensions
     {
         public static T? AsNullable<T>(this T item) where T : struct => item;
@@ -44,6 +51,24 @@ namespace AccountProcessor.Components.Services
             {
                 fnPerform(item);
             }
+        }
+
+        public static Partition<T> Partition<T>(this IEnumerable<T> items, Func<T, bool> fnPredicate)
+        {
+            var predTrue = ImmutableList.CreateBuilder<T>();
+            var predFalse = ImmutableList.CreateBuilder<T>();
+            foreach (var item in items)
+            {
+                if (fnPredicate(item))
+                {
+                    predTrue.Add(item);
+                }
+                else
+                {
+                    predFalse.Add(item);
+                }
+            }
+            return new Partition<T> { PredicateTrue = predTrue.ToImmutable(), PredicateFalse = predFalse.ToImmutable() };
         }
     }
 
