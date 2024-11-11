@@ -1,46 +1,53 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics;
 
 namespace AccountProcessor.Components.Services
 {
+    public class Transaction
+    {
+        public DateOnly Date { get; init; }
+        public string Description { get; init; }
+        public decimal Amount { get; init; }
+    }
+
+    public class MatchedTransaction
+    {
+        public Transaction Transaction { get; init; }
+        public Section Section { get; init; }
+        public Match Match { get; init; }
+    }
+
+    public class CategorisationResult
+    {
+        public ImmutableArray<MatchedTransaction> Matched { get; init; }
+        public ImmutableArray<Transaction> UnMatched { get; init; }
+    }
+
     public interface ITransactionCategoriser
     {
-        ImmutableArray<Category> GetCategories();
     }
 
     public class TransactionCategoriser : ITransactionCategoriser
     {
-        public ImmutableArray<Category> GetCategories()
+        /// <summary>
+        /// Current use case; only 1 instance linked to 1 file.
+        /// No intention to support multiple concurrent sessions distributed with many Clients.
+        /// This would require persistence, client sessions etc.
+        /// </summary>
+        public static readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(_InitialiseModel);
+
+        private static MatchModel _InitialiseModel()
         {
-            var headerCount = 0;
-
-            return new[]
-            {
-                _CreateCategory(Header("Income"), _ToBlocks("Salary")),
-                _CreateCategory(Header("Bills"), _ToBlocks("House", "Standing Order")),
-                _CreateCategory(Header("Giving"), _ToBlocks("Charity", "Tithe")),
-                _CreateCategory(Header("House"), _ToBlocks("House & Garage", "Childcare", "Exercise")),
-                _CreateCategory(Header("Supermarkets"), _ToBlocks("Supermarket")),
-                _CreateCategory(Header("Restaurants"), _ToBlocks("Restaurant", "Drink")),
-                _CreateCategory(Header("Travel & Trips"), _ToBlocks("Transport", "Petrol")),
-                _CreateCategory(Header("Internet & Shops"), _ToBlocks("Online", "Cash", "Shops")),
-                _CreateCategory(Header("IGNORE"), _ToBlocks("Internal Transactions", "Balance")),
-            }.ToImmutableArray();
-
-            CategoryHeader Header(string name) =>
-                new CategoryHeader { Order = headerCount++, Name = name };
+            var processPath = Process.GetCurrentProcess().MainModule!.FileName;
+            var json = Path.Combine(new FileInfo(processPath).Directory!.FullName, "Components", "Services", "MatchModel.json");
+            return JsonHelper.Deserialise<MatchModel>(File.ReadAllText(json))
+                ?? throw new ApplicationException("Could not initialise model from json file");
         }
+    }
 
-        private Block[] _ToBlocks(params string[] names) =>
-            names.Select((x, nx) => new Block { Order = nx, Name = x }).ToArray();
-
-        private static Category _CreateCategory(CategoryHeader header, params Block[] sections) =>
-            new Category
-            {
-                Header = header,
-                Sections = sections
-                    .Select(x => new Section { Order = x.Order, Name = x.Name, Parent = header })
-                    .ToList()
-            };
+    public class MatchModel
+    {
+        public ImmutableArray<Category> Categories { get; init; }
     }
 
     public class Block
@@ -51,11 +58,6 @@ namespace AccountProcessor.Components.Services
 
     public class CategoryHeader : Block
     {
-    }
-
-    public class MatchModel
-    {
-        public ImmutableArray<Category> Categories { get; init; }
     }
 
     public class Category

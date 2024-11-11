@@ -2,6 +2,7 @@
 @page "/"
 @rendermode InteractiveServer
 @inject Services.IExcelFileRunner ExcelFileRunner;
+@inject Services.ITransactionCategoriser Categoriser;
 @inject IJSRuntime JS
 
 <PageTitle>Home</PageTitle>
@@ -46,6 +47,7 @@
 {
     private async Task OnChangeItem(ChangeEventArgs e)
     {
+        var model = Categoriser.GetModel();
         await Task.Delay(10);
     }
 

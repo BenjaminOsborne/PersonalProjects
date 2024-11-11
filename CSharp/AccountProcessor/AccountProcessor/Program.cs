@@ -9,6 +9,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<IExcelFileRunner, ExcelFileRunner>();
+builder.Services.AddScoped<ITransactionCategoriser, TransactionCategoriser>();
 
 var app = builder.Build();
 

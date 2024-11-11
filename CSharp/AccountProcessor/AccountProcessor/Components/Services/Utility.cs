@@ -1,4 +1,6 @@
-﻿namespace AccountProcessor.Components.Services
+﻿using System.Text.Json;
+
+namespace AccountProcessor.Components.Services
 {
     public static class WrappedResult
     {
@@ -53,5 +55,19 @@
             await input.CopyToAsync(memory);
             return memory.ToArray();
         }
+    }
+
+    public static class JsonHelper
+    {
+        public static string Serialise<T>(T data, bool writeIndented = false) =>
+            JsonSerializer.Serialize(data,
+                new JsonSerializerOptions { IncludeFields = true, WriteIndented = writeIndented });
+
+        public static T? Deserialise<T>(string json) => JsonSerializer.Deserialize<T>(json);
+    }
+
+    public static class LazyHelper
+    {
+        public static Lazy<T> Create<T>(Func<T> fnCreate) => new Lazy<T>(fnCreate);
     }
 }
