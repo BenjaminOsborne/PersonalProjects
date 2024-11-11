@@ -9,13 +9,7 @@ namespace AccountProcessor.Tests
         [Test]
         public void BootstrapJson()
         {
-            var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
-            while(dir.Name != "CSharp")
-            {
-                dir = dir.Parent!;
-            }
-
-            var outputPath = Path.Combine(dir.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
+            var outputPath = _GetOutputPath();
             var content = JsonHelper.Serialise(_GetMatchModel(), writeIndented: true);
             File.WriteAllText(outputPath, content);
         }
@@ -55,5 +49,15 @@ namespace AccountProcessor.Tests
                     .Select(x => new Section { Order = x.Order, Name = x.Name, Parent = header, Matches = [] })
                     .ToList()
             };
+
+        private static string _GetOutputPath()
+        {
+            var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (dir.Name != "CSharp")
+            {
+                dir = dir.Parent!;
+            }
+            return Path.Combine(dir.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
+        }
     }
 }
