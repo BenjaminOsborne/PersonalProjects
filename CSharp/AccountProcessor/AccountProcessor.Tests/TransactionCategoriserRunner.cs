@@ -10,45 +10,38 @@ namespace AccountProcessor.Tests
         public void BootstrapJson()
         {
             var outputPath = _GetOutputPath();
-            var content = JsonHelper.Serialise(_GetMatchModel(), writeIndented: true);
+            var model = _GetMatchModel();
+            var content = JsonHelper.Serialise(model, writeIndented: true);
             File.WriteAllText(outputPath, content);
+
+            var loaded = JsonHelper.Deserialise<MatchModel>(content);
+            Assert.That(loaded.Categories.Length, Is.EqualTo(model.Categories.Length));
         }
 
         private MatchModel _GetMatchModel()
         {
-            var headerCount = 0;
-
-            return new MatchModel
+            var categories = new[]
             {
-                Categories = new[]
-                {
-                    _CreateCategory(Header("Income"), _ToBlocks("Salary")),
-                    _CreateCategory(Header("Bills"), _ToBlocks("House", "Standing Order")),
-                    _CreateCategory(Header("Giving"), _ToBlocks("Charity", "Tithe")),
-                    _CreateCategory(Header("House"), _ToBlocks("House & Garage", "Childcare", "Exercise")),
-                    _CreateCategory(Header("Supermarkets"), _ToBlocks("Supermarket")),
-                    _CreateCategory(Header("Restaurants"), _ToBlocks("Restaurant", "Drink")),
-                    _CreateCategory(Header("Travel & Trips"), _ToBlocks("Transport", "Petrol")),
-                    _CreateCategory(Header("Internet & Shops"), _ToBlocks("Online", "Cash", "Shops")),
-                    _CreateCategory(Header("IGNORE"), _ToBlocks("Internal Transactions", "Balance")),
-                }.ToImmutableArray()
-            };
-
-            CategoryHeader Header(string name) =>
-                new CategoryHeader { Order = headerCount++, Name = name };
+                _CreateCategory(CategoryHeader.Income, "Salary"),
+                _CreateCategory(CategoryHeader.Bills, "House", "Standing Order"),
+                _CreateCategory(CategoryHeader.Giving, "Charity", "Tithe"),
+                _CreateCategory(CategoryHeader.House, "House & Garage", "Childcare", "Exercise"),
+                _CreateCategory(CategoryHeader.Supermarkets, "Supermarket"),
+                _CreateCategory(CategoryHeader.Restaurants, "Restaurant", "Drink"),
+                _CreateCategory(CategoryHeader.TravelTrips, "Transport", "Petrol"),
+                _CreateCategory(CategoryHeader.InternetShops, "Online", "Cash", "Shops"),
+                _CreateCategory(CategoryHeader.IGNORE, "Internal Transactions", "Balance"),
+            }.ToImmutableArray();
+            return new MatchModel(categories);
         }
 
-        private Block[] _ToBlocks(params string[] names) =>
-            names.Select((x, nx) => new Block { Order = nx, Name = x }).ToArray();
-
-        private static Category _CreateCategory(CategoryHeader header, params Block[] sections) =>
-            new Category
-            {
-                Header = header,
-                Sections = sections
-                    .Select(x => new Section { Order = x.Order, Name = x.Name, Parent = header, Matches = [] })
-                    .ToList()
-            };
+        private static Category _CreateCategory(CategoryHeader header, params string[] sections)
+        {
+            var sectionList = sections
+                .Select((x,nx) => new SectionMatches(new SectionHeader(nx, x, header, month: null), []))
+                .ToList();
+            return new Category(header, sectionList);
+        }
 
         private static string _GetOutputPath()
         {

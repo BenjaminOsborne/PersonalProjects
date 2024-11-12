@@ -1,29 +1,9 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace AccountProcessor.Components.Services
 {
-    public class Transaction
-    {
-        public DateOnly Date { get; init; }
-        public string Description { get; init; }
-        public decimal Amount { get; init; }
-    }
-
-    public class MatchedTransaction
-    {
-        public Transaction Transaction { get; init; }
-        
-        /// <summary> Preference ordered matches. Always at least 1 in collection. </summary>
-        public ImmutableArray<(Section Section, Match Match)> SectionMatches { get; init; }
-    }
-
-    public class CategorisationResult
-    {
-        public ImmutableArray<MatchedTransaction> Matched { get; init; }
-        public ImmutableArray<Transaction> UnMatched { get; init; }
-    }
-
     public interface ITransactionCategoriser
     {
 
@@ -61,23 +41,58 @@ namespace AccountProcessor.Components.Services
             var parition = withMatch.Partition(x => x.Matches.Any());
             var matched = parition.PredicateTrue
                 .Select(x =>
-                    new MatchedTransaction
-                    {
-                        Transaction = x.Transaction,
-                        SectionMatches = x.Matches
-                            .Select(m => (m.Section, m.Match))
+                    new MatchedTransaction(
+                        x.Transaction,
+                        sectionMatches: x.Matches
+                            .Select(m => new SectionMatch(m.Section.Section, m.Match))
                             .ToImmutableArray()
-                    })
+                    ))
                 .ToImmutableArray();
 
-            return new CategorisationResult
-            {
-                Matched = matched,
-                UnMatched = parition.PredicateFalse
-                    .Select(x => x.Transaction)
-                    .ToImmutableArray()
-            };
+            var unmatched = parition.PredicateFalse
+                .Select(x => x.Transaction)
+                .ToImmutableArray();
+            return new CategorisationResult(matched, unmatched);
         }
+
+        public WrappedResult<SectionHeader> AddSection(CategoryHeader categoryHeader, string sectionName, DateOnly? matchMonthOnly)
+        {
+            var category = _FindModelHeaderFor(categoryHeader);
+            if (category == null)
+            {
+                return WrappedResult.Fail<SectionHeader>($"Could not find matching Category for: {categoryHeader.Name}");
+            }
+            var found = category.Sections.FirstOrDefault(s => s.Section.Name == sectionName);
+            if (found != null)
+            {
+                return WrappedResult.Fail<SectionHeader>($"Already have section for: {sectionName}");
+            }
+            
+            var next = category.Sections.Max(s => s.Section.Order) + 1;
+            var created = new SectionHeader(next, sectionName, categoryHeader, matchMonthOnly);
+            category.Sections.Add(new SectionMatches(created, []));
+            return WrappedResult.Create(created);
+        }
+
+        public WrappedResult<SectionMatches> AddMatch(CategoryHeader header, Block section, Match match)
+        {
+            var category = _FindModelHeaderFor(header);
+            if (category == null)
+            {
+                return WrappedResult.Fail<SectionMatches>($"Could not find matching Category for: {header.Name}");
+            }
+            var found = category.Sections.FirstOrDefault(s => s.Section.Name == section.Name);
+            if (found == null)
+            {
+                return WrappedResult.Fail<SectionMatches>($"Could not find matching Section for: {section.Name}");
+            }
+            found.Matches.Add(match);
+            return WrappedResult.Create(found);
+        }
+
+        private static Category? _FindModelHeaderFor(CategoryHeader header) =>
+            _singleModel.Value.Categories
+            .FirstOrDefault(x => x.Header.Name == header.Name);
 
         private static MatchModel _InitialiseModel()
         {
@@ -88,34 +103,93 @@ namespace AccountProcessor.Components.Services
         }
     }
 
-    public class MatchModel
+    public record Transaction(DateOnly Date, string Description, decimal Amount);
+
+    public record SelectorData(ImmutableArray<CategoryHeader> Headers, ImmutableArray<Block> Sections);
+
+    public class MatchedTransaction
     {
-        public ImmutableArray<Category> Categories { get; init; }
+        public MatchedTransaction(Transaction transaction, ImmutableArray<SectionMatch> sectionMatches)
+        {
+            Transaction = transaction;
+            SectionMatches = sectionMatches;
+        }
+
+        public Transaction Transaction { get; }
+
+        /// <summary> Preference ordered matches. Always at least 1 in collection. </summary>
+        public ImmutableArray<SectionMatch> SectionMatches { get; }
     }
 
-    public class Block
+    public record SectionMatch(SectionHeader Section, Match Match);
+
+    public record CategorisationResult(ImmutableArray<MatchedTransaction> Matched, ImmutableArray<Transaction> UnMatched);
+
+    public record MatchModel(ImmutableArray<Category> Categories);
+
+    public abstract class Block
     {
-        public int Order { get; init; }
-        public string Name { get; init; }
+        protected Block(int order, string name)
+        {
+            Order = order;
+            Name = name;
+        }
+        public int Order { get; }
+        public string Name { get; }
     }
 
     public class CategoryHeader : Block
     {
+        [JsonConstructor]
+        private CategoryHeader(int Order, string Name) : base(Order, Name)
+        {
+        }
+
+        #region Fixed Categories - all sections/transactions must fit in one of these
+
+        public static CategoryHeader Income { get; } = _Create(0, "Income");
+        public static CategoryHeader Bills { get; } = _Create(1, "Bills");
+        public static CategoryHeader Giving { get; } = _Create(2, "Giving");
+        public static CategoryHeader House { get; } = _Create(3, "House");
+        public static CategoryHeader Supermarkets { get; } = _Create(4, "Supermarkets");
+        public static CategoryHeader Restaurants { get; } = _Create(5, "Restaurants");
+        public static CategoryHeader TravelTrips { get; } = _Create(6, "Travel & Trips");
+        public static CategoryHeader InternetShops { get; } = _Create(7, "Internet & Shops");
+        public static CategoryHeader IGNORE { get; } = _Create(8, "IGNORE");
+
+        #endregion
+
+        private static CategoryHeader _Create(int order, string name) =>
+            new CategoryHeader(order, name);
     }
 
-    public class Category
-    {
-        public CategoryHeader Header { get; init; }
-        public List<Section> Sections { get; init; }
-    }
+    public record Category(CategoryHeader Header, List<SectionMatches> Sections);
 
-    public class Section : Block
+    public class SectionHeader : Block
     {
-        public CategoryHeader Parent { get; init; }
-        public List<Match> Matches { get; init; }
+        public SectionHeader(int order, string name, CategoryHeader parent, DateOnly? month) : base(order, name)
+        {
+            Parent = parent;
+            Month = month;
+        }
+
+        public CategoryHeader Parent { get; }
+
         /// <summary> If set; specifies the specific month/year this section applies to. </summary>
         /// <remarks> Day component should always be "1". Only Month/Year relevant. </remarks>
-        public DateOnly? Month { get; init; }
+        public DateOnly? Month { get; }
+    }
+
+    public class SectionMatches
+    {
+        public SectionMatches(SectionHeader section, List<Match> matches)
+        {
+            Section = section;
+            Matches = matches;
+            
+        }
+        public SectionHeader Section { get; }
+        public List<Match> Matches { get; }
     }
 
     public class Match

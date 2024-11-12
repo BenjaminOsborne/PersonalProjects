@@ -7,14 +7,16 @@
       },
       "Sections": [
         {
-          "Parent": {
+          "Section": {
+            "Parent": {
+              "Order": 0,
+              "Name": "Income"
+            },
+            "Month": null,
             "Order": 0,
-            "Name": "Income"
+            "Name": "Salary"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 0,
-          "Name": "Salary"
+          "Matches": []
         }
       ]
     },
@@ -25,24 +27,28 @@
       },
       "Sections": [
         {
-          "Parent": {
-            "Order": 1,
-            "Name": "Bills"
+          "Section": {
+            "Parent": {
+              "Order": 1,
+              "Name": "Bills"
+            },
+            "Month": null,
+            "Order": 0,
+            "Name": "House"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 0,
-          "Name": "House"
+          "Matches": []
         },
         {
-          "Parent": {
+          "Section": {
+            "Parent": {
+              "Order": 1,
+              "Name": "Bills"
+            },
+            "Month": null,
             "Order": 1,
-            "Name": "Bills"
+            "Name": "Standing Order"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 1,
-          "Name": "Standing Order"
+          "Matches": []
         }
       ]
     },
@@ -53,24 +59,28 @@
       },
       "Sections": [
         {
-          "Parent": {
-            "Order": 2,
-            "Name": "Giving"
+          "Section": {
+            "Parent": {
+              "Order": 2,
+              "Name": "Giving"
+            },
+            "Month": null,
+            "Order": 0,
+            "Name": "Charity"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 0,
-          "Name": "Charity"
+          "Matches": []
         },
         {
-          "Parent": {
-            "Order": 2,
-            "Name": "Giving"
+          "Section": {
+            "Parent": {
+              "Order": 2,
+              "Name": "Giving"
+            },
+            "Month": null,
+            "Order": 1,
+            "Name": "Tithe"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 1,
-          "Name": "Tithe"
+          "Matches": []
         }
       ]
     },
@@ -81,34 +91,40 @@
       },
       "Sections": [
         {
-          "Parent": {
-            "Order": 3,
-            "Name": "House"
+          "Section": {
+            "Parent": {
+              "Order": 3,
+              "Name": "House"
+            },
+            "Month": null,
+            "Order": 0,
+            "Name": "House \u0026 Garage"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 0,
-          "Name": "House \u0026 Garage"
+          "Matches": []
         },
         {
-          "Parent": {
-            "Order": 3,
-            "Name": "House"
+          "Section": {
+            "Parent": {
+              "Order": 3,
+              "Name": "House"
+            },
+            "Month": null,
+            "Order": 1,
+            "Name": "Childcare"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 1,
-          "Name": "Childcare"
+          "Matches": []
         },
         {
-          "Parent": {
-            "Order": 3,
-            "Name": "House"
+          "Section": {
+            "Parent": {
+              "Order": 3,
+              "Name": "House"
+            },
+            "Month": null,
+            "Order": 2,
+            "Name": "Exercise"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 2,
-          "Name": "Exercise"
+          "Matches": []
         }
       ]
     },
@@ -119,14 +135,16 @@
       },
       "Sections": [
         {
-          "Parent": {
-            "Order": 4,
-            "Name": "Supermarkets"
+          "Section": {
+            "Parent": {
+              "Order": 4,
+              "Name": "Supermarkets"
+            },
+            "Month": null,
+            "Order": 0,
+            "Name": "Supermarket"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 0,
-          "Name": "Supermarket"
+          "Matches": []
         }
       ]
     },
@@ -137,24 +155,28 @@
       },
       "Sections": [
         {
-          "Parent": {
-            "Order": 5,
-            "Name": "Restaurants"
+          "Section": {
+            "Parent": {
+              "Order": 5,
+              "Name": "Restaurants"
+            },
+            "Month": null,
+            "Order": 0,
+            "Name": "Restaurant"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 0,
-          "Name": "Restaurant"
+          "Matches": []
         },
         {
-          "Parent": {
-            "Order": 5,
-            "Name": "Restaurants"
+          "Section": {
+            "Parent": {
+              "Order": 5,
+              "Name": "Restaurants"
+            },
+            "Month": null,
+            "Order": 1,
+            "Name": "Drink"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 1,
-          "Name": "Drink"
+          "Matches": []
         }
       ]
     },
@@ -165,24 +187,28 @@
       },
       "Sections": [
         {
-          "Parent": {
-            "Order": 6,
-            "Name": "Travel \u0026 Trips"
+          "Section": {
+            "Parent": {
+              "Order": 6,
+              "Name": "Travel \u0026 Trips"
+            },
+            "Month": null,
+            "Order": 0,
+            "Name": "Transport"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 0,
-          "Name": "Transport"
+          "Matches": []
         },
         {
-          "Parent": {
-            "Order": 6,
-            "Name": "Travel \u0026 Trips"
+          "Section": {
+            "Parent": {
+              "Order": 6,
+              "Name": "Travel \u0026 Trips"
+            },
+            "Month": null,
+            "Order": 1,
+            "Name": "Petrol"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 1,
-          "Name": "Petrol"
+          "Matches": []
         }
       ]
     },
@@ -193,34 +219,40 @@
       },
       "Sections": [
         {
-          "Parent": {
-            "Order": 7,
-            "Name": "Internet \u0026 Shops"
+          "Section": {
+            "Parent": {
+              "Order": 7,
+              "Name": "Internet \u0026 Shops"
+            },
+            "Month": null,
+            "Order": 0,
+            "Name": "Online"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 0,
-          "Name": "Online"
+          "Matches": []
         },
         {
-          "Parent": {
-            "Order": 7,
-            "Name": "Internet \u0026 Shops"
+          "Section": {
+            "Parent": {
+              "Order": 7,
+              "Name": "Internet \u0026 Shops"
+            },
+            "Month": null,
+            "Order": 1,
+            "Name": "Cash"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 1,
-          "Name": "Cash"
+          "Matches": []
         },
         {
-          "Parent": {
-            "Order": 7,
-            "Name": "Internet \u0026 Shops"
+          "Section": {
+            "Parent": {
+              "Order": 7,
+              "Name": "Internet \u0026 Shops"
+            },
+            "Month": null,
+            "Order": 2,
+            "Name": "Shops"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 2,
-          "Name": "Shops"
+          "Matches": []
         }
       ]
     },
@@ -231,24 +263,28 @@
       },
       "Sections": [
         {
-          "Parent": {
-            "Order": 8,
-            "Name": "IGNORE"
+          "Section": {
+            "Parent": {
+              "Order": 8,
+              "Name": "IGNORE"
+            },
+            "Month": null,
+            "Order": 0,
+            "Name": "Internal Transactions"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 0,
-          "Name": "Internal Transactions"
+          "Matches": []
         },
         {
-          "Parent": {
-            "Order": 8,
-            "Name": "IGNORE"
+          "Section": {
+            "Parent": {
+              "Order": 8,
+              "Name": "IGNORE"
+            },
+            "Month": null,
+            "Order": 1,
+            "Name": "Balance"
           },
-          "Matches": [],
-          "Month": null,
-          "Order": 1,
-          "Name": "Balance"
+          "Matches": []
         }
       ]
     }
