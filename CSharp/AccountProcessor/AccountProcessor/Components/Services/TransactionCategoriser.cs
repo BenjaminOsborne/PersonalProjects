@@ -18,6 +18,22 @@ namespace AccountProcessor.Components.Services
         /// </summary>
         public static readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(_InitialiseModel);
 
+        public SelectorData GetSelectorData()
+        {
+            var model = _singleModel.Value;
+            var categories = model.Categories
+                .Select(x => x.Header)
+                .OrderBy(x => x.Order)
+                .ToImmutableArray();
+            var sections = model.Categories
+                .SelectMany(x => x.Sections)
+                .Select(x => x.Section)
+                .OrderBy(x => x.Parent.Order)
+                .ThenBy(x => x.Order)
+                .ToImmutableArray();
+            return new SelectorData(categories, sections);
+        }
+
         public CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly now)
         {
             var model = _singleModel.Value;
@@ -105,7 +121,7 @@ namespace AccountProcessor.Components.Services
 
     public record Transaction(DateOnly Date, string Description, decimal Amount);
 
-    public record SelectorData(ImmutableArray<CategoryHeader> Headers, ImmutableArray<Block> Sections);
+    public record SelectorData(ImmutableArray<CategoryHeader> Categories, ImmutableArray<SectionHeader> Sections);
 
     public class MatchedTransaction
     {
