@@ -19,7 +19,7 @@ namespace AccountProcessor.Tests
             File.WriteAllText(outputPath, content);
 
             var loaded = JsonHelper.Deserialise<MatchModel>(content);
-            Assert.That(loaded.Categories.Length, Is.EqualTo(model.Categories.Length));
+            Assert.That(loaded!.Categories.Length, Is.EqualTo(model.Categories.Length));
         }
 
         private MatchModel _GetMatchModel()

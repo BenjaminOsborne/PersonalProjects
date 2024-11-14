@@ -8,6 +8,9 @@ namespace AccountProcessor.Components.Services
     {
         SelectorData GetSelectorData();
         CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly now);
+
+        void ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription);
+        void MatchOnce(Transaction transaction, SectionHeader header, string? overrideDescription);
     }
 
     public class TransactionCategoriser : ITransactionCategoriser
@@ -91,20 +94,44 @@ namespace AccountProcessor.Components.Services
             return WrappedResult.Create(created);
         }
 
-        public WrappedResult<SectionMatches> AddMatch(CategoryHeader header, Block section, Match match)
+        //public WrappedResult<SectionMatches> AddMatch(CategoryHeader header, Block section, Match match)
+        public void ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription)
         {
-            var category = _FindModelHeaderFor(header);
+            var match = new Match(matchOn, overrideDescription, null);
+            _ApplyMatch(transaction, section, match);
+        }
+
+        public void MatchOnce(Transaction transaction, SectionHeader section, string? overrideDescription)
+        {
+            var match = new Match(transaction.Description, overrideDescription, transaction.Date);
+            _ApplyMatch(transaction, section, match);
+        }
+
+        private static void _ApplyMatch(Transaction transaction, SectionHeader section, Match match)
+        {
+            var category = _FindModelHeaderFor(section.Parent);
             if (category == null)
             {
-                return WrappedResult.Fail<SectionMatches>($"Could not find matching Category for: {header.Name}");
+                //return WrappedResult.Fail<SectionMatches>($"Could not find matching Category for: {header.Name}");
+                return;
             }
             var found = category.Sections.FirstOrDefault(s => s.Section.Name == section.Name);
             if (found == null)
             {
-                return WrappedResult.Fail<SectionMatches>($"Could not find matching Section for: {section.Name}");
+                //return WrappedResult.Fail<SectionMatches>($"Could not find matching Section for: {section.Name}");
+                return;
             }
+
+            if (match.Matches(transaction) == false)
+            {
+                //Should not apply if doesn't actually match inbound transaction
+                return;
+            }
+
             found.Matches.Add(match);
-            return WrappedResult.Create(found);
+            _WriteModel(_singleModel.Value);
+
+            //return WrappedResult.Create(found);
         }
 
         private static Category? _FindModelHeaderFor(CategoryHeader header) =>
@@ -113,10 +140,34 @@ namespace AccountProcessor.Components.Services
 
         private static MatchModel _InitialiseModel()
         {
-            var processPath = Process.GetCurrentProcess().MainModule!.FileName;
-            var json = Path.Combine(new FileInfo(processPath).Directory!.FullName, "Components", "Services", "MatchModel.json");
+            string dir = _GetProcessDirectoryPath();
+            var json = Path.Combine(dir, "Components", "Services", "MatchModel.json");
             return JsonHelper.Deserialise<MatchModel>(File.ReadAllText(json))
                 ?? throw new ApplicationException("Could not initialise model from json file");
+        }
+
+        private static void _WriteModel(MatchModel model)
+        {
+            var processPath = Process.GetCurrentProcess().MainModule!.FileName;
+            var outputPath = GetOutputPath();
+            var content = JsonHelper.Serialise(model, writeIndented: true);
+            File.WriteAllText(outputPath, content);
+
+            static string GetOutputPath()
+            {
+                var dir = new DirectoryInfo(_GetProcessDirectoryPath());
+                while (dir.Name != "CSharp")
+                {
+                    dir = dir.Parent!;
+                }
+                return Path.Combine(dir.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
+            }
+        }
+
+        private static string _GetProcessDirectoryPath()
+        {
+            var processPath = Process.GetCurrentProcess().MainModule!.FileName;
+            return new FileInfo(processPath).Directory!.FullName;
         }
     }
 

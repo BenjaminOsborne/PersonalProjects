@@ -32,5 +32,10 @@ namespace AccountProcessor.Components.Pages
         }
     }
 
-    public record TransactionRow(Transaction Transaction, SectionHeader? Section);
+    public record TransactionRow(Transaction Transaction, SectionHeader? Section)
+    {
+        public string? MatchOn { get; set; }
+        public string? OverrideDescription { get; set; }
+        public string? SelectionId { get; set; }
+    }
 }

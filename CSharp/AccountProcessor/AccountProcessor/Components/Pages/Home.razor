@@ -44,18 +44,50 @@
                     <th>Date</th>
                     <th>Description</th>
                     <th>Amount (£)</th>
+                    <th>Category</th>
+                    <th>Match On</th>
+                    <th>Description</th>
+                    <th>Match General</th>
+                    <th>Match Once</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var row in grp.Rows)
                 {
                     var tr = row.Transaction;
-                    var displayAmount = tr.Amount < 0 ? $"-£{-tr.Amount}" : $"£{tr.Amount}";
+                    var displayAmount = tr.Amount < 0 ? $"-£{-tr.Amount:F2}" : $"£{tr.Amount:F2}";
                     var styleColor = tr.Amount < 0 ? "color:red" : "color:black";
+
                     <tr>
                         <td class="fitwidth">@tr.Date.ToShortDateString()</td>
                         <td class="fitwidth">@tr.Description</td>
                         <td style="@styleColor">@displayAmount</td>
+
+                        <td>
+                            <select id="categoryID" value="Initial" @onchange="e => row.SelectionId = (string?)e.Value">
+                                <option value="0" selected>Choose Section</option>
+                                @if (AllSections.HasValue)
+                                {
+                                    foreach (var cat in AllSections)
+                                    {
+                                        <option value="@cat.id">@cat.display</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+
+                        <td>
+                            <input placeholder="Match on" @onchange="e => row.MatchOn = (string?)e.Value" />
+                        </td>
+                        <td>
+                            <input placeholder="Override Description" @onchange="e => row.OverrideDescription = (string?)e.Value" />
+                        </td>
+                        <td>
+                            <button @onclick="() => PerformMatch(row, addOnceOnly: false)">Add</button>
+                        </td>
+                        <td>
+                            <button @onclick="() => PerformMatch(row, addOnceOnly: true)">Add Once</button>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -64,20 +96,6 @@
 }
 
 <hr />
-
-<input placeholder="Something todo" />
-<button @onclick="AddItem">Add Item</button>
-
-<select id="categoryID" value="Initial" @onchange="x => OnSelectCategory(x)">
-    <option value="0" selected>Choose Section</option>
-    @if(AllSections.HasValue)
-    {
-        foreach (var cat in AllSections)
-        {
-            <option value="@cat.id">@cat.display</option>
-        }
-    }
-</select>
 
 @code
 {
@@ -89,25 +107,41 @@
 
     private ImmutableArray<(SectionHeader header, string display, string id)>? AllSections;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         var allData = Categoriser.GetSelectorData();
         AllSections = allData.Sections.Select(s => (
             header: s,
-            display: $"{s.Parent.Name}: {s.Name}",
+            display: _ToDisplay(s),
             id: Guid.NewGuid().ToString()))
             .ToImmutableArray();
+        return Task.CompletedTask;
     }
 
-    private async Task OnSelectCategory(ChangeEventArgs e)
-    {
-        var found = AllSections?.SingleOrDefault(x => x.id.Equals(e.Value));
-        await Task.Delay(10);
-    }
+    private static string _ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
 
-    private void AddItem()
+    private void PerformMatch(TransactionRow row, bool addOnceOnly)
     {
+        var found = AllSections?.SingleOrDefault(x => x.id == row.SelectionId);
+        var header = found?.header;
+        if (header == null)
+        {
+            return;
+        }
 
+        if (addOnceOnly)
+        {
+            Categoriser.MatchOnce(row.Transaction, header!, row.OverrideDescription);
+        }
+        else
+        {
+            if (row.MatchOn.IsNullOrEmpty())
+            {
+                return;
+            }
+
+            Categoriser.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription);
+        }
     }
 
     private async Task ReverseFile(InputFileChangeEventArgs e)
