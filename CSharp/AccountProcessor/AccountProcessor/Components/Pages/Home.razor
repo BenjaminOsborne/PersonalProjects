@@ -81,10 +81,6 @@
 
 @code
 {
-    private record TransactionBlock(string Display, ImmutableArray<TransactionRow> Rows);
-
-    private record TransactionRow(Transaction Transaction, SectionHeader? Section);
-
     /// <summary> Display message after "Reverse File" called </summary>
     private string? ReverseFileResult;
 
@@ -147,38 +143,12 @@
             var categorisationResult = Categoriser.Categorise(transactionResult.Result, DateOnly.FromDateTime(DateTime.UtcNow));
             CategorisedTransactionsResult = "Success!";
 
-            Transactions = _CreateBlocks(categorisationResult);
+            Transactions = TransactionBlock.CreateFromResult(categorisationResult);
         }
         else
         {
             CategorisedTransactionsResult = $"Failed: {transactionResult.Error}";
         }
-    }
-
-    private ImmutableArray<TransactionBlock> _CreateBlocks(CategorisationResult result)
-    {
-        var blocks = new List<TransactionBlock>();
-
-        var unmatchedTransactions = result.UnMatched.Select(x => new TransactionRow(x, null)).ToImmutableArray();
-        blocks.Add(new TransactionBlock("Uncategorised", unmatchedTransactions));
-
-        var matched = result.Matched
-            .Select(x =>
-            {
-                var section = x.SectionMatches.First().Section;
-                var category = section.Parent;
-                return (x.Transaction, x.SectionMatches, Section: section, Category: category, CategoryKey: category.Order);
-            })
-            .GroupBy(x => x.CategoryKey)
-            .Select(grp =>
-            {
-                var category = grp.First().Category;
-                var rows = grp.Select(t => new TransactionRow(t.Transaction, t.Section)).ToImmutableArray();
-                return new TransactionBlock(category.Name, rows);
-            }).ToImmutableArray();
-        blocks.AddRange(matched);
-
-        return blocks.ToImmutableArray();
     }
 
     /// <summary>
