@@ -40,7 +40,7 @@ namespace AccountProcessor.Components.Services
 
     public static class StringExtensions
     {
-        public static bool IsNullOrEmpty(this string s) => string.IsNullOrEmpty(s);
+        public static bool IsNullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
     }
 
     public static class EnumerableExtensions
@@ -70,6 +70,15 @@ namespace AccountProcessor.Components.Services
             }
             return new Partition<T> { PredicateTrue = predTrue.ToImmutable(), PredicateFalse = predFalse.ToImmutable() };
         }
+
+        public static IEnumerable<(T Value, int Index)> SelectWithIndexes<T>(this IEnumerable<T> items) =>
+            items.Select((x, nx) => (x, nx));
+
+        public static string ToJoinedString(this IEnumerable<string> items, string separator) =>
+            string.Join(separator, items);
+
+        public static string ToJoinedString<T>(this IEnumerable<T> items, string separator, Func<T, string> fnToString) =>
+            string.Join(separator, items.Select(fnToString));
     }
 
     public static class StreamExtensions

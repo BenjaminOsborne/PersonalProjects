@@ -8,14 +8,16 @@ namespace AccountProcessor.Components.Services
     public interface IExcelFileRunner
     {
         Task<WrappedResult<byte[]>> ReverseCsvTransactions(Stream inputCsv);
-        Task Categorise(Stream inputExcel);
+        Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactions(Stream inputExcel);
     }
 
     public class ExcelFileRunner : IExcelFileRunner
     {
-        private class CsvRow
+        private class TransactionRow
         {
-            [CsvHelper.Configuration.Attributes.Format("dd/MM/yyyy")]
+            public const string DateFormat = "dd/MM/yyyy";
+
+            [CsvHelper.Configuration.Attributes.Format(DateFormat)]
             public DateOnly Date { get; init; }
 
             public string Description { get; init; } = null!;
@@ -43,7 +45,7 @@ namespace AccountProcessor.Components.Services
             return WrappedResult.Create(resultBytes);
         }
 
-        private static WrappedResult<ImmutableArray<CsvRow>> _ExtractRows(Stream inputCsv)
+        private static WrappedResult<ImmutableArray<TransactionRow>> _ExtractRows(Stream inputCsv)
         {
             try
             {
@@ -54,9 +56,9 @@ namespace AccountProcessor.Components.Services
 
                 using var reader = new StreamReader(inputCsv);
                 using var csv = new CsvReader(reader, config);
-                var records = csv.GetRecords<CsvRow>().ToImmutableArray();
+                var records = csv.GetRecords<TransactionRow>().ToImmutableArray();
 
-                CsvRow? previous = null;
+                TransactionRow? previous = null;
                 for (int nx = 0; nx < records.Length; nx++)
                 {
                     var row = nx + 1;
@@ -93,33 +95,31 @@ namespace AccountProcessor.Components.Services
                 return Fail(ex.ToString());
             }
 
-            static WrappedResult<ImmutableArray<CsvRow>> Fail(string error) =>
-                WrappedResult.Fail<ImmutableArray<CsvRow>>(error);
+            static WrappedResult<ImmutableArray<TransactionRow>> Fail(string error) =>
+                WrappedResult.Fail<ImmutableArray<TransactionRow>>(error);
 
-            static WrappedResult<ImmutableArray<CsvRow>> FailOnRow(string error, int rowNumber) =>
-                WrappedResult.Fail<ImmutableArray<CsvRow>>($"{error}. Row: {rowNumber}");
+            static WrappedResult<ImmutableArray<TransactionRow>> FailOnRow(string error, int rowNumber) =>
+                WrappedResult.Fail<ImmutableArray<TransactionRow>>($"{error}. Row: {rowNumber}");
         }
 
-        private static async Task<byte[]> _WriteRowsToExcel(ImmutableArray<CsvRow> allRows)
+        private static readonly ImmutableArray<string> _expectedHeaders = ["Date", "Description", "Type", "Money In", "Money Out", "Balance"];
+
+        private static async Task<byte[]> _WriteRowsToExcel(ImmutableArray<TransactionRow> allRows)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             var excel = new ExcelPackage();
 
             var added = excel.Workbook.Worksheets.Add("Default");
 
-            var col = 0;
-            added.Cells[1, ++col].Value = "Date";
-            added.Cells[1, ++col].Value = "Description";
-            added.Cells[1, ++col].Value = "Type";
-            added.Cells[1, ++col].Value = "Money In";
-            added.Cells[1, ++col].Value = "Money Out";
-            added.Cells[1, ++col].Value = "Balance";
+            _expectedHeaders
+                .SelectWithIndexes()
+                .ForEach(p => added.Cells[1, p.Index + 1].Value = p.Value);
 
             for (int r = 0; r < allRows.Length; r++)
             {
                 var row = allRows[r];
                 var rowNum = r + 2;
-                col = 0;
+                var col = 0;
                 added.Cells[rowNum, ++col].Value = row.Date.ToString("dd/MM/yyyy");
                 added.Cells[rowNum, ++col].Value = row.Description;
                 added.Cells[rowNum, ++col].Value = row.Type;
@@ -134,7 +134,7 @@ namespace AccountProcessor.Components.Services
             return await excel.GetAsByteArrayAsync();
         }
 
-        public async Task Categorise(Stream inputExcel)
+        public async Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactions(Stream inputExcel)
         {
             try
             {
@@ -143,13 +143,47 @@ namespace AccountProcessor.Components.Services
                 await excel.LoadAsync(inputExcel);
                 
                 var found = excel.Workbook.Worksheets.Single();
-                var rows = found.Rows.ToArray();
-                var l = rows.Length;
+
+                var titles = Enumerable.Range(1, 6).Select(col => found.Cells[1, col].Value).ToArray();
+                if(!titles.SequenceEqual(_expectedHeaders))
+                {
+                    return FailWith($"Title row should be: {_expectedHeaders.ToJoinedString(",")}");
+                }
+
+                var transactions = new List<Transaction>();
+
+                //found.Row
+
+                foreach (var rowNum in Enumerable.Range(2, found.Dimension.Rows - 1))
+                {
+                    var date = _TryParseDate(found.Cells[rowNum, 1].Value);
+                    var description = found.Cells[rowNum, 2].Value?.ToString();
+                    var moneyIn = _TryParseDecimal(found.Cells[rowNum, 4].Value);
+                    var moneyOut = _TryParseDecimal(found.Cells[rowNum, 5].Value);
+                    if (date.HasValue == false || description.IsNullOrEmpty() || (moneyIn.HasValue == false && moneyOut.HasValue == false))
+                    {
+                        return FailWith($"Row {rowNum} has invalid data");
+                    }
+                    transactions.Add(new Transaction(date.Value, description!, moneyIn ?? (-moneyOut!.Value)));
+                }
+
+                var ordered = transactions.OrderBy(x => x.Date).ToImmutableArray();
+                return WrappedResult.Create(ordered);
+                
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                return FailWith($"Exception: {ex}");
             }
+
+            static WrappedResult<ImmutableArray<Transaction>> FailWith(string error) =>
+                WrappedResult.Fail<ImmutableArray<Transaction>>(error);
         }
+
+        private static DateOnly? _TryParseDate(object val) =>
+            DateOnly.TryParseExact(val?.ToString(), TransactionRow.DateFormat, out var date) ? date : null;
+
+        private static decimal? _TryParseDecimal(object val) =>
+            decimal.TryParse(val?.ToString(), out var moneyIn) ? moneyIn : null;
     }
 }

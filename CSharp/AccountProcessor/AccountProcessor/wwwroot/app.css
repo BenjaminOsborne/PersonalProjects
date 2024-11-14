@@ -42,10 +42,16 @@ h1:focus {
     color: white;
 }
 
-    .blazor-error-boundary::after {
+.blazor-error-boundary::after {
         content: "An error has occurred."
     }
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
+}
+
+/* This enables table columns to be auto-fitted on width. Note: ensure the table width is not 100%. */
+td.fitwidth {
+    width: 1px;
+    white-space: nowrap;
 }
