@@ -6,7 +6,7 @@ namespace AccountProcessor.Components.Services
 {
     public interface ITransactionCategoriser
     {
-
+        SelectorData GetSelectorData();
     }
 
     public class TransactionCategoriser : ITransactionCategoriser

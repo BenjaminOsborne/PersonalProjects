@@ -1,4 +1,6 @@
 ﻿@using System.IO
+@using System.Collections.Immutable;
+@using AccountProcessor.Components.Services;
 @page "/"
 @rendermode InteractiveServer
 @inject Services.IExcelFileRunner ExcelFileRunner;
@@ -34,20 +36,33 @@
 <input placeholder="Something todo" />
 <button @onclick="AddItem">Add Item</button>
 <select id="categoryID" value="Initial" @onchange="OnChangeItem">
-    <option value="0" selected>Choose Category</option>
-    <option value="1" selected>Value 1</option>
-    <option value="2" selected>Value 2</option>
-    @* @foreach (Category category in categories)
+    <option value="0" selected>Choose Section</option>
+    @if(AllSections.HasValue)
     {
-        <option value="@category.Name">@category.Name</option>
-    } *@
+        foreach (var cat in AllSections)
+        {
+            <option value="@cat.id">@cat.display</option>
+        }
+    }
 </select>
 
 @code
 {
+    private ImmutableArray<(SectionHeader header, string display, string id)>? AllSections;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var allData = Categoriser.GetSelectorData();
+        AllSections = allData.Sections.Select(x => (
+            header: x,
+            display: $"{x.Parent.Name}: {x.Name}",
+            id: Guid.NewGuid().ToString()))
+            .ToImmutableArray();
+    }
+
     private async Task OnChangeItem(ChangeEventArgs e)
     {
-        //var model = Categoriser;
+        var found = AllSections?.SingleOrDefault(x => x.id.Equals(e.Value));
         await Task.Delay(10);
     }
 
