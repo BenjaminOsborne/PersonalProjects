@@ -35,7 +35,8 @@
 
 <input placeholder="Something todo" />
 <button @onclick="AddItem">Add Item</button>
-<select id="categoryID" value="Initial" @onchange="OnChangeItem">
+
+<select id="categoryID" value="Initial" @onchange="x => OnChangeItem(x)">
     <option value="0" selected>Choose Section</option>
     @if(AllSections.HasValue)
     {
@@ -53,9 +54,9 @@
     protected override async Task OnInitializedAsync()
     {
         var allData = Categoriser.GetSelectorData();
-        AllSections = allData.Sections.Select(x => (
-            header: x,
-            display: $"{x.Parent.Name}: {x.Name}",
+        AllSections = allData.Sections.Select(s => (
+            header: s,
+            display: $"{s.Parent.Name}: {s.Name}",
             id: Guid.NewGuid().ToString()))
             .ToImmutableArray();
     }
