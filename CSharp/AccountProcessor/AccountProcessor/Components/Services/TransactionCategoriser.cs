@@ -7,6 +7,7 @@ namespace AccountProcessor.Components.Services
     public interface ITransactionCategoriser
     {
         SelectorData GetSelectorData();
+        CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly now);
     }
 
     public class TransactionCategoriser : ITransactionCategoriser

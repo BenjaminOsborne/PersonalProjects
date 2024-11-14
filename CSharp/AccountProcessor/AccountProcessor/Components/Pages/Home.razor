@@ -18,7 +18,7 @@
     <strong>Reverse File: </strong>
     <InputFile OnChange="@ReverseFile" accept=".csv" />
 </button>
-<p role="status"><strong>Result</strong>: @reverseFileResult</p>
+<p role="status"><strong>Result</strong>: @ReverseFileResult</p>
 
 <p/>
 
@@ -30,30 +30,37 @@
     <strong>Categorise: </strong>
     <InputFile OnChange="@Categorise" accept=".xlsx" />
 </button>
+<p role="status"><strong>Result</strong>: @CategorisedTransactionsResult</p>
 
-@if (LoadedTansactions.HasValue)
+@if (Transactions.HasValue)
 {
-    <table class="table" style="width:auto">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Amount (£)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var tr in LoadedTansactions)
-            {
-                var displayAmount = tr.Amount < 0 ? $"-£{-tr.Amount}" : $"£{tr.Amount}";
-                var styleColor = tr.Amount < 0 ? "color:red" : "color:black";
+    foreach(var grp in Transactions.Value)
+    {
+        <p role="status"><strong>@grp.Display</strong></p>
+
+        <table class="table" style="width:auto">
+            <thead>
                 <tr>
-                    <td class="fitwidth">@tr.Date.ToShortDateString()</td>
-                    <td class="fitwidth">@tr.Description</td>
-                    <td style="@styleColor">@displayAmount</td>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount (£)</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var row in grp.Rows)
+                {
+                    var tr = row.Transaction;
+                    var displayAmount = tr.Amount < 0 ? $"-£{-tr.Amount}" : $"£{tr.Amount}";
+                    var styleColor = tr.Amount < 0 ? "color:red" : "color:black";
+                    <tr>
+                        <td class="fitwidth">@tr.Date.ToShortDateString()</td>
+                        <td class="fitwidth">@tr.Description</td>
+                        <td style="@styleColor">@displayAmount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 }
 
 <hr />
@@ -61,7 +68,7 @@
 <input placeholder="Something todo" />
 <button @onclick="AddItem">Add Item</button>
 
-<select id="categoryID" value="Initial" @onchange="x => OnChangeItem(x)">
+<select id="categoryID" value="Initial" @onchange="x => OnSelectCategory(x)">
     <option value="0" selected>Choose Section</option>
     @if(AllSections.HasValue)
     {
@@ -74,7 +81,15 @@
 
 @code
 {
-    private ImmutableArray<Transaction>? LoadedTansactions;
+    private record TransactionBlock(string Display, ImmutableArray<TransactionRow> Rows);
+
+    private record TransactionRow(Transaction Transaction, SectionHeader? Section);
+
+    /// <summary> Display message after "Reverse File" called </summary>
+    private string? ReverseFileResult;
+
+    private string? CategorisedTransactionsResult;
+    private ImmutableArray<TransactionBlock>? Transactions;
 
     private ImmutableArray<(SectionHeader header, string display, string id)>? AllSections;
 
@@ -88,7 +103,7 @@
             .ToImmutableArray();
     }
 
-    private async Task OnChangeItem(ChangeEventArgs e)
+    private async Task OnSelectCategory(ChangeEventArgs e)
     {
         var found = AllSections?.SingleOrDefault(x => x.id.Equals(e.Value));
         await Task.Delay(10);
@@ -99,18 +114,16 @@
 
     }
 
-    private string? reverseFileResult;
-
     private async Task ReverseFile(InputFileChangeEventArgs e)
     {
-        reverseFileResult = "Running...";
+        ReverseFileResult = "Running...";
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         var result = await ExcelFileRunner.ReverseCsvTransactions(inputStream);
 
         if (result.IsSuccess)
         {
-            reverseFileResult = "Success!";
+            ReverseFileResult = "Success!";
 
             await JS.InvokeAsync<object>(
                 "jsSaveAsFile",
@@ -119,20 +132,53 @@
         }
         else
         {
-            reverseFileResult = $"Failed: {result.Error}";
+            ReverseFileResult = $"Failed: {result.Error}";
         }
     }
 
     private async Task Categorise(InputFileChangeEventArgs e)
     {
-        LoadedTansactions = null;
+        Transactions = null;
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
-        var result = await ExcelFileRunner.LoadTransactions(inputStream);
-        if (result.IsSuccess)
+        var transactionResult = await ExcelFileRunner.LoadTransactions(inputStream);
+        if (transactionResult.IsSuccess)
         {
-            LoadedTansactions = result.Result;
+            var categorisationResult = Categoriser.Categorise(transactionResult.Result, DateOnly.FromDateTime(DateTime.UtcNow));
+            CategorisedTransactionsResult = "Success!";
+
+            Transactions = _CreateBlocks(categorisationResult);
         }
+        else
+        {
+            CategorisedTransactionsResult = $"Failed: {transactionResult.Error}";
+        }
+    }
+
+    private ImmutableArray<TransactionBlock> _CreateBlocks(CategorisationResult result)
+    {
+        var blocks = new List<TransactionBlock>();
+
+        var unmatchedTransactions = result.UnMatched.Select(x => new TransactionRow(x, null)).ToImmutableArray();
+        blocks.Add(new TransactionBlock("Uncategorised", unmatchedTransactions));
+
+        var matched = result.Matched
+            .Select(x =>
+            {
+                var section = x.SectionMatches.First().Section;
+                var category = section.Parent;
+                return (x.Transaction, x.SectionMatches, Section: section, Category: category, CategoryKey: category.Order);
+            })
+            .GroupBy(x => x.CategoryKey)
+            .Select(grp =>
+            {
+                var category = grp.First().Category;
+                var rows = grp.Select(t => new TransactionRow(t.Transaction, t.Section)).ToImmutableArray();
+                return new TransactionBlock(category.Name, rows);
+            }).ToImmutableArray();
+        blocks.AddRange(matched);
+
+        return blocks.ToImmutableArray();
     }
 
     /// <summary>
