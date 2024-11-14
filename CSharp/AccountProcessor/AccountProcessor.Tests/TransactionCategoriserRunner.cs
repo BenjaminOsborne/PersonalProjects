@@ -11,6 +11,10 @@ namespace AccountProcessor.Tests
         {
             var outputPath = _GetOutputPath();
             var model = _GetMatchModel();
+
+            //Add example for Income<>Salary
+            model.Categories[0].Sections[0].Matches.Add(new Match("Accurx Limited Pay", "Accurx Salary", null));
+
             var content = JsonHelper.Serialise(model, writeIndented: true);
             File.WriteAllText(outputPath, content);
 

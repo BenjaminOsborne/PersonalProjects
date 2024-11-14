@@ -211,13 +211,22 @@ namespace AccountProcessor.Components.Services
 
     public class Match
     {
-        public string Pattern { get; init; }
+        public static Match FromPatternOnly(string pattern) => new (pattern, null, null);
+
+        public Match(string pattern, string? overrideDescription, DateOnly? exactDate)
+        {
+            Pattern = pattern;
+            OverrideDescription = overrideDescription;
+            ExactDate = exactDate;
+        }
+
+        public string Pattern { get; }
 
         /// <summary> If left null, <see cref="Pattern"/> used for the Transaction Description. Else this is used. </summary>
-        public string? OverrideDescription { get; init; }
+        public string? OverrideDescription { get; }
 
         /// <summary> If set - only applies to specific transaction. <see cref="Pattern"/> should be exact Transaction title at this point. </summary>
-        public DateOnly? ExactDate { get; init; }
+        public DateOnly? ExactDate { get; }
 
         /// <remarks> "False" is before "True" for OrderBy. Prefer overriden dates. </remarks>
         public IComparable OrderKey => (!ExactDate.HasValue, Pattern.Length);

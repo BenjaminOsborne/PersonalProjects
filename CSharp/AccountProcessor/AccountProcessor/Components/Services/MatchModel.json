@@ -16,7 +16,14 @@
             "Order": 0,
             "Name": "Salary"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "ACCURX LIMITED PAY",
+              "OverrideDescription": "Accurx Pay",
+              "ExactDate": null,
+              "OrderKey": {}
+            }
+          ]
         }
       ]
     },
