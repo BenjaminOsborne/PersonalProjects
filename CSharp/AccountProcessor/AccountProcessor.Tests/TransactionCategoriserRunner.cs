@@ -6,7 +6,7 @@ namespace AccountProcessor.Tests
 {
     public class TransactionCategoriserRunner
     {
-        [Test]
+        [Test, Ignore("ONLY RUN ONCE BEFORE LIVE EDITING MODEL")]
         public void BootstrapJson()
         {
             var outputPath = _GetOutputPath();
