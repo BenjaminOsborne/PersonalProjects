@@ -18,8 +18,8 @@
           },
           "Matches": [
             {
-              "Pattern": "ACCURX LIMITED PAY",
-              "OverrideDescription": "Accurx Pay",
+              "Pattern": "*ACCURX LIMITED PAY",
+              "OverrideDescription": "Accurx Salary",
               "ExactDate": null
             }
           ]
@@ -291,7 +291,7 @@
           },
           "Matches": [
             {
-              "Pattern": "amazon.co.uk",
+              "Pattern": "amazon.co.uk*",
               "OverrideDescription": "Amazon",
               "ExactDate": null
             },
