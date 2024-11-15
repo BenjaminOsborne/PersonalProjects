@@ -169,6 +169,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "TESCO STORES*",
+              "OverrideDescription": "Tesco Store",
+              "ExactDate": null
+            },
+            {
               "Pattern": "SAINSBURY S S/MKTS",
               "OverrideDescription": "Sainsburys",
               "ExactDate": null
@@ -227,6 +232,11 @@
             "Name": "Drink"
           },
           "Matches": [
+            {
+              "Pattern": "Grocer",
+              "OverrideDescription": null,
+              "ExactDate": "2024-09-27"
+            },
             {
               "Pattern": "CAFFE NERO*",
               "OverrideDescription": "Cafe Nero",
@@ -335,7 +345,13 @@
             "Order": 2,
             "Name": "Shops"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "CARD FACTORY",
+              "OverrideDescription": "Card Factory",
+              "ExactDate": null
+            }
+          ]
         }
       ]
     },
