@@ -164,6 +164,11 @@
           },
           "Matches": [
             {
+              "Pattern": "LIDL GB*",
+              "OverrideDescription": "Lidl",
+              "ExactDate": null
+            },
+            {
               "Pattern": "TESCO STORES",
               "OverrideDescription": "Tesco",
               "ExactDate": null
@@ -210,12 +215,17 @@
           },
           "Matches": [
             {
-              "Pattern": "Nazrul Brick Lane",
+              "Pattern": "CAMINO",
               "OverrideDescription": null,
               "ExactDate": null
             },
             {
-              "Pattern": "CAMINO",
+              "Pattern": "CHAI YO",
+              "OverrideDescription": "Chai Yo",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "Nazrul Brick Lane",
               "OverrideDescription": null,
               "ExactDate": null
             }
@@ -240,6 +250,11 @@
             {
               "Pattern": "CAFFE NERO*",
               "OverrideDescription": "Cafe Nero",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "SUDAWK.CO.UK",
+              "OverrideDescription": "Sudawk.co.uk",
               "ExactDate": null
             }
           ]
@@ -319,6 +334,11 @@
             {
               "Pattern": "amazon.co.uk*",
               "OverrideDescription": "Amazon",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "WWW.ARGOS.CO.UK",
+              "OverrideDescription": "Argos.co.uk",
               "ExactDate": null
             }
           ]
