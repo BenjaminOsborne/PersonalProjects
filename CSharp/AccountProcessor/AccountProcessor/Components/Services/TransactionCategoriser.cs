@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace AccountProcessor.Components.Services
@@ -300,6 +301,8 @@ namespace AccountProcessor.Components.Services
 
     public class Match
     {
+        private readonly Lazy<System.Text.RegularExpressions.Regex> _regex;
+
         public static Match FromPatternOnly(string pattern) => new (pattern, null, null);
 
         public Match(string pattern, string? overrideDescription, DateOnly? exactDate)
@@ -307,6 +310,7 @@ namespace AccountProcessor.Components.Services
             Pattern = pattern;
             OverrideDescription = overrideDescription;
             ExactDate = exactDate;
+            _regex = LazyHelper.Create(() => _BuildRegex(pattern));
         }
 
         public string Pattern { get; }
@@ -322,8 +326,7 @@ namespace AccountProcessor.Components.Services
 
         public MatchType Matches(Transaction trans)
         {
-            //TODO: Consider handling "*" wild cards (or similar)
-            var doesMatch = trans.Description.ToLower().Contains(Pattern.ToLower());
+            var doesMatch = _regex.Value.IsMatch(trans.Description.ToLower());
             if (!doesMatch)
             {
                 return MatchType.NoMatch;
@@ -331,6 +334,15 @@ namespace AccountProcessor.Components.Services
             return ExactDate.HasValue && ExactDate != trans.Date
                 ? MatchType.MatchPreviousTransaction
                 : MatchType.MatchExact;
+        }
+
+        private static System.Text.RegularExpressions.Regex _BuildRegex(string pattern)
+        {
+            var builder = new StringBuilder();
+            builder.Append("^");
+            builder.Append(pattern.ToLower().Replace("*", ".*"));
+            builder.Append("$");
+            return new System.Text.RegularExpressions.Regex(builder.ToString());
         }
     }
 }
