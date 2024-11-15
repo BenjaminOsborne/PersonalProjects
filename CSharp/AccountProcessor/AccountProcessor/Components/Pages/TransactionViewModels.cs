@@ -35,10 +35,13 @@ namespace AccountProcessor.Components.Pages
                     return (x.Transaction, x.SectionMatches, Section: section, Category: category, CategoryKey: category.Order);
                 })
                 .GroupBy(x => x.CategoryKey)
+                .OrderBy(x => x.Key)
                 .Select(grp =>
                 {
                     var category = grp.First().Category;
                     var rows = grp
+                        .OrderBy(x => x.Section.Order)
+                        .ThenBy(x => x.Transaction.Date)
                         .Select(t => new TransactionRow(t.Transaction, t.Section))
                         .ToImmutableArray();
                     return new TransactionBlock(category.Name, IsUnmatched: false, rows);

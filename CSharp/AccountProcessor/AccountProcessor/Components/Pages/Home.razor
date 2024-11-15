@@ -66,6 +66,11 @@
         <table class="table" style="width:auto">
             <thead>
                 <tr>
+                    @if (!block.IsUnmatched)
+                    {
+                        <th>Section</th>
+                    }
+
                     <th>Date</th>
                     <th>Description</th>
                     <th>Amount (£)</th>
@@ -88,6 +93,12 @@
                     var styleColor = tr.Amount < 0 ? "color:red" : "color:black";
 
                     <tr>
+
+                        @if (!block.IsUnmatched)
+                        {
+                            <td class="fitwidth">@row.Section?.Name</td>
+                        }
+
                         <td class="fitwidth">@tr.Date.ToShortDateString()</td>
                         <td class="fitwidth">@tr.Description</td>
                         <td style="@styleColor">@displayAmount</td>
