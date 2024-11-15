@@ -103,6 +103,11 @@
               "Pattern": "Spotify Limited",
               "OverrideDescription": "Spotify",
               "ExactDate": null
+            },
+            {
+              "Pattern": "OCTOPUS ENERGY*",
+              "OverrideDescription": "Octopus Energy",
+              "ExactDate": null
             }
           ]
         }
@@ -297,6 +302,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "SAINSBURYS S/MKTS",
+              "OverrideDescription": "Sainsburys",
+              "ExactDate": null
+            },
+            {
               "Pattern": "SAINSBURY S S/MKTS",
               "OverrideDescription": "Sainsburys",
               "ExactDate": null
@@ -396,6 +406,16 @@
               "ExactDate": null
             },
             {
+              "Pattern": "COSTA COFFEE*",
+              "OverrideDescription": "Costa Coffee",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "STARBUCKS COFFEE",
+              "OverrideDescription": "Starbucks",
+              "ExactDate": null
+            },
+            {
               "Pattern": "SumUp  *Boathouse",
               "OverrideDescription": "Boathouse",
               "ExactDate": null
@@ -403,6 +423,11 @@
             {
               "Pattern": "CHRISTIAN CONF TRU",
               "OverrideDescription": "Christian Conference",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "SQ *NOTTINGHAM CAS",
+              "OverrideDescription": "Casuals Bar",
               "ExactDate": null
             }
           ]
@@ -521,6 +546,11 @@
           },
           "Matches": [
             {
+              "Pattern": "I-F TFR 97891390",
+              "OverrideDescription": "Fraud Rebate",
+              "ExactDate": "2024-11-04"
+            },
+            {
               "Pattern": "AMZNMktplace*",
               "OverrideDescription": "Amazon Marketplace",
               "ExactDate": null
@@ -533,6 +563,11 @@
             {
               "Pattern": "WWW.ARGOS.CO.UK",
               "OverrideDescription": "Argos.co.uk",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "PAYPAL PAYMENT*",
+              "OverrideDescription": "Paypal",
               "ExactDate": null
             }
           ]
@@ -563,6 +598,11 @@
             {
               "Pattern": "CARD FACTORY",
               "OverrideDescription": "Card Factory",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "HOLLINS BUILDING S",
+              "OverrideDescription": "Hollins Building Supplies",
               "ExactDate": null
             }
           ]
