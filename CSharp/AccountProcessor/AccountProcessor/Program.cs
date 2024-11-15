@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<IExcelFileRunner, ExcelFileRunner>();
 builder.Services.AddScoped<ITransactionCategoriser, TransactionCategoriser>();
 
