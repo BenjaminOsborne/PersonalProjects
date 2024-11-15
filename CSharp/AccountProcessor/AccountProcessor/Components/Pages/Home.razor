@@ -126,7 +126,7 @@
 
     private static string _ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
 
-    private void PerformMatch(TransactionRow row, bool addOnceOnly)
+    private async Task PerformMatch(TransactionRow row, bool addOnceOnly)
     {
         LastActionError = null;
 
@@ -154,6 +154,11 @@
         }
         if (result.IsSuccess)
         {
+            //Triggers total table refresh - task yield required to enable re-render
+            Transactions = ImmutableArray<TransactionBlock>.Empty;
+            StateHasChanged();
+            await Task.Yield();
+
             _RefreshCategorisedTransactions();
         }
         else

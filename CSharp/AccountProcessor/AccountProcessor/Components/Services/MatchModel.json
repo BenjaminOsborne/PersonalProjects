@@ -55,7 +55,14 @@
             "Order": 1,
             "Name": "Standing Order"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "Netflix.com",
+              "OverrideDescription": "Netflix",
+              "ExactDate": null,
+              "OrderKey": {}
+            }
+          ]
         }
       ]
     },
@@ -164,6 +171,18 @@
               "OverrideDescription": "Sainsburys",
               "ExactDate": null,
               "OrderKey": {}
+            },
+            {
+              "Pattern": "CO-OP GROUP 011001",
+              "OverrideDescription": "Co-op",
+              "ExactDate": null,
+              "OrderKey": {}
+            },
+            {
+              "Pattern": "TESCO STORES",
+              "OverrideDescription": "Tesco",
+              "ExactDate": null,
+              "OrderKey": {}
             }
           ]
         }
@@ -185,7 +204,14 @@
             "Order": 0,
             "Name": "Restaurant"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "Nazrul Brick Lane",
+              "OverrideDescription": null,
+              "ExactDate": null,
+              "OrderKey": {}
+            }
+          ]
         },
         {
           "Section": {
