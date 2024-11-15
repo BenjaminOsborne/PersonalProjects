@@ -164,6 +164,11 @@
           },
           "Matches": [
             {
+              "Pattern": "TESCO STORES",
+              "OverrideDescription": "Tesco",
+              "ExactDate": null
+            },
+            {
               "Pattern": "SAINSBURY S S/MKTS",
               "OverrideDescription": "Sainsburys",
               "ExactDate": null
@@ -174,8 +179,8 @@
               "ExactDate": null
             },
             {
-              "Pattern": "TESCO STORES",
-              "OverrideDescription": "Tesco",
+              "Pattern": "HERON FOODS BILBOR",
+              "OverrideDescription": "Heron Foods",
               "ExactDate": null
             }
           ]
@@ -221,7 +226,13 @@
             "Order": 1,
             "Name": "Drink"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "CAFFE NERO*",
+              "OverrideDescription": "Cafe Nero",
+              "ExactDate": null
+            }
+          ]
         }
       ]
     },
@@ -291,13 +302,13 @@
           },
           "Matches": [
             {
-              "Pattern": "amazon.co.uk*",
-              "OverrideDescription": "Amazon",
+              "Pattern": "AMZNMktplace*",
+              "OverrideDescription": "Amazon Marketplace",
               "ExactDate": null
             },
             {
-              "Pattern": "AMZNMktplace*",
-              "OverrideDescription": "Amazon Marketplace",
+              "Pattern": "amazon.co.uk*",
+              "OverrideDescription": "Amazon",
               "ExactDate": null
             }
           ]
