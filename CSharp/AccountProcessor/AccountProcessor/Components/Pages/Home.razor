@@ -146,13 +146,22 @@
     {
         var now = DateTime.Now;
         Month = new DateOnly(now.Year, now.Month, 1).AddMonths(-1);
+        _RefreshCategories();
 
-        var allData = Categoriser.GetSelectorData();
+        return Task.CompletedTask;
+    }
+
+    private void _RefreshCategories()
+    {
+        if (Month.HasValue == false)
+        {
+            return;
+        }
+        var allData = Categoriser.GetSelectorData(Month!.Value);
         Categories = allData.Categories;
         AllSections = allData.Sections
             .Select(s => new SectionSelectorRow(s, _ToDisplay(s), Guid.NewGuid().ToString())) //Arbitrary Id
             .ToImmutableArray();
-        return Task.CompletedTask;
 
         static string _ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
     }
@@ -162,8 +171,15 @@
         if (DateOnly.TryParseExact(yearAndMonth, "yyyy-MM", out var parsed))
         {
             Month = parsed;
-            _RefreshCategorisedTransactions();
+
+            _RefreshCategoriesAndTransactions();
         }
+    }
+
+    private void _RefreshCategoriesAndTransactions()
+    {
+        _RefreshCategories();
+        _RefreshCategorisedTransactions();
     }
 
     private void CreateNewSection()
@@ -174,6 +190,8 @@
             return;
         }
         Categoriser.AddSection(category, NewSectionName!, matchMonthOnly: Month);
+
+        _RefreshCategoriesAndTransactions();
 
         NewSectionCategoryName = null;
         NewSectionName = null;

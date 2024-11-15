@@ -7,7 +7,7 @@ namespace AccountProcessor.Components.Services
 {
     public interface ITransactionCategoriser
     {
-        SelectorData GetSelectorData();
+        SelectorData GetSelectorData(DateOnly month);
         CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month);
 
         WrappedResult<SectionHeader> AddSection(CategoryHeader categoryHeader, string sectionName, DateOnly? matchMonthOnly);
@@ -25,7 +25,7 @@ namespace AccountProcessor.Components.Services
         /// </summary>
         public static readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(_InitialiseModel);
 
-        public SelectorData GetSelectorData()
+        public SelectorData GetSelectorData(DateOnly month)
         {
             var model = _singleModel.Value;
             var categories = model.Categories
@@ -35,6 +35,7 @@ namespace AccountProcessor.Components.Services
             var sections = model.Categories
                 .SelectMany(x => x.Sections)
                 .Select(x => x.Section)
+                .Where(x => x.Month == null || x.Month == month)
                 .OrderBy(x => x.Parent.Order)
                 .ThenBy(x => x.Order)
                 .ToImmutableArray();
