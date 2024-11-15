@@ -12,11 +12,18 @@ namespace AccountProcessor.Components.Services
             new WrappedResult<T> { Error = error };
     }
 
-    public class WrappedResult<T>
+    public class Result
     {
         public bool IsSuccess { get; init; }
-        public T? Result { get; init; }
         public string? Error { get; init; }
+
+        public static Result Success { get; } = new Result { IsSuccess = true };
+        public static Result Fail(string error) => new Result { Error = error };
+    }
+
+    public class WrappedResult<T> : Result
+    {
+        public T? Result { get; init; }
 
         public WrappedResult<TMap> MapFail<TMap>() =>
             !IsSuccess

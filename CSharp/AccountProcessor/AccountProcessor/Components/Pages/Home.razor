@@ -101,8 +101,10 @@
 {
     /// <summary> Display message after "Reverse File" called </summary>
     private string? ReverseFileResult;
-
     private string? CategorisedTransactionsResult;
+    private string? LastActionError;
+
+    private ImmutableArray<Transaction>? LoadedTransactions;
     private ImmutableArray<TransactionBlock>? Transactions;
 
     private ImmutableArray<(SectionHeader header, string display, string id)>? AllSections;
@@ -122,25 +124,37 @@
 
     private void PerformMatch(TransactionRow row, bool addOnceOnly)
     {
+        LastActionError = null;
+
         var found = AllSections?.SingleOrDefault(x => x.id == row.SelectionId);
         var header = found?.header;
         if (header == null)
         {
+            LastActionError = "Could not find Section";
             return;
         }
 
+        Result result;
         if (addOnceOnly)
         {
-            Categoriser.MatchOnce(row.Transaction, header!, row.OverrideDescription);
+            result = Categoriser.MatchOnce(row.Transaction, header!, row.OverrideDescription);
         }
         else
         {
             if (row.MatchOn.IsNullOrEmpty())
             {
+                LastActionError = "Match On must be defined";
                 return;
             }
-
-            Categoriser.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription);
+            result = Categoriser.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription);
+        }
+        if (result.IsSuccess)
+        {
+            _RefreshCategorisedTransactions();
+        }
+        else
+        {
+            LastActionError = result.Error;
         }
     }
 
@@ -168,21 +182,32 @@
 
     private async Task Categorise(InputFileChangeEventArgs e)
     {
+        LoadedTransactions = null;
         Transactions = null;
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         var transactionResult = await ExcelFileRunner.LoadTransactions(inputStream);
         if (transactionResult.IsSuccess)
         {
-            var categorisationResult = Categoriser.Categorise(transactionResult.Result, DateOnly.FromDateTime(DateTime.UtcNow));
             CategorisedTransactionsResult = "Success!";
 
-            Transactions = TransactionBlock.CreateFromResult(categorisationResult);
+            LoadedTransactions = transactionResult.Result;
+            _RefreshCategorisedTransactions();
         }
         else
         {
             CategorisedTransactionsResult = $"Failed: {transactionResult.Error}";
         }
+    }
+
+    private void _RefreshCategorisedTransactions()
+    {
+        if (LoadedTransactions.HasValue == false)
+        {
+            return;
+        }
+        var categorisationResult = Categoriser.Categorise(LoadedTransactions!.Value, DateOnly.FromDateTime(DateTime.UtcNow));
+        Transactions = TransactionBlock.CreateFromResult(categorisationResult);
     }
 
     /// <summary>

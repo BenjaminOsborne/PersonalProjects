@@ -131,7 +131,14 @@
             "Order": 2,
             "Name": "Exercise"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "CLR*FIT2GO PHYSIO",
+              "OverrideDescription": "FIT2GO PHYSIO",
+              "ExactDate": "2024-09-25",
+              "OrderKey": {}
+            }
+          ]
         }
       ]
     },
@@ -235,7 +242,14 @@
             "Order": 0,
             "Name": "Online"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "amazon.co.uk",
+              "OverrideDescription": null,
+              "ExactDate": null,
+              "OrderKey": {}
+            }
+          ]
         },
         {
           "Section": {

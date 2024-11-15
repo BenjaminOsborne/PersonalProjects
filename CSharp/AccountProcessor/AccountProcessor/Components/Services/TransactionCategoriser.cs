@@ -9,8 +9,8 @@ namespace AccountProcessor.Components.Services
         SelectorData GetSelectorData();
         CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly now);
 
-        void ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription);
-        void MatchOnce(Transaction transaction, SectionHeader header, string? overrideDescription);
+        Result ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription);
+        Result MatchOnce(Transaction transaction, SectionHeader header, string? overrideDescription);
     }
 
     public class TransactionCategoriser : ITransactionCategoriser
@@ -94,44 +94,40 @@ namespace AccountProcessor.Components.Services
             return WrappedResult.Create(created);
         }
 
-        //public WrappedResult<SectionMatches> AddMatch(CategoryHeader header, Block section, Match match)
-        public void ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription)
+        public Result ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription)
         {
             var match = new Match(matchOn, overrideDescription, null);
-            _ApplyMatch(transaction, section, match);
+            return _ApplyMatch(transaction, section, match);
         }
 
-        public void MatchOnce(Transaction transaction, SectionHeader section, string? overrideDescription)
+        public Result MatchOnce(Transaction transaction, SectionHeader section, string? overrideDescription)
         {
             var match = new Match(transaction.Description, overrideDescription, transaction.Date);
-            _ApplyMatch(transaction, section, match);
+            return _ApplyMatch(transaction, section, match);
         }
 
-        private static void _ApplyMatch(Transaction transaction, SectionHeader section, Match match)
+        private static Result _ApplyMatch(Transaction transaction, SectionHeader section, Match match)
         {
             var category = _FindModelHeaderFor(section.Parent);
             if (category == null)
             {
-                //return WrappedResult.Fail<SectionMatches>($"Could not find matching Category for: {header.Name}");
-                return;
+                return Result.Fail($"Could not find matching Category for: {section.Name}");
             }
             var found = category.Sections.FirstOrDefault(s => s.Section.Name == section.Name);
             if (found == null)
             {
-                //return WrappedResult.Fail<SectionMatches>($"Could not find matching Section for: {section.Name}");
-                return;
+                return Result.Fail($"Could not find matching Section for: {section.Name}");
             }
 
             if (match.Matches(transaction) == false)
             {
-                //Should not apply if doesn't actually match inbound transaction
-                return;
+                return Result.Fail("Does not match transaction!");
             }
 
             found.Matches.Add(match);
             _WriteModel(_singleModel.Value);
 
-            //return WrappedResult.Create(found);
+            return Result.Success;
         }
 
         private static Category? _FindModelHeaderFor(CategoryHeader header) =>
