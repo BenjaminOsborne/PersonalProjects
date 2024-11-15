@@ -32,6 +32,10 @@
 </button>
 <p role="status"><strong>Result</strong>: @CategorisedTransactionsResult</p>
 
+<hr />
+
+<p role="status"><strong>Last Action Error</strong>: @LastActionError</p>
+
 @if (Transactions.HasValue)
 {
     foreach(var grp in Transactions.Value)
@@ -83,7 +87,7 @@
                             <input placeholder="Override Description" @onchange="e => row.OverrideDescription = (string?)e.Value" />
                         </td>
                         <td>
-                            <button @onclick="() => PerformMatch(row, addOnceOnly: false)">Add</button>
+                            <button @onclick="() => PerformMatch(row, addOnceOnly: false)">Add General</button>
                         </td>
                         <td>
                             <button @onclick="() => PerformMatch(row, addOnceOnly: true)">Add Once</button>
