@@ -6,19 +6,30 @@ namespace AccountProcessor.Tests
 {
     public class MatchTests
     {
+        //Simple exact
         [TestCase("Test", "Test", true)]
-
+        [TestCase(" Test Yeah", " Test Yeah", true)]
+        //Wilcard at end
         [TestCase("Test Today", "Test", false)]
         [TestCase("Test Today", "Test*", true)]
-        
+        //Wilcard at start
         [TestCase("Today Test", "Test", false)]
         [TestCase("Today Test", "*Test", true)]
-        
+        //Wilcard either end
         [TestCase("Today Test Tomorrow", "Test", false)]
         [TestCase("Today Test Tomorrow", "Test*", false)]
         [TestCase("Today Test Tomorrow", "*Test", false)]
         [TestCase("Today Test Tomorrow", "*Test*", true)]
-        
+        //Wildcard in middle
+        [TestCase("Test", "Te*s", false)]
+        [TestCase("Test", "Te*t", true)]
+        [TestCase("Test", "T**t", true)]
+        [TestCase("Teeeesssst", "T*t", true)]
+        //Many wildcards
+        [TestCase("This is a test", "This *s a* est", false)]
+        [TestCase("This is a test", "This *s a *es*t", true)]
+        [TestCase("This is a test", "*is i* a tes*", true)]
+        //Whitespace Tests
         [TestCase("Test ", "Test", false)]
         [TestCase("Test ", "Test*", true)]
         [TestCase("Test ", "Test *", true)]
