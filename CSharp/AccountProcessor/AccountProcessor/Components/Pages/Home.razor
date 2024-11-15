@@ -36,12 +36,27 @@
 
 <p role="status"><strong>Last Action Error</strong>: @LastActionError</p>
 
-<!-- TODO:
-    - Ability to add section
--->
+<hr />
 
-@if (Transactions.HasValue)
+<label>Month:</label>
+<input type="month" value="@Month?.ToString("yyyy-MM")" @onchange="e => OnSetMonth((string?)e.Value)">
+<p/>
+
+@if (Categories.HasValue && AllSections.HasValue && Transactions.HasValue)
 {
+    <p role="status"><strong>Add New Section:</strong></p>
+    <select value="@NewSectionName" @onchange="e => NewSectionCategoryName = (string?)e.Value">
+        <option value="0" selected>Choose Category</option>
+        @foreach (var cat in Categories.Value)
+        {
+            <option value="@cat.Name">@cat.Name</option>
+        }
+    </select>
+
+    <input placeholder="Section Name..." value="@NewSectionName" @onchange="e => NewSectionName = (string?)e.Value" />
+
+    <button @onclick="() => CreateNewSection()">Create Section</button>
+
     foreach(var block in Transactions.Value)
     {
         <hr />
@@ -80,14 +95,11 @@
                         @if (block.IsUnmatched)
                         {
                             <td>
-                                <select id="categoryID" value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
+                                <select value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
                                     <option value="0" selected>Choose Section</option>
-                                    @if (AllSections.HasValue)
+                                    @foreach (var cat in AllSections.Value)
                                     {
-                                        foreach (var cat in AllSections)
-                                        {
-                                            <option value="@cat.Id">@cat.Display</option>
-                                        }
+                                        <option value="@cat.Id">@cat.Display</option>
                                     }
                                 </select>
                             </td>
@@ -112,8 +124,6 @@
     }
 }
 
-<hr />
-
 @code
 {
     /// <summary> Display message after "Reverse File" called </summary>
@@ -121,21 +131,53 @@
     private string? CategorisedTransactionsResult;
     private string? LastActionError;
 
+    private DateOnly? Month;
+
+    private ImmutableArray<CategoryHeader>? Categories;
+    private ImmutableArray<SectionSelectorRow>? AllSections;
+
+    private string? NewSectionCategoryName;
+    private string? NewSectionName;
+
     private ImmutableArray<Transaction>? LoadedTransactions;
     private ImmutableArray<TransactionBlock>? Transactions;
 
-    private ImmutableArray<SectionSelectorRow>? AllSections;
-
     protected override Task OnInitializedAsync()
     {
+        var now = DateTime.Now;
+        Month = new DateOnly(now.Year, now.Month, 1).AddMonths(-1);
+
         var allData = Categoriser.GetSelectorData();
+        Categories = allData.Categories;
         AllSections = allData.Sections
             .Select(s => new SectionSelectorRow(s, _ToDisplay(s), Guid.NewGuid().ToString())) //Arbitrary Id
             .ToImmutableArray();
         return Task.CompletedTask;
+
+        static string _ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
     }
 
-    private static string _ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
+    private void OnSetMonth(string? yearAndMonth)
+    {
+        if (DateOnly.TryParseExact(yearAndMonth, "yyyy-MM", out var parsed))
+        {
+            Month = parsed;
+            _RefreshCategorisedTransactions();
+        }
+    }
+
+    private void CreateNewSection()
+    {
+        var category = Categories?.SingleOrDefault(x => x.Name == NewSectionCategoryName);
+        if (category == null || NewSectionName.IsNullOrWhiteSpace())
+        {
+            return;
+        }
+        Categoriser.AddSection(category, NewSectionName!, matchMonthOnly: Month);
+
+        NewSectionCategoryName = null;
+        NewSectionName = null;
+    }
 
     private async Task PerformMatch(TransactionRow row)
     {
@@ -222,11 +264,11 @@
 
     private void _RefreshCategorisedTransactions()
     {
-        if (LoadedTransactions.HasValue == false || AllSections.HasValue == false)
+        if (Month.HasValue == false || LoadedTransactions.HasValue == false || AllSections.HasValue == false)
         {
             return;
         }
-        var categorisationResult = Categoriser.Categorise(LoadedTransactions!.Value, DateOnly.FromDateTime(DateTime.UtcNow));
+        var categorisationResult = Categoriser.Categorise(LoadedTransactions!.Value, month: Month!.Value);
         Transactions = TransactionBlock.CreateFromResult(categorisationResult, AllSections!.Value);
     }
 

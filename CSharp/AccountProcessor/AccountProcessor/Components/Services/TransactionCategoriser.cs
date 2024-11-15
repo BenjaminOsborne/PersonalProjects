@@ -8,7 +8,9 @@ namespace AccountProcessor.Components.Services
     public interface ITransactionCategoriser
     {
         SelectorData GetSelectorData();
-        CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly now);
+        CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month);
+
+        WrappedResult<SectionHeader> AddSection(CategoryHeader categoryHeader, string sectionName, DateOnly? matchMonthOnly);
 
         Result ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription);
         Result MatchOnce(Transaction transaction, SectionHeader header, string? matchOn, string? overrideDescription);
@@ -39,7 +41,7 @@ namespace AccountProcessor.Components.Services
             return new SelectorData(categories, sections);
         }
 
-        public CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly now)
+        public CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month)
         {
             var model = _singleModel.Value;
             
@@ -49,6 +51,7 @@ namespace AccountProcessor.Components.Services
                 .ToImmutableArray();
 
             var withMatch = transactions
+                .Where(trans => trans.IsInMonth(month))
                 .Select(trans =>
                 {
                     var matches = sections
@@ -184,7 +187,11 @@ namespace AccountProcessor.Components.Services
         }
     }
 
-    public record Transaction(DateOnly Date, string Description, decimal Amount);
+    public record Transaction(DateOnly Date, string Description, decimal Amount)
+    {
+        public bool IsInMonth(DateOnly month) =>
+            Date.Year == month.Year && Date.Month == month.Month;
+    }
 
     public record SelectorData(ImmutableArray<CategoryHeader> Categories, ImmutableArray<SectionHeader> Sections);
 
