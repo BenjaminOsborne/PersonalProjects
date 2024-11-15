@@ -36,6 +36,15 @@ namespace AccountProcessor.Tests
         public void Match(string transaction, string pattern, bool isMatch) =>
             _PatternAssert(pattern, transaction, isMatch ? MatchType.MatchExact : MatchType.NoMatch);
 
+        [TestCase(0, MatchType.MatchExact)]
+        [TestCase(-1, MatchType.MatchPreviousTransaction)]
+        [TestCase(1, MatchType.MatchPreviousTransaction)]
+        public void Previous_date(int offsetDays, MatchType match) =>
+            _AssertMatchIs(
+                _CreateMatch("Test", exactDate: _Now().AddDays(offsetDays)),
+                _CreateTransaction("Test"),
+                match);
+
         [Test, Explicit]
         public void RegexPlay()
         {
@@ -59,6 +68,8 @@ namespace AccountProcessor.Tests
             new Match(pattern, overrideDescription, exactDate);
 
         private static Transaction _CreateTransaction(string pattern, DateOnly? overrideDate = null) =>
-            new Transaction(overrideDate ?? DateOnly.FromDateTime(DateTime.Now), pattern, 0);
+            new Transaction(overrideDate ?? _Now(), pattern, 0);
+
+        private static DateOnly _Now() => DateOnly.FromDateTime(DateTime.Now);
     }
 }
