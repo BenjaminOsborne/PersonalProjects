@@ -134,7 +134,7 @@
           "Matches": [
             {
               "Pattern": "CLR*FIT2GO PHYSIO",
-              "OverrideDescription": "FIT2GO PHYSIO",
+              "OverrideDescription": "FIT2GO Physio",
               "ExactDate": "2024-09-25",
               "OrderKey": {}
             }
@@ -158,7 +158,14 @@
             "Order": 0,
             "Name": "Supermarket"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "SAINSBURY S S/MKTS",
+              "OverrideDescription": "Sainsburys",
+              "ExactDate": null,
+              "OrderKey": {}
+            }
+          ]
         }
       ]
     },
@@ -212,8 +219,20 @@
           },
           "Matches": [
             {
-              "Pattern": "trainline",
-              "OverrideDescription": null,
+              "Pattern": "TRAINLINE",
+              "OverrideDescription": "Trainline",
+              "ExactDate": null,
+              "OrderKey": {}
+            },
+            {
+              "Pattern": "NCT BUSES",
+              "OverrideDescription": "NCT bus",
+              "ExactDate": null,
+              "OrderKey": {}
+            },
+            {
+              "Pattern": "TFL TRAVEL CH",
+              "OverrideDescription": "TFL Travel",
               "ExactDate": null,
               "OrderKey": {}
             }
@@ -252,7 +271,7 @@
           "Matches": [
             {
               "Pattern": "amazon.co.uk",
-              "OverrideDescription": null,
+              "OverrideDescription": "Amazon",
               "ExactDate": null,
               "OrderKey": {}
             }
