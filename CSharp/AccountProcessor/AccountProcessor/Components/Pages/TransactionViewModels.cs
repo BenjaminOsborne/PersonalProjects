@@ -20,7 +20,8 @@ namespace AccountProcessor.Components.Pages
                     return new TransactionRow(x.Transaction, Section: null)
                     {
                         SelectionId = found?.Id,
-                        MatchOn = x.Transaction.Description
+                        MatchOn = x.Transaction.Description,
+                        OverrideDescription = x.Transaction.Description.ToCamelCase()
                     };
                 })
                 .ToImmutableArray();
@@ -53,5 +54,6 @@ namespace AccountProcessor.Components.Pages
         public string? SelectionId { get; set; }
         public string? MatchOn { get; set; }
         public string? OverrideDescription { get; set; }
+        public bool AddOnlyForTransaction { get; set; }
     }
 }

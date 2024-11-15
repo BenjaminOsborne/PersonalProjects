@@ -51,8 +51,8 @@
                     <th>Category</th>
                     <th>Match On</th>
                     <th>Description</th>
-                    <th>Match General</th>
-                    <th>Match Once</th>
+                    <th>Once</th>
+                    <th>Match</th>
                 </tr>
             </thead>
             <tbody>
@@ -84,13 +84,13 @@
                             <input placeholder="Match on" value="@row.MatchOn" @onchange="e => row.MatchOn = (string?)e.Value" />
                         </td>
                         <td>
-                            <input placeholder="Override Description" @onchange="e => row.OverrideDescription = (string?)e.Value" />
+                            <input placeholder="Override Description" value="@row.OverrideDescription" @onchange="e => row.OverrideDescription = (string?)e.Value" />
                         </td>
                         <td>
-                            <button @onclick="() => PerformMatch(row, addOnceOnly: false)">Add General</button>
+                            <input type="checkbox" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value">
                         </td>
                         <td>
-                            <button @onclick="() => PerformMatch(row, addOnceOnly: true)">Add Once</button>
+                            <button @onclick="() => PerformMatch(row)">Add</button>
                         </td>
                     </tr>
                 }
@@ -124,7 +124,7 @@
 
     private static string _ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
 
-    private async Task PerformMatch(TransactionRow row, bool addOnceOnly)
+    private async Task PerformMatch(TransactionRow row)
     {
         LastActionError = null;
 
@@ -137,7 +137,7 @@
         }
 
         Result result;
-        if (addOnceOnly)
+        if (row.AddOnlyForTransaction)
         {
             result = Categoriser.MatchOnce(row.Transaction, header!, row.OverrideDescription);
         }

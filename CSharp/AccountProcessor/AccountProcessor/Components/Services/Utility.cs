@@ -54,6 +54,28 @@ namespace AccountProcessor.Components.Services
     public static class StringExtensions
     {
         public static bool IsNullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
+
+        public static string ToCamelCase(this string value)
+        {
+            var split = new System.Text.RegularExpressions.Regex("\\s+")
+                .Split(value);
+            return split
+                .Where(x => x.Length > 0)
+                .Select(x => x.Length > 1
+                    ? $"{char.ToUpper(x[0])}{x.Skip(1).Select(char.ToLower).CreateString()}"
+                    : x.ToUpper())
+                .ToJoinedString(" ");
+        }
+
+        public static string CreateString(this char[] chars) => new string(chars);
+
+        public static string CreateString(this IEnumerable<char> chars) => new string(chars.ToArray());
+
+        public static string ToJoinedString(this IEnumerable<string> items, string separator) =>
+            string.Join(separator, items);
+
+        public static string ToJoinedString<T>(this IEnumerable<T> items, string separator, Func<T, string> fnToString) =>
+            string.Join(separator, items.Select(fnToString));
     }
 
     public static class EnumerableExtensions
@@ -88,12 +110,6 @@ namespace AccountProcessor.Components.Services
             items.Select((x, nx) => (x, nx));
 
         public static IEnumerable<T> ConcatItem<T>(this IEnumerable<T> items, T item) => items.Concat([item]);
-
-        public static string ToJoinedString(this IEnumerable<string> items, string separator) =>
-            string.Join(separator, items);
-
-        public static string ToJoinedString<T>(this IEnumerable<T> items, string separator, Func<T, string> fnToString) =>
-            string.Join(separator, items.Select(fnToString));
     }
 
     public static class StreamExtensions
