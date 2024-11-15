@@ -35,6 +35,12 @@ namespace AccountProcessor.Components.Services
     {
         public ImmutableList<T> PredicateTrue { get; init; }
         public ImmutableList<T> PredicateFalse { get; init; }
+
+        public Partition<U> Map<U>(Func<T, U> fnMap) => new Partition<U>
+        {
+            PredicateTrue = PredicateTrue.Select(fnMap).ToImmutableList(),
+            PredicateFalse = PredicateFalse.Select(fnMap).ToImmutableList()
+        };
     }
 
     public static class TypeExtensions

@@ -68,20 +68,20 @@
                         <td style="@styleColor">@displayAmount</td>
 
                         <td>
-                            <select id="categoryID" value="Initial" @onchange="e => row.SelectionId = (string?)e.Value">
+                            <select id="categoryID" value="@row.SuggestedSectionId" @onchange="e => row.SelectionId = (string?)e.Value">
                                 <option value="0" selected>Choose Section</option>
                                 @if (AllSections.HasValue)
                                 {
                                     foreach (var cat in AllSections)
                                     {
-                                        <option value="@cat.id">@cat.display</option>
+                                        <option value="@cat.Id">@cat.Display</option>
                                     }
                                 }
                             </select>
                         </td>
 
                         <td>
-                            <input placeholder="Match on" @onchange="e => row.MatchOn = (string?)e.Value" />
+                            <input placeholder="Match on" value="@row.SuggestedMatchOn" @onchange="e => row.MatchOn = (string?)e.Value" />
                         </td>
                         <td>
                             <input placeholder="Override Description" @onchange="e => row.OverrideDescription = (string?)e.Value" />
@@ -111,15 +111,13 @@
     private ImmutableArray<Transaction>? LoadedTransactions;
     private ImmutableArray<TransactionBlock>? Transactions;
 
-    private ImmutableArray<(SectionHeader header, string display, string id)>? AllSections;
+    private ImmutableArray<SectionSelectorRow>? AllSections;
 
     protected override Task OnInitializedAsync()
     {
         var allData = Categoriser.GetSelectorData();
-        AllSections = allData.Sections.Select(s => (
-            header: s,
-            display: _ToDisplay(s),
-            id: Guid.NewGuid().ToString()))
+        AllSections = allData.Sections
+            .Select(s => new SectionSelectorRow(s, _ToDisplay(s), Guid.NewGuid().ToString())) //Arbitrary Id
             .ToImmutableArray();
         return Task.CompletedTask;
     }
@@ -130,8 +128,8 @@
     {
         LastActionError = null;
 
-        var found = AllSections?.SingleOrDefault(x => x.id == row.SelectionId);
-        var header = found?.header;
+        var found = AllSections?.SingleOrDefault(x => x.Id == row.SelectionId);
+        var header = found?.Header;
         if (header == null)
         {
             LastActionError = "Could not find Section";
@@ -211,12 +209,12 @@
 
     private void _RefreshCategorisedTransactions()
     {
-        if (LoadedTransactions.HasValue == false)
+        if (LoadedTransactions.HasValue == false || AllSections.HasValue == false)
         {
             return;
         }
         var categorisationResult = Categoriser.Categorise(LoadedTransactions!.Value, DateOnly.FromDateTime(DateTime.UtcNow));
-        Transactions = TransactionBlock.CreateFromResult(categorisationResult);
+        Transactions = TransactionBlock.CreateFromResult(categorisationResult, AllSections!.Value);
     }
 
     /// <summary>

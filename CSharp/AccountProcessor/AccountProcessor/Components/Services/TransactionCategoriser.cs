@@ -43,7 +43,7 @@ namespace AccountProcessor.Components.Services
             var model = _singleModel.Value;
             
             var sections = model.Categories
-                .SelectMany(x => x.Sections)
+                .SelectMany(c => c.Sections)
                 .SelectMany(s => s.Matches.Select(m => new { Section = s, Match = m }))
                 .ToImmutableArray();
 
@@ -51,26 +51,36 @@ namespace AccountProcessor.Components.Services
                 .Select(trans =>
                 {
                     var matches = sections
-                    .Where(s => s.Match.Matches(trans))
-                    .OrderBy(x => x)
-                    .ToImmutableArray();
-                    return new { Transaction = trans, Matches = matches };
+                        .Select(s => (Section: s, Match: s.Match.Matches(trans)))
+                        .Where(s => s.Match != MatchType.NoMatch)
+                        .Partition(x => x.Match == MatchType.MatchExact)
+                        .Map(x => x.Section);
+                    return new { Transaction = trans, ExactMatches = matches.PredicateTrue, HistoricMatches = matches.PredicateFalse };
                 })
                 .ToImmutableArray();
 
-            var parition = withMatch.Partition(x => x.Matches.Any());
+            var parition = withMatch.Partition(x => x.ExactMatches.Any());
             var matched = parition.PredicateTrue
                 .Select(x =>
                     new MatchedTransaction(
                         x.Transaction,
-                        sectionMatches: x.Matches
+                        sectionMatches: x.ExactMatches
                             .Select(m => new SectionMatch(m.Section.Section, m.Match))
                             .ToImmutableArray()
                     ))
                 .ToImmutableArray();
 
             var unmatched = parition.PredicateFalse
-                .Select(x => x.Transaction)
+                .Select(unMatched =>
+                {
+                    var suggestedSection = unMatched.HistoricMatches
+                        .Select(x => x.Section.Section)
+                        .FirstOrDefault();
+                    var suggestedPattern = unMatched.HistoricMatches
+                        .Select(x => x.Match.Pattern)
+                        .FirstOrDefault();
+                    return new UnMatchedTransaction(unMatched.Transaction, suggestedSection, suggestedPattern);
+                })
                 .ToImmutableArray();
             return new CategorisationResult(matched, unmatched);
         }
@@ -119,7 +129,7 @@ namespace AccountProcessor.Components.Services
                 return Result.Fail($"Could not find matching Section for: {section.Name}");
             }
 
-            if (match.Matches(transaction) == false)
+            if (match.Matches(transaction) != MatchType.MatchExact)
             {
                 return Result.Fail("Does not match transaction!");
             }
@@ -171,6 +181,20 @@ namespace AccountProcessor.Components.Services
 
     public record SelectorData(ImmutableArray<CategoryHeader> Categories, ImmutableArray<SectionHeader> Sections);
 
+    public class UnMatchedTransaction
+    {
+        public UnMatchedTransaction(Transaction transaction, SectionHeader? suggestedSection, string? suggestedPattern)
+        {
+            Transaction = transaction;
+            SuggestedSection = suggestedSection;
+            SuggestedPattern = suggestedPattern;
+        }
+
+        public Transaction Transaction { get; }
+        public SectionHeader? SuggestedSection { get; }
+        public string? SuggestedPattern { get; }
+    }
+
     public class MatchedTransaction
     {
         public MatchedTransaction(Transaction transaction, ImmutableArray<SectionMatch> sectionMatches)
@@ -187,7 +211,7 @@ namespace AccountProcessor.Components.Services
 
     public record SectionMatch(SectionHeader Section, Match Match);
 
-    public record CategorisationResult(ImmutableArray<MatchedTransaction> Matched, ImmutableArray<Transaction> UnMatched);
+    public record CategorisationResult(ImmutableArray<MatchedTransaction> Matched, ImmutableArray<UnMatchedTransaction> UnMatched);
 
     public record MatchModel(ImmutableArray<Category> Categories);
 
@@ -242,6 +266,8 @@ namespace AccountProcessor.Components.Services
         /// <summary> If set; specifies the specific month/year this section applies to. </summary>
         /// <remarks> Day component should always be "1". Only Month/Year relevant. </remarks>
         public DateOnly? Month { get; }
+
+        public IComparable Key => (Order, Name, Parent.Order, Parent.Name);
     }
 
     public class SectionMatches
@@ -254,6 +280,13 @@ namespace AccountProcessor.Components.Services
         }
         public SectionHeader Section { get; }
         public List<Match> Matches { get; }
+    }
+
+    public enum MatchType
+    {
+        NoMatch,
+        MatchExact,
+        MatchPreviousTransaction
     }
 
     public class Match
@@ -278,15 +311,17 @@ namespace AccountProcessor.Components.Services
         /// <remarks> "False" is before "True" for OrderBy. Prefer overriden dates. </remarks>
         public IComparable OrderKey => (!ExactDate.HasValue, Pattern.Length);
 
-        public bool Matches(Transaction trans)
+        public MatchType Matches(Transaction trans)
         {
-            if (ExactDate.HasValue && ExactDate != trans.Date)
-            {
-                return false;
-            }
-
             //TODO: Consider handling "*" wild cards (or similar)
-            return trans.Description.ToLower().Contains(Pattern.ToLower());
+            var doesMatch = trans.Description.ToLower().Contains(Pattern.ToLower());
+            if (!doesMatch)
+            {
+                return MatchType.NoMatch;
+            }
+            return ExactDate.HasValue && ExactDate != trans.Date
+                ? MatchType.MatchPreviousTransaction
+                : MatchType.MatchExact;
         }
     }
 }

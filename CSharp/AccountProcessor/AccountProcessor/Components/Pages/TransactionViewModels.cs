@@ -3,13 +3,23 @@ using AccountProcessor.Components.Services;
 
 namespace AccountProcessor.Components.Pages
 {
+    public record SectionSelectorRow(SectionHeader Header, string Display, string Id);
+
     public record TransactionBlock(string Display, ImmutableArray<TransactionRow> Rows)
     {
-        public static ImmutableArray<TransactionBlock> CreateFromResult(CategorisationResult result)
+        public static ImmutableArray<TransactionBlock> CreateFromResult(CategorisationResult result, ImmutableArray<SectionSelectorRow> selectorOptions)
         {
             var blocks = new List<TransactionBlock>();
 
-            var unmatchedTransactions = result.UnMatched.Select(x => new TransactionRow(x, null)).ToImmutableArray();
+            var unmatchedTransactions = result.UnMatched
+                .Select(x =>
+                {
+                    var found = x.SuggestedSection != null
+                        ? selectorOptions.FirstOrDefault(s => s.Header.Key == x.SuggestedSection!.Key)
+                        : null;
+                    return new TransactionRow(x.Transaction, Section: null, SuggestedSectionId: found?.Id, SuggestedMatchOn: x.Transaction.Description);
+                })
+                .ToImmutableArray();
             blocks.Add(new TransactionBlock("Uncategorised", unmatchedTransactions));
 
             var matched = result.Matched
@@ -23,7 +33,9 @@ namespace AccountProcessor.Components.Pages
                 .Select(grp =>
                 {
                     var category = grp.First().Category;
-                    var rows = grp.Select(t => new TransactionRow(t.Transaction, t.Section)).ToImmutableArray();
+                    var rows = grp
+                        .Select(t => new TransactionRow(t.Transaction, t.Section, SuggestedSectionId: null, SuggestedMatchOn: null))
+                        .ToImmutableArray();
                     return new TransactionBlock(category.Name, rows);
                 }).ToImmutableArray();
             blocks.AddRange(matched);
@@ -32,7 +44,7 @@ namespace AccountProcessor.Components.Pages
         }
     }
 
-    public record TransactionRow(Transaction Transaction, SectionHeader? Section)
+    public record TransactionRow(Transaction Transaction, SectionHeader? Section, string? SuggestedSectionId, string? SuggestedMatchOn)
     {
         public string? MatchOn { get; set; }
         public string? OverrideDescription { get; set; }
