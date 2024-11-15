@@ -68,7 +68,7 @@
                         <td style="@styleColor">@displayAmount</td>
 
                         <td>
-                            <select id="categoryID" value="@row.SuggestedSectionId" @onchange="e => row.SelectionId = (string?)e.Value">
+                            <select id="categoryID" value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
                                 <option value="0" selected>Choose Section</option>
                                 @if (AllSections.HasValue)
                                 {
@@ -81,7 +81,7 @@
                         </td>
 
                         <td>
-                            <input placeholder="Match on" value="@row.SuggestedMatchOn" @onchange="e => row.MatchOn = (string?)e.Value" />
+                            <input placeholder="Match on" value="@row.MatchOn" @onchange="e => row.MatchOn = (string?)e.Value" />
                         </td>
                         <td>
                             <input placeholder="Override Description" @onchange="e => row.OverrideDescription = (string?)e.Value" />

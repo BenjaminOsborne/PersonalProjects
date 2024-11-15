@@ -134,7 +134,7 @@ namespace AccountProcessor.Components.Services
                 return Result.Fail("Does not match transaction!");
             }
 
-            found.Matches.Add(match);
+            found.AddMatch(match);
             _WriteModel(_singleModel.Value);
 
             return Result.Success;
@@ -267,19 +267,28 @@ namespace AccountProcessor.Components.Services
         /// <remarks> Day component should always be "1". Only Month/Year relevant. </remarks>
         public DateOnly? Month { get; }
 
-        public IComparable Key => (Order, Name, Parent.Order, Parent.Name);
+        public bool AreSame(SectionHeader other) => other != null && _GetKey().Equals(other._GetKey());
+
+        private IComparable _GetKey() => (Order, Name, Parent.Order, Parent.Name);
     }
 
     public class SectionMatches
     {
-        public SectionMatches(SectionHeader section, List<Match> matches)
+        public SectionMatches(SectionHeader section, ImmutableArray<Match> matches)
         {
             Section = section;
             Matches = matches;
             
         }
         public SectionHeader Section { get; }
-        public List<Match> Matches { get; }
+        public ImmutableArray<Match> Matches { get; private set; }
+
+        /// <summary> Order when modifying - so ensures already ordered when used. </summary>
+        public void AddMatch(Match match) =>
+            Matches = Matches
+                .ConcatItem(match)
+                .OrderBy(x => x.GetOrderKey())
+                .ToImmutableArray();
     }
 
     public enum MatchType
@@ -309,7 +318,7 @@ namespace AccountProcessor.Components.Services
         public DateOnly? ExactDate { get; }
 
         /// <remarks> "False" is before "True" for OrderBy. Prefer overriden dates. </remarks>
-        public IComparable OrderKey => (!ExactDate.HasValue, Pattern.Length);
+        public IComparable GetOrderKey() => (!ExactDate.HasValue, Pattern.Length);
 
         public MatchType Matches(Transaction trans)
         {

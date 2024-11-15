@@ -15,9 +15,13 @@ namespace AccountProcessor.Components.Pages
                 .Select(x =>
                 {
                     var found = x.SuggestedSection != null
-                        ? selectorOptions.FirstOrDefault(s => s.Header.Key == x.SuggestedSection!.Key)
+                        ? selectorOptions.FirstOrDefault(s => s.Header.AreSame(x.SuggestedSection!))
                         : null;
-                    return new TransactionRow(x.Transaction, Section: null, SuggestedSectionId: found?.Id, SuggestedMatchOn: x.Transaction.Description);
+                    return new TransactionRow(x.Transaction, Section: null)
+                    {
+                        SelectionId = found?.Id,
+                        MatchOn = x.Transaction.Description
+                    };
                 })
                 .ToImmutableArray();
             blocks.Add(new TransactionBlock("Uncategorised", unmatchedTransactions));
@@ -34,7 +38,7 @@ namespace AccountProcessor.Components.Pages
                 {
                     var category = grp.First().Category;
                     var rows = grp
-                        .Select(t => new TransactionRow(t.Transaction, t.Section, SuggestedSectionId: null, SuggestedMatchOn: null))
+                        .Select(t => new TransactionRow(t.Transaction, t.Section))
                         .ToImmutableArray();
                     return new TransactionBlock(category.Name, rows);
                 }).ToImmutableArray();
@@ -44,10 +48,10 @@ namespace AccountProcessor.Components.Pages
         }
     }
 
-    public record TransactionRow(Transaction Transaction, SectionHeader? Section, string? SuggestedSectionId, string? SuggestedMatchOn)
+    public record TransactionRow(Transaction Transaction, SectionHeader? Section)
     {
+        public string? SelectionId { get; set; }
         public string? MatchOn { get; set; }
         public string? OverrideDescription { get; set; }
-        public string? SelectionId { get; set; }
     }
 }

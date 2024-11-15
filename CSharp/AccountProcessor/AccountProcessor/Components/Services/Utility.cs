@@ -87,6 +87,8 @@ namespace AccountProcessor.Components.Services
         public static IEnumerable<(T Value, int Index)> SelectWithIndexes<T>(this IEnumerable<T> items) =>
             items.Select((x, nx) => (x, nx));
 
+        public static IEnumerable<T> ConcatItem<T>(this IEnumerable<T> items, T item) => items.Concat([item]);
+
         public static string ToJoinedString(this IEnumerable<string> items, string separator) =>
             string.Join(separator, items);
 
