@@ -105,6 +105,8 @@ namespace AccountProcessor.Components.Services
             var next = category.Sections.Max(s => s.Section.Order) + 1;
             var created = new SectionHeader(next, sectionName, categoryHeader, matchMonthOnly);
             category.Sections.Add(new SectionMatches(created, []));
+            _WriteModel();
+
             return WrappedResult.Create(created);
         }
 
@@ -145,7 +147,7 @@ namespace AccountProcessor.Components.Services
             }
 
             found.AddMatch(match);
-            _WriteModel(_singleModel.Value);
+            _WriteModel();
 
             return Result.Success;
         }
@@ -162,8 +164,9 @@ namespace AccountProcessor.Components.Services
                 ?? throw new ApplicationException("Could not initialise model from json file");
         }
 
-        private static void _WriteModel(MatchModel model)
+        private static void _WriteModel()
         {
+            var model = _singleModel.Value;
             var processPath = Process.GetCurrentProcess().MainModule!.FileName;
             var outputPath = GetOutputPath();
             var content = JsonHelper.Serialise(model, writeIndented: true);
