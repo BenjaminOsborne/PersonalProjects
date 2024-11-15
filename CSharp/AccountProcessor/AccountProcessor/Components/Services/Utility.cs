@@ -55,6 +55,8 @@ namespace AccountProcessor.Components.Services
     {
         public static bool IsNullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
 
+        public static bool IsNullOrWhiteSpace(this string? s) => string.IsNullOrWhiteSpace(s);
+
         public static string ToCamelCase(this string value)
         {
             var split = new System.Text.RegularExpressions.Regex("\\s+")

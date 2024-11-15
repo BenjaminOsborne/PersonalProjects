@@ -11,7 +11,7 @@ namespace AccountProcessor.Components.Services
         CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly now);
 
         Result ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription);
-        Result MatchOnce(Transaction transaction, SectionHeader header, string? overrideDescription);
+        Result MatchOnce(Transaction transaction, SectionHeader header, string? matchOn, string? overrideDescription);
     }
 
     public class TransactionCategoriser : ITransactionCategoriser
@@ -111,14 +111,20 @@ namespace AccountProcessor.Components.Services
             return _ApplyMatch(transaction, section, match);
         }
 
-        public Result MatchOnce(Transaction transaction, SectionHeader section, string? overrideDescription)
+        /// <remarks> Note: It is valid to specify <see cref="matchOn"/> (which may have a wild-card) as this can mean future transactions get a "suggestion", even if need to be confirmed. </remarks>
+        public Result MatchOnce(Transaction transaction, SectionHeader section, string? matchOn, string? overrideDescription)
         {
-            var match = new Match(transaction.Description, overrideDescription, transaction.Date);
+            var match = new Match(matchOn ?? transaction.Description, overrideDescription, transaction.Date);
             return _ApplyMatch(transaction, section, match);
         }
 
         private static Result _ApplyMatch(Transaction transaction, SectionHeader section, Match match)
         {
+            if (!Match.IsValidPattern(match.Pattern))
+            {
+                return Result.Fail("Match should contain at least 3 characters");
+            }
+
             var category = _FindModelHeaderFor(section.Parent);
             if (category == null)
             {
@@ -302,6 +308,10 @@ namespace AccountProcessor.Components.Services
     public class Match
     {
         private readonly Lazy<System.Text.RegularExpressions.Regex> _regex;
+
+        /// <summary> Must contain at least 3 letters or numbers (i.e. not whitespace or wildcard) </summary>
+        public static bool IsValidPattern(string pattern) =>
+            pattern?.Count(char.IsLetterOrDigit) >= 3;
 
         public static Match FromPatternOnly(string pattern) => new (pattern, null, null);
 

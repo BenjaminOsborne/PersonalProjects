@@ -139,7 +139,7 @@
         Result result;
         if (row.AddOnlyForTransaction)
         {
-            result = Categoriser.MatchOnce(row.Transaction, header!, row.OverrideDescription);
+            result = Categoriser.MatchOnce(row.Transaction, header!, row.MatchOn, row.OverrideDescription);
         }
         else
         {
