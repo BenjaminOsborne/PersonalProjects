@@ -7,7 +7,7 @@ namespace AccountProcessor.Tests
     public class TransactionCategoriserRunner
     {
         [Test, Ignore("ONLY RUN ONCE BEFORE LIVE EDITING MODEL")]
-        public void BootstrapJson()
+        public void Bootstrap_Json_from_scratch()
         {
             var outputPath = _GetOutputPath();
             var model = _GetMatchModel();
@@ -34,6 +34,7 @@ namespace AccountProcessor.Tests
                 _CreateCategory(CategoryHeader.Restaurants, "Restaurant", "Drink"),
                 _CreateCategory(CategoryHeader.TravelTrips, "Transport", "Petrol"),
                 _CreateCategory(CategoryHeader.InternetShops, "Online", "Cash", "Shops"),
+                _CreateCategory(CategoryHeader.Manual, "Manual Sort"),
                 _CreateCategory(CategoryHeader.IGNORE, "Internal Transactions", "Balance"),
             }.ToImmutableArray();
             return new MatchModel(categories);
