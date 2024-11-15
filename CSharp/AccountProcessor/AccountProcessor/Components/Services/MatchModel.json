@@ -390,13 +390,33 @@
     {
       "Header": {
         "Order": 8,
-        "Name": "IGNORE"
+        "Name": "Manual"
       },
       "Sections": [
         {
           "Section": {
             "Parent": {
               "Order": 8,
+              "Name": "Manual"
+            },
+            "Month": null,
+            "Order": 0,
+            "Name": "Manual Sort"
+          },
+          "Matches": []
+        }
+      ]
+    },
+    {
+      "Header": {
+        "Order": 9,
+        "Name": "IGNORE"
+      },
+      "Sections": [
+        {
+          "Section": {
+            "Parent": {
+              "Order": 9,
               "Name": "IGNORE"
             },
             "Month": null,
@@ -408,7 +428,7 @@
         {
           "Section": {
             "Parent": {
-              "Order": 8,
+              "Order": 9,
               "Name": "IGNORE"
             },
             "Month": null,
