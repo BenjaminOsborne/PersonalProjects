@@ -112,7 +112,13 @@
             "Order": 0,
             "Name": "House \u0026 Garage"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "Lanes Garden Centr",
+              "OverrideDescription": "Lanes Garden Centre",
+              "ExactDate": null
+            }
+          ]
         },
         {
           "Section": {
@@ -124,7 +130,13 @@
             "Order": 1,
             "Name": "Childcare"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "BREEDON HOUSE NURS NAOMI OSBORNE",
+              "OverrideDescription": "Naomi Nursery",
+              "ExactDate": null
+            }
+          ]
         },
         {
           "Section": {

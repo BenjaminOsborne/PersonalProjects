@@ -38,9 +38,11 @@
 
 @if (Transactions.HasValue)
 {
-    foreach(var grp in Transactions.Value)
+    foreach(var block in Transactions.Value)
     {
-        <p role="status"><strong>@grp.Display</strong></p>
+        <hr />
+
+        <p role="status"><strong>@block.Display</strong></p>
 
         <table class="table" style="width:auto">
             <thead>
@@ -48,15 +50,19 @@
                     <th>Date</th>
                     <th>Description</th>
                     <th>Amount (£)</th>
-                    <th>Category</th>
-                    <th>Match On</th>
-                    <th>Description</th>
-                    <th>Once</th>
-                    <th>Match</th>
+
+                    @if (block.IsUnmatched)
+                    {
+                        <th>Category</th>
+                        <th>Match On</th>
+                        <th>Description</th>
+                        <th>Once</th>
+                        <th>Match</th>
+                    }
                 </tr>
             </thead>
             <tbody>
-                @foreach (var row in grp.Rows)
+                @foreach (var row in block.Rows)
                 {
                     var tr = row.Transaction;
                     var displayAmount = tr.Amount < 0 ? $"-£{-tr.Amount:F2}" : $"£{tr.Amount:F2}";
@@ -67,31 +73,34 @@
                         <td class="fitwidth">@tr.Description</td>
                         <td style="@styleColor">@displayAmount</td>
 
-                        <td>
-                            <select id="categoryID" value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
-                                <option value="0" selected>Choose Section</option>
-                                @if (AllSections.HasValue)
-                                {
-                                    foreach (var cat in AllSections)
+                        @if (block.IsUnmatched)
+                        {
+                            <td>
+                                <select id="categoryID" value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
+                                    <option value="0" selected>Choose Section</option>
+                                    @if (AllSections.HasValue)
                                     {
-                                        <option value="@cat.Id">@cat.Display</option>
+                                        foreach (var cat in AllSections)
+                                        {
+                                            <option value="@cat.Id">@cat.Display</option>
+                                        }
                                     }
-                                }
-                            </select>
-                        </td>
+                                </select>
+                            </td>
 
-                        <td>
-                            <input placeholder="Match on" value="@row.MatchOn" @onchange="e => row.MatchOn = (string?)e.Value" />
-                        </td>
-                        <td>
-                            <input placeholder="Override Description" value="@row.OverrideDescription" @onchange="e => row.OverrideDescription = (string?)e.Value" />
-                        </td>
-                        <td>
-                            <input type="checkbox" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value">
-                        </td>
-                        <td>
-                            <button @onclick="() => PerformMatch(row)">Add</button>
-                        </td>
+                            <td>
+                                <input placeholder="Match on" value="@row.MatchOn" @onchange="e => row.MatchOn = (string?)e.Value" />
+                            </td>
+                            <td>
+                                <input placeholder="Override Description" value="@row.OverrideDescription" @onchange="e => row.OverrideDescription = (string?)e.Value" />
+                            </td>
+                            <td>
+                                <input type="checkbox" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value">
+                            </td>
+                            <td>
+                                <button @onclick="() => PerformMatch(row)">Add</button>
+                            </td>
+                        }
                     </tr>
                 }
             </tbody>

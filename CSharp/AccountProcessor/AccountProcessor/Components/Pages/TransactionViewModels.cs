@@ -5,7 +5,7 @@ namespace AccountProcessor.Components.Pages
 {
     public record SectionSelectorRow(SectionHeader Header, string Display, string Id);
 
-    public record TransactionBlock(string Display, ImmutableArray<TransactionRow> Rows)
+    public record TransactionBlock(string Display, bool IsUnmatched, ImmutableArray<TransactionRow> Rows)
     {
         public static ImmutableArray<TransactionBlock> CreateFromResult(CategorisationResult result, ImmutableArray<SectionSelectorRow> selectorOptions)
         {
@@ -25,7 +25,7 @@ namespace AccountProcessor.Components.Pages
                     };
                 })
                 .ToImmutableArray();
-            blocks.Add(new TransactionBlock("Uncategorised", unmatchedTransactions));
+            blocks.Add(new TransactionBlock("Uncategorised", IsUnmatched: true, unmatchedTransactions));
 
             var matched = result.Matched
                 .Select(x =>
@@ -41,7 +41,7 @@ namespace AccountProcessor.Components.Pages
                     var rows = grp
                         .Select(t => new TransactionRow(t.Transaction, t.Section))
                         .ToImmutableArray();
-                    return new TransactionBlock(category.Name, rows);
+                    return new TransactionBlock(category.Name, IsUnmatched: false, rows);
                 }).ToImmutableArray();
             blocks.AddRange(matched);
 
