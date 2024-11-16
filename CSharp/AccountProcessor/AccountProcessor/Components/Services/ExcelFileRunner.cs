@@ -15,9 +15,10 @@ namespace AccountProcessor.Components.Services
     {
         private class TransactionRow
         {
-            public const string DateFormat = "dd/MM/yyyy";
+            public const string DateFormatCsv = "yyyy-MM-dd";
+            public const string DateFormatExcel = "dd/MM/yyyy";
 
-            [CsvHelper.Configuration.Attributes.Format(DateFormat)]
+            [CsvHelper.Configuration.Attributes.Format(DateFormatCsv)]
             public DateOnly Date { get; init; }
 
             public string Description { get; init; } = null!;
@@ -181,7 +182,7 @@ namespace AccountProcessor.Components.Services
         }
 
         private static DateOnly? _TryParseDate(object val) =>
-            DateOnly.TryParseExact(val?.ToString(), TransactionRow.DateFormat, out var date) ? date : null;
+            DateOnly.TryParseExact(val?.ToString(), TransactionRow.DateFormatExcel, out var date) ? date : null;
 
         private static decimal? _TryParseDecimal(object val) =>
             decimal.TryParse(val?.ToString(), out var moneyIn) ? moneyIn : null;
