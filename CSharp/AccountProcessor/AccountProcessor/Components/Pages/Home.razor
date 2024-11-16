@@ -304,7 +304,7 @@
         ReverseFileResult = "Running...";
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
-        var result = await ExcelFileRunner.ReverseCsvTransactions(inputStream);
+        var result = await ExcelFileRunner.ReverseCsvTransactionsToExcel(inputStream);
 
         if (result.IsSuccess)
         {
@@ -327,7 +327,7 @@
         Transactions = null;
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
-        var transactionResult = await ExcelFileRunner.LoadTransactions(inputStream);
+        var transactionResult = await ExcelFileRunner.LoadTransactionsFromExcel(inputStream);
         if (transactionResult.IsSuccess)
         {
             CategorisedTransactionsResult = "Success!";

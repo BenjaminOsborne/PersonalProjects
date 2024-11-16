@@ -1,2 +1,3 @@
 - Export button in expected format
-- Re-categorise with override match and/or delete match
+
+- Consider loading from Santander too (for Credit Card)

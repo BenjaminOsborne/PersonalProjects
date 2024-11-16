@@ -7,12 +7,17 @@ namespace AccountProcessor.Components.Services
 {
     public interface IExcelFileRunner
     {
-        Task<WrappedResult<byte[]>> ReverseCsvTransactions(Stream inputCsv);
-        Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactions(Stream inputExcel);
+        /// <summary> Takes input CSV stream and returns excel byte[] for download with transactions in ascending order </summary>
+        /// <remarks> Assumes the co-op CSV format is in reverse order </remarks>
+        Task<WrappedResult<byte[]>> ReverseCsvTransactionsToExcel(Stream inputCsv);
+        
+        Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsFromExcel(Stream inputExcel);
     }
 
     public class ExcelFileRunner : IExcelFileRunner
     {
+        private static readonly ImmutableArray<string> _expectedColumnHeaders = ["Date", "Description", "Type", "Money In", "Money Out", "Balance"];
+
         private class TransactionRow
         {
             public const string DateFormatCsv = "yyyy-MM-dd";
@@ -34,9 +39,11 @@ namespace AccountProcessor.Components.Services
             public decimal Balance { get; init; }
         }
 
-        public async Task<WrappedResult<byte[]>> ReverseCsvTransactions(Stream inputCsv)
+        #region ReverseCsvTransactionsToExcel
+        
+        public async Task<WrappedResult<byte[]>> ReverseCsvTransactionsToExcel(Stream inputCsv)
         {
-            var rows = _ExtractRows(inputCsv);
+            var rows = _ExtractRowsFromCsvStream(inputCsv);
             if (!rows.IsSuccess)
             {
                 return rows.MapFail<byte[]>();
@@ -46,7 +53,7 @@ namespace AccountProcessor.Components.Services
             return WrappedResult.Create(resultBytes);
         }
 
-        private static WrappedResult<ImmutableArray<TransactionRow>> _ExtractRows(Stream inputCsv)
+        private static WrappedResult<ImmutableArray<TransactionRow>> _ExtractRowsFromCsvStream(Stream inputCsv)
         {
             try
             {
@@ -102,9 +109,7 @@ namespace AccountProcessor.Components.Services
             static WrappedResult<ImmutableArray<TransactionRow>> FailOnRow(string error, int rowNumber) =>
                 WrappedResult.Fail<ImmutableArray<TransactionRow>>($"{error}. Row: {rowNumber}");
         }
-
-        private static readonly ImmutableArray<string> _expectedHeaders = ["Date", "Description", "Type", "Money In", "Money Out", "Balance"];
-
+        
         private static async Task<byte[]> _WriteRowsToExcel(ImmutableArray<TransactionRow> allRows)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -112,7 +117,7 @@ namespace AccountProcessor.Components.Services
 
             var added = excel.Workbook.Worksheets.Add("Default");
 
-            _expectedHeaders
+            _expectedColumnHeaders
                 .SelectWithIndexes()
                 .ForEach(p => added.Cells[1, p.Index + 1].Value = p.Value);
 
@@ -135,7 +140,11 @@ namespace AccountProcessor.Components.Services
             return await excel.GetAsByteArrayAsync();
         }
 
-        public async Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactions(Stream inputExcel)
+        #endregion
+
+        #region LoadTransactionsFromExcel
+        
+        public async Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsFromExcel(Stream inputExcel)
         {
             try
             {
@@ -146,14 +155,12 @@ namespace AccountProcessor.Components.Services
                 var found = excel.Workbook.Worksheets.Single();
 
                 var titles = Enumerable.Range(1, 6).Select(col => found.Cells[1, col].Value).ToArray();
-                if(!titles.SequenceEqual(_expectedHeaders))
+                if(!titles.SequenceEqual(_expectedColumnHeaders))
                 {
-                    return FailWith($"Title row should be: {_expectedHeaders.ToJoinedString(",")}");
+                    return FailWith($"Title row should be: {_expectedColumnHeaders.ToJoinedString(",")}");
                 }
 
                 var transactions = new List<Transaction>();
-
-                //found.Row
 
                 foreach (var rowNum in Enumerable.Range(2, found.Dimension.Rows - 1))
                 {
@@ -186,5 +193,7 @@ namespace AccountProcessor.Components.Services
 
         private static decimal? _TryParseDecimal(object val) =>
             decimal.TryParse(val?.ToString(), out var moneyIn) ? moneyIn : null;
+
+        #endregion
     }
 }
