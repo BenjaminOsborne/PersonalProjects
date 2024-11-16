@@ -355,6 +355,7 @@ namespace AccountProcessor.Components.Services
     public class Match
     {
         private readonly Lazy<System.Text.RegularExpressions.Regex> _regex;
+        private readonly int _wildCardCount;
 
         /// <summary> Must contain at least 3 letters or numbers (i.e. not whitespace or wildcard) </summary>
         public static bool IsValidPattern(string pattern) =>
@@ -367,6 +368,7 @@ namespace AccountProcessor.Components.Services
             Pattern = pattern;
             OverrideDescription = overrideDescription;
             ExactDate = exactDate;
+            _wildCardCount = pattern.Count(c => c == '*');
             _regex = LazyHelper.Create(() => _BuildRegex(pattern));
         }
 
@@ -378,8 +380,8 @@ namespace AccountProcessor.Components.Services
         /// <summary> If set - only applies to specific transaction. <see cref="Pattern"/> should be exact Transaction title at this point. </summary>
         public DateOnly? ExactDate { get; }
 
-        /// <remarks> "False" is before "True" for OrderBy. Prefer overriden dates. </remarks>
-        public IComparable GetOrderKey() => (!ExactDate.HasValue, Pattern.Length);
+        /// <remarks> "False" is before "True" for OrderBy. Prefer overriden dates & non-wild-card matches first. </remarks>
+        public IComparable GetOrderKey() => (!ExactDate.HasValue, _wildCardCount, Pattern.Length);
 
         public MatchType Matches(Transaction trans)
         {
