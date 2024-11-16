@@ -62,9 +62,15 @@
 <input type="month" value="@Month?.ToString("yyyy-MM")" @onchange="e => OnSetMonth((string?)e.Value)">
 <p/>
 
-@if (Categories.HasValue && AllSections.HasValue && Transactions.HasValue)
+@if (Categories.HasValue && AllSections.HasValue && TransactionMatches.HasValue)
 {
     <hr />
+
+    <button class="btn btn-primary" @onclick="() => ExportCategorisedTransactions()">
+        <strong>Export Categorised Transactions: </strong>
+    </button>
+
+    <p />
 
     <label ><strong>Add New Section:</strong></label>
     <select style="margin-right: 5px" value="@NewSectionName" @onchange="e => NewSectionCategoryName = (string?)e.Value">
@@ -79,7 +85,7 @@
 
     <button class="btn" @onclick="() => CreateNewSection()"><i class="fa fa-plus"></i></button>
 
-    foreach(var block in Transactions.Value)
+    foreach(var block in TransactionMatches.Value)
     {
         <hr />
 
@@ -185,7 +191,9 @@
     private string? NewSectionName;
 
     private ImmutableArray<Transaction>? LoadedTransactions;
-    private ImmutableArray<TransactionBlock>? Transactions;
+
+    private CategorisationResult? LatestCategorisationResult;
+    private ImmutableArray<TransactionBlock>? TransactionMatches;
 
     protected override Task OnInitializedAsync()
     {
@@ -271,7 +279,9 @@
         if (result.IsSuccess)
         {
             //Triggers total table refresh - task yield required to enable re-render
-            Transactions = ImmutableArray<TransactionBlock>.Empty;
+            LatestCategorisationResult = null;
+            TransactionMatches = ImmutableArray<TransactionBlock>.Empty;
+
             StateHasChanged();
             await Task.Yield();
 
@@ -310,10 +320,9 @@
         {
             ReverseFileResult = "Success!";
 
-            await JS.InvokeAsync<object>(
-                "jsSaveAsFile",
-                $"{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
-                Convert.ToBase64String(result.Result!));
+            await _DownloadBytes(
+                fileName: $"{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
+                bytes: result.Result!);
         }
         else
         {
@@ -321,10 +330,30 @@
         }
     }
 
+    private async Task ExportCategorisedTransactions()
+    {
+        if (LatestCategorisationResult == null)
+        {
+            return;
+        }
+        
+        var bytes = await ExcelFileRunner.ExportCategorisedTransactionsToExcel(LatestCategorisationResult!);
+        await _DownloadBytes(
+            fileName: $"{Month:yyyy-MM}_CategorisedTransactions_{DateTime.Now.ToFileTime()}.xlsx",
+            bytes: bytes);
+    }
+
+    private async Task _DownloadBytes(string fileName, byte[] bytes) =>
+        await JS.InvokeAsync<object>(
+            "jsSaveAsFile",
+            fileName,
+            Convert.ToBase64String(bytes));
+
     private async Task Categorise(InputFileChangeEventArgs e)
     {
         LoadedTransactions = null;
-        Transactions = null;
+        LatestCategorisationResult = null;
+        TransactionMatches = null;
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         var transactionResult = await ExcelFileRunner.LoadTransactionsFromExcel(inputStream);
@@ -348,7 +377,8 @@
             return;
         }
         var categorisationResult = Categoriser.Categorise(LoadedTransactions!.Value, month: Month!.Value);
-        Transactions = TransactionBlock.CreateFromResult(categorisationResult, AllSections!.Value);
+        LatestCategorisationResult = categorisationResult;
+        TransactionMatches = TransactionBlock.CreateFromResult(categorisationResult, AllSections!.Value);
     }
 
     /// <summary>

@@ -265,6 +265,8 @@ namespace AccountProcessor.Components.Services
         }
         public int Order { get; }
         public string Name { get; }
+
+        public (int order, string name) GetKey() => (Order, Name);
     }
 
     public class CategoryHeader : Block

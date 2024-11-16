@@ -12,6 +12,8 @@ namespace AccountProcessor.Components.Services
         Task<WrappedResult<byte[]>> ReverseCsvTransactionsToExcel(Stream inputCsv);
         
         Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsFromExcel(Stream inputExcel);
+
+        Task<byte[]> ExportCategorisedTransactionsToExcel(CategorisationResult result);
     }
 
     public class ExcelFileRunner : IExcelFileRunner
@@ -112,38 +114,43 @@ namespace AccountProcessor.Components.Services
         
         private static async Task<byte[]> _WriteRowsToExcel(ImmutableArray<TransactionRow> allRows)
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            var excel = new ExcelPackage();
-
-            var added = excel.Workbook.Worksheets.Add("Default");
+            var (excel, worksheet) = _CreateNewExcel();
 
             _expectedColumnHeaders
                 .SelectWithIndexes()
-                .ForEach(p => added.Cells[1, p.Index + 1].Value = p.Value);
+                .ForEach(p => worksheet.Cells[1, p.Index + 1].Value = p.Value);
 
             for (int r = 0; r < allRows.Length; r++)
             {
                 var row = allRows[r];
                 var rowNum = r + 2;
                 var col = 0;
-                added.Cells[rowNum, ++col].Value = row.Date.ToString("dd/MM/yyyy");
-                added.Cells[rowNum, ++col].Value = row.Description;
-                added.Cells[rowNum, ++col].Value = row.Type;
-                added.Cells[rowNum, ++col].Value = row.MoneyIn;
-                added.Cells[rowNum, ++col].Value = row.MoneyOut;
-                added.Cells[rowNum, ++col].Value = row.Balance;
+                worksheet.Cells[rowNum, ++col].Value = row.Date.ToString("dd/MM/yyyy");
+                worksheet.Cells[rowNum, ++col].Value = row.Description;
+                worksheet.Cells[rowNum, ++col].Value = row.Type;
+                worksheet.Cells[rowNum, ++col].Value = row.MoneyIn;
+                worksheet.Cells[rowNum, ++col].Value = row.MoneyOut;
+                worksheet.Cells[rowNum, ++col].Value = row.Balance;
             }
 
             //Autofit for easy viewing
-            added.Columns.ForEach(x => x.AutoFit());
+            worksheet.Columns.ForEach(x => x.AutoFit());
 
             return await excel.GetAsByteArrayAsync();
+        }
+
+        private static (ExcelPackage excel, ExcelWorksheet worksheet) _CreateNewExcel()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            var excel = new ExcelPackage();
+            var worksheet = excel.Workbook.Worksheets.Add("Default");
+            return (excel, worksheet);
         }
 
         #endregion
 
         #region LoadTransactionsFromExcel
-        
+
         public async Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsFromExcel(Stream inputExcel)
         {
             try
@@ -193,6 +200,93 @@ namespace AccountProcessor.Components.Services
 
         private static decimal? _TryParseDecimal(object val) =>
             decimal.TryParse(val?.ToString(), out var moneyIn) ? moneyIn : null;
+
+        #endregion
+
+        #region ExportCategorisedTransactionsToExcel
+
+        public async Task<byte[]> ExportCategorisedTransactionsToExcel(CategorisationResult result)
+        {
+            var (excel, worksheet) = _CreateNewExcel();
+
+            var catSummary = _ToWriteSummary(result);
+
+            for (int catNx = 0; catNx < catSummary.Length; catNx++)
+            {
+                var cat = catSummary[catNx];
+                var row = 1;
+                var col = catNx*2 + 1;
+
+                SetValue(row++, col, cat.Category.Name, isBold: true);
+
+                foreach (var sec in cat.Sections)
+                {
+                    SetValue(row++, col, sec.Section.Name, isBold: true);
+
+                    foreach (var trans in sec.Transactions)
+                    {
+                        SetValue(row, col, $"{trans.Date:dd}/{trans.Date:MM} - {trans.Description}");
+                        SetValue(row++, col + 1, trans.Amount, numberFormat: _excelCurrencyNumberFormat);
+                    }
+
+                    row++; //Create space between sections
+                }
+            }
+
+            void SetValue<T>(int rowNum, int colNum, T val, bool isBold = false, string? numberFormat = null)
+            {
+                var cell = worksheet.Cells[rowNum, colNum];
+                cell.Value = val;
+                if (isBold)
+                {
+                    cell.Style.Font.Bold = true;
+                }
+                if (numberFormat != null)
+                {
+                    cell.Style.Numberformat.Format = numberFormat;
+                }
+            }
+
+            //Autofit for easy viewing
+            worksheet.Columns.ForEach(x => x.AutoFit());
+
+            return await excel.GetAsByteArrayAsync();
+
+        }
+
+        private ImmutableArray<CategorySummary> _ToWriteSummary(CategorisationResult result)
+        {
+            //All unmatched go as "Manual" section
+            var manualHeader = CategoryHeader.Manual;
+            var unmatched = result.UnMatched
+                .Select(x => (x.Transaction, Section: new SectionHeader(int.MaxValue, "UnMatched", manualHeader, null)));
+            
+            return result.Matched
+                .Select(x => (x.Transaction, x.SectionMatches[0].Section))
+                .Concat(unmatched)
+                .GroupBy(x => x.Section.Parent.GetKey())
+                .OrderBy(grp => grp.Key.order)
+                .Select(grpByCat =>
+                {
+                    var category = grpByCat.First().Section.Parent;
+
+                    var sections = grpByCat
+                        .GroupBy(x => x.Section.GetKey())
+                        .OrderBy(grp => grp.Key.order)
+                        .Select(grp => new SectionSummary(grp.First().Section, grp.Select(x => x.Transaction).ToImmutableArray()))
+                        .ToImmutableArray();
+
+                    return new CategorySummary(category, sections);
+                })
+                .ToImmutableArray();
+        }
+
+        private const string _excelCurrencyNumberFormat = """
+            "£"#,##0.00;[Red]\-"£"#,##0.00
+            """;
+
+        private record CategorySummary(CategoryHeader Category, ImmutableArray<SectionSummary> Sections);
+        private record SectionSummary(SectionHeader Section, ImmutableArray<Transaction> Transactions);
 
         #endregion
     }
