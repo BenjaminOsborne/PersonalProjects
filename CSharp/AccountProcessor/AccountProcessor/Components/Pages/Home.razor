@@ -83,6 +83,11 @@
                         <th>Once</th>
                         <th>Match</th>
                     }
+                    else
+                    {
+                        <th>Match</th>
+                        <th>Delete match</th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -126,6 +131,13 @@
                             </td>
                             <td>
                                 <button @onclick="() => PerformMatch(row)">Add</button>
+                            </td>
+                        }
+                        else
+                        {
+                            <td class="fitwidth">@row.LatestMatch?.Pattern</td>
+                            <td>
+                                <button @onclick="() => DeleteMatch(row)">Delete</button>
                             </td>
                         }
                     </tr>
@@ -183,14 +195,14 @@
         {
             Month = parsed;
 
-            _RefreshCategoriesAndTransactions();
+            _RefreshCategoriesAndMatchedTransactions();
         }
     }
 
-    private void _RefreshCategoriesAndTransactions()
+    private void _RefreshCategoriesAndMatchedTransactions()
     {
         _RefreshCategories();
-        _RefreshCategorisedTransactions();
+        _RefreshMatchedTransactions();
     }
 
     private void CreateNewSection()
@@ -202,7 +214,7 @@
         }
         Categoriser.AddSection(category, NewSectionName!, matchMonthOnly: Month);
 
-        _RefreshCategoriesAndTransactions();
+        _RefreshCategoriesAndMatchedTransactions();
 
         NewSectionCategoryName = null;
         NewSectionName = null;
@@ -241,12 +253,28 @@
             StateHasChanged();
             await Task.Yield();
 
-            _RefreshCategorisedTransactions();
+            _RefreshMatchedTransactions();
         }
         else
         {
             LastActionError = result.Error;
         }
+    }
+
+    private void DeleteMatch(TransactionRow row)
+    {
+        LastActionError = null;
+
+        if (row.Section == null || row.LatestMatch == null)
+        {
+            LastActionError = "Empty section or empty matches";
+            return;
+        }
+
+        var result = Categoriser.DeleteMatch(row.Section!, row.LatestMatch!);
+        LastActionError = result.Error;
+
+        _RefreshMatchedTransactions();
     }
 
     private async Task ReverseFile(InputFileChangeEventArgs e)
@@ -283,7 +311,7 @@
             CategorisedTransactionsResult = "Success!";
 
             LoadedTransactions = transactionResult.Result;
-            _RefreshCategorisedTransactions();
+            _RefreshMatchedTransactions();
         }
         else
         {
@@ -291,7 +319,7 @@
         }
     }
 
-    private void _RefreshCategorisedTransactions()
+    private void _RefreshMatchedTransactions()
     {
         if (Month.HasValue == false || LoadedTransactions.HasValue == false || AllSections.HasValue == false)
         {

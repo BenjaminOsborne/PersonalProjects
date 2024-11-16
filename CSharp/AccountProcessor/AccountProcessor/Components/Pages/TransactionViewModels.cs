@@ -17,7 +17,7 @@ namespace AccountProcessor.Components.Pages
                     var found = x.SuggestedSection != null
                         ? selectorOptions.FirstOrDefault(s => s.Header.AreSame(x.SuggestedSection!))
                         : null;
-                    return new TransactionRow(x.Transaction, Section: null)
+                    return new TransactionRow(x.Transaction, Section: null, LatestMatch: null)
                     {
                         SelectionId = found?.Id,
                         MatchOn = x.Transaction.Description,
@@ -31,8 +31,9 @@ namespace AccountProcessor.Components.Pages
                 .Select(x =>
                 {
                     var section = x.SectionMatches.First().Section;
+                    var match = x.SectionMatches.First().Match;
                     var category = section.Parent;
-                    return (x.Transaction, x.SectionMatches, Section: section, Category: category, CategoryKey: category.Order);
+                    return (x.Transaction, Matches: match, Section: section, Category: category, CategoryKey: category.Order);
                 })
                 .GroupBy(x => x.CategoryKey)
                 .OrderBy(x => x.Key)
@@ -42,7 +43,7 @@ namespace AccountProcessor.Components.Pages
                     var rows = grp
                         .OrderBy(x => x.Section.Order)
                         .ThenBy(x => x.Transaction.Date)
-                        .Select(t => new TransactionRow(t.Transaction, t.Section))
+                        .Select(t => new TransactionRow(t.Transaction, t.Section, t.Matches))
                         .ToImmutableArray();
                     return new TransactionBlock(category.Name, IsUnmatched: false, rows);
                 }).ToImmutableArray();
@@ -52,7 +53,7 @@ namespace AccountProcessor.Components.Pages
         }
     }
 
-    public record TransactionRow(Transaction Transaction, SectionHeader? Section)
+    public record TransactionRow(Transaction Transaction, SectionHeader? Section, Match? LatestMatch)
     {
         public string? SelectionId { get; set; }
         public string? MatchOn { get; set; }

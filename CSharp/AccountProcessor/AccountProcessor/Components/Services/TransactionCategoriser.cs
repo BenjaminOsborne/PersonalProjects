@@ -14,6 +14,8 @@ namespace AccountProcessor.Components.Services
 
         Result ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription);
         Result MatchOnce(Transaction transaction, SectionHeader header, string? matchOn, string? overrideDescription);
+
+        Result DeleteMatch(SectionHeader section, Match match);
     }
 
     public class TransactionCategoriser : ITransactionCategoriser
@@ -122,6 +124,18 @@ namespace AccountProcessor.Components.Services
             return _ApplyMatch(transaction, section, match);
         }
 
+        public Result DeleteMatch(SectionHeader section, Match match)
+        {
+            var sectionMatches = _FindSection(section);
+            if (!sectionMatches.IsSuccess)
+            {
+                return sectionMatches;
+            }
+            var result = sectionMatches.Result!.DeleteMatch(match);
+            _WriteModel();
+            return result;
+        }
+
         private static Result _ApplyMatch(Transaction transaction, SectionHeader section, Match match)
         {
             if (!Match.IsValidPattern(match.Pattern))
@@ -129,15 +143,10 @@ namespace AccountProcessor.Components.Services
                 return Result.Fail("Match should contain at least 3 characters");
             }
 
-            var category = _FindModelHeaderFor(section.Parent);
-            if (category == null)
+            var sectionMatches = _FindSection(section);
+            if (!sectionMatches.IsSuccess)
             {
-                return Result.Fail($"Could not find matching Category for: {section.Name}");
-            }
-            var found = category.Sections.FirstOrDefault(s => s.Section.Name == section.Name);
-            if (found == null)
-            {
-                return Result.Fail($"Could not find matching Section for: {section.Name}");
+                return sectionMatches;
             }
 
             if (match.Matches(transaction) != MatchType.MatchExact)
@@ -145,10 +154,26 @@ namespace AccountProcessor.Components.Services
                 return Result.Fail("Does not match transaction!");
             }
 
-            found.AddMatch(match);
+            sectionMatches.Result!.AddMatch(match);
             _WriteModel();
 
             return Result.Success;
+        }
+
+        private static WrappedResult<SectionMatches> _FindSection(SectionHeader section)
+        {
+            var category = _FindModelHeaderFor(section.Parent);
+            if (category == null)
+            {
+                return WrappedResult.Fail<SectionMatches>($"Could not find matching Category for: {section.Name}");
+            }
+            var found = category.Sections.FirstOrDefault(s => s.Section.Name == section.Name);
+            if (found == null)
+            {
+                return WrappedResult.Fail<SectionMatches>($"Could not find matching Section for: {section.Name}");
+            }
+
+            return WrappedResult.Create(found);
         }
 
         private static Category? _FindModelHeaderFor(CategoryHeader header) =>
@@ -343,6 +368,15 @@ namespace AccountProcessor.Components.Services
                 .ConcatItem(match)
                 .OrderBy(x => x.GetOrderKey())
                 .ToImmutableArray();
+
+        public Result DeleteMatch(Match match)
+        {
+            var snap = Matches;
+            Matches = snap.Remove(match);
+            return snap != Matches
+                ? Result.Success
+                : Result.Fail("Could not find Match");
+        }
     }
 
     public enum MatchType
