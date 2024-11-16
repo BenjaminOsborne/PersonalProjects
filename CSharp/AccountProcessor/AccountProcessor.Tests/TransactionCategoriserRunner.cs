@@ -10,19 +10,32 @@ namespace AccountProcessor.Tests
         public void Bootstrap_Json_from_scratch()
         {
             var outputPath = _GetOutputPath();
-            var model = _GetMatchModel();
+            var model = _CreateInitialModel();
 
             //Add example for Income<>Salary
             model.Categories[0].Sections[0].AddMatch(new Match("Accurx Limited Pay", "Accurx Salary", null));
 
-            var content = JsonHelper.Serialise(model, writeIndented: true);
-            File.WriteAllText(outputPath, content);
+            var content = _WriteModel(outputPath, model);
 
             var loaded = JsonHelper.Deserialise<MatchModel>(content);
             Assert.That(loaded!.Categories.Length, Is.EqualTo(model.Categories.Length));
         }
 
-        private MatchModel _GetMatchModel()
+        [Test]
+        public void Add_manual_section()
+        {
+            var outputPath = _GetOutputPath();
+            var loaded = JsonHelper.Deserialise<MatchModel>(File.OpenRead(outputPath));
+
+            var catToMatch = CategoryHeader.TravelTrips.Name;
+            var category = loaded!.Categories.Single(x => x.Header.Name == catToMatch);
+            var next = category.Sections.Max(s => s.Section.Order) + 1;
+            category.AddSection(new SectionMatches(new SectionHeader(next, "Ad-hoc Trips", category.Header, null), []));
+
+            _WriteModel(outputPath, loaded);
+        }
+
+        private MatchModel _CreateInitialModel()
         {
             var categories = new[]
             {
@@ -44,8 +57,15 @@ namespace AccountProcessor.Tests
         {
             var sectionList = sections
                 .Select((x,nx) => new SectionMatches(new SectionHeader(nx, x, header, month: null), []))
-                .ToList();
+                .ToImmutableArray();
             return new Category(header, sectionList);
+        }
+
+        private static string _WriteModel(string outputPath, MatchModel model)
+        {
+            var content = JsonHelper.Serialise(model, writeIndented: true);
+            File.WriteAllText(outputPath, content);
+            return content;
         }
 
         private static string _GetOutputPath()

@@ -131,6 +131,7 @@ namespace AccountProcessor.Components.Services
                 new JsonSerializerOptions { IncludeFields = true, WriteIndented = writeIndented });
 
         public static T? Deserialise<T>(string json) => JsonSerializer.Deserialize<T>(json);
+        public static T? Deserialise<T>(Stream stream) => JsonSerializer.Deserialize<T>(stream);
     }
 
     public static class LazyHelper

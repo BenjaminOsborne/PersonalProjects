@@ -105,7 +105,7 @@ namespace AccountProcessor.Components.Services
             
             var next = category.Sections.Max(s => s.Section.Order) + 1;
             var created = new SectionHeader(next, sectionName, categoryHeader, matchMonthOnly);
-            category.Sections.Add(new SectionMatches(created, []));
+            category.AddSection(new SectionMatches(created, []));
             _WriteModel();
 
             return WrappedResult.Create(created);
@@ -270,7 +270,21 @@ namespace AccountProcessor.Components.Services
             new CategoryHeader(order, name);
     }
 
-    public record Category(CategoryHeader Header, List<SectionMatches> Sections);
+    public class Category
+    {
+        public Category(CategoryHeader header, ImmutableArray<SectionMatches> sections)
+        {
+            Header = header;
+            Sections = sections;
+        }
+
+        public CategoryHeader Header { get; }
+
+        public ImmutableArray<SectionMatches> Sections { get; private set; }
+
+        public void AddSection(SectionMatches section) =>
+            Sections = Sections.Add(section);
+    }
 
     public class SectionHeader : Block
     {
