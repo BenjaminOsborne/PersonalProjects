@@ -287,21 +287,6 @@
           },
           "Matches": [
             {
-              "Pattern": "LIDL GB*",
-              "OverrideDescription": "Lidl",
-              "ExactDate": null
-            },
-            {
-              "Pattern": "ONE STOP*",
-              "OverrideDescription": "One Stop",
-              "ExactDate": null
-            },
-            {
-              "Pattern": "NYA*Tesco",
-              "OverrideDescription": "Tesco NYA",
-              "ExactDate": null
-            },
-            {
               "Pattern": "ASDA STORES",
               "OverrideDescription": "Asda",
               "ExactDate": null
@@ -314,16 +299,6 @@
             {
               "Pattern": "SMOL LIMITED",
               "OverrideDescription": "Smol Ltd",
-              "ExactDate": null
-            },
-            {
-              "Pattern": "TESCO STORES*",
-              "OverrideDescription": "Tesco Store",
-              "ExactDate": null
-            },
-            {
-              "Pattern": "CO-OP GROUP *",
-              "OverrideDescription": "Co-op",
               "ExactDate": null
             },
             {
@@ -352,11 +327,6 @@
               "ExactDate": null
             },
             {
-              "Pattern": "CO-OP GROUP 011001",
-              "OverrideDescription": "Co-op",
-              "ExactDate": null
-            },
-            {
               "Pattern": "HERON FOODS BILBOR",
               "OverrideDescription": "Heron Foods",
               "ExactDate": null
@@ -364,6 +334,31 @@
             {
               "Pattern": "SPARK ETAIL LIMITE",
               "OverrideDescription": "Spark Etail",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "LIDL GB*",
+              "OverrideDescription": "Lidl",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "ONE STOP*",
+              "OverrideDescription": "One Stop",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "NYA*Tesco",
+              "OverrideDescription": "Tesco NYA",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "TESCO STORES*",
+              "OverrideDescription": "Tesco Store",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "CO-OP GROUP *",
+              "OverrideDescription": "Co-op Supermarket",
               "ExactDate": null
             }
           ]
