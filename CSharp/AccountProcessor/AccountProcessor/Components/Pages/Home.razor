@@ -7,6 +7,26 @@
 @inject Services.ITransactionCategoriser Categoriser;
 @inject IJSRuntime JS
 
+<!-- Add icon library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!-- Button Style -->
+<style>
+    .btn {
+        background-color: DodgerBlue;
+        border: none;
+        color: white;
+        padding: 2px 2x;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    /* Darker background on mouse-over */
+    .btn:hover {
+        background-color: RoyalBlue;
+    }
+</style>
+
 <PageTitle>Home</PageTitle>
 
 <h1>Account Processor</h1>
@@ -44,8 +64,10 @@
 
 @if (Categories.HasValue && AllSections.HasValue && Transactions.HasValue)
 {
-    <p role="status"><strong>Add New Section:</strong></p>
-    <select value="@NewSectionName" @onchange="e => NewSectionCategoryName = (string?)e.Value">
+    <hr />
+
+    <label ><strong>Add New Section:</strong></label>
+    <select style="margin-right: 5px" value="@NewSectionName" @onchange="e => NewSectionCategoryName = (string?)e.Value">
         <option value="0" selected>Choose Category</option>
         @foreach (var cat in Categories.Value)
         {
@@ -53,15 +75,15 @@
         }
     </select>
 
-    <input placeholder="Section Name..." value="@NewSectionName" @onchange="e => NewSectionName = (string?)e.Value" />
+    <input style="margin-right: 5px" placeholder="Section Name..." value="@NewSectionName" @onchange="e => NewSectionName = (string?)e.Value" />
 
-    <button @onclick="() => CreateNewSection()">Create Section</button>
+    <button class="btn" @onclick="() => CreateNewSection()"><i class="fa fa-plus"></i></button>
 
     foreach(var block in Transactions.Value)
     {
         <hr />
 
-        <p role="status"><strong>@block.Display</strong></p>
+        <label><strong>@block.Display</strong></label>
 
         <table class="table" style="width:auto">
             <thead>
@@ -86,7 +108,7 @@
                     else
                     {
                         <th>Match</th>
-                        <th>Delete match</th>
+                        <th>Delete</th>
                     }
                 </tr>
             </thead>
@@ -130,14 +152,14 @@
                                 <input type="checkbox" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value">
                             </td>
                             <td>
-                                <button @onclick="() => PerformMatch(row)">Add</button>
+                                <button class="btn" @onclick="() => PerformMatch(row)"><i class="fa fa-plus"></i></button>
                             </td>
                         }
                         else
                         {
                             <td class="fitwidth">@row.LatestMatch?.Pattern</td>
                             <td>
-                                <button @onclick="() => DeleteMatch(row)">Delete</button>
+                                <button class="btn" @onclick="() => DeleteMatch(row)"><i class="fa fa-trash"></i></button>
                             </td>
                         }
                     </tr>
