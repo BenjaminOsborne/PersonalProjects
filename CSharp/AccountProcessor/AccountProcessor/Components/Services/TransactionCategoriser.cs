@@ -285,7 +285,7 @@ namespace AccountProcessor.Components.Services
             var next = Sections.Max(s => s.Section.Order) + 1;
             var section = new SectionHeader(next, sectionName, Header, matchMonthOnly);
 
-            if (Sections.Any(x => x.Section.AreSameDefinition(section)))
+            if (Sections.Any(x => x.Section.IsClashing(section)))
             {
                 return null;
             }
@@ -312,8 +312,16 @@ namespace AccountProcessor.Components.Services
 
         public bool AreSame(SectionHeader other) => other != null && _GetKey().Equals(other._GetKey());
 
-        public bool AreSameDefinition(SectionHeader section) =>
-            Name == section.Name && Month == section.Month;
+        /// <summary>
+        /// Clashing if Name matches and EITHER
+        /// - <see cref="Month"/> not set (i.e. general section)
+        /// OR
+        /// - <see cref="Month"/> set and same (i.e. defining for same month).
+        /// 
+        /// I.e. Can only have identical Name added if for set months which are different.
+        /// </summary>
+        public bool IsClashing(SectionHeader newSection) =>
+            Name == newSection.Name && (Month == null || Month == newSection.Month);
 
         private IComparable _GetKey() => (Order, Name, Month, Parent.Order, Parent.Name);
     }
