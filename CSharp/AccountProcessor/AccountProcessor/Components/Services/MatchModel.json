@@ -26,6 +26,11 @@
               "Pattern": "Robert Soane \u0026 Ros 36 Thorpe Way",
               "OverrideDescription": "36 Thorpe Way",
               "ExactDate": null
+            },
+            {
+              "Pattern": "HMRC CHILD BENEFIT OSBORNEELIZA870505",
+              "OverrideDescription": "Child Benefit",
+              "ExactDate": null
             }
           ]
         },
@@ -136,6 +141,11 @@
               "ExactDate": "2024-10-02"
             },
             {
+              "Pattern": "Movember Foundatio",
+              "OverrideDescription": "Movember Gift",
+              "ExactDate": "2024-11-15"
+            },
+            {
               "Pattern": "TOYBOX CHARITY*",
               "OverrideDescription": "Toybox",
               "ExactDate": null
@@ -143,6 +153,11 @@
             {
               "Pattern": "CAMBRIDGE YFC      OSBORNE",
               "OverrideDescription": "Cambridge YFC",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "COMPASSION UK      110421-",
+              "OverrideDescription": "Compassion",
               "ExactDate": null
             },
             {
@@ -218,6 +233,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "NCC COMMUNITY      A/HHSV*",
+              "OverrideDescription": "NCC Community Gym",
+              "ExactDate": null
+            },
+            {
               "Pattern": "BREEDON HOUSE NURS NAOMI OSBORNE",
               "OverrideDescription": "Naomi Nursery",
               "ExactDate": null
@@ -277,6 +297,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "NYA*Tesco",
+              "OverrideDescription": "Tesco NYA",
+              "ExactDate": null
+            },
+            {
               "Pattern": "ASDA STORES",
               "OverrideDescription": "Asda",
               "ExactDate": null
@@ -287,8 +312,23 @@
               "ExactDate": null
             },
             {
+              "Pattern": "SMOL LIMITED",
+              "OverrideDescription": "Smol Ltd",
+              "ExactDate": null
+            },
+            {
               "Pattern": "TESCO STORES*",
               "OverrideDescription": "Tesco Store",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "CO-OP GROUP *",
+              "OverrideDescription": "Co-op",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "ASDA SUPERSTORE",
+              "OverrideDescription": "Asda",
               "ExactDate": null
             },
             {
@@ -320,6 +360,11 @@
               "Pattern": "HERON FOODS BILBOR",
               "OverrideDescription": "Heron Foods",
               "ExactDate": null
+            },
+            {
+              "Pattern": "SPARK ETAIL LIMITE",
+              "OverrideDescription": "Spark Etail",
+              "ExactDate": null
             }
           ]
         }
@@ -350,6 +395,11 @@
             {
               "Pattern": "CHAI YO",
               "OverrideDescription": "Chai Yo",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "GREGGS PLC",
+              "OverrideDescription": "Greggs",
               "ExactDate": null
             },
             {
@@ -389,6 +439,21 @@
               "Pattern": "NATIONAL TRUST",
               "OverrideDescription": "National Trust",
               "ExactDate": "2024-10-04"
+            },
+            {
+              "Pattern": "TROCKEL",
+              "OverrideDescription": "Trockel",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "WOLLATON",
+              "OverrideDescription": "Wollaton",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "CHAIIWALA",
+              "OverrideDescription": "Chaiiwala",
+              "ExactDate": null
             },
             {
               "Pattern": "CAFFE NERO*",
@@ -493,6 +558,11 @@
               "Pattern": "SAINSBURYS PETROL",
               "OverrideDescription": "Sainsburys Petrol",
               "ExactDate": null
+            },
+            {
+              "Pattern": "TESCO PAY AT PUMP",
+              "OverrideDescription": "Tesco Petrol",
+              "ExactDate": null
             }
           ]
         },
@@ -524,7 +594,18 @@
             "Order": 3,
             "Name": "Ad-hoc Trips"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "FIXR.CO* TICKET 5B",
+              "OverrideDescription": "Steely Dan",
+              "ExactDate": "2024-11-11"
+            },
+            {
+              "Pattern": "RedKangaroo Nottin",
+              "OverrideDescription": "RedKangaroo",
+              "ExactDate": null
+            }
+          ]
         },
         {
           "Section": {
@@ -561,6 +642,16 @@
               "Pattern": "I-F TFR 97891390",
               "OverrideDescription": "Fraud Rebate",
               "ExactDate": "2024-11-04"
+            },
+            {
+              "Pattern": "eBay O*08-12311-73",
+              "OverrideDescription": "Ebay Furniture",
+              "ExactDate": "2024-11-12"
+            },
+            {
+              "Pattern": "NEXT DIRECTORY GPA",
+              "OverrideDescription": "Next Refund",
+              "ExactDate": "2024-11-15"
             },
             {
               "Pattern": "AMZNMktplace*",
@@ -637,7 +728,13 @@
             "Order": 0,
             "Name": "Manual Sort"
           },
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "TFR 91020207031300",
+              "OverrideDescription": "TFR 91020207031300",
+              "ExactDate": "2024-11-01"
+            }
+          ]
         }
       ]
     },
