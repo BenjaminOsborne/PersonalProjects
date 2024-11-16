@@ -73,7 +73,7 @@
 
                     <th>Date</th>
                     <th>Description</th>
-                    <th>Amount (£)</th>
+                    <th class="border-right">Amount (£)</th>
 
                     @if (block.IsUnmatched)
                     {
@@ -106,7 +106,7 @@
 
                         <td class="fitwidth">@tr.Date.ToShortDateString()</td>
                         <td class="fitwidth">@tr.Description</td>
-                        <td style="@styleColor">@displayAmount</td>
+                        <td class="border-right" style="@styleColor">@displayAmount</td>
 
                         @if (block.IsUnmatched)
                         {

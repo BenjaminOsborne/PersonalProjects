@@ -55,3 +55,7 @@ td.fitwidth {
     width: 1px;
     white-space: nowrap;
 }
+
+.border-right {
+    border-right: 1px solid LightGray;
+}
