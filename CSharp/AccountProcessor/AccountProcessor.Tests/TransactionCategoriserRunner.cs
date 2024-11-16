@@ -21,7 +21,7 @@ namespace AccountProcessor.Tests
             Assert.That(loaded!.Categories.Length, Is.EqualTo(model.Categories.Length));
         }
 
-        [Test, Ignore("ONLY RUN TO ADD A NEW SECTION")]]
+        [Test, Ignore("ONLY RUN TO ADD A NEW SECTION")]
         public void Add_manual_section()
         {
             var outputPath = _GetOutputPath();
@@ -34,8 +34,7 @@ namespace AccountProcessor.Tests
 
             var catToMatch = CategoryHeader.TravelTrips.Name;
             var category = loaded.Categories.Single(x => x.Header.Name == catToMatch);
-            var next = category.Sections.Max(s => s.Section.Order) + 1;
-            category.AddSection(new SectionMatches(new SectionHeader(next, "Ad-hoc Trips", category.Header, null), []));
+            category.AddSection("Ad-hoc Trips", null);
 
             _WriteModel(outputPath, loaded);
         }
