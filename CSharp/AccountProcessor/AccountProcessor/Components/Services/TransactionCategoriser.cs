@@ -97,15 +97,13 @@ namespace AccountProcessor.Components.Services
             {
                 return WrappedResult.Fail<SectionHeader>($"Could not find matching Category for: {categoryHeader.Name}");
             }
-            var found = category.Sections.FirstOrDefault(s => s.Section.Name == sectionName);
-            if (found != null)
+
+            var created = category.AddSection(sectionName, matchMonthOnly);
+            if (created == null)
             {
                 return WrappedResult.Fail<SectionHeader>($"Already have section for: {sectionName}");
             }
             
-            var next = category.Sections.Max(s => s.Section.Order) + 1;
-            var created = new SectionHeader(next, sectionName, categoryHeader, matchMonthOnly);
-            category.AddSection(new SectionMatches(created, []));
             _WriteModel();
 
             return WrappedResult.Create(created);
@@ -282,8 +280,20 @@ namespace AccountProcessor.Components.Services
 
         public ImmutableArray<SectionMatches> Sections { get; private set; }
 
-        public void AddSection(SectionMatches section) =>
-            Sections = Sections.Add(section);
+        public SectionHeader? AddSection(string sectionName, DateOnly? matchMonthOnly)
+        {
+            var next = Sections.Max(s => s.Section.Order) + 1;
+            var section = new SectionHeader(next, sectionName, Header, matchMonthOnly);
+
+            if (Sections.Any(x => x.Section.AreSameDefinition(section)))
+            {
+                return null;
+            }
+            
+            var sectionMatches = new SectionMatches(section, []);
+            Sections = Sections.Add(sectionMatches);
+            return section;            
+        }
     }
 
     public class SectionHeader : Block
@@ -302,7 +312,10 @@ namespace AccountProcessor.Components.Services
 
         public bool AreSame(SectionHeader other) => other != null && _GetKey().Equals(other._GetKey());
 
-        private IComparable _GetKey() => (Order, Name, Parent.Order, Parent.Name);
+        public bool AreSameDefinition(SectionHeader section) =>
+            Name == section.Name && Month == section.Month;
+
+        private IComparable _GetKey() => (Order, Name, Month, Parent.Order, Parent.Name);
     }
 
     public class SectionMatches

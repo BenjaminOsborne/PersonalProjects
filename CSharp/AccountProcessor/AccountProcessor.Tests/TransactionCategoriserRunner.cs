@@ -21,14 +21,19 @@ namespace AccountProcessor.Tests
             Assert.That(loaded!.Categories.Length, Is.EqualTo(model.Categories.Length));
         }
 
-        [Test]
+        [Test, Ignore("ONLY RUN TO ADD A NEW SECTION")]]
         public void Add_manual_section()
         {
             var outputPath = _GetOutputPath();
-            var loaded = JsonHelper.Deserialise<MatchModel>(File.OpenRead(outputPath));
+            MatchModel loaded;
+            
+            using(var fs = File.OpenRead(outputPath))
+            {
+                loaded = JsonHelper.Deserialise<MatchModel>(fs)!;
+            }
 
             var catToMatch = CategoryHeader.TravelTrips.Name;
-            var category = loaded!.Categories.Single(x => x.Header.Name == catToMatch);
+            var category = loaded.Categories.Single(x => x.Header.Name == catToMatch);
             var next = category.Sections.Max(s => s.Section.Order) + 1;
             category.AddSection(new SectionMatches(new SectionHeader(next, "Ad-hoc Trips", category.Header, null), []));
 
