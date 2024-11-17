@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Reflection;
 using System.Text.Json;
 
 namespace AccountProcessor.Components.Services
@@ -114,6 +115,15 @@ namespace AccountProcessor.Components.Services
         public static IEnumerable<T> ConcatItem<T>(this IEnumerable<T> items, T item) => items.Concat([item]);
     }
 
+    public static class DictionaryExtensions
+    {
+        public static T? TryGet<TKey, T>(this IReadOnlyDictionary<TKey, T> map, TKey key) where T : class =>
+            map.TryGetValue(key, out var value) ? value : default;
+
+        public static T? TryGetStruct<TKey, T>(this IReadOnlyDictionary<TKey, T> map, TKey key) where T : struct =>
+            map.TryGetValue(key, out var value) ? value : null;
+    }
+
     public static class StreamExtensions
     {
         public static async Task<byte[]> ReadAllBytesAsync(this Stream input)
@@ -137,5 +147,28 @@ namespace AccountProcessor.Components.Services
     public static class LazyHelper
     {
         public static Lazy<T> Create<T>(Func<T> fnCreate) => new Lazy<T>(fnCreate);
+    }
+
+    public static class ReflectionUtility
+    {
+        public static ImmutableArray<(string fieldName, T value)> GetPublicConstFieldsOfType<T>(this Type type) =>
+            type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.IsLiteral && fi.IsInitOnly == false)
+                .Select(x => x.GetRawConstantValue() is T rawCast ? (fieldName: x.Name, value: rawCast).AsNullable() : null)
+                .Where(x => x.HasValue)
+                .Select(x => x!.Value)
+                .ToImmutableArray();
+
+        public static ImmutableArray<(string propertyName, T value)> GetAllStaticPublicPropertiesOfType<T>(this Type type) =>
+            type.GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.PropertyType == typeof(T))
+                .Select(x => (fieldName: x.Name, value: (T)x.GetValue(null)!))
+                .ToImmutableArray();
+
+        public static ImmutableArray<(string fieldName, T value)> GetAllStaticPublicFieldsOfType<T>(this Type type) =>
+            type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.FieldType == typeof(T))
+                .Select(x => (fieldName: x.Name, value: (T)x.GetValue(null)!))
+                .ToImmutableArray();
     }
 }

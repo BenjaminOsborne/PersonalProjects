@@ -278,21 +278,26 @@ namespace AccountProcessor.Components.Services
             var manualHeader = CategoryHeader.Manual;
             var unmatched = result.UnMatched
                 .Select(x => (x.Transaction, Section: new SectionHeader(int.MaxValue, "UnMatched", manualHeader, null)));
-            
-            return result.Matched
+            var map = result.Matched
                 .Select(x => (x.Transaction, x.SectionMatches[0].Section))
                 .Concat(unmatched)
-                .GroupBy(x => x.Section.Parent.GetKey())
-                .OrderBy(grp => grp.Key.order)
-                .Select(grpByCat =>
+                .GroupBy(x => x.Section.Parent.Name)
+                .ToImmutableDictionary(x => x.Key, x => x.ToImmutableArray());
+            
+            //Ensures every category present, even if no transactions
+            return CategoryHeader.AllValues
+                .OrderBy(x => x.Order)
+                .Select(c => (Cat: c, Vals: map.TryGetStruct(c.Name)))
+                .Select(cat =>
                 {
-                    var category = grpByCat.First().Section.Parent;
+                    var category = cat.Cat;
 
-                    var sections = grpByCat
+                    var sections = cat.Vals?
                         .GroupBy(x => x.Section.GetKey())
                         .OrderBy(grp => grp.Key.order)
                         .Select(grp => new SectionSummary(grp.First().Section, grp.Select(x => x.Transaction).ToImmutableArray()))
-                        .ToImmutableArray();
+                        .ToImmutableArray()
+                        ?? ImmutableArray<SectionSummary>.Empty;
 
                     return new CategorySummary(category, sections);
                 })
