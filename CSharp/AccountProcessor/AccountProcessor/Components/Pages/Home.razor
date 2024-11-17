@@ -336,11 +336,16 @@
         {
             return;
         }
-        
-        var bytes = await ExcelFileRunner.ExportCategorisedTransactionsToExcel(LatestCategorisationResult!);
+
+        var result = await ExcelFileRunner.ExportCategorisedTransactionsToExcel(LatestCategorisationResult!);
+        if (!result.IsSuccess)
+        {
+            LastActionError = result.Error;
+            return;
+        }
         await _DownloadBytes(
             fileName: $"{Month:yyyy-MM}_CategorisedTransactions_{DateTime.Now.ToFileTime()}.xlsx",
-            bytes: bytes);
+            bytes: result.Result!);
     }
 
     private async Task _DownloadBytes(string fileName, byte[] bytes) =>

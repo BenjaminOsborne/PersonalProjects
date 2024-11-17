@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using OfficeOpenXml;
 using System.Collections.Immutable;
+using System.Drawing;
 using System.Globalization;
 
 namespace AccountProcessor.Components.Services
@@ -13,7 +14,7 @@ namespace AccountProcessor.Components.Services
         
         Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsFromExcel(Stream inputExcel);
 
-        Task<byte[]> ExportCategorisedTransactionsToExcel(CategorisationResult result);
+        Task<WrappedResult<byte[]>> ExportCategorisedTransactionsToExcel(CategorisationResult result);
     }
 
     public class ExcelFileRunner : IExcelFileRunner
@@ -205,53 +206,70 @@ namespace AccountProcessor.Components.Services
 
         #region ExportCategorisedTransactionsToExcel
 
-        public async Task<byte[]> ExportCategorisedTransactionsToExcel(CategorisationResult result)
+        public async Task<WrappedResult<byte[]>> ExportCategorisedTransactionsToExcel(CategorisationResult result)
         {
-            var (excel, worksheet) = _CreateNewExcel();
-
-            var catSummary = _ToWriteSummary(result);
-
-            for (int catNx = 0; catNx < catSummary.Length; catNx++)
+            try
             {
-                var cat = catSummary[catNx];
-                var row = 1;
-                var col = catNx*2 + 1;
+                var (excel, worksheet) = _CreateNewExcel();
 
-                SetValue(row++, col, cat.Category.Name, isBold: true);
+                var catSummary = _ToWriteSummary(result);
 
-                foreach (var sec in cat.Sections)
+                for (int catNx = 0; catNx < catSummary.Length; catNx++)
                 {
-                    SetValue(row++, col, sec.Section.Name, isBold: true);
+                    var cat = catSummary[catNx];
+                    var row = 1;
+                    var col = catNx * 2 + 1;
 
-                    foreach (var trans in sec.Transactions)
+                    SetValue(row++, col, cat.Category.Name, isBold: true);
+
+                    foreach (var sec in cat.Sections)
                     {
-                        SetValue(row, col, $"{trans.Date:dd}/{trans.Date:MM} - {trans.Description}");
-                        SetValue(row++, col + 1, trans.Amount, numberFormat: _excelCurrencyNumberFormat);
+                        SetValue(row++, col, sec.Section.Name, isBold: true);
+
+                        foreach (var trans in sec.Transactions)
+                        {
+                            SetValue(row, col, $"{trans.Date:dd}/{trans.Date:MM} - {trans.Description}");
+                            SetValue(row++, col + 1, trans.Amount, numberFormat: _excelCurrencyNumberFormat);
+                        }
+
+                        row++; //Create space between sections
                     }
 
-                    row++; //Create space between sections
-                }
-            }
+                    //Autofit for easy viewing
+                    worksheet.Columns[col].AutoFit();
+                    worksheet.Columns[col + 1].AutoFit();
 
-            void SetValue<T>(int rowNum, int colNum, T val, bool isBold = false, string? numberFormat = null)
+                    //Set column borders
+                    var border = worksheet.Columns[col + 1].Style.Border;
+                    border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    border.Right.Color.SetColor(Color.Black);
+                }
+
+                //Set first row border
+                var rowBorder = worksheet.Rows[1].Style.Border;
+                rowBorder.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                rowBorder.Bottom.Color.SetColor(Color.Black);
+
+                void SetValue<T>(int rowNum, int colNum, T val, bool isBold = false, string? numberFormat = null)
+                {
+                    var cell = worksheet.Cells[rowNum, colNum];
+                    cell.Value = val;
+                    if (isBold)
+                    {
+                        cell.Style.Font.Bold = true;
+                    }
+                    if (numberFormat != null)
+                    {
+                        cell.Style.Numberformat.Format = numberFormat;
+                    }
+                }
+
+                return WrappedResult.Create(await excel.GetAsByteArrayAsync());
+            }
+            catch (Exception ex)
             {
-                var cell = worksheet.Cells[rowNum, colNum];
-                cell.Value = val;
-                if (isBold)
-                {
-                    cell.Style.Font.Bold = true;
-                }
-                if (numberFormat != null)
-                {
-                    cell.Style.Numberformat.Format = numberFormat;
-                }
+                return WrappedResult.Fail<byte[]>(ex.ToString());
             }
-
-            //Autofit for easy viewing
-            worksheet.Columns.ForEach(x => x.AutoFit());
-
-            return await excel.GetAsByteArrayAsync();
-
         }
 
         private ImmutableArray<CategorySummary> _ToWriteSummary(CategorisationResult result)
