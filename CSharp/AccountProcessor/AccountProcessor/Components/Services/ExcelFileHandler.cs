@@ -19,7 +19,10 @@ namespace AccountProcessor.Components.Services
 
     public class ExcelFileHandler : IExcelFileHandler
     {
-        private static readonly ImmutableArray<string> _expectedColumnHeaders = ["Date", "Description", "Type", "Money In", "Money Out", "Balance"];
+        /// <summary> Note: "Balance" included in co-op report, but not required for loading transactions out to process </summary>
+        private static readonly ImmutableArray<string> _transactionsRequiredColumnHeaders = ["Date", "Description", "Type", "Money In", "Money Out"];
+        
+        private static readonly ImmutableArray<string> _coopBankColumnHeaders = _transactionsRequiredColumnHeaders.Add("Balance");
         
         private const string _dateFormatExcel = "dd/MM/yyyy";
 
@@ -116,7 +119,7 @@ namespace AccountProcessor.Components.Services
         {
             var (excel, worksheet) = _CreateNewExcel();
 
-            _expectedColumnHeaders
+            _coopBankColumnHeaders
                 .SelectWithIndexes()
                 .ForEach(p => worksheet.Cells[1, p.Index + 1].Value = p.Value);
 
@@ -161,11 +164,12 @@ namespace AccountProcessor.Components.Services
                 
                 var found = excel.Workbook.Worksheets.Single();
 
-                var titles = Enumerable.Range(1, _expectedColumnHeaders.Length)
+                var required = _transactionsRequiredColumnHeaders;
+                var titles = Enumerable.Range(1, required.Length)
                     .ToImmutableArray(col => found.Cells[1, col].Value);
-                if(!titles.SequenceEqual(_expectedColumnHeaders))
+                if(!titles.SequenceEqual(required))
                 {
-                    return FailWith($"Title row should be: {_expectedColumnHeaders.ToJoinedString(",")}");
+                    return FailWith($"Title row should be: {required.ToJoinedString(",")}");
                 }
 
                 var transactions = new List<Transaction>();
