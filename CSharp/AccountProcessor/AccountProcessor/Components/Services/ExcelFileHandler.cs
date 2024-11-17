@@ -10,7 +10,7 @@ namespace AccountProcessor.Components.Services
     {
         /// <summary> Takes input CSV stream and returns excel byte[] for download with transactions in ascending order </summary>
         /// <remarks> Assumes the co-op CSV format is in reverse order </remarks>
-        Task<WrappedResult<byte[]>> ReverseCsvTransactionsToExcel(Stream inputCsv);
+        Task<WrappedResult<byte[]>> CoopBank_ReverseCsvTransactionsToExcel(Stream inputCsv);
         
         Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsFromExcel(Stream inputExcel);
 
@@ -42,9 +42,9 @@ namespace AccountProcessor.Components.Services
             public decimal Balance { get; init; }
         }
 
-        #region ReverseCsvTransactionsToExcel
-        
-        public async Task<WrappedResult<byte[]>> ReverseCsvTransactionsToExcel(Stream inputCsv)
+        #region CoopBank_ReverseCsvTransactionsToExcel
+
+        public async Task<WrappedResult<byte[]>> CoopBank_ReverseCsvTransactionsToExcel(Stream inputCsv)
         {
             var rows = _ExtractRowsFromCsvStream(inputCsv);
             if (!rows.IsSuccess)

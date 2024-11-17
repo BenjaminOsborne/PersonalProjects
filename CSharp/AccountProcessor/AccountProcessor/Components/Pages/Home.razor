@@ -35,8 +35,8 @@
 <hr/>
 
 <button class="btn btn-primary">
-    <strong>Reverse File: </strong>
-    <InputFile OnChange="@ReverseFile" accept=".csv" />
+    <strong>Coop Bank: Reverse File</strong>
+    <InputFile OnChange="@CoopBankReverseFile" accept=".csv" />
 </button>
 <p role="status"><strong>Result</strong>: @ReverseFileResult</p>
 
@@ -328,19 +328,19 @@
         _RefreshMatchedTransactions();
     }
 
-    private async Task ReverseFile(InputFileChangeEventArgs e)
+    private async Task CoopBankReverseFile(InputFileChangeEventArgs e)
     {
         ReverseFileResult = "Running...";
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
-        var result = await ExcelFileHandler.ReverseCsvTransactionsToExcel(inputStream);
+        var result = await ExcelFileHandler.CoopBank_ReverseCsvTransactionsToExcel(inputStream);
 
         if (result.IsSuccess)
         {
             ReverseFileResult = "Success!";
 
             await _DownloadBytes(
-                fileName: $"{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
+                fileName: $"CoopBank_Reverse_{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
                 bytes: result.Result!);
         }
         else
