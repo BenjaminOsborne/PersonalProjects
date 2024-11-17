@@ -89,7 +89,7 @@
     @if (TransactionResultViewModel.UnMatchedRows.Any())
     {
         <hr />
-        <label><strong>UnMatched</strong></label>
+        <label style="color:red; font-size:large"><strong>UnMatched</strong></label>
 
         <table class="table" style="width:auto">
             <thead>
@@ -144,7 +144,7 @@
     if (TransactionResultViewModel.MatchedRows.Any())
     {
         <hr />
-        <label><strong>Matched</strong></label>
+        <label style="color:green; font-size:large"><strong>Matched</strong></label>
 
         <table class="table" style="width:auto">
             <thead>
@@ -162,7 +162,8 @@
             <tbody>
                 @foreach (var row in TransactionResultViewModel.MatchedRows)
                 {
-                    <tr>
+                    var rowClassBottom = row.IsLastRowForCategory ? "border-bottom-thick" : "";
+                    <tr class=@rowClassBottom>
                         <td class="fitwidth">@row.Category.Name</td>
                         <td class="fitwidth">@row.Section.Name</td>
                         <td class="fitwidth">@row.Transaction.Date.ToShortDateString()</td>

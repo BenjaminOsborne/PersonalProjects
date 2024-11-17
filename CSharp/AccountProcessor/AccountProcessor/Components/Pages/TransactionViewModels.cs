@@ -38,13 +38,14 @@ namespace AccountProcessor.Components.Pages
                 .OrderBy(x => x.Key)
                 .ToImmutableArrayMany(grp =>
                 {
-                    var category = grp.First().Category;
+                    var grpArr = grp.ToImmutableArray();
+                    var category = grpArr[0].Category;
                     return grp
                         .OrderBy(x => x.Section.Order)
                         .ThenBy(x => x.Tr.Date)
                         .Select((t, nx) => new TransactionRowMatched(
                             t.Section.Parent,
-                            IsFirstRowForCategory: nx == 0,
+                            IsLastRowForCategory: nx == grpArr.Length - 1,
                             t.Section,
                             t.Tr,
                             DisplayAmount(t.Tr),
@@ -75,7 +76,7 @@ namespace AccountProcessor.Components.Pages
 
     public record TransactionRowMatched(
         CategoryHeader Category,
-        bool IsFirstRowForCategory,
+        bool IsLastRowForCategory,
         SectionHeader Section,
         Transaction Transaction,
         string DisplayAmount,

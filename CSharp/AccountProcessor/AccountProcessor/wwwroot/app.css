@@ -59,3 +59,7 @@ td.fitwidth {
 .border-right {
     border-right: 1px solid LightGray;
 }
+
+.border-bottom-thick {
+    border-bottom: 1px solid Black;
+}
