@@ -31,26 +31,28 @@
 
 <h1>Account Processor</h1>
 
-<p/>
-<hr/>
+<p />
+<hr />
 
+<label><strong>Coop Bank: Reverse File</strong></label>
 <button class="btn btn-primary">
-    <strong>Coop Bank: Reverse File</strong>
     <InputFile OnChange="@CoopBankReverseFile" accept=".csv" />
 </button>
 
+<p />
+
+<label><strong>Santander: Extract</strong></label>
 <button class="btn btn-primary">
-    <strong>Santander: Extract</strong>
     <InputFile OnChange="@SantanderProcessFile" accept=".xls" />
 </button>
 
 <p role="status"><strong>Result</strong>: @ReverseFileResult</p>
 
-<p/>
+<p />
 
-<hr/>
+<hr />
 
-<p/>
+<p />
 
 <button class="btn btn-primary">
     <strong>Categorise: </strong>
