@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -25,7 +24,7 @@ namespace AccountProcessor.Components.Services
         /// No intention to support multiple concurrent sessions distributed with many Clients.
         /// This would require persistence, client sessions etc.
         /// </summary>
-        public static readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(_InitialiseModel);
+        public static readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(ModelPersistence.LoadModel);
 
         public SelectorData GetSelectorData(DateOnly month)
         {
@@ -175,38 +174,8 @@ namespace AccountProcessor.Components.Services
             _singleModel.Value.Categories
             .FirstOrDefault(x => x.Header.Name == header.Name);
 
-        private static MatchModel _InitialiseModel()
-        {
-            string dir = _GetProcessDirectoryPath();
-            var json = Path.Combine(dir, "Components", "Services", "MatchModel.json");
-            return JsonHelper.Deserialise<MatchModel>(File.ReadAllText(json))
-                ?? throw new ApplicationException("Could not initialise model from json file");
-        }
-
-        private static void _WriteModel()
-        {
-            var model = _singleModel.Value;
-            var processPath = Process.GetCurrentProcess().MainModule!.FileName;
-            var outputPath = GetOutputPath();
-            var content = JsonHelper.Serialise(model, writeIndented: true);
-            File.WriteAllText(outputPath, content);
-
-            static string GetOutputPath()
-            {
-                var dir = new DirectoryInfo(_GetProcessDirectoryPath());
-                while (dir.Name != "CSharp")
-                {
-                    dir = dir.Parent!;
-                }
-                return Path.Combine(dir.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
-            }
-        }
-
-        private static string _GetProcessDirectoryPath()
-        {
-            var processPath = Process.GetCurrentProcess().MainModule!.FileName;
-            return new FileInfo(processPath).Directory!.FullName;
-        }
+        private static void _WriteModel() =>
+            ModelPersistence.WriteModel(_singleModel.Value);
     }
 
     public record Transaction(DateOnly Date, string Description, decimal Amount)
