@@ -83,6 +83,7 @@ namespace AccountProcessor.Components.Pages
         string StyleColor,
         Match LatestMatch)
     {
+        public string CategorySectionDisplay => $"{Category.Name}: {Section.Name}";
         public string MatchPattern => LatestMatch.Pattern;
         public string MatchDescription => LatestMatch.GetDescription();
     }
