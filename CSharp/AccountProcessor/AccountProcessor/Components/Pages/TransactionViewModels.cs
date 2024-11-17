@@ -5,11 +5,11 @@ namespace AccountProcessor.Components.Pages
 {
     public record SectionSelectorRow(SectionHeader Header, string Display, string Id);
 
-    public record TransactionResult(
+    public record TransactionResultViewModel(
         ImmutableArray<TransactionRowUnMatched> UnMatchedRows,
         ImmutableArray<TransactionRowMatched> MatchedRows)
     {
-        public static TransactionResult CreateFromResult(CategorisationResult result, ImmutableArray<SectionSelectorRow> selectorOptions)
+        public static TransactionResultViewModel CreateFromResult(CategorisationResult result, ImmutableArray<SectionSelectorRow> selectorOptions)
         {
             var unmatched = result.UnMatched
                 .ToImmutableArray(x =>
@@ -52,7 +52,7 @@ namespace AccountProcessor.Components.Pages
                             t.Matches));
                 });
 
-            return new TransactionResult(unmatched, matched);
+            return new TransactionResultViewModel(unmatched, matched);
 
             static string DisplayAmount(Transaction tr) =>
                 tr.Amount < 0 ? $"-£{-tr.Amount:F2}" : $"£{tr.Amount:F2}";

@@ -62,7 +62,7 @@
 <input type="month" value="@Month?.ToString("yyyy-MM")" @onchange="e => OnSetMonth((string?)e.Value)">
 <p/>
 
-@if (Categories.HasValue && AllSections.HasValue && TransactionMatches != null)
+@if (Categories.HasValue && AllSections.HasValue && TransactionResultViewModel != null)
 {
     <hr />
 
@@ -85,7 +85,8 @@
 
     <button class="btn" @onclick="() => CreateNewSection()"><i class="fa fa-plus"></i></button>
 
-    @if (TransactionMatches.UnMatchedRows.Any())
+    /* UnMatched Rows */
+    @if (TransactionResultViewModel.UnMatchedRows.Any())
     {
         <hr />
         <label><strong>UnMatched</strong></label>
@@ -104,7 +105,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var row in TransactionMatches.UnMatchedRows)
+                @foreach (var row in TransactionResultViewModel.UnMatchedRows)
                 {
                     <tr>
                         <td class="fitwidth">@row.Transaction.Date.ToShortDateString()</td>
@@ -139,7 +140,8 @@
         </table>
     }
 
-    if (TransactionMatches.MatchedRows.Any())
+    /* Matched Rows */
+    if (TransactionResultViewModel.MatchedRows.Any())
     {
         <hr />
         <label><strong>Matched</strong></label>
@@ -158,7 +160,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var row in TransactionMatches.MatchedRows)
+                @foreach (var row in TransactionResultViewModel.MatchedRows)
                 {
                     <tr>
                         <td class="fitwidth">@row.Category.Name</td>
@@ -196,7 +198,7 @@
     private ImmutableArray<Transaction>? LoadedTransactions;
 
     private CategorisationResult? LatestCategorisationResult;
-    private TransactionResult? TransactionMatches;
+    private TransactionResultViewModel? TransactionResultViewModel;
 
     protected override Task OnInitializedAsync()
     {
@@ -282,7 +284,7 @@
         {
             //Triggers total table refresh - task yield required to enable re-render
             LatestCategorisationResult = null;
-            TransactionMatches = null;
+            TransactionResultViewModel = null;
 
             StateHasChanged();
             await Task.Yield();
@@ -360,7 +362,7 @@
     {
         LoadedTransactions = null;
         LatestCategorisationResult = null;
-        TransactionMatches = null;
+        TransactionResultViewModel = null;
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         var transactionResult = await ExcelFileRunner.LoadTransactionsFromExcel(inputStream);
@@ -385,7 +387,7 @@
         }
         var categorisationResult = Categoriser.Categorise(LoadedTransactions!.Value, month: Month!.Value);
         LatestCategorisationResult = categorisationResult;
-        TransactionMatches = TransactionResult.CreateFromResult(categorisationResult, AllSections!.Value);
+        TransactionResultViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, AllSections!.Value);
     }
 
     /// <summary>
