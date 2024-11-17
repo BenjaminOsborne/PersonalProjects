@@ -8,8 +8,13 @@
           "Month": null,
           "Matches": [
             {
+              "Pattern": "Robert Soane \u0026 Ros",
+              "OverrideDescription": "36TW Rental",
+              "ExactDate": null
+            },
+            {
               "Pattern": "Robert Soane \u0026 Ros 36 Thorpe Way",
-              "OverrideDescription": "36 Thorpe Way",
+              "OverrideDescription": "36TW Rental",
               "ExactDate": null
             },
             {
@@ -100,6 +105,16 @@
               "Pattern": "Movember Foundatio",
               "OverrideDescription": "Movember Gift",
               "ExactDate": "2024-11-15"
+            },
+            {
+              "Pattern": "CAMBRIDGE YFC",
+              "OverrideDescription": "Cambridge YFC",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "CHARLES SIMEON",
+              "OverrideDescription": "Charles Simeon",
+              "ExactDate": null
             },
             {
               "Pattern": "CAMBRIDGE YFC      OSBORNE",
