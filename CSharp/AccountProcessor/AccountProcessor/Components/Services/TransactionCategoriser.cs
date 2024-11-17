@@ -238,7 +238,6 @@ namespace AccountProcessor.Components.Services
 
     public class CategoryHeader : Block
     {
-        [JsonConstructor]
         private CategoryHeader(int Order, string Name) : base(Order, Name)
         {
         }

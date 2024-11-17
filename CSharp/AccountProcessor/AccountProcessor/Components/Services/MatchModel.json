@@ -1,27 +1,12 @@
 {
   "Categories": [
     {
-      "Header": {
-        "Order": 0,
-        "Name": "Income"
-      },
+      "CategoryName": "Income",
       "Sections": [
         {
-          "Section": {
-            "Parent": {
-              "Order": 0,
-              "Name": "Income"
-            },
-            "Month": null,
-            "Order": 0,
-            "Name": "Salary"
-          },
+          "SectionName": "Salary",
+          "Month": null,
           "Matches": [
-            {
-              "Pattern": "*ACCURX LIMITED PAY",
-              "OverrideDescription": "Accurx Salary",
-              "ExactDate": null
-            },
             {
               "Pattern": "Robert Soane \u0026 Ros 36 Thorpe Way",
               "OverrideDescription": "36 Thorpe Way",
@@ -31,19 +16,17 @@
               "Pattern": "HMRC CHILD BENEFIT OSBORNEELIZA870505",
               "OverrideDescription": "Child Benefit",
               "ExactDate": null
+            },
+            {
+              "Pattern": "*ACCURX LIMITED PAY",
+              "OverrideDescription": "Accurx Salary",
+              "ExactDate": null
             }
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 0,
-              "Name": "Income"
-            },
-            "Month": "2024-11-01",
-            "Order": 1,
-            "Name": "Accurx Shares"
-          },
+          "SectionName": "Accurx Shares",
+          "Month": "2024-11-01",
           "Matches": [
             {
               "Pattern": "ACCURX LIMITED     BOSBORNE EMI",
@@ -55,21 +38,11 @@
       ]
     },
     {
-      "Header": {
-        "Order": 1,
-        "Name": "Bills"
-      },
+      "CategoryName": "Bills",
       "Sections": [
         {
-          "Section": {
-            "Parent": {
-              "Order": 1,
-              "Name": "Bills"
-            },
-            "Month": null,
-            "Order": 0,
-            "Name": "House"
-          },
+          "SectionName": "House",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "NATWEST BANK       83899140/2491297",
@@ -79,15 +52,8 @@
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 1,
-              "Name": "Bills"
-            },
-            "Month": null,
-            "Order": 1,
-            "Name": "Standing Order"
-          },
+          "SectionName": "Standing Order",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "Amazon Prime*",
@@ -100,13 +66,13 @@
               "ExactDate": null
             },
             {
-              "Pattern": "TV LICENCE MBP*",
-              "OverrideDescription": "TV Licence",
+              "Pattern": "Spotify Limited",
+              "OverrideDescription": "Spotify",
               "ExactDate": null
             },
             {
-              "Pattern": "Spotify Limited",
-              "OverrideDescription": "Spotify",
+              "Pattern": "TV LICENCE MBP*",
+              "OverrideDescription": "TV Licence",
               "ExactDate": null
             },
             {
@@ -119,21 +85,11 @@
       ]
     },
     {
-      "Header": {
-        "Order": 2,
-        "Name": "Giving"
-      },
+      "CategoryName": "Giving",
       "Sections": [
         {
-          "Section": {
-            "Parent": {
-              "Order": 2,
-              "Name": "Giving"
-            },
-            "Month": null,
-            "Order": 0,
-            "Name": "Charity"
-          },
+          "SectionName": "Charity",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "XTREMECC",
@@ -144,11 +100,6 @@
               "Pattern": "Movember Foundatio",
               "OverrideDescription": "Movember Gift",
               "ExactDate": "2024-11-15"
-            },
-            {
-              "Pattern": "TOYBOX CHARITY*",
-              "OverrideDescription": "Toybox",
-              "ExactDate": null
             },
             {
               "Pattern": "CAMBRIDGE YFC      OSBORNE",
@@ -164,19 +115,17 @@
               "Pattern": "CHARLES SIMEON     OSBOURNE",
               "OverrideDescription": "Charles Simeon",
               "ExactDate": null
+            },
+            {
+              "Pattern": "TOYBOX CHARITY*",
+              "OverrideDescription": "Toybox",
+              "ExactDate": null
             }
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 2,
-              "Name": "Giving"
-            },
-            "Month": null,
-            "Order": 1,
-            "Name": "Tithe"
-          },
+          "SectionName": "Tithe",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "ST JOHN BILBOROUGH MR B I OSBORNE",
@@ -188,21 +137,11 @@
       ]
     },
     {
-      "Header": {
-        "Order": 3,
-        "Name": "House"
-      },
+      "CategoryName": "House",
       "Sections": [
         {
-          "Section": {
-            "Parent": {
-              "Order": 3,
-              "Name": "House"
-            },
-            "Month": null,
-            "Order": 0,
-            "Name": "House \u0026 Garage"
-          },
+          "SectionName": "House \u0026 Garage",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "Lanes Garden Centr",
@@ -212,19 +151,17 @@
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 3,
-              "Name": "House"
-            },
-            "Month": null,
-            "Order": 1,
-            "Name": "Childcare"
-          },
+          "SectionName": "Childcare",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "NOTTINGHAMGYMNASTI",
               "OverrideDescription": "Gynmastics",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "BREEDON HOUSE NURS NAOMI OSBORNE",
+              "OverrideDescription": "Naomi Nursery",
               "ExactDate": null
             },
             {
@@ -236,33 +173,21 @@
               "Pattern": "NCC COMMUNITY      A/HHSV*",
               "OverrideDescription": "NCC Community Gym",
               "ExactDate": null
-            },
-            {
-              "Pattern": "BREEDON HOUSE NURS NAOMI OSBORNE",
-              "OverrideDescription": "Naomi Nursery",
-              "ExactDate": null
             }
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 3,
-              "Name": "House"
-            },
-            "Month": null,
-            "Order": 2,
-            "Name": "Exercise"
-          },
+          "SectionName": "Exercise",
+          "Month": null,
           "Matches": [
-            {
-              "Pattern": "CLR*FIT2GO PHYSIO",
-              "OverrideDescription": "FIT2GO Physio",
-              "ExactDate": null
-            },
             {
               "Pattern": "PLAY SPORTS LEAGUE",
               "OverrideDescription": "Netball",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "CLR*FIT2GO PHYSIO",
+              "OverrideDescription": "FIT2GO Physio",
               "ExactDate": null
             }
           ]
@@ -270,21 +195,11 @@
       ]
     },
     {
-      "Header": {
-        "Order": 4,
-        "Name": "Supermarkets"
-      },
+      "CategoryName": "Supermarkets",
       "Sections": [
         {
-          "Section": {
-            "Parent": {
-              "Order": 4,
-              "Name": "Supermarkets"
-            },
-            "Month": null,
-            "Order": 0,
-            "Name": "Supermarket"
-          },
+          "SectionName": "Supermarket",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "ASDA STORES",
@@ -366,21 +281,11 @@
       ]
     },
     {
-      "Header": {
-        "Order": 5,
-        "Name": "Restaurants"
-      },
+      "CategoryName": "Restaurants",
       "Sections": [
         {
-          "Section": {
-            "Parent": {
-              "Order": 5,
-              "Name": "Restaurants"
-            },
-            "Month": null,
-            "Order": 0,
-            "Name": "Restaurant"
-          },
+          "SectionName": "Restaurant",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "CAMINO",
@@ -405,15 +310,8 @@
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 5,
-              "Name": "Restaurants"
-            },
-            "Month": null,
-            "Order": 1,
-            "Name": "Drink"
-          },
+          "SectionName": "Drink",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "Grocer",
@@ -451,11 +349,6 @@
               "ExactDate": null
             },
             {
-              "Pattern": "CAFFE NERO*",
-              "OverrideDescription": "Cafe Nero",
-              "ExactDate": null
-            },
-            {
               "Pattern": "SUDAWK.CO.UK",
               "OverrideDescription": "Sudawk.co.uk",
               "ExactDate": null
@@ -466,23 +359,28 @@
               "ExactDate": null
             },
             {
-              "Pattern": "COSTA COFFEE*",
-              "OverrideDescription": "Costa Coffee",
-              "ExactDate": null
-            },
-            {
               "Pattern": "STARBUCKS COFFEE",
               "OverrideDescription": "Starbucks",
               "ExactDate": null
             },
             {
-              "Pattern": "SumUp  *Boathouse",
-              "OverrideDescription": "Boathouse",
+              "Pattern": "CHRISTIAN CONF TRU",
+              "OverrideDescription": "Christian Conference",
               "ExactDate": null
             },
             {
-              "Pattern": "CHRISTIAN CONF TRU",
-              "OverrideDescription": "Christian Conference",
+              "Pattern": "CAFFE NERO*",
+              "OverrideDescription": "Cafe Nero",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "COSTA COFFEE*",
+              "OverrideDescription": "Costa Coffee",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "SumUp  *Boathouse",
+              "OverrideDescription": "Boathouse",
               "ExactDate": null
             },
             {
@@ -495,21 +393,11 @@
       ]
     },
     {
-      "Header": {
-        "Order": 6,
-        "Name": "Travel \u0026 Trips"
-      },
+      "CategoryName": "Travel \u0026 Trips",
       "Sections": [
         {
-          "Section": {
-            "Parent": {
-              "Order": 6,
-              "Name": "Travel \u0026 Trips"
-            },
-            "Month": null,
-            "Order": 0,
-            "Name": "Transport"
-          },
+          "SectionName": "Transport",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "TRAINLINE",
@@ -529,26 +417,9 @@
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 6,
-              "Name": "Travel \u0026 Trips"
-            },
-            "Month": null,
-            "Order": 1,
-            "Name": "Petrol"
-          },
+          "SectionName": "Petrol",
+          "Month": null,
           "Matches": [
-            {
-              "Pattern": "TESCO PFS *",
-              "OverrideDescription": "Tesco Petrol",
-              "ExactDate": null
-            },
-            {
-              "Pattern": "ASDA PETROL*",
-              "OverrideDescription": "Asda Petrol",
-              "ExactDate": null
-            },
             {
               "Pattern": "SAINSBURYS PETROL",
               "OverrideDescription": "Sainsburys Petrol",
@@ -558,19 +429,22 @@
               "Pattern": "TESCO PAY AT PUMP",
               "OverrideDescription": "Tesco Petrol",
               "ExactDate": null
+            },
+            {
+              "Pattern": "TESCO PFS *",
+              "OverrideDescription": "Tesco Petrol",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "ASDA PETROL*",
+              "OverrideDescription": "Asda Petrol",
+              "ExactDate": null
             }
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 6,
-              "Name": "Travel \u0026 Trips"
-            },
-            "Month": "2024-10-01",
-            "Order": 2,
-            "Name": "France Holiday"
-          },
+          "SectionName": "France Holiday",
+          "Month": "2024-10-01",
           "Matches": [
             {
               "Pattern": "R Broughton        HOLIDAY",
@@ -580,15 +454,8 @@
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 6,
-              "Name": "Travel \u0026 Trips"
-            },
-            "Month": null,
-            "Order": 3,
-            "Name": "Ad-hoc Trips"
-          },
+          "SectionName": "Ad-hoc Trips",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "FIXR.CO* TICKET 5B",
@@ -603,35 +470,18 @@
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 6,
-              "Name": "Travel \u0026 Trips"
-            },
-            "Month": "2024-10-01",
-            "Order": 4,
-            "Name": "Dad\u0027s Weekend"
-          },
+          "SectionName": "Dad\u0027s Weekend",
+          "Month": "2024-10-01",
           "Matches": []
         }
       ]
     },
     {
-      "Header": {
-        "Order": 7,
-        "Name": "Internet \u0026 Shops"
-      },
+      "CategoryName": "Internet \u0026 Shops",
       "Sections": [
         {
-          "Section": {
-            "Parent": {
-              "Order": 7,
-              "Name": "Internet \u0026 Shops"
-            },
-            "Month": null,
-            "Order": 0,
-            "Name": "Online"
-          },
+          "SectionName": "Online",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "I-F TFR 97891390",
@@ -639,14 +489,19 @@
               "ExactDate": "2024-11-04"
             },
             {
+              "Pattern": "NEXT DIRECTORY GPA",
+              "OverrideDescription": "Next Refund",
+              "ExactDate": "2024-11-15"
+            },
+            {
               "Pattern": "eBay O*08-12311-73",
               "OverrideDescription": "Ebay Furniture",
               "ExactDate": "2024-11-12"
             },
             {
-              "Pattern": "NEXT DIRECTORY GPA",
-              "OverrideDescription": "Next Refund",
-              "ExactDate": "2024-11-15"
+              "Pattern": "WWW.ARGOS.CO.UK",
+              "OverrideDescription": "Argos.co.uk",
+              "ExactDate": null
             },
             {
               "Pattern": "AMZNMktplace*",
@@ -659,11 +514,6 @@
               "ExactDate": null
             },
             {
-              "Pattern": "WWW.ARGOS.CO.UK",
-              "OverrideDescription": "Argos.co.uk",
-              "ExactDate": null
-            },
-            {
               "Pattern": "PAYPAL PAYMENT*",
               "OverrideDescription": "Paypal",
               "ExactDate": null
@@ -671,27 +521,13 @@
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 7,
-              "Name": "Internet \u0026 Shops"
-            },
-            "Month": null,
-            "Order": 1,
-            "Name": "Cash"
-          },
+          "SectionName": "Cash",
+          "Month": null,
           "Matches": []
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 7,
-              "Name": "Internet \u0026 Shops"
-            },
-            "Month": null,
-            "Order": 2,
-            "Name": "Shops"
-          },
+          "SectionName": "Shops",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "CARD FACTORY",
@@ -708,21 +544,11 @@
       ]
     },
     {
-      "Header": {
-        "Order": 8,
-        "Name": "Manual"
-      },
+      "CategoryName": "Manual",
       "Sections": [
         {
-          "Section": {
-            "Parent": {
-              "Order": 8,
-              "Name": "Manual"
-            },
-            "Month": null,
-            "Order": 0,
-            "Name": "Manual Sort"
-          },
+          "SectionName": "Manual Sort",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "TFR 91020207031300",
@@ -732,15 +558,8 @@
           ]
         },
         {
-          "Section": {
-            "Parent": {
-              "Order": 8,
-              "Name": "Manual"
-            },
-            "Month": null,
-            "Order": 1,
-            "Name": "Internal Transactions"
-          },
+          "SectionName": "Internal Transactions",
+          "Month": null,
           "Matches": [
             {
               "Pattern": "BENJAMIN OSBORNE",

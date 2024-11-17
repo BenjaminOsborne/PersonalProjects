@@ -6,6 +6,21 @@ namespace AccountProcessor.Tests
 {
     public class TransactionCategoriserRunner
     {
+        [Test]
+        public void MigrateOnce()
+        {
+            var outputPath = _GetOutputPath();
+            MatchModel loaded;
+
+            using (var fs = File.OpenRead(outputPath))
+            {
+                loaded = JsonHelper.Deserialise<MatchModel>(fs)!;
+            }
+            var persist = ModelPersistence._MapToPersistence(loaded);
+            _WriteModel(outputPath, persist);
+
+        }
+
         [Test, Ignore("ONLY RUN ONCE BEFORE LIVE EDITING MODEL")]
         public void Bootstrap_Json_from_scratch()
         {
@@ -64,7 +79,7 @@ namespace AccountProcessor.Tests
             return new Category(header, sectionList);
         }
 
-        private static string _WriteModel(string outputPath, MatchModel model)
+        private static string _WriteModel<T>(string outputPath, T model)
         {
             var content = JsonHelper.Serialise(model, writeIndented: true);
             File.WriteAllText(outputPath, content);
