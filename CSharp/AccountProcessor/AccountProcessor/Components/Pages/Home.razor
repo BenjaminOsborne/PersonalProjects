@@ -184,7 +184,7 @@
                     <th>Transaction</th>
                     <th>Export As</th>
                     <th class="border-right">Amount (£)</th>
-                    <th>Match</th>
+                    <th>Match Pattern</th>
                     <th>Clear</th>
                 </tr>
             </thead>
@@ -199,7 +199,7 @@
                         <td class="fitwidth">@row.Transaction.Description</td>
                         <td class="fitwidth">@row.MatchDescription</td>
                         <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
-                        <td class="fitwidth">@row.MatchPattern</td>
+                        <td class="fitwidth" style="color:darkslategray">@row.MatchPattern</td>
                         <td>
                             <button class="btn" @onclick="() => ClearMatch(row)"><i class="fa fa-trash"></i></button>
                         </td>
