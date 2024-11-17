@@ -5,29 +5,26 @@ namespace AccountProcessor.Components.Pages
 {
     public record SectionSelectorRow(SectionHeader Header, string Display, string Id);
 
-    public record TransactionBlock(string Display, bool IsUnmatched, ImmutableArray<TransactionRow> Rows)
+    public record TransactionResult(
+        ImmutableArray<TransactionRowUnMatched> UnMatchedRows,
+        ImmutableArray<TransactionRowMatched> MatchedRows)
     {
-        public static ImmutableArray<TransactionBlock> CreateFromResult(CategorisationResult result, ImmutableArray<SectionSelectorRow> selectorOptions)
+        public static TransactionResult CreateFromResult(CategorisationResult result, ImmutableArray<SectionSelectorRow> selectorOptions)
         {
-            var blocks = new List<TransactionBlock>();
-
-            var unmatchedTransactions = result.UnMatched
+            var unmatched = result.UnMatched
                 .ToImmutableArray(x =>
                 {
                     var found = x.SuggestedSection != null
                         ? selectorOptions.FirstOrDefault(s => s.Header.AreSame(x.SuggestedSection!))
                         : null;
-                    return new TransactionRow(x.Transaction, Section: null, LatestMatch: null)
+                    var tr = x.Transaction;
+                    return new TransactionRowUnMatched(tr, DisplayAmount(tr), StyleColor(tr))
                     {
                         SelectionId = found?.Id,
-                        MatchOn = x.Transaction.Description,
-                        OverrideDescription = x.Transaction.Description.ToCamelCase()
+                        MatchOn = tr.Description,
+                        OverrideDescription = tr.Description.ToCamelCase()
                     };
                 });
-            if (unmatchedTransactions.Any())
-            {
-                blocks.Add(new TransactionBlock("Uncategorised", IsUnmatched: true, unmatchedTransactions));
-            }
 
             var matched = result.Matched
                 .Select(x =>
@@ -35,33 +32,57 @@ namespace AccountProcessor.Components.Pages
                     var section = x.SectionMatch.Section;
                     var match = x.SectionMatch.Match;
                     var category = section.Parent;
-                    return (x.Transaction, Matches: match, Section: section, Category: category, CategoryKey: category.Order);
+                    return (Tr: x.Transaction, Matches: match, Section: section, Category: category, CategoryKey: category.Order);
                 })
                 .GroupBy(x => x.CategoryKey)
                 .OrderBy(x => x.Key)
-                .ToImmutableArray(grp =>
+                .ToImmutableArrayMany(grp =>
                 {
                     var category = grp.First().Category;
-                    var rows = grp
+                    return grp
                         .OrderBy(x => x.Section.Order)
-                        .ThenBy(x => x.Transaction.Date)
-                        .ToImmutableArray(t => new TransactionRow(t.Transaction, t.Section, t.Matches));
-                    return new TransactionBlock(category.Name, IsUnmatched: false, rows);
+                        .ThenBy(x => x.Tr.Date)
+                        .Select((t, nx) => new TransactionRowMatched(
+                            t.Section.Parent,
+                            IsFirstRowForCategory: nx == 0,
+                            t.Section,
+                            t.Tr,
+                            DisplayAmount(t.Tr),
+                            StyleColor(t.Tr),
+                            t.Matches));
                 });
-            blocks.AddRange(matched);
 
-            return blocks.ToImmutableArray();
+            return new TransactionResult(unmatched, matched);
+
+            static string DisplayAmount(Transaction tr) =>
+                tr.Amount < 0 ? $"-£{-tr.Amount:F2}" : $"£{tr.Amount:F2}";
+            
+            static string StyleColor(Transaction tr) =>
+                tr.Amount < 0 ? "color:red" : "color:black";
         }
     }
 
-    public record TransactionRow(Transaction Transaction, SectionHeader? Section, Match? LatestMatch)
+    public record TransactionRowUnMatched(
+        Transaction Transaction,
+        string DisplayAmount,
+        string StyleColor)
     {
-        public string? MatchPattern => LatestMatch?.Pattern;
-        public string? MatchDescription => LatestMatch?.GetDescription();
-
         public string? SelectionId { get; set; }
         public string? MatchOn { get; set; }
         public string? OverrideDescription { get; set; }
         public bool AddOnlyForTransaction { get; set; }
+    }
+
+    public record TransactionRowMatched(
+        CategoryHeader Category,
+        bool IsFirstRowForCategory,
+        SectionHeader Section,
+        Transaction Transaction,
+        string DisplayAmount,
+        string StyleColor,
+        Match LatestMatch)
+    {
+        public string MatchPattern => LatestMatch.Pattern;
+        public string MatchDescription => LatestMatch.GetDescription();
     }
 }

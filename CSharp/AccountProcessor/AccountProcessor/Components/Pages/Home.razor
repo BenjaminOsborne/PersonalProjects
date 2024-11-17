@@ -62,7 +62,7 @@
 <input type="month" value="@Month?.ToString("yyyy-MM")" @onchange="e => OnSetMonth((string?)e.Value)">
 <p/>
 
-@if (Categories.HasValue && AllSections.HasValue && TransactionMatches.HasValue)
+@if (Categories.HasValue && AllSections.HasValue && TransactionMatches != null)
 {
     <hr />
 
@@ -75,7 +75,7 @@
     <label ><strong>Add New Section:</strong></label>
     <select style="margin-right: 5px" value="@NewSectionName" @onchange="e => NewSectionCategoryName = (string?)e.Value">
         <option value="0" selected>Choose Category</option>
-        @foreach (var cat in Categories.Value)
+        @foreach (var cat in Categories!.Value)
         {
             <option value="@cat.Name">@cat.Name</option>
         }
@@ -85,101 +85,92 @@
 
     <button class="btn" @onclick="() => CreateNewSection()"><i class="fa fa-plus"></i></button>
 
-    foreach(var block in TransactionMatches.Value)
+    @if (TransactionMatches.UnMatchedRows.Any())
     {
         <hr />
-
-        <label><strong>@block.Display</strong></label>
+        <label><strong>UnMatched</strong></label>
 
         <table class="table" style="width:auto">
             <thead>
                 <tr>
-                    @if (!block.IsUnmatched)
-                    {
-                        <th>Section</th>
-                    }
-
                     <th>Date</th>
                     <th>Transaction</th>
-
-                    @if (!block.IsUnmatched)
-                    {
-                        <th>Export As</th>
-                    }
-
                     <th class="border-right">Amount (£)</th>
-
-                    @if (block.IsUnmatched)
-                    {
-                        <th>Category</th>
-                        <th>Match On</th>
-                        <th>Description</th>
-                        <th>Once</th>
-                        <th>Match</th>
-                    }
-                    else
-                    {
-                        <th>Match</th>
-                        <th>Clear</th>
-                    }
+                    <th>Category</th>
+                    <th>Match On</th>
+                    <th>Description</th>
+                    <th>Once</th>
+                    <th>Match</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var row in block.Rows)
+                @foreach (var row in TransactionMatches.UnMatchedRows)
                 {
-                    var tr = row.Transaction;
-                    var displayAmount = tr.Amount < 0 ? $"-£{-tr.Amount:F2}" : $"£{tr.Amount:F2}";
-                    var styleColor = tr.Amount < 0 ? "color:red" : "color:black";
-
                     <tr>
+                        <td class="fitwidth">@row.Transaction.Date.ToShortDateString()</td>
+                        <td class="fitwidth">@row.Transaction.Description</td>
+                        <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
+                        
+                        <td>
+                            <select value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
+                                <option value="0" selected>Choose Section</option>
+                                @foreach (var cat in AllSections.Value)
+                                {
+                                    <option value="@cat.Id">@cat.Display</option>
+                                }
+                            </select>
+                        </td>
 
-                        @if (!block.IsUnmatched)
-                        {
-                            <td class="fitwidth">@row.Section?.Name</td>
-                        }
+                        <td>
+                            <input placeholder="Match on" value="@row.MatchOn" @onchange="e => row.MatchOn = (string?)e.Value" />
+                        </td>
+                        <td>
+                            <input placeholder="Override Description" value="@row.OverrideDescription" @onchange="e => row.OverrideDescription = (string?)e.Value" />
+                        </td>
+                        <td>
+                            <input type="checkbox" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value">
+                        </td>
+                        <td>
+                            <button class="btn" @onclick="() => PerformMatch(row)"><i class="fa fa-plus"></i></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 
-                        <td class="fitwidth">@tr.Date.ToShortDateString()</td>
-                        <td class="fitwidth">@tr.Description</td>
+    if (TransactionMatches.MatchedRows.Any())
+    {
+        <hr />
+        <label><strong>Matched</strong></label>
 
-                        @if (!block.IsUnmatched)
-                        {
-                            <td class="fitwidth">@row.MatchDescription</td>
-                        }
-
-                        <td class="border-right" style="@styleColor">@displayAmount</td>
-
-                        @if (block.IsUnmatched)
-                        {
-                            <td>
-                                <select value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
-                                    <option value="0" selected>Choose Section</option>
-                                    @foreach (var cat in AllSections.Value)
-                                    {
-                                        <option value="@cat.Id">@cat.Display</option>
-                                    }
-                                </select>
-                            </td>
-
-                            <td>
-                                <input placeholder="Match on" value="@row.MatchOn" @onchange="e => row.MatchOn = (string?)e.Value" />
-                            </td>
-                            <td>
-                                <input placeholder="Override Description" value="@row.OverrideDescription" @onchange="e => row.OverrideDescription = (string?)e.Value" />
-                            </td>
-                            <td>
-                                <input type="checkbox" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value">
-                            </td>
-                            <td>
-                                <button class="btn" @onclick="() => PerformMatch(row)"><i class="fa fa-plus"></i></button>
-                            </td>
-                        }
-                        else
-                        {
-                            <td class="fitwidth">@row.MatchPattern</td>
-                            <td>
-                                <button class="btn" @onclick="() => ClearMatch(row)"><i class="fa fa-trash"></i></button>
-                            </td>
-                        }
+        <table class="table" style="width:auto">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Section</th>
+                    <th>Date</th>
+                    <th>Transaction</th>
+                    <th>Export As</th>
+                    <th class="border-right">Amount (£)</th>
+                    <th>Match</th>
+                    <th>Clear</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in TransactionMatches.MatchedRows)
+                {
+                    <tr>
+                        <td class="fitwidth">@row.Category.Name</td>
+                        <td class="fitwidth">@row.Section.Name</td>
+                        <td class="fitwidth">@row.Transaction.Date.ToShortDateString()</td>
+                        <td class="fitwidth">@row.Transaction.Description</td>
+                        <td class="fitwidth">@row.MatchDescription</td>
+                        <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
+                        <td class="fitwidth">@row.MatchPattern</td>
+                        <td>
+                            <button class="btn" @onclick="() => ClearMatch(row)"><i class="fa fa-trash"></i></button>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -205,7 +196,7 @@
     private ImmutableArray<Transaction>? LoadedTransactions;
 
     private CategorisationResult? LatestCategorisationResult;
-    private ImmutableArray<TransactionBlock>? TransactionMatches;
+    private TransactionResult? TransactionMatches;
 
     protected override Task OnInitializedAsync()
     {
@@ -261,7 +252,7 @@
         NewSectionName = null;
     }
 
-    private async Task PerformMatch(TransactionRow row)
+    private async Task PerformMatch(TransactionRowUnMatched row)
     {
         LastActionError = null;
 
@@ -291,7 +282,7 @@
         {
             //Triggers total table refresh - task yield required to enable re-render
             LatestCategorisationResult = null;
-            TransactionMatches = ImmutableArray<TransactionBlock>.Empty;
+            TransactionMatches = null;
 
             StateHasChanged();
             await Task.Yield();
@@ -304,7 +295,7 @@
         }
     }
 
-    private void ClearMatch(TransactionRow row)
+    private void ClearMatch(TransactionRowMatched row)
     {
         LastActionError = null;
 
@@ -394,7 +385,7 @@
         }
         var categorisationResult = Categoriser.Categorise(LoadedTransactions!.Value, month: Month!.Value);
         LatestCategorisationResult = categorisationResult;
-        TransactionMatches = TransactionBlock.CreateFromResult(categorisationResult, AllSections!.Value);
+        TransactionMatches = TransactionResult.CreateFromResult(categorisationResult, AllSections!.Value);
     }
 
     /// <summary>
