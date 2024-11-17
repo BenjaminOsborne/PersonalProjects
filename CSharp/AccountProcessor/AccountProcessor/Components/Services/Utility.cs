@@ -115,6 +115,15 @@ namespace AccountProcessor.Components.Services
         public static IEnumerable<T> ConcatItem<T>(this IEnumerable<T> items, T item) => items.Concat([item]);
     }
 
+    public static class ImmutableExtensions
+    {
+        public static ImmutableArray<T> ToImmutableArray<TIn, T>(this IEnumerable<TIn> items, Func<TIn, T> fnMap) =>
+            items.Select(fnMap).ToImmutableArray();
+
+        public static ImmutableArray<T> ToImmutableArrayMany<TIn, T>(this IEnumerable<TIn> items, Func<TIn, IEnumerable<T>> fnMap) =>
+            items.SelectMany(fnMap).ToImmutableArray();
+    }
+
     public static class DictionaryExtensions
     {
         public static T? TryGet<TKey, T>(this IReadOnlyDictionary<TKey, T> map, TKey key) where T : class =>

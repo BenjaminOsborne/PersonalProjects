@@ -294,24 +294,22 @@ namespace AccountProcessor.Components.Services
             return CategoryHeader.AllValues
                 .OrderBy(x => x.Order)
                 .Select(c => (Cat: c, Vals: map.TryGetStruct(c.Name)))
-                .Select(cat =>
+                .ToImmutableArray(cat =>
                 {
                     var category = cat.Cat;
 
                     var sections = cat.Vals?
                         .GroupBy(x => x.Section.GetKey())
                         .OrderBy(grp => grp.Key.order)
-                        .Select(grp =>
+                        .ToImmutableArray(grp =>
                         {
-                            var transactions = grp.Select(x => x.Transaction).ToImmutableArray();
+                            var transactions = grp.ToImmutableArray(x => x.Transaction);
                             return new SectionSummary(grp.First().Section, transactions);
                         })
-                        .ToImmutableArray()
                         ?? ImmutableArray<SectionSummary>.Empty;
 
                     return new CategorySummary(category, sections);
-                })
-                .ToImmutableArray();
+                });
         }
 
         private const string _excelCurrencyNumberFormat = """

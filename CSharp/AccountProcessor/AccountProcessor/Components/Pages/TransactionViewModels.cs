@@ -12,7 +12,7 @@ namespace AccountProcessor.Components.Pages
             var blocks = new List<TransactionBlock>();
 
             var unmatchedTransactions = result.UnMatched
-                .Select(x =>
+                .ToImmutableArray(x =>
                 {
                     var found = x.SuggestedSection != null
                         ? selectorOptions.FirstOrDefault(s => s.Header.AreSame(x.SuggestedSection!))
@@ -23,8 +23,7 @@ namespace AccountProcessor.Components.Pages
                         MatchOn = x.Transaction.Description,
                         OverrideDescription = x.Transaction.Description.ToCamelCase()
                     };
-                })
-                .ToImmutableArray();
+                });
             if (unmatchedTransactions.Any())
             {
                 blocks.Add(new TransactionBlock("Uncategorised", IsUnmatched: true, unmatchedTransactions));
@@ -40,16 +39,15 @@ namespace AccountProcessor.Components.Pages
                 })
                 .GroupBy(x => x.CategoryKey)
                 .OrderBy(x => x.Key)
-                .Select(grp =>
+                .ToImmutableArray(grp =>
                 {
                     var category = grp.First().Category;
                     var rows = grp
                         .OrderBy(x => x.Section.Order)
                         .ThenBy(x => x.Transaction.Date)
-                        .Select(t => new TransactionRow(t.Transaction, t.Section, t.Matches))
-                        .ToImmutableArray();
+                        .ToImmutableArray(t => new TransactionRow(t.Transaction, t.Section, t.Matches));
                     return new TransactionBlock(category.Name, IsUnmatched: false, rows);
-                }).ToImmutableArray();
+                });
             blocks.AddRange(matched);
 
             return blocks.ToImmutableArray();

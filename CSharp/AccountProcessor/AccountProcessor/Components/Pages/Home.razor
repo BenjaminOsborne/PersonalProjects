@@ -225,8 +225,7 @@
         var allData = Categoriser.GetSelectorData(Month!.Value);
         Categories = allData.Categories;
         AllSections = allData.Sections
-            .Select(s => new SectionSelectorRow(s, _ToDisplay(s), Guid.NewGuid().ToString())) //Arbitrary Id
-            .ToImmutableArray();
+            .ToImmutableArray(s => new SectionSelectorRow(s, _ToDisplay(s), Guid.NewGuid().ToString())); //Arbitrary Id
 
         static string _ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
     }

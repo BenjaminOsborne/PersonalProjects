@@ -60,7 +60,7 @@ namespace AccountProcessor.Tests
         private static Category _CreateCategory(CategoryHeader header, params string[] sections)
         {
             var sectionList = sections
-                .Select((x,nx) => new SectionMatches(new SectionHeader(nx, x, header, month: null), []))
+                .Select((x, nx) => new SectionMatches(new SectionHeader(nx, x, header, month: null), []))
                 .ToImmutableArray();
             return new Category(header, sectionList);
         }

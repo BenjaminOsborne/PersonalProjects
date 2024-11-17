@@ -47,15 +47,14 @@ namespace AccountProcessor.Components.Services
         public CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month)
         {
             var model = _singleModel.Value;
-            
+
             var sections = model.Categories
                 .SelectMany(c => c.Sections)
-                .SelectMany(s => s.Matches.Select(m => new { Section = s, Match = m }))
-                .ToImmutableArray();
+                .ToImmutableArrayMany(s => s.Matches.Select(m => new { Section = s, Match = m }));
 
             var withMatch = transactions
                 .Where(trans => trans.IsInMonth(month))
-                .Select(trans =>
+                .ToImmutableArray(trans =>
                 {
                     var matches = sections
                         .Select(s => (Section: s, Match: s.Match.Matches(trans)))
@@ -63,22 +62,19 @@ namespace AccountProcessor.Components.Services
                         .Partition(x => x.Match == MatchType.MatchExact)
                         .Map(x => x.Section);
                     return new { Transaction = trans, ExactMatches = matches.PredicateTrue, HistoricMatches = matches.PredicateFalse };
-                })
-                .ToImmutableArray();
+                });
 
             var parition = withMatch.Partition(x => x.ExactMatches.Any());
             var matched = parition.PredicateTrue
-                .Select(x =>
+                .ToImmutableArray(x =>
                     new MatchedTransaction(
                         x.Transaction,
                         sectionMatches: x.ExactMatches
-                            .Select(m => new SectionMatch(m.Section.Section, m.Match))
-                            .ToImmutableArray()
-                    ))
-                .ToImmutableArray();
+                            .ToImmutableArray(m => new SectionMatch(m.Section.Section, m.Match))
+                    ));
 
             var unmatched = parition.PredicateFalse
-                .Select(unMatched =>
+                .ToImmutableArray(unMatched =>
                 {
                     var suggestedSection = unMatched.HistoricMatches
                         .Select(x => x.Section.Section)
@@ -87,8 +83,7 @@ namespace AccountProcessor.Components.Services
                         .Select(x => x.Match.Pattern)
                         .FirstOrDefault();
                     return new UnMatchedTransaction(unMatched.Transaction, suggestedSection, suggestedPattern);
-                })
-                .ToImmutableArray();
+                });
             return new CategorisationResult(matched, unmatched);
         }
 
@@ -294,8 +289,7 @@ namespace AccountProcessor.Components.Services
 
         public static ImmutableArray<CategoryHeader> AllValues { get; } = typeof(CategoryHeader)
             .GetAllStaticPublicPropertiesOfType<CategoryHeader>()
-            .Select(x => x.value)
-            .ToImmutableArray();
+            .ToImmutableArray(x => x.value);
 
         #endregion
 
