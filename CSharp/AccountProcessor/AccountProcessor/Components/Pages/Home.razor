@@ -93,9 +93,9 @@
         <hr />
         <label style="color:red; font-size:large"><strong>UnMatched</strong></label>
 
-        <table class="table" style="width:auto">
+        <table style="width:auto" cellpadding="5">
             <thead>
-                <tr>
+                <tr class="border-bottom-thick">
                     <th>Date</th>
                     <th>Transaction</th>
                     <th class="border-right">Amount (£)</th>
@@ -109,7 +109,7 @@
             <tbody>
                 @foreach (var row in TransactionResultViewModel.UnMatchedRows)
                 {
-                    <tr>
+                    <tr class="border-bottom">
                         <td class="fitwidth">@row.Transaction.Date.ToString("dd/MM")</td>
                         <td class="fitwidth">@row.Transaction.Description</td>
                         <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
