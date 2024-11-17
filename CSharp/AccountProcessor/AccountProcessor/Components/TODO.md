@@ -1,1 +1,2 @@
-- Consider loading from Santander too (for Credit Card)
+- Impl. for loading from Santander (from Credit Card)
+- Spike into making observable? Some state view model intermediate?
