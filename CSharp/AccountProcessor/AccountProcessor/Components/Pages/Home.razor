@@ -148,9 +148,9 @@
         <hr />
         <label style="color:green; font-size:large"><strong>Matched</strong></label>
 
-        <table class="table" style="width:auto">
+        <table style="width:auto" cellpadding="5">
             <thead>
-                <tr>
+                <tr class="border-bottom-thick">
                     <th>Category</th>
                     <th class="border-right">Section</th>
                     <th>Date</th>
@@ -164,7 +164,7 @@
             <tbody>
                 @foreach (var row in TransactionResultViewModel.MatchedRows)
                 {
-                    var rowClassBottom = row.IsLastRowForCategory ? "border-bottom-thick" : "";
+                    var rowClassBottom = row.IsLastRowForCategory ? "border-bottom-thick" : "border-bottom";
                     <tr class=@rowClassBottom>
                         <td class="fitwidth">@row.Category.Name</td>
                         <td class="fitwidth border-right">@row.Section.Name</td>
