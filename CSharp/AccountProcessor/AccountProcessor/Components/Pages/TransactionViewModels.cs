@@ -33,8 +33,8 @@ namespace AccountProcessor.Components.Pages
             var matched = result.Matched
                 .Select(x =>
                 {
-                    var section = x.SectionMatches.First().Section;
-                    var match = x.SectionMatches.First().Match;
+                    var section = x.SectionMatch.Section;
+                    var match = x.SectionMatch.Match;
                     var category = section.Parent;
                     return (x.Transaction, Matches: match, Section: section, Category: category, CategoryKey: category.Order);
                 })

@@ -226,9 +226,11 @@ namespace AccountProcessor.Components.Services
                     {
                         SetValue(row++, col, sec.Section.Name, isBold: true);
 
-                        foreach (var trans in sec.Transactions)
+                        foreach (var ts in sec.Transactions)
                         {
-                            SetValue(row, col, $"{trans.Date:dd}/{trans.Date:MM} - {trans.Description}");
+                            var trans = ts.Transaction;
+                            var description = ts.OverrideDescription ?? trans.Description;
+                            SetValue(row, col, $"{trans.Date:dd}/{trans.Date:MM} - {description}");
                             SetValue(row++, col + 1, trans.Amount, numberFormat: _excelCurrencyNumberFormat);
                         }
 
@@ -277,9 +279,13 @@ namespace AccountProcessor.Components.Services
             //All unmatched go as "Manual" section
             var manualHeader = CategoryHeader.Manual;
             var unmatched = result.UnMatched
-                .Select(x => (x.Transaction, Section: new SectionHeader(int.MaxValue, "UnMatched", manualHeader, null)));
+                .Select(x => (
+                    Transaction: new TransactionSummary(x.Transaction, OverrideDescription: null),
+                    Section: new SectionHeader(int.MaxValue, "UnMatched", manualHeader, null)));
             var map = result.Matched
-                .Select(x => (x.Transaction, x.SectionMatches[0].Section))
+                .Select(x => (
+                    Transaction: new TransactionSummary(x.Transaction, OverrideDescription: x.SectionMatch.Match.GetDescription()),
+                    x.SectionMatch.Section))
                 .Concat(unmatched)
                 .GroupBy(x => x.Section.Parent.Name)
                 .ToImmutableDictionary(x => x.Key, x => x.ToImmutableArray());
@@ -295,7 +301,11 @@ namespace AccountProcessor.Components.Services
                     var sections = cat.Vals?
                         .GroupBy(x => x.Section.GetKey())
                         .OrderBy(grp => grp.Key.order)
-                        .Select(grp => new SectionSummary(grp.First().Section, grp.Select(x => x.Transaction).ToImmutableArray()))
+                        .Select(grp =>
+                        {
+                            var transactions = grp.Select(x => x.Transaction).ToImmutableArray();
+                            return new SectionSummary(grp.First().Section, transactions);
+                        })
                         .ToImmutableArray()
                         ?? ImmutableArray<SectionSummary>.Empty;
 
@@ -309,7 +319,8 @@ namespace AccountProcessor.Components.Services
             """;
 
         private record CategorySummary(CategoryHeader Category, ImmutableArray<SectionSummary> Sections);
-        private record SectionSummary(SectionHeader Section, ImmutableArray<Transaction> Transactions);
+        private record SectionSummary(SectionHeader Section, ImmutableArray<TransactionSummary> Transactions);
+        private record TransactionSummary(Transaction Transaction, string? OverrideDescription);
 
         #endregion
     }

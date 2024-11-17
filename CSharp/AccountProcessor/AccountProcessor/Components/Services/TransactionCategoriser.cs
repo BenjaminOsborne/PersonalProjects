@@ -248,6 +248,9 @@ namespace AccountProcessor.Components.Services
 
         /// <summary> Preference ordered matches. Always at least 1 in collection. </summary>
         public ImmutableArray<SectionMatch> SectionMatches { get; }
+        
+        /// <summary> As preference order, the current match is the first in the collection </summary>
+        public SectionMatch SectionMatch => SectionMatches[0];
     }
 
     public record SectionMatch(SectionHeader Section, Match Match);
@@ -421,7 +424,7 @@ namespace AccountProcessor.Components.Services
         /// <summary> If set - only applies to specific transaction. <see cref="Pattern"/> should be exact Transaction title at this point. </summary>
         public DateOnly? ExactDate { get; }
 
-        public string? GetDescription() => OverrideDescription ?? Pattern;
+        public string GetDescription() => OverrideDescription ?? Pattern;
 
         /// <remarks> "False" is before "True" for OrderBy. Prefer overriden dates & non-wild-card matches first. </remarks>
         public IComparable GetOrderKey() => (!ExactDate.HasValue, _wildCardCount, Pattern.Length);
