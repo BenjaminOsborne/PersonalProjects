@@ -7,7 +7,7 @@
 @inject Services.ITransactionCategoriser Categoriser;
 @inject IJSRuntime JS
 
-<!-- Add icon library -->
+<!-- Add icon library: https://fontawesome.com/v4/icons/ -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <!-- Button Style -->
@@ -60,6 +60,8 @@
 
 <label>Month:</label>
 <input type="month" value="@Month?.ToString("yyyy-MM")" @onchange="e => OnSetMonth((string?)e.Value)">
+<button @onclick="() => SkipMonth(-1)"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+<button @onclick="() => SkipMonth(+1)"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
 <p/>
 
 @if (Categories.HasValue && AllSections.HasValue && TransactionResultViewModel != null)
@@ -203,11 +205,16 @@
 
     protected override Task OnInitializedAsync()
     {
-        var now = DateTime.Now;
-        Month = new DateOnly(now.Year, now.Month, 1).AddMonths(-1);
+        Month = _InitialiseMonth();
         _RefreshCategories();
 
         return Task.CompletedTask;
+    }
+
+    private static DateOnly _InitialiseMonth()
+    {
+        var now = DateTime.Now;
+        return new DateOnly(now.Year, now.Month, 1).AddMonths(-1);        
     }
 
     private void _RefreshCategories()
@@ -228,10 +235,17 @@
     {
         if (DateOnly.TryParseExact(yearAndMonth, "yyyy-MM", out var parsed))
         {
-            Month = parsed;
-
-            _RefreshCategoriesAndMatchedTransactions();
+            _SetMonth(parsed);
         }
+    }
+
+    private void SkipMonth(int months) =>
+        _SetMonth(Month?.AddMonths(months) ?? _InitialiseMonth());
+
+    private void _SetMonth(DateOnly month)
+    {
+        Month = month;
+        _RefreshCategoriesAndMatchedTransactions();        
     }
 
     private void _RefreshCategoriesAndMatchedTransactions()
