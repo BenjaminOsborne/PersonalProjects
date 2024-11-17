@@ -1,3 +1,2 @@
-- Export button in expected format
-
+- Collapse IGNORE section
 - Consider loading from Santander too (for Credit Card)

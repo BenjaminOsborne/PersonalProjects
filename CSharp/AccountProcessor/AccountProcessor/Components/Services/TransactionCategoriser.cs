@@ -421,6 +421,8 @@ namespace AccountProcessor.Components.Services
         /// <summary> If set - only applies to specific transaction. <see cref="Pattern"/> should be exact Transaction title at this point. </summary>
         public DateOnly? ExactDate { get; }
 
+        public string? GetDescription() => OverrideDescription ?? Pattern;
+
         /// <remarks> "False" is before "True" for OrderBy. Prefer overriden dates & non-wild-card matches first. </remarks>
         public IComparable GetOrderKey() => (!ExactDate.HasValue, _wildCardCount, Pattern.Length);
 

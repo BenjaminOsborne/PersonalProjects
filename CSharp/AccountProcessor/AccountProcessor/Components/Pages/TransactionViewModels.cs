@@ -58,6 +58,9 @@ namespace AccountProcessor.Components.Pages
 
     public record TransactionRow(Transaction Transaction, SectionHeader? Section, Match? LatestMatch)
     {
+        public string? MatchPattern => LatestMatch?.Pattern;
+        public string? MatchDescription => LatestMatch?.GetDescription();
+
         public string? SelectionId { get; set; }
         public string? MatchOn { get; set; }
         public string? OverrideDescription { get; set; }

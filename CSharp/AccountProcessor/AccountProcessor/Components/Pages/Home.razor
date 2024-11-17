@@ -100,7 +100,13 @@
                     }
 
                     <th>Date</th>
-                    <th>Description</th>
+                    <th>Transaction</th>
+
+                    @if (!block.IsUnmatched)
+                    {
+                        <th>Export As</th>
+                    }
+
                     <th class="border-right">Amount (£)</th>
 
                     @if (block.IsUnmatched)
@@ -134,6 +140,12 @@
 
                         <td class="fitwidth">@tr.Date.ToShortDateString()</td>
                         <td class="fitwidth">@tr.Description</td>
+
+                        @if (!block.IsUnmatched)
+                        {
+                            <td class="fitwidth">@row.MatchDescription</td>
+                        }
+
                         <td class="border-right" style="@styleColor">@displayAmount</td>
 
                         @if (block.IsUnmatched)
@@ -163,7 +175,7 @@
                         }
                         else
                         {
-                            <td class="fitwidth">@row.LatestMatch?.Pattern</td>
+                            <td class="fitwidth">@row.MatchPattern</td>
                             <td>
                                 <button class="btn" @onclick="() => ClearMatch(row)"><i class="fa fa-trash"></i></button>
                             </td>
