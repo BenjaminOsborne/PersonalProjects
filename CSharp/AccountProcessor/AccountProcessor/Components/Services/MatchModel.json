@@ -66,6 +66,16 @@
               "ExactDate": "2024-10-04"
             },
             {
+              "Pattern": "H3G",
+              "OverrideDescription": "3 Mobile",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "GOCARDLESS",
+              "OverrideDescription": "Casuals Rugby",
+              "ExactDate": null
+            },
+            {
               "Pattern": "Netflix.com",
               "OverrideDescription": "Netflix",
               "ExactDate": null
