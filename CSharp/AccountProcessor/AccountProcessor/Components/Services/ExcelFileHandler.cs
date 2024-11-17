@@ -8,14 +8,18 @@ namespace AccountProcessor.Components.Services
 {
     public interface IExcelFileHandler
     {
-        /// <summary> Takes input CSV stream and returns excel byte[] for download with transactions in ascending order </summary>
+        /// <summary> Takes input .csv stream (from co-op bank file) and returns excel byte[] for download with transactions in ascending order </summary>
         /// <remarks> Assumes the co-op CSV format is in reverse order </remarks>
         Task<WrappedResult<byte[]>> CoopBank_ExtractCsvTransactionsToExcel(Stream inputCsv);
-        
+
+        /// <summary> Takes input .xlsx stream (from santander bank file) and returns excel byte[] for download with transactions in ascending order </summary>
         Task<WrappedResult<byte[]>> Santander_ExtractExcelTransactionsToExcel(Stream inputExcel);
         
+        /// <summary> Loads transactions from excel file with these columns: Date, Description, Type, Money In, Money Out </summary>
         Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsFromExcel(Stream inputExcel);
 
+        /// <summary> Exports categorised transactions to excel with 2 columns ("Date - Description", "Amount") for each category (ordered section within)</summary>
+        /// <remarks> Output is then ready to be pasted into LifeOrganisation summary sheet </remarks>
         Task<WrappedResult<byte[]>> ExportCategorisedTransactionsToExcel(CategorisationResult result);
     }
 
