@@ -34,35 +34,60 @@
 <p />
 <hr />
 
-<label><strong>Coop Bank: Reverse File</strong></label>
-<button class="btn btn-primary">
-    <InputFile OnChange="@CoopBankReverseFile" accept=".csv" />
-</button>
-
-<p />
-
-<label><strong>Santander: Extract</strong></label>
-<button class="btn btn-primary">
-    <InputFile OnChange="@SantanderProcessFile" accept=".xlsx" />
-</button>
-
-<p role="status"><strong>Result</strong>: @ReverseFileResult</p>
-
-<p />
+<p role="status"><strong>Last Action Result</strong>: @LastActionResult</p>
 
 <hr />
 
-<p />
+<p style="border:thin">
+    <table style="width:auto" cellpadding="5">
+        <tbody>
+            <!-- Coop Bank extract -->
+            <tr>
+                <td><label><strong>Coop Bank: Reverse File</strong></label></td>
+                <td>
+                    <button class="btn btn-primary">
+                        <InputFile OnChange="@CoopBankReverseFile" accept=".csv" />
+                    </button>
+                </td>
+                <td><label>Takes a raw CSV from Co-op Bank, reverses the transactions and downloads in standard format</label></td>
+            </tr>
 
-<button class="btn btn-primary">
-    <strong>Categorise: </strong>
-    <InputFile OnChange="@Categorise" accept=".xlsx" />
-</button>
-<p role="status"><strong>Result</strong>: @CategorisedTransactionsResult</p>
+            <!-- Santander Bank extract -->
+            <tr>
+                <td><label><strong>Santander: Extract</strong></label></td>
+                <td>
+                    <button class="btn btn-primary">
+                        <InputFile OnChange="@SantanderProcessFile" accept=".xlsx" />
+                    </button>
+                </td>
+                <td><label>Takes a converted xlsx from Santander and downloads in standard format. (Must be saved to xlsx manually)</label></td>
+            </tr>
 
-<hr />
+            <!-- Categorise transaction files -->
+            <tr class="border-top">
+                <td><label><strong>Categorise: </strong></label></td>
+                <td>
+                    <button class="btn btn-primary">
+                        <InputFile OnChange="@Categorise" accept=".xlsx" />
+                    </button>
+                </td>
+                <td><label>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </label></td>
+            </tr>
 
-<p role="status"><strong>Last Action Error</strong>: @LastActionError</p>
+            @if (TransactionsFullyLoaded())
+            {
+                <!-- Export categorised -->
+                <tr class="border-top">
+                    <td><label><strong>Export Categorised</strong></label></td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => ExportCategorisedTransactions()">Export</button>
+                    </td>
+                    <td><label>Finally, exports the categorised transactions by category, for storage in LifeOrganisation file. </label></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</p>
 
 <hr />
 
@@ -72,15 +97,9 @@
 <button @onclick="() => SkipMonth(+1)"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
 <p/>
 
-@if (Categories.HasValue && AllSections.HasValue && TransactionResultViewModel != null)
+@if (TransactionsFullyLoaded())
 {
     <hr />
-
-    <button class="btn btn-primary" @onclick="() => ExportCategorisedTransactions()">
-        <strong>Export Categorised Transactions</strong>
-    </button>
-
-    <p />
 
     <label ><strong>Add New Section:</strong></label>
     <select style="margin-right: 5px" value="@NewSectionName" @onchange="e => NewSectionCategoryName = (string?)e.Value">
@@ -194,9 +213,8 @@
 @code
 {
     /// <summary> Display message after "Reverse File" called </summary>
-    private string? ReverseFileResult;
-    private string? CategorisedTransactionsResult;
-    private string? LastActionError;
+    private string? LastActionResult;
+    private const string _success = "Success!";
 
     private DateOnly? Month;
 
@@ -218,6 +236,9 @@
 
         return Task.CompletedTask;
     }
+
+    private bool TransactionsFullyLoaded() =>
+        Categories.HasValue && AllSections.HasValue && TransactionResultViewModel != null;
 
     private static DateOnly _InitialiseMonth()
     {
@@ -279,13 +300,13 @@
 
     private async Task PerformMatch(TransactionRowUnMatched row)
     {
-        LastActionError = null;
+        LastActionResult = null;
 
         var found = AllSections?.SingleOrDefault(x => x.Id == row.SelectionId);
         var header = found?.Header;
         if (header == null)
         {
-            LastActionError = "Could not find Section";
+            LastActionResult = "Could not find Section";
             return;
         }
 
@@ -298,7 +319,7 @@
         {
             if (row.MatchOn.IsNullOrEmpty())
             {
-                LastActionError = "Match On must be defined";
+                LastActionResult = "Match On must be defined";
                 return;
             }
             result = Categoriser.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription);
@@ -313,25 +334,27 @@
             await Task.Yield();
 
             _RefreshMatchedTransactions();
+
+            LastActionResult = _success;
         }
         else
         {
-            LastActionError = result.Error;
+            LastActionResult = result.Error;
         }
     }
 
     private void ClearMatch(TransactionRowMatched row)
     {
-        LastActionError = null;
+        LastActionResult = null;
 
         if (row.Section == null || row.LatestMatch == null)
         {
-            LastActionError = "Empty section or empty matches";
+            LastActionResult = "Empty section or empty matches";
             return;
         }
 
         var result = Categoriser.DeleteMatch(row.Section!, row.LatestMatch!);
-        LastActionError = result.Error;
+        LastActionResult = result.IsSuccess ? _success : result.Error;
 
         _RefreshMatchedTransactions();
     }
@@ -351,14 +374,14 @@
         Func<Stream, Task<WrappedResult<byte[]>>> fnProcess,
         string filePrefix)
     {
-        ReverseFileResult = "Running...";
+        LastActionResult = "Running...";
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         var result = await fnProcess(inputStream);
 
         if (result.IsSuccess)
         {
-            ReverseFileResult = "Success!";
+            LastActionResult = _success;
 
             await _DownloadBytes(
                 fileName: $"{filePrefix}_{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
@@ -366,7 +389,7 @@
         }
         else
         {
-            ReverseFileResult = $"Failed: {result.Error}";
+            LastActionResult = $"Failed: {result.Error}";
         }
     }
 
@@ -380,9 +403,11 @@
         var result = await ExcelFileHandler.ExportCategorisedTransactionsToExcel(LatestCategorisationResult!);
         if (!result.IsSuccess)
         {
-            LastActionError = result.Error;
+            LastActionResult = result.Error;
             return;
         }
+
+        LastActionResult = _success;
         await _DownloadBytes(
             fileName: $"{Month:yyyy-MM}_CategorisedTransactions_{DateTime.Now.ToFileTime()}.xlsx",
             bytes: result.Result!);
@@ -404,14 +429,14 @@
         var transactionResult = await ExcelFileHandler.LoadTransactionsFromExcel(inputStream);
         if (transactionResult.IsSuccess)
         {
-            CategorisedTransactionsResult = "Success!";
+            LastActionResult = _success;
 
             LoadedTransactions = transactionResult.Result;
             _RefreshMatchedTransactions();
         }
         else
         {
-            CategorisedTransactionsResult = $"Failed: {transactionResult.Error}";
+            LastActionResult = $"Failed: {transactionResult.Error}";
         }
     }
 
