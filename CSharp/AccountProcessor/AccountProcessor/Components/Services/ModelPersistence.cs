@@ -10,7 +10,7 @@ namespace AccountProcessor.Components.Services
             var processPath = Process.GetCurrentProcess().MainModule!.FileName;
             var outputPath = GetOutputPath();
             var persistenceData = _MapToPersistence(model);
-            var content = JsonHelper.Serialise(model, writeIndented: true);
+            var content = JsonHelper.Serialise(persistenceData, writeIndented: true);
             File.WriteAllText(outputPath, content);
 
             static string GetOutputPath()
