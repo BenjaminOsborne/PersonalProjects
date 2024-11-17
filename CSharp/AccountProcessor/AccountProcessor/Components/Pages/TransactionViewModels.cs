@@ -25,7 +25,10 @@ namespace AccountProcessor.Components.Pages
                     };
                 })
                 .ToImmutableArray();
-            blocks.Add(new TransactionBlock("Uncategorised", IsUnmatched: true, unmatchedTransactions));
+            if (unmatchedTransactions.Any())
+            {
+                blocks.Add(new TransactionBlock("Uncategorised", IsUnmatched: true, unmatchedTransactions));
+            }
 
             var matched = result.Matched
                 .Select(x =>
