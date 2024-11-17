@@ -1,2 +1,1 @@
-- Other persistence? (Or JSON which is decoupled from underlying model?)
 - Consider loading from Santander too (for Credit Card)

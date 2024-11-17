@@ -110,7 +110,7 @@
                 @foreach (var row in TransactionResultViewModel.UnMatchedRows)
                 {
                     <tr>
-                        <td class="fitwidth">@row.Transaction.Date.ToShortDateString()</td>
+                        <td class="fitwidth">@row.Transaction.Date.ToString("dd/MM")</td>
                         <td class="fitwidth">@row.Transaction.Description</td>
                         <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
                         
@@ -152,7 +152,7 @@
             <thead>
                 <tr>
                     <th>Category</th>
-                    <th>Section</th>
+                    <th class="border-right">Section</th>
                     <th>Date</th>
                     <th>Transaction</th>
                     <th>Export As</th>
@@ -167,8 +167,8 @@
                     var rowClassBottom = row.IsLastRowForCategory ? "border-bottom-thick" : "";
                     <tr class=@rowClassBottom>
                         <td class="fitwidth">@row.Category.Name</td>
-                        <td class="fitwidth">@row.Section.Name</td>
-                        <td class="fitwidth">@row.Transaction.Date.ToShortDateString()</td>
+                        <td class="fitwidth border-right">@row.Section.Name</td>
+                        <td class="fitwidth">@row.Transaction.Date.ToString("dd/MM")</td>
                         <td class="fitwidth">@row.Transaction.Description</td>
                         <td class="fitwidth">@row.MatchDescription</td>
                         <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
