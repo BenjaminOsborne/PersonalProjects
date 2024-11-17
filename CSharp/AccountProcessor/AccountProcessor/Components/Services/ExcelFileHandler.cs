@@ -10,7 +10,7 @@ namespace AccountProcessor.Components.Services
     {
         /// <summary> Takes input CSV stream and returns excel byte[] for download with transactions in ascending order </summary>
         /// <remarks> Assumes the co-op CSV format is in reverse order </remarks>
-        Task<WrappedResult<byte[]>> CoopBank_ReverseCsvTransactionsToExcel(Stream inputCsv);
+        Task<WrappedResult<byte[]>> CoopBank_ExtractCsvTransactionsToExcel(Stream inputCsv);
         
         Task<WrappedResult<byte[]>> Santander_ExtractExcelTransactionsToExcel(Stream inputExcel);
         
@@ -24,9 +24,9 @@ namespace AccountProcessor.Components.Services
         /// <summary> Note: "Balance" included in co-op report, but not required for loading transactions out to process </summary>
         private static readonly ImmutableArray<string> _transactionsRequiredColumnHeaders = ["Date", "Description", "Type", "Money In", "Money Out"];
         
-        private static readonly ImmutableArray<string> _coopBankColumnHeaders = _transactionsRequiredColumnHeaders.Add("Balance");
+        private static readonly ImmutableArray<string> _writeTransactionColumnHeaders = _transactionsRequiredColumnHeaders.Add("Balance");
         
-        private const string _dateFormatExcel = "dd/MM/yyyy";
+        private const string _dateFormatExcelExport = "dd/MM/yyyy";
 
         #region CoopBank_ReverseCsvTransactionsToExcel
 
@@ -48,15 +48,17 @@ namespace AccountProcessor.Components.Services
             public decimal Balance { get; init; }
         }
 
-        public async Task<WrappedResult<byte[]>> CoopBank_ReverseCsvTransactionsToExcel(Stream inputCsv)
+        public async Task<WrappedResult<byte[]>> CoopBank_ExtractCsvTransactionsToExcel(Stream inputCsv)
         {
             var rows = _CoopBank_ExtractRowsFromCsvStream(inputCsv);
             if (!rows.IsSuccess)
             {
                 return rows.MapFail<byte[]>();
             }
-            var allRows = rows.Result!.Reverse().ToImmutableArray();
-            var resultBytes = await _CoopBank_WriteRowsToExcel(allRows);
+            var allRows = rows.Result!
+                .Reverse() //Coop has them newest to oldest - should be output in Date ascending order
+                .ToImmutableArray(x => new TransactionRow(x.Date, x.Description, x.Type, x.MoneyIn, x.MoneyOut, x.Balance));
+            var resultBytes = await _WriteTransactionRowsToExcel(allRows);
             return WrappedResult.Create(resultBytes);
         }
 
@@ -116,33 +118,6 @@ namespace AccountProcessor.Components.Services
             static WrappedResult<ImmutableArray<CoopBankCsvRow>> FailOnRow(string error, int rowNumber) =>
                 WrappedResult.Fail<ImmutableArray<CoopBankCsvRow>>($"{error}. Row: {rowNumber}");
         }
-        
-        private static async Task<byte[]> _CoopBank_WriteRowsToExcel(ImmutableArray<CoopBankCsvRow> allRows)
-        {
-            var (excel, worksheet) = _CreateNewExcel();
-
-            _coopBankColumnHeaders
-                .SelectWithIndexes()
-                .ForEach(p => worksheet.Cells[1, p.Index + 1].Value = p.Value);
-
-            for (int r = 0; r < allRows.Length; r++)
-            {
-                var row = allRows[r];
-                var rowNum = r + 2;
-                var col = 0;
-                worksheet.Cells[rowNum, ++col].Value = row.Date.ToString(_dateFormatExcel);
-                worksheet.Cells[rowNum, ++col].Value = row.Description;
-                worksheet.Cells[rowNum, ++col].Value = row.Type;
-                worksheet.Cells[rowNum, ++col].Value = row.MoneyIn;
-                worksheet.Cells[rowNum, ++col].Value = row.MoneyOut;
-                worksheet.Cells[rowNum, ++col].Value = row.Balance;
-            }
-
-            //Autofit for easy viewing
-            worksheet.Columns.ForEach(x => x.AutoFit());
-
-            return await excel.GetAsByteArrayAsync();
-        }
 
         private static (ExcelPackage excel, ExcelWorksheet worksheet) _CreateNewExcel()
         {
@@ -154,17 +129,63 @@ namespace AccountProcessor.Components.Services
 
         #endregion
 
-        public async Task<WrappedResult<byte[]>> Santander_ExtractExcelTransactionsToExcel(Stream inputExcel) 
+        #region Santander_ExtractExcelTransactionsToExcel
+        
+        public async Task<WrappedResult<byte[]>> Santander_ExtractExcelTransactionsToExcel(Stream inputExcel)
+        {
+            var result = await _Santander_ExtractRowsFromExcelStream(inputExcel);
+            if (!result.IsSuccess)
+            {
+                return result.MapFail<byte[]>();
+            }
+
+            var resultBytes = await _WriteTransactionRowsToExcel(result.Result);
+            return WrappedResult.Create(resultBytes);
+        }
+
+        private static async Task<WrappedResult<ImmutableArray<TransactionRow>>> _Santander_ExtractRowsFromExcelStream(Stream inputExcel)
         {
             var excelFromStream = await _LoadFromExcelStream(inputExcel);
             var found = excelFromStream.Workbook.Worksheets.Single();
 
-            var (excel, worksheet) = _CreateNewExcel();
+            var columnNums = ImmutableArray.Create(2, 4, 6, 8, 10);
+            var expectedHeaders = ImmutableArray.Create("Date", "Card", "Description", "Money in", "Money Out");
+            var titleRow = 4;
+            var transactionsStartRow = 6;
 
-            worksheet.Cells[1, 1].Value = "Hello";
+            var titles = columnNums
+                .ToImmutableArray(col => found.Cells[titleRow, col].Value.ToString());
+            if (!titles.SequenceEqual(expectedHeaders))
+            {
+                return Fail($"Expecting headers: {expectedHeaders.ToJoinedString(", ")}");
+            }
 
-            return WrappedResult.Create(await excel.GetAsByteArrayAsync());
+            var transactionRows = new List<TransactionRow>();
+            foreach (var rowNum in Enumerable.Range(transactionsStartRow, found.Dimension.Rows - transactionsStartRow + 1))
+            {
+                var date = _TryParseDate(found.Cells[rowNum, columnNums[0]].Value);
+                var description = found.Cells[rowNum, columnNums[2]].Value?.ToString();
+                var moneyIn = _TryParseDecimal(found.Cells[rowNum, columnNums[3]].Value);
+                var moneyOut = _TryParseDecimal(found.Cells[rowNum, columnNums[4]].Value);
+                if (date == null && description == null && moneyIn == null && moneyOut == null)
+                {
+                    continue; //entirely empty row is OK
+                }
+                if (date.HasValue == false || description == null || (moneyIn == null && moneyOut == null))
+                {
+                    return Fail($"Invalid row - missing data: {rowNum}");
+                }
+
+                transactionRows.Add(new TransactionRow(date.Value, description, "Credit Card", moneyIn, moneyOut, Balance: null));
+            }
+            
+            return WrappedResult.Create(transactionRows.ToImmutableArray());
+
+            static WrappedResult<ImmutableArray<TransactionRow>> Fail(string error) =>
+                WrappedResult.Fail<ImmutableArray<TransactionRow>>(error);
         }
+
+        #endregion
 
         #region LoadTransactionsFromExcel
 
@@ -211,12 +232,6 @@ namespace AccountProcessor.Components.Services
             static WrappedResult<ImmutableArray<Transaction>> FailWith(string error) =>
                 WrappedResult.Fail<ImmutableArray<Transaction>>(error);
         }
-
-        private static DateOnly? _TryParseDate(object val) =>
-            DateOnly.TryParseExact(val?.ToString(), _dateFormatExcel, out var date) ? date : null;
-
-        private static decimal? _TryParseDecimal(object val) =>
-            decimal.TryParse(val?.ToString(), out var moneyIn) ? moneyIn : null;
 
         #endregion
 
@@ -338,6 +353,45 @@ namespace AccountProcessor.Components.Services
 
         #endregion
 
+        #region General Helpers
+
+        private record TransactionRow(DateOnly Date, string Description, string Type, decimal? MoneyIn, decimal? MoneyOut, decimal? Balance);
+
+        private static async Task<byte[]> _WriteTransactionRowsToExcel(ImmutableArray<TransactionRow> allRows)
+        {
+            var (excel, worksheet) = _CreateNewExcel();
+
+            _writeTransactionColumnHeaders
+                .SelectWithIndexes()
+                .ForEach(p => worksheet.Cells[1, p.Index + 1].Value = p.Value);
+
+            for (int r = 0; r < allRows.Length; r++)
+            {
+                var row = allRows[r];
+                var rowNum = r + 2;
+                var col = 0;
+                worksheet.Cells[rowNum, ++col].Value = row.Date.ToString(_dateFormatExcelExport);
+                worksheet.Cells[rowNum, ++col].Value = row.Description;
+                worksheet.Cells[rowNum, ++col].Value = row.Type;
+                worksheet.Cells[rowNum, ++col].Value = row.MoneyIn;
+                worksheet.Cells[rowNum, ++col].Value = row.MoneyOut;
+                worksheet.Cells[rowNum, ++col].Value = row.Balance;
+            }
+
+            //Autofit for easy viewing
+            worksheet.Columns.ForEach(x => x.AutoFit());
+
+            return await excel.GetAsByteArrayAsync();
+        }
+
+        private static DateOnly? _TryParseDate(object val) =>
+            val is DateTime dt
+                ? DateOnly.FromDateTime(dt)
+                : DateOnly.TryParseExact(val?.ToString(), _dateFormatExcelExport, out var date) ? date : null;
+
+        private static decimal? _TryParseDecimal(object val) =>
+            decimal.TryParse(val?.ToString(), out var moneyIn) ? moneyIn : null;
+
         private static async Task<ExcelPackage> _LoadFromExcelStream(Stream inputExcel)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -345,5 +399,7 @@ namespace AccountProcessor.Components.Services
             await excel.LoadAsync(inputExcel);
             return excel;
         }
+
+        #endregion
     }
 }

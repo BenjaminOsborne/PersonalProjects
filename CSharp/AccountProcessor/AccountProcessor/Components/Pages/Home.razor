@@ -361,7 +361,7 @@
 
     private Task CoopBankReverseFile(InputFileChangeEventArgs e) =>
         _ProcessBankFileExtraction(e,
-            fnProcess: s => ExcelFileHandler.CoopBank_ReverseCsvTransactionsToExcel(s),
+            fnProcess: s => ExcelFileHandler.CoopBank_ExtractCsvTransactionsToExcel(s),
             filePrefix: "CoopBank_Extract");
 
     private Task SantanderProcessFile(InputFileChangeEventArgs e) =>
