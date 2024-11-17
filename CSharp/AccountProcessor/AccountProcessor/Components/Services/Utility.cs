@@ -180,4 +180,14 @@ namespace AccountProcessor.Components.Services
                 .Select(x => (fieldName: x.Name, value: (T)x.GetValue(null)!))
                 .ToImmutableArray();
     }
+
+    public class FuncCreator
+    {
+        public static Func<T> Build<T>(Func<T> func) => func;
+    }
+
+    public class FuncCreator<TIn>
+    {
+        public static Func<TIn, T> Build<T>(Func<TIn, T> func) => func;
+    }
 }

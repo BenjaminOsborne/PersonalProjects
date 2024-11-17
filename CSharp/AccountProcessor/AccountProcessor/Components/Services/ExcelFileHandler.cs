@@ -12,6 +12,8 @@ namespace AccountProcessor.Components.Services
         /// <remarks> Assumes the co-op CSV format is in reverse order </remarks>
         Task<WrappedResult<byte[]>> CoopBank_ReverseCsvTransactionsToExcel(Stream inputCsv);
         
+        Task<WrappedResult<byte[]>> Santander_ExtractExcelTransactionsToExcel(Stream inputExcel);
+        
         Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsFromExcel(Stream inputExcel);
 
         Task<WrappedResult<byte[]>> ExportCategorisedTransactionsToExcel(CategorisationResult result);
@@ -152,22 +154,32 @@ namespace AccountProcessor.Components.Services
 
         #endregion
 
+        public async Task<WrappedResult<byte[]>> Santander_ExtractExcelTransactionsToExcel(Stream inputExcel) 
+        {
+            var excelFromStream = await _LoadFromExcelStream(inputExcel);
+            var found = excelFromStream.Workbook.Worksheets.Single();
+
+            var (excel, worksheet) = _CreateNewExcel();
+
+            worksheet.Cells[1, 1].Value = "Hello";
+
+            return WrappedResult.Create(await excel.GetAsByteArrayAsync());
+        }
+
         #region LoadTransactionsFromExcel
 
         public async Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsFromExcel(Stream inputExcel)
         {
             try
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                var excel = new ExcelPackage();
-                await excel.LoadAsync(inputExcel);
-                
+                var excel = await _LoadFromExcelStream(inputExcel);
+
                 var found = excel.Workbook.Worksheets.Single();
 
                 var required = _transactionsRequiredColumnHeaders;
                 var titles = Enumerable.Range(1, required.Length)
                     .ToImmutableArray(col => found.Cells[1, col].Value);
-                if(!titles.SequenceEqual(required))
+                if (!titles.SequenceEqual(required))
                 {
                     return FailWith($"Title row should be: {required.ToJoinedString(",")}");
                 }
@@ -189,7 +201,7 @@ namespace AccountProcessor.Components.Services
 
                 var ordered = transactions.OrderBy(x => x.Date).ToImmutableArray();
                 return WrappedResult.Create(ordered);
-                
+
             }
             catch (Exception ex)
             {
@@ -325,5 +337,13 @@ namespace AccountProcessor.Components.Services
         private record TransactionSummary(Transaction Transaction, string? OverrideDescription);
 
         #endregion
+
+        private static async Task<ExcelPackage> _LoadFromExcelStream(Stream inputExcel)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            var excel = new ExcelPackage();
+            await excel.LoadAsync(inputExcel);
+            return excel;
+        }
     }
 }

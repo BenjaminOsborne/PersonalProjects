@@ -38,6 +38,12 @@
     <strong>Coop Bank: Reverse File</strong>
     <InputFile OnChange="@CoopBankReverseFile" accept=".csv" />
 </button>
+
+<button class="btn btn-primary">
+    <strong>Santander: Extract</strong>
+    <InputFile OnChange="@SantanderProcessFile" accept=".xls" />
+</button>
+
 <p role="status"><strong>Result</strong>: @ReverseFileResult</p>
 
 <p/>
@@ -328,19 +334,32 @@
         _RefreshMatchedTransactions();
     }
 
-    private async Task CoopBankReverseFile(InputFileChangeEventArgs e)
+    private Task CoopBankReverseFile(InputFileChangeEventArgs e) =>
+        _ProcessBankFileExtraction(e,
+            fnProcess: s => ExcelFileHandler.CoopBank_ReverseCsvTransactionsToExcel(s),
+            filePrefix: "CoopBank_Extract");
+
+    private Task SantanderProcessFile(InputFileChangeEventArgs e) =>
+        _ProcessBankFileExtraction(e,
+            fnProcess: s => ExcelFileHandler.Santander_ExtractExcelTransactionsToExcel(s),
+            filePrefix: "Santander_Extract");
+
+    private async Task _ProcessBankFileExtraction(
+    InputFileChangeEventArgs e,
+        Func<Stream, Task<WrappedResult<byte[]>>> fnProcess,
+        string filePrefix)
     {
         ReverseFileResult = "Running...";
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
-        var result = await ExcelFileHandler.CoopBank_ReverseCsvTransactionsToExcel(inputStream);
+        var result = await fnProcess(inputStream);
 
         if (result.IsSuccess)
         {
             ReverseFileResult = "Success!";
 
             await _DownloadBytes(
-                fileName: $"CoopBank_Reverse_{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
+                fileName: $"{filePrefix}_{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
                 bytes: result.Result!);
         }
         else
