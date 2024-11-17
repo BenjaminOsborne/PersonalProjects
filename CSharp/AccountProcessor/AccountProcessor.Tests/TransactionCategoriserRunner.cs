@@ -6,21 +6,6 @@ namespace AccountProcessor.Tests
 {
     public class TransactionCategoriserRunner
     {
-        [Test]
-        public void MigrateOnce()
-        {
-            var outputPath = _GetOutputPath();
-            MatchModel loaded;
-
-            using (var fs = File.OpenRead(outputPath))
-            {
-                loaded = JsonHelper.Deserialise<MatchModel>(fs)!;
-            }
-            var persist = ModelPersistence._MapToPersistence(loaded);
-            _WriteModel(outputPath, persist);
-
-        }
-
         [Test, Ignore("ONLY RUN ONCE BEFORE LIVE EDITING MODEL")]
         public void Bootstrap_Json_from_scratch()
         {

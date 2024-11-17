@@ -57,7 +57,7 @@ namespace AccountProcessor.Components.Services
                 }));
         }
 
-        public static ModelData _MapToPersistence(MatchModel model) =>
+        private static ModelData _MapToPersistence(MatchModel model) =>
             new (model.Categories
                 .OrderBy(x => x.Header.Order)
                 .ToImmutableArray(c =>
@@ -76,11 +76,11 @@ namespace AccountProcessor.Components.Services
                                         m.ExactDate))
                                     )))));
 
-        public record ModelData(ImmutableArray<CategoryData> Categories);
+        private record ModelData(ImmutableArray<CategoryData> Categories);
 
         /// <summary> Relates to the fixed set of <see cref="CategoryHeader"/>s </summary>
-        public record CategoryData(string CategoryName, ImmutableArray<SectionMatchData> Sections);
-        public record SectionMatchData(string SectionName, DateOnly? Month, ImmutableArray<MatchData> Matches);
-        public record MatchData(string Pattern, string? OverrideDescription, DateOnly? ExactDate);
+        private record CategoryData(string CategoryName, ImmutableArray<SectionMatchData> Sections);
+        private record SectionMatchData(string SectionName, DateOnly? Month, ImmutableArray<MatchData> Matches);
+        private record MatchData(string Pattern, string? OverrideDescription, DateOnly? ExactDate);
     }
 }
