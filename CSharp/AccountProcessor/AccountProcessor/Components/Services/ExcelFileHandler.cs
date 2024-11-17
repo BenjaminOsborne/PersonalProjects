@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace AccountProcessor.Components.Services
 {
-    public interface IExcelFileRunner
+    public interface IExcelFileHandler
     {
         /// <summary> Takes input CSV stream and returns excel byte[] for download with transactions in ascending order </summary>
         /// <remarks> Assumes the co-op CSV format is in reverse order </remarks>
@@ -17,7 +17,7 @@ namespace AccountProcessor.Components.Services
         Task<WrappedResult<byte[]>> ExportCategorisedTransactionsToExcel(CategorisationResult result);
     }
 
-    public class ExcelFileRunner : IExcelFileRunner
+    public class ExcelFileHandler : IExcelFileHandler
     {
         private static readonly ImmutableArray<string> _expectedColumnHeaders = ["Date", "Description", "Type", "Money In", "Money Out", "Balance"];
 

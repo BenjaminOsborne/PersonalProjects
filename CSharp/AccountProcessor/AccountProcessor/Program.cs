@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<IExcelFileRunner, ExcelFileRunner>();
+builder.Services.AddScoped<IExcelFileHandler, ExcelFileHandler>();
 builder.Services.AddScoped<ITransactionCategoriser, TransactionCategoriser>();
 
 var app = builder.Build();

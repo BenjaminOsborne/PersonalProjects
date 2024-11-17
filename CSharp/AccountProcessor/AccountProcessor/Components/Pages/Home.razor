@@ -3,7 +3,7 @@
 @using AccountProcessor.Components.Services;
 @page "/"
 @rendermode InteractiveServer
-@inject Services.IExcelFileRunner ExcelFileRunner;
+@inject Services.IExcelFileHandler ExcelFileHandler;
 @inject Services.ITransactionCategoriser Categoriser;
 @inject IJSRuntime JS
 
@@ -333,7 +333,7 @@
         ReverseFileResult = "Running...";
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
-        var result = await ExcelFileRunner.ReverseCsvTransactionsToExcel(inputStream);
+        var result = await ExcelFileHandler.ReverseCsvTransactionsToExcel(inputStream);
 
         if (result.IsSuccess)
         {
@@ -356,7 +356,7 @@
             return;
         }
 
-        var result = await ExcelFileRunner.ExportCategorisedTransactionsToExcel(LatestCategorisationResult!);
+        var result = await ExcelFileHandler.ExportCategorisedTransactionsToExcel(LatestCategorisationResult!);
         if (!result.IsSuccess)
         {
             LastActionError = result.Error;
@@ -380,7 +380,7 @@
         TransactionResultViewModel = null;
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
-        var transactionResult = await ExcelFileRunner.LoadTransactionsFromExcel(inputStream);
+        var transactionResult = await ExcelFileHandler.LoadTransactionsFromExcel(inputStream);
         if (transactionResult.IsSuccess)
         {
             CategorisedTransactionsResult = "Success!";
