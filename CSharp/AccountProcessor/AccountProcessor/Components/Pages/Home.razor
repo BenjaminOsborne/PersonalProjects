@@ -67,7 +67,7 @@
     <hr />
 
     <button class="btn btn-primary" @onclick="() => ExportCategorisedTransactions()">
-        <strong>Export Categorised Transactions: </strong>
+        <strong>Export Categorised Transactions</strong>
     </button>
 
     <p />
@@ -114,7 +114,7 @@
                     else
                     {
                         <th>Match</th>
-                        <th>Delete</th>
+                        <th>Clear</th>
                     }
                 </tr>
             </thead>
@@ -165,7 +165,7 @@
                         {
                             <td class="fitwidth">@row.LatestMatch?.Pattern</td>
                             <td>
-                                <button class="btn" @onclick="() => DeleteMatch(row)"><i class="fa fa-trash"></i></button>
+                                <button class="btn" @onclick="() => ClearMatch(row)"><i class="fa fa-trash"></i></button>
                             </td>
                         }
                     </tr>
@@ -293,7 +293,7 @@
         }
     }
 
-    private void DeleteMatch(TransactionRow row)
+    private void ClearMatch(TransactionRow row)
     {
         LastActionError = null;
 
