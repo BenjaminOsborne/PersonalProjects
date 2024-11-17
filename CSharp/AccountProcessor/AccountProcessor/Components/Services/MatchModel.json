@@ -730,23 +730,15 @@
               "ExactDate": "2024-11-01"
             }
           ]
-        }
-      ]
-    },
-    {
-      "Header": {
-        "Order": 9,
-        "Name": "IGNORE"
-      },
-      "Sections": [
+        },
         {
           "Section": {
             "Parent": {
-              "Order": 9,
-              "Name": "IGNORE"
+              "Order": 8,
+              "Name": "Manual"
             },
             "Month": null,
-            "Order": 0,
+            "Order": 1,
             "Name": "Internal Transactions"
           },
           "Matches": [
@@ -756,18 +748,6 @@
               "ExactDate": null
             }
           ]
-        },
-        {
-          "Section": {
-            "Parent": {
-              "Order": 9,
-              "Name": "IGNORE"
-            },
-            "Month": null,
-            "Order": 1,
-            "Name": "Balance"
-          },
-          "Matches": []
         }
       ]
     }

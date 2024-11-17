@@ -51,8 +51,7 @@ namespace AccountProcessor.Tests
                 _CreateCategory(CategoryHeader.Restaurants, "Restaurant", "Drink"),
                 _CreateCategory(CategoryHeader.TravelTrips, "Transport", "Petrol"),
                 _CreateCategory(CategoryHeader.InternetShops, "Online", "Cash", "Shops"),
-                _CreateCategory(CategoryHeader.Manual, "Manual Sort"),
-                _CreateCategory(CategoryHeader.IGNORE, "Internal Transactions", "Balance"),
+                _CreateCategory(CategoryHeader.Manual, "Manual", "Internal Transactions")
             }.ToImmutableArray();
             return new MatchModel(categories);
         }

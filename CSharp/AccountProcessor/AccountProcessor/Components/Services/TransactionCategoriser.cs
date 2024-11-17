@@ -285,7 +285,6 @@ namespace AccountProcessor.Components.Services
         public static CategoryHeader TravelTrips { get; } = _Create(6, "Travel & Trips");
         public static CategoryHeader InternetShops { get; } = _Create(7, "Internet & Shops");
         public static CategoryHeader Manual { get; } = _Create(8, "Manual");
-        public static CategoryHeader IGNORE { get; } = _Create(9, "IGNORE");
 
         public static ImmutableArray<CategoryHeader> AllValues { get; } = typeof(CategoryHeader)
             .GetAllStaticPublicPropertiesOfType<CategoryHeader>()
