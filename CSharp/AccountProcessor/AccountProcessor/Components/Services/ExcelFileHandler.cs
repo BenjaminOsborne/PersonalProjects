@@ -292,7 +292,7 @@ namespace AccountProcessor.Components.Services
                     .SelectMany(x => x.Sections)
                     .SelectMany(x => x.Transactions)
                     .Sum(x => x.Transaction.Amount);
-                SetValue(1, summaryCol, "Net", isBold: true);
+                SetValue(1, summaryCol, "Net Amount", isBold: true);
                 SetValue(1, summaryCol+1, netOverall, isBold: true, numberFormat: _excelCurrencyNumberFormat);
                 worksheet.Columns[summaryCol].AutoFit();
                 worksheet.Columns[summaryCol + 1].AutoFit();
