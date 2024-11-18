@@ -158,7 +158,7 @@ namespace AccountProcessor.Components.Services
             var transactionsStartRow = 6;
 
             var titles = columnNums
-                .ToImmutableArray(col => found.Cells[titleRow, col].Value.ToString());
+                .ToImmutableArray(col => found.Cells[titleRow, col].Value?.ToString());
             if (!titles.SequenceEqual(expectedHeaders))
             {
                 return Fail($"Expecting headers: {expectedHeaders.ToJoinedString(", ")}");

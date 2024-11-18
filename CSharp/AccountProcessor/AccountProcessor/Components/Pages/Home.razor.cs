@@ -7,7 +7,7 @@ namespace AccountProcessor.Components.Pages;
 public partial class Home
 {
     /// <summary> Display message after any action invoked </summary>
-    private string? LastActionResult;
+    private Result? LastActionResult;
 
     private StateModel Model;
 
@@ -101,7 +101,7 @@ public partial class Home
         var header = found?.Header;
         if (header == null)
         {
-            LastActionResult = "Could not find Section";
+            _UpdateLastActionResult("Could not find Section");
             return;
         }
 
@@ -114,7 +114,7 @@ public partial class Home
         {
             if (row.MatchOn.IsNullOrEmpty())
             {
-                LastActionResult = "Match On must be defined";
+                _UpdateLastActionResult("Match On must be defined");
                 return;
             }
             result = Categoriser.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription);
@@ -139,7 +139,7 @@ public partial class Home
     {
         if (row.Section == null || row.LatestMatch == null)
         {
-            LastActionResult = "Empty section or empty matches";
+            _UpdateLastActionResult("Empty section or empty matches");
             return;
         }
 
@@ -163,8 +163,6 @@ public partial class Home
         Func<Stream, Task<WrappedResult<byte[]>>> fnProcess,
         string filePrefix)
     {
-        LastActionResult = "Running...";
-
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         var result = await fnProcess(inputStream);
         _UpdateLastActionResult(result);
@@ -242,8 +240,9 @@ public partial class Home
         return inputStream;
     }
 
+    private void _UpdateLastActionResult(string error) =>
+        LastActionResult = Result.Fail(error);
+
     private void _UpdateLastActionResult(Result result) =>
-        LastActionResult = result.IsSuccess
-            ? "Success!"
-            : $"Failed: {result.Error}";
+        LastActionResult = result;
 }

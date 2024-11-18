@@ -31,7 +31,19 @@
 <p />
 <hr />
 
-<p role="status"><strong>Last Action Result</strong>: @LastActionResult</p>
+<p role="status"><strong>Last Action Result: </strong>
+    @if(LastActionResult != null)
+    {
+        @if(LastActionResult.IsSuccess)
+        {
+            <label style="color:green">Success!</label>
+        }
+        else
+        {
+            <label style="color:red">Failed: @LastActionResult.Error</label>
+        }
+    }
+</p>
 
 <hr />
 
