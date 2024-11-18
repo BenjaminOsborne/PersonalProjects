@@ -74,7 +74,7 @@
                 <td><label>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </label></td>
             </tr>
 
-            @if (TransactionsFullyLoaded())
+            @if (TransactionsFullyLoaded()) //Only display export button if transactions have been loaded
             {
                 <!-- Export categorised -->
                 <tr class="border-top">
@@ -115,7 +115,7 @@
     <button class="btn" @onclick="() => CreateNewSection()"><i class="fa fa-plus"></i></button>
 
     /* UnMatched Rows */
-    @if (TransactionResultViewModel.UnMatchedRows.Any())
+    @if (TransactionResultViewModel!.UnMatchedRows.Any())
     {
         <hr />
         <label style="color:red; font-size:large"><strong>UnMatched</strong></label>
@@ -170,7 +170,7 @@
     }
 
     /* Matched Rows */
-    if (TransactionResultViewModel.MatchedRows.Any())
+    if (TransactionResultViewModel!.MatchedRows.Any())
     {
         <hr />
         <label style="color:green; font-size:large"><strong>Matched</strong></label>
@@ -210,9 +210,8 @@
 
 @code
 {
-    /// <summary> Display message after "Reverse File" called </summary>
+    /// <summary> Display message after any action invoked </summary>
     private string? LastActionResult;
-    private const string _success = "Success!";
 
     private DateOnly? Month;
 
@@ -298,8 +297,6 @@
 
     private async Task PerformMatch(TransactionRowUnMatched row)
     {
-        LastActionResult = null;
-
         var found = AllSections?.SingleOrDefault(x => x.Id == row.SelectionId);
         var header = found?.Header;
         if (header == null)
@@ -322,29 +319,24 @@
             }
             result = Categoriser.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription);
         }
-        if (result.IsSuccess)
+        _UpdateLastActionResult(result);
+        if (!result.IsSuccess)
         {
-            //Triggers total table refresh - task yield required to enable re-render
-            LatestCategorisationResult = null;
-            TransactionResultViewModel = null;
-
-            StateHasChanged();
-            await Task.Yield();
-
-            _RefreshMatchedTransactions();
-
-            LastActionResult = _success;
+            return;
         }
-        else
-        {
-            LastActionResult = result.Error;
-        }
+
+        //Triggers total table refresh - task yield required to enable re-render
+        LatestCategorisationResult = null;
+        TransactionResultViewModel = null;
+
+        StateHasChanged();
+        await Task.Yield();
+
+        _RefreshMatchedTransactions();
     }
 
     private void ClearMatch(TransactionRowMatched row)
     {
-        LastActionResult = null;
-
         if (row.Section == null || row.LatestMatch == null)
         {
             LastActionResult = "Empty section or empty matches";
@@ -352,8 +344,7 @@
         }
 
         var result = Categoriser.DeleteMatch(row.Section!, row.LatestMatch!);
-        LastActionResult = result.IsSuccess ? _success : result.Error;
-
+        _UpdateLastActionResult(result);
         _RefreshMatchedTransactions();
     }
 
@@ -376,19 +367,14 @@
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         var result = await fnProcess(inputStream);
-
-        if (result.IsSuccess)
+        _UpdateLastActionResult(result);
+        if (!result.IsSuccess)
         {
-            LastActionResult = _success;
-
-            await _DownloadBytes(
-                fileName: $"{filePrefix}_{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
-                bytes: result.Result!);
+            return;
         }
-        else
-        {
-            LastActionResult = $"Failed: {result.Error}";
-        }
+        await _DownloadBytes(
+            fileName: $"{filePrefix}_{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
+            bytes: result.Result!);
     }
 
     private async Task ExportCategorisedTransactions()
@@ -399,13 +385,11 @@
         }
 
         var result = await ExcelFileHandler.ExportCategorisedTransactionsToExcel(LatestCategorisationResult!);
+        _UpdateLastActionResult(result);
         if (!result.IsSuccess)
         {
-            LastActionResult = result.Error;
             return;
         }
-
-        LastActionResult = _success;
         await _DownloadBytes(
             fileName: $"{Month:yyyy-MM}_CategorisedTransactions_{DateTime.Now.ToFileTime()}.xlsx",
             bytes: result.Result!);
@@ -425,17 +409,13 @@
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         var transactionResult = await ExcelFileHandler.LoadTransactionsFromExcel(inputStream);
-        if (transactionResult.IsSuccess)
+        _UpdateLastActionResult(transactionResult);
+        if (!transactionResult.IsSuccess)
         {
-            LastActionResult = _success;
-
-            LoadedTransactions = transactionResult.Result;
-            _RefreshMatchedTransactions();
+            return;
         }
-        else
-        {
-            LastActionResult = $"Failed: {transactionResult.Error}";
-        }
+        LoadedTransactions = transactionResult.Result;
+        _RefreshMatchedTransactions();
     }
 
     private void _RefreshMatchedTransactions()
@@ -462,4 +442,9 @@
         inputStream.Position = 0;
         return inputStream;
     }
+
+    private void _UpdateLastActionResult(Result result) =>
+        LastActionResult = result.IsSuccess
+            ? "Success!"
+            : $"Failed: {result.Error}";
 }
