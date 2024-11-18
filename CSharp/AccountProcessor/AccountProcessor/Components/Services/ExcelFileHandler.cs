@@ -255,7 +255,11 @@ namespace AccountProcessor.Components.Services
                     var row = 1;
                     var col = catNx * 2 + 1;
 
-                    SetValue(row++, col, cat.Category.Name, isBold: true);
+                    var categoryTotal = cat.Sections
+                        .SelectMany(x => x.Transactions)
+                        .Sum(x => x.Transaction.Amount);
+                    SetValue(row, col, cat.Category.Name, isBold: true);
+                    SetValue(row++, col+1, categoryTotal, isBold: true, numberFormat: _excelCurrencyNumberFormat); //net amount
 
                     foreach (var sec in cat.Sections)
                     {
@@ -281,6 +285,17 @@ namespace AccountProcessor.Components.Services
                     border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                     border.Right.Color.SetColor(Color.Black);
                 }
+
+                //Net Total column (at end)
+                var summaryCol = catSummary.Length * 2 + 1;
+                var netOverall = catSummary
+                    .SelectMany(x => x.Sections)
+                    .SelectMany(x => x.Transactions)
+                    .Sum(x => x.Transaction.Amount);
+                SetValue(1, summaryCol, "Net", isBold: true);
+                SetValue(1, summaryCol+1, netOverall, isBold: true, numberFormat: _excelCurrencyNumberFormat);
+                worksheet.Columns[summaryCol].AutoFit();
+                worksheet.Columns[summaryCol + 1].AutoFit();
 
                 //Set first row border
                 var rowBorder = worksheet.Rows[1].Style.Border;
