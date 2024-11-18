@@ -1,1 +1,2 @@
 - Spike into making observable? Some state view model intermediate?
+-> Start by embodying the state transitions in a view model class with some tighter control

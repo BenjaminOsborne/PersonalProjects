@@ -373,7 +373,7 @@
             return;
         }
         await _DownloadBytes(
-            fileName: $"{filePrefix}_{e.File.Name}_{DateTime.Now.ToFileTime()}.xlsx",
+            fileName: $"{filePrefix}_{e.File.Name}.xlsx",
             bytes: result.Result!);
     }
 
@@ -391,7 +391,7 @@
             return;
         }
         await _DownloadBytes(
-            fileName: $"{Month:yyyy-MM}_CategorisedTransactions_{DateTime.Now.ToFileTime()}.xlsx",
+            fileName: $"CategorisedTransactions_{Month:yyyy-MM}.xlsx",
             bytes: result.Result!);
     }
 
