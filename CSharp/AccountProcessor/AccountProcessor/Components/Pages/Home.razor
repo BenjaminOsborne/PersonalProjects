@@ -32,17 +32,9 @@
 <hr />
 
 <p role="status"><strong>Last Action Result: </strong>
-    @if(LastActionResult != null)
-    {
-        @if(LastActionResult.IsSuccess)
-        {
-            <label style="color:green">Success!</label>
-        }
-        else
-        {
-            <label style="color:red">Failed: @LastActionResult.Error</label>
-        }
-    }
+    <label style=@(LastActionResult?.IsSuccess == true ? "color:green" : "color:red")>
+        @(LastActionResult?.IsSuccess == true ? "Success!" : LastActionResult?.Error)
+    </label>
 </p>
 
 <hr />
