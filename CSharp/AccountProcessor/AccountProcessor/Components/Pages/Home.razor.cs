@@ -4,6 +4,11 @@ using System.Collections.Immutable;
 
 namespace AccountProcessor.Components.Pages;
 
+public static class SelectorConstants
+{
+    public static readonly string ChooseSectionId = Guid.NewGuid().ToString();
+}
+
 public partial class Home
 {
     /// <summary> Display message after any action invoked </summary>
@@ -32,17 +37,15 @@ public partial class Home
             static string _ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
         }
 
-        public void ClearLoadedTransactions() =>
-            LoadedTransactions = null;
-
-        internal void UpdateLoadedTransactions(ImmutableArray<Transaction> result) =>
-            LoadedTransactions = result;
-
-        public void ClearCategorisedTransactions()
+        public void ClearTransactionsAndCategorisations()
         {
+            LoadedTransactions = null;
             LatestCategorisationResult = null;
             TransactionResultViewModel = null;
         }
+
+        internal void UpdateLoadedTransactions(ImmutableArray<Transaction> result) =>
+            LoadedTransactions = result;
 
         public void UpdateFromCategorisationResult(CategorisationResult categorisationResult)
         {
@@ -56,10 +59,7 @@ public partial class Home
     
     protected override Task OnInitializedAsync()
     {
-        Model = new StateModel
-        {
-            Month = _InitialiseMonth()
-        };
+        Model = new StateModel { Month = _InitialiseMonth() };
         _RefreshCategories();
 
         return Task.CompletedTask;
@@ -115,7 +115,7 @@ public partial class Home
         NewSectionName = null;
     }
 
-    private async Task PerformMatch(TransactionRowUnMatched row)
+    private async void AddNewMatchForRow(TransactionRowUnMatched row)
     {
         var found = Model.AllSections?.SingleOrDefault(x => x.Id == row.SelectionId);
         var header = found?.Header;
@@ -144,12 +144,6 @@ public partial class Home
         {
             return;
         }
-
-        //Triggers total table refresh - task yield required to enable re-render
-        Model.ClearCategorisedTransactions();
-
-        StateHasChanged();
-        await Task.Yield();
 
         _RefreshMatchedTransactions();
     }
@@ -217,10 +211,9 @@ public partial class Home
             "jsSaveAsFile",
             args: [fileName, Convert.ToBase64String(bytes)]);
 
-    private async Task Categorise(InputFileChangeEventArgs e)
+    private async Task LoadTransactionsAndCategorise(InputFileChangeEventArgs e)
     {
-        Model.ClearLoadedTransactions();
-        Model.ClearCategorisedTransactions();
+        Model.ClearTransactionsAndCategorisations();
         
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         var transactionResult = await ExcelFileHandler.LoadTransactionsFromExcel(inputStream);
@@ -239,8 +232,8 @@ public partial class Home
         {
             return;
         }
-        var categorisationResult = Categoriser.Categorise(Model.LoadedTransactions!.Value, month: Model.Month);
-        Model.UpdateFromCategorisationResult(categorisationResult);
+        var result = Categoriser.Categorise(Model.LoadedTransactions!.Value, month: Model.Month);
+        Model.UpdateFromCategorisationResult(result);
     }
 
     /// <summary>
