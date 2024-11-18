@@ -102,7 +102,7 @@ public partial class Home
     private void _RefreshCategoriesAndMatchedTransactions()
     {
         _RefreshCategories();
-        _RefreshMatchedTransactions();
+        _ReRunTransactionMatching();
     }
 
     private void CreateNewSection()
@@ -150,7 +150,7 @@ public partial class Home
             return;
         }
 
-        _RefreshMatchedTransactions();
+        _ReRunTransactionMatching();
     }
 
     private void ClearMatch(TransactionRowMatched row)
@@ -163,7 +163,7 @@ public partial class Home
 
         var result = Categoriser.DeleteMatch(row.Section!, row.LatestMatch!);
         _UpdateLastActionResult(result);
-        _RefreshMatchedTransactions();
+        _ReRunTransactionMatching();
     }
 
     private Task CoopBankReverseFile(InputFileChangeEventArgs e) =>
@@ -228,10 +228,10 @@ public partial class Home
             return;
         }
         Model.UpdateLoadedTransactions(transactionResult.Result);
-        _RefreshMatchedTransactions();
+        _ReRunTransactionMatching();
     }
 
-    private void _RefreshMatchedTransactions()
+    private void _ReRunTransactionMatching()
     {
         if (Model.LoadedTransactions.HasValue == false || Model.AllSections.HasValue == false)
         {
