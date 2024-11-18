@@ -20,7 +20,7 @@ namespace AccountProcessor.Components.Pages
                     var tr = x.Transaction;
                     return new TransactionRowUnMatched(tr, DisplayAmount(tr), StyleColor(tr))
                     {
-                        SelectionId = found?.Id ?? SelectorConstants.ChooseSectionId, //If none suggested, use the default "Choose Selection" option
+                        SelectionId = found?.Id ?? SelectorConstants.ChooseSectionDefaultId, //If none suggested, use the default "Choose Selection" option
                         MatchOn = tr.Description,
                         OverrideDescription = tr.Description.ToCamelCase()
                     };

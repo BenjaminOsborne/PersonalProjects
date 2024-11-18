@@ -6,7 +6,11 @@ namespace AccountProcessor.Components.Pages;
 
 public static class SelectorConstants
 {
-    public static readonly string ChooseSectionId = Guid.NewGuid().ToString();
+    /// <summary> Stable Id for the "Choose Category" default option when creating a new Section </summary>
+    public static readonly string ChooseCategoryDefaultId = Guid.NewGuid().ToString();
+
+    /// <summary> Stable Id for the "Choose Section" default option when matching a row </summary>
+    public static readonly string ChooseSectionDefaultId = Guid.NewGuid().ToString();
 }
 
 public partial class Home
@@ -54,7 +58,8 @@ public partial class Home
         }
     }
 
-    private string? NewSectionCategoryName;
+    /// <remarks> Initial Id should be the "Choose Category" option </remarks>
+    private string? NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
     private string? NewSectionName;
     
     protected override Task OnInitializedAsync()
@@ -111,7 +116,7 @@ public partial class Home
 
         _RefreshCategoriesAndMatchedTransactions();
 
-        NewSectionCategoryName = null;
+        NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
         NewSectionName = null;
     }
 

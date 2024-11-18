@@ -103,8 +103,8 @@
     <hr />
 
     <label ><strong>Add New Section:</strong></label>
-    <select style="margin-right: 5px" value="@NewSectionName" @onchange="e => NewSectionCategoryName = (string?)e.Value">
-        <option value="0" selected>Choose Category</option>
+    <select style="margin-right: 5px" value="@NewSectionCategoryName" @onchange="e => NewSectionCategoryName = (string?)e.Value">
+        <option value="@SelectorConstants.ChooseCategoryDefaultId" selected>Choose Category</option>
         @foreach (var cat in Model.Categories!.Value)
         {
             <option value="@cat.Name">@cat.Name</option>
@@ -144,7 +144,7 @@
                         
                         <td>
                             <select value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
-                                <option value="@SelectorConstants.ChooseSectionId" selected>Choose Section</option>
+                                <option value="@SelectorConstants.ChooseSectionDefaultId" selected>Choose Section</option>
                                 @foreach (var cat in Model.AllSections!.Value)
                                 {
                                     <option value="@cat.Id">@cat.Display</option>
