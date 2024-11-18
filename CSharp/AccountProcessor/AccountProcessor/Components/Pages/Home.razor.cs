@@ -9,29 +9,37 @@ public partial class Home
     /// <summary> Display message after any action invoked </summary>
     private string? LastActionResult;
 
-    private DateOnly? Month;
+    private StateModel Model;
 
-    private ImmutableArray<CategoryHeader>? Categories;
-    private ImmutableArray<SectionSelectorRow>? AllSections;
+    private class StateModel
+    {
+        public DateOnly Month;
+
+        public ImmutableArray<CategoryHeader>? Categories;
+        public ImmutableArray<SectionSelectorRow>? AllSections;
+
+        public ImmutableArray<Transaction>? LoadedTransactions;
+
+        public CategorisationResult? LatestCategorisationResult;
+        public TransactionResultViewModel? TransactionResultViewModel;
+    }
 
     private string? NewSectionCategoryName;
     private string? NewSectionName;
-
-    private ImmutableArray<Transaction>? LoadedTransactions;
-
-    private CategorisationResult? LatestCategorisationResult;
-    private TransactionResultViewModel? TransactionResultViewModel;
-
+    
     protected override Task OnInitializedAsync()
     {
-        Month = _InitialiseMonth();
+        Model = new StateModel
+        {
+            Month = _InitialiseMonth()
+        };
         _RefreshCategories();
 
         return Task.CompletedTask;
     }
 
     private bool TransactionsFullyLoaded() =>
-        Categories.HasValue && AllSections.HasValue && TransactionResultViewModel != null;
+        Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
 
     private static DateOnly _InitialiseMonth()
     {
@@ -41,13 +49,9 @@ public partial class Home
 
     private void _RefreshCategories()
     {
-        if (Month.HasValue == false)
-        {
-            return;
-        }
-        var allData = Categoriser.GetSelectorData(Month!.Value);
-        Categories = allData.Categories;
-        AllSections = allData.Sections
+        var allData = Categoriser.GetSelectorData(Model.Month);
+        Model.Categories = allData.Categories;
+        Model.AllSections = allData.Sections
             .ToImmutableArray(s => new SectionSelectorRow(s, _ToDisplay(s), Guid.NewGuid().ToString())); //Arbitrary Id
 
         static string _ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
@@ -62,11 +66,11 @@ public partial class Home
     }
 
     private void SkipMonth(int months) =>
-        _SetMonth(Month?.AddMonths(months) ?? _InitialiseMonth());
+        _SetMonth(Model.Month.AddMonths(months));
 
     private void _SetMonth(DateOnly month)
     {
-        Month = month;
+        Model.Month = month;
         _RefreshCategoriesAndMatchedTransactions();
     }
 
@@ -78,12 +82,12 @@ public partial class Home
 
     private void CreateNewSection()
     {
-        var category = Categories?.SingleOrDefault(x => x.Name == NewSectionCategoryName);
+        var category = Model.Categories?.SingleOrDefault(x => x.Name == NewSectionCategoryName);
         if (category == null || NewSectionName.IsNullOrWhiteSpace())
         {
             return;
         }
-        Categoriser.AddSection(category, NewSectionName!, matchMonthOnly: Month);
+        Categoriser.AddSection(category, NewSectionName!, matchMonthOnly: Model.Month);
 
         _RefreshCategoriesAndMatchedTransactions();
 
@@ -93,7 +97,7 @@ public partial class Home
 
     private async Task PerformMatch(TransactionRowUnMatched row)
     {
-        var found = AllSections?.SingleOrDefault(x => x.Id == row.SelectionId);
+        var found = Model.AllSections?.SingleOrDefault(x => x.Id == row.SelectionId);
         var header = found?.Header;
         if (header == null)
         {
@@ -122,8 +126,8 @@ public partial class Home
         }
 
         //Triggers total table refresh - task yield required to enable re-render
-        LatestCategorisationResult = null;
-        TransactionResultViewModel = null;
+        Model.LatestCategorisationResult = null;
+        Model.TransactionResultViewModel = null;
 
         StateHasChanged();
         await Task.Yield();
@@ -175,19 +179,19 @@ public partial class Home
 
     private async Task ExportCategorisedTransactions()
     {
-        if (LatestCategorisationResult == null)
+        if (Model.LatestCategorisationResult == null)
         {
             return;
         }
 
-        var result = await ExcelFileHandler.ExportCategorisedTransactionsToExcel(LatestCategorisationResult!);
+        var result = await ExcelFileHandler.ExportCategorisedTransactionsToExcel(Model.LatestCategorisationResult!);
         _UpdateLastActionResult(result);
         if (!result.IsSuccess)
         {
             return;
         }
         await _DownloadBytes(
-            fileName: $"CategorisedTransactions_{Month:yyyy-MM}.xlsx",
+            fileName: $"CategorisedTransactions_{Model.Month:yyyy-MM}.xlsx",
             bytes: result.Result!);
     }
 
@@ -198,9 +202,9 @@ public partial class Home
 
     private async Task Categorise(InputFileChangeEventArgs e)
     {
-        LoadedTransactions = null;
-        LatestCategorisationResult = null;
-        TransactionResultViewModel = null;
+        Model.LoadedTransactions = null;
+        Model.LatestCategorisationResult = null;
+        Model.TransactionResultViewModel = null;
 
         using var inputStream = await _CopyToMemoryStreamAsync(e);
         var transactionResult = await ExcelFileHandler.LoadTransactionsFromExcel(inputStream);
@@ -209,19 +213,19 @@ public partial class Home
         {
             return;
         }
-        LoadedTransactions = transactionResult.Result;
+        Model.LoadedTransactions = transactionResult.Result;
         _RefreshMatchedTransactions();
     }
 
     private void _RefreshMatchedTransactions()
     {
-        if (Month.HasValue == false || LoadedTransactions.HasValue == false || AllSections.HasValue == false)
+        if (Model.LoadedTransactions.HasValue == false || Model.AllSections.HasValue == false)
         {
             return;
         }
-        var categorisationResult = Categoriser.Categorise(LoadedTransactions!.Value, month: Month!.Value);
-        LatestCategorisationResult = categorisationResult;
-        TransactionResultViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, AllSections!.Value);
+        var categorisationResult = Categoriser.Categorise(Model.LoadedTransactions!.Value, month: Model.Month);
+        Model.LatestCategorisationResult = categorisationResult;
+        Model.TransactionResultViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, Model.AllSections!.Value);
     }
 
     /// <summary>

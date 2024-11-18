@@ -13,6 +13,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "TFR 91020207031300",
+              "OverrideDescription": "Naomi Transfer",
+              "ExactDate": null
+            },
+            {
               "Pattern": "Robert Soane \u0026 Ros 36 Thorpe Way",
               "OverrideDescription": "36TW Rental",
               "ExactDate": null
@@ -574,13 +579,7 @@
         {
           "SectionName": "Manual Sort",
           "Month": null,
-          "Matches": [
-            {
-              "Pattern": "TFR 91020207031300",
-              "OverrideDescription": "TFR 91020207031300",
-              "ExactDate": "2024-11-01"
-            }
-          ]
+          "Matches": []
         },
         {
           "SectionName": "Internal",

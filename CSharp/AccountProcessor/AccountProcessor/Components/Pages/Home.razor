@@ -89,7 +89,7 @@
 <hr />
 
 <label>Month:</label>
-<input type="month" value="@Month?.ToString("yyyy-MM")" @onchange="e => OnSetMonth((string?)e.Value)">
+<input type="month" value="@Model.Month.ToString("yyyy-MM")" @onchange="e => OnSetMonth((string?)e.Value)">
 <button @onclick="() => SkipMonth(-1)"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
 <button @onclick="() => SkipMonth(+1)"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
 <p/>
@@ -101,7 +101,7 @@
     <label ><strong>Add New Section:</strong></label>
     <select style="margin-right: 5px" value="@NewSectionName" @onchange="e => NewSectionCategoryName = (string?)e.Value">
         <option value="0" selected>Choose Category</option>
-        @foreach (var cat in Categories!.Value)
+        @foreach (var cat in Model.Categories!.Value)
         {
             <option value="@cat.Name">@cat.Name</option>
         }
@@ -112,7 +112,7 @@
     <button class="btn" @onclick="() => CreateNewSection()"><i class="fa fa-plus"></i></button>
 
     /* UnMatched Rows */
-    @if (TransactionResultViewModel!.UnMatchedRows.Any())
+    @if (Model.TransactionResultViewModel!.UnMatchedRows.Any())
     {
         <hr />
         <label style="color:red; font-size:large"><strong>UnMatched</strong></label>
@@ -131,7 +131,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var row in TransactionResultViewModel.UnMatchedRows)
+                @foreach (var row in Model.TransactionResultViewModel.UnMatchedRows)
                 {
                     <tr class="border-bottom">
                         <td class="fitwidth">@row.Transaction.Date.ToString("dd/MM")</td>
@@ -141,7 +141,7 @@
                         <td>
                             <select value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
                                 <option value="0" selected>Choose Section</option>
-                                @foreach (var cat in AllSections.Value)
+                                @foreach (var cat in Model.AllSections.Value)
                                 {
                                     <option value="@cat.Id">@cat.Display</option>
                                 }
@@ -167,7 +167,7 @@
     }
 
     /* Matched Rows */
-    if (TransactionResultViewModel!.MatchedRows.Any())
+    if (Model.TransactionResultViewModel!.MatchedRows.Any())
     {
         <hr />
         <label style="color:green; font-size:large"><strong>Matched</strong></label>
@@ -185,7 +185,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var row in TransactionResultViewModel.MatchedRows)
+                @foreach (var row in Model.TransactionResultViewModel.MatchedRows)
                 {
                     var rowClassBottom = row.IsLastRowForCategory ? "border-bottom-thick" : "border-bottom";
                     <tr class=@rowClassBottom>
