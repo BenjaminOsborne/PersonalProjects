@@ -14,6 +14,7 @@ public static class SelectorConstants
     public static readonly string ChooseSectionDefaultId = Guid.NewGuid().ToString();
 }
 
+/// <summary> Code-behind for Home.razor - gives logical split between html-render code and c# data processing </summary>
 public partial class Home
 {
     [Inject]
@@ -42,7 +43,7 @@ public partial class Home
         }
 
         var result = await _excelFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!);
-        Model.UpdateLastActionResult(result);
+        Model.OnFileExtractResult(result);
         if (!result.IsSuccess)
         {
             return;
@@ -76,7 +77,7 @@ public partial class Home
     {
         using var inputStream = await e.CopyToMemoryStreamAsync();
         var result = await fnProcess(inputStream);
-        Model.UpdateLastActionResult(result);
+        Model.OnFileExtractResult(result);
         if (!result.IsSuccess)
         {
             return;
@@ -92,6 +93,7 @@ public partial class Home
             args: [fileName, Convert.ToBase64String(bytes)]);
 }
 
+/// <summary> Separate class from <see cref="Home"/> so that state transitions & data access can be controlled explicitly </summary>
 public class HomeViewModel
 {
     private readonly TransactionsModel _transactionsModel;
@@ -113,6 +115,79 @@ public class HomeViewModel
     public ImmutableArray<SectionSelectorRow>? AllSections => _transactionsModel.AllSections;
     public TransactionResultViewModel? TransactionResultViewModel => _transactionsModel.TransactionResultViewModel;
 
+    public void Initialise()
+    {
+        var now = DateTime.Now;
+        _transactionsModel.UpdateMonth(WrappedResult.Create(new DateOnly(now.Year, now.Month, 1).AddMonths(-1)));
+    }
+
+    public CategorisationResult? GetLatestCategorisationResultForExport() => _transactionsModel.LatestCategorisationResult;
+
+    /// <summary> Only actions not managed by this model are the Excel file extracts - this method enables result to display </summary>
+    public void OnFileExtractResult(Result result) =>
+        _UpdateLastActionResult(result);
+
+    public void SetMonth(string? yearAndMonth) =>
+        _transactionsModel.UpdateMonth(
+            DateOnly.TryParseExact(yearAndMonth, "yyyy-MM", out var parsed)
+                ? WrappedResult.Create(parsed)
+                : WrappedResult.Fail<DateOnly>($"Invalid date format: {yearAndMonth}"));
+
+    public void SkipMonth(int months) =>
+        _transactionsModel.UpdateMonth(WrappedResult.Create(_transactionsModel.Month.AddMonths(months)));
+
+    public void SetNewSectionCategory(string? category) =>
+        NewSectionCategoryName = category;
+
+    public void SetNewSectionName(string? name) =>
+        NewSectionName = name;
+
+    public void CreateNewSection() =>
+        _transactionsModel.ChangeMatchModel(
+            fnPerform: cat =>
+            {
+                var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == NewSectionCategoryName);
+                return category != null && !NewSectionName.IsNullOrWhiteSpace()
+                    ? cat.AddSection(category, NewSectionName!, matchMonthOnly: _transactionsModel.Month)
+                    : WrappedResult.Fail<SectionHeader>("Invalid Category or empty Section Name");
+            },
+            refreshCategories: true,
+            onSuccess: () =>
+            {
+                NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
+                NewSectionName = null;
+            });
+
+    public void AddNewMatchForRow(TransactionRowUnMatched row) =>
+        _transactionsModel.ChangeMatchModel(
+            fnPerform: cat =>
+            {
+                var header = _transactionsModel.AllSections
+                    ?.SingleOrDefault(x => x.Id == row.SelectionId)
+                    ?.Header;
+                return header != null
+                    ? row.AddOnlyForTransaction
+                        ? cat.MatchOnce(row.Transaction, header!, row.MatchOn, row.OverrideDescription)
+                        : !row.MatchOn.IsNullOrEmpty()
+                            ? cat.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription)
+                            : Result.Fail("Match On must be defined")
+                    : Result.Fail("Could not find Section");
+            });
+
+    public void ClearMatch(TransactionRowMatched row) =>
+        _transactionsModel.ChangeMatchModel(
+            fnPerform: c =>
+                row.Section != null && row.LatestMatch != null
+                    ? c.DeleteMatch(row.Section!, row.LatestMatch!)
+                    : Result.Fail("Empty section or empty matches"));
+
+    public async Task LoadTransactionsAndCategorise(Func<Task<WrappedResult<ImmutableArray<Transaction>>>> fnLoad) =>
+        _transactionsModel.UpdateLoadedTransactions(await fnLoad());
+
+    private void _UpdateLastActionResult(Result result) =>
+        LastActionResult = result;
+
+    /// <summary> Class manages storage-of & changes-of state. Ensures transactions re-categorised when match-model changes etc. </summary>
     private class TransactionsModel
     {
         private readonly ITransactionCategoriser _categoriser;
@@ -135,9 +210,14 @@ public class HomeViewModel
         public CategorisationResult? LatestCategorisationResult { get; private set; }
         public TransactionResultViewModel? TransactionResultViewModel { get; private set; }
 
-        public void UpdateMonth(DateOnly month)
+        public void UpdateMonth(WrappedResult<DateOnly> result)
         {
-            Month = month;
+            _onActionHandleResult(result);
+            if (!result.IsSuccess)
+            {
+                return;
+            }
+            Month = result.Result;
             _RefreshCategories();
         }
 
@@ -196,82 +276,6 @@ public class HomeViewModel
         }
     }
 
-    public void Initialise()
-    {
-        var now = DateTime.Now;
-        _transactionsModel.UpdateMonth(new DateOnly(now.Year, now.Month, 1).AddMonths(-1));
-    }
-
-    public CategorisationResult? GetLatestCategorisationResultForExport() => _transactionsModel.LatestCategorisationResult;
-
-    public void UpdateLastActionResult(Result result) =>
-        _UpdateLastActionResult(result);
-
-    public void SetMonth(string? yearAndMonth)
-    {
-        if (DateOnly.TryParseExact(yearAndMonth, "yyyy-MM", out var parsed))
-        {
-            _transactionsModel.UpdateMonth(parsed);
-        }
-        else
-        {
-            _UpdateLastActionResult(Result.Fail($"Invalid date format: {yearAndMonth}"));
-        }
-    }
-
-    public void SkipMonth(int months) =>
-        _transactionsModel.UpdateMonth(_transactionsModel.Month.AddMonths(months));
-
-    public void SetNewSectionCategory(string? category) =>
-        NewSectionCategoryName = category;
-
-    public void SetNewSectionName(string? name) =>
-        NewSectionName = name;
-
-    public void CreateNewSection() =>
-        _transactionsModel.ChangeMatchModel(
-            fnPerform: cat =>
-            {
-                var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == NewSectionCategoryName);
-                return category != null && !NewSectionName.IsNullOrWhiteSpace()
-                    ? cat.AddSection(category, NewSectionName!, matchMonthOnly: _transactionsModel.Month)
-                    : WrappedResult.Fail<SectionHeader>("Invalid Category or empty Section Name");
-            },
-            refreshCategories: true,
-            onSuccess: () =>
-            {
-                NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
-                NewSectionName = null;
-            });
-
-    public void AddNewMatchForRow(TransactionRowUnMatched row) =>
-        _transactionsModel.ChangeMatchModel(
-            fnPerform: cat =>
-            {
-                var header = _transactionsModel.AllSections
-                    ?.SingleOrDefault(x => x.Id == row.SelectionId)
-                    ?.Header;
-                return header != null
-                    ? row.AddOnlyForTransaction
-                        ? cat.MatchOnce(row.Transaction, header!, row.MatchOn, row.OverrideDescription)
-                        : !row.MatchOn.IsNullOrEmpty()
-                            ? cat.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription)
-                            : Result.Fail("Match On must be defined")
-                    : Result.Fail("Could not find Section");
-            });
-
-    public void ClearMatch(TransactionRowMatched row) =>
-        _transactionsModel.ChangeMatchModel(
-            fnPerform: c =>
-                row.Section != null && row.LatestMatch != null
-                    ? c.DeleteMatch(row.Section!, row.LatestMatch!)
-                    : Result.Fail("Empty section or empty matches"));
-
-    public async Task LoadTransactionsAndCategorise(Func<Task<WrappedResult<ImmutableArray<Transaction>>>> fnLoad) =>
-        _transactionsModel.UpdateLoadedTransactions(await fnLoad());
-
-    private void _UpdateLastActionResult(Result result) =>
-        LastActionResult = result;
 }
 
 public static class HomeExstensions
