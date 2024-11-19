@@ -94,13 +94,22 @@ public partial class Home
 
 public class HomeViewModel
 {
-    private readonly ITransactionCategoriser _categoriser;
     private readonly TransactionsModel _transactionsModel;
+
+    private class Unit
+    {
+        private Unit() { }
+        public static Unit Instance { get; } = new Unit();
+    }
+
+    //public IObservable<Unit> MatchModelChanged { get; }
+    //public IObservable<Unit> TransactionsChanged { get; }
 
     public HomeViewModel(ITransactionCategoriser categoriser)
     {
-        _categoriser = categoriser;
-        _transactionsModel = new TransactionsModel();
+        _transactionsModel = new(
+            categoriser,
+            onActionHandleResult: _UpdateLastActionResult);
     }
 
     /// <summary> Display message after any action invoked </summary>
@@ -117,6 +126,43 @@ public class HomeViewModel
 
     private class TransactionsModel
     {
+        private readonly ITransactionCategoriser _categoriser;
+        private readonly Action<Result> _onActionHandleResult;
+
+
+        public TransactionsModel(ITransactionCategoriser categoriser,
+            Action<Result> onActionHandleResult)
+        {
+            _categoriser = categoriser;
+            _onActionHandleResult = onActionHandleResult;
+        }
+
+        public void ChangeModel<T>(Func<ITransactionCategoriser, WrappedResult<T>> fnPerform, Action<T> onSuccess)
+        {
+            var result = fnPerform(_categoriser);
+            _onActionHandleResult(result);
+            if (result.IsSuccess)
+            {
+                onSuccess(result.Result!);
+            }
+        }
+
+        public void ChangeModel(Func<ITransactionCategoriser, Result> fnPerform, Action onSuccess)
+        {
+            var result = fnPerform(_categoriser);
+            _onActionHandleResult(result);
+            if (result.IsSuccess)
+            {
+                onSuccess();
+            }
+        }
+
+        public void ChangeModel<T>(Func<ITransactionCategoriser, T> fnPerform, Action<T> withResult)
+        {
+            var result = fnPerform(_categoriser);
+            withResult(result);
+        }
+
         public DateOnly Month;
 
         public ImmutableArray<CategoryHeader>? Categories { get; private set; }
@@ -127,7 +173,7 @@ public class HomeViewModel
         public CategorisationResult? LatestCategorisationResult { get; private set; }
         public TransactionResultViewModel? TransactionResultViewModel { get; private set; }
 
-        public void RefreshCategories(SelectorData allData)
+        public void UpdateCategories(SelectorData allData)
         {
             Categories = allData.Categories;
             AllSections = allData.Sections
@@ -136,14 +182,7 @@ public class HomeViewModel
             static string _ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
         }
 
-        public void ClearTransactionsAndCategorisations()
-        {
-            LoadedTransactions = null;
-            LatestCategorisationResult = null;
-            TransactionResultViewModel = null;
-        }
-
-        internal void UpdateLoadedTransactions(ImmutableArray<Transaction> result) =>
+        public void UpdateLoadedTransactions(ImmutableArray<Transaction> result) =>
             LoadedTransactions = result;
 
         public void UpdateFromCategorisationResult(CategorisationResult categorisationResult)
@@ -177,16 +216,15 @@ public class HomeViewModel
         {
             return;
         }
-        var result = _categoriser.AddSection(category, NewSectionName!, matchMonthOnly: _transactionsModel.Month);
-        _UpdateLastActionResult(result);
-        if (!result.IsSuccess)
-        {
-            return;
-        }
 
-        _RefreshCategoriesAndMatchedTransactions();
-        NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
-        NewSectionName = null;
+        _transactionsModel.ChangeModel(
+            fnPerform: c => c.AddSection(category, NewSectionName!, matchMonthOnly: _transactionsModel.Month),
+            onSuccess: _ =>
+            {
+                _RefreshCategoriesAndMatchedTransactions();
+                NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
+                NewSectionName = null;
+            });
     }
 
     public void OnSetMonth(string? yearAndMonth)
@@ -210,27 +248,23 @@ public class HomeViewModel
             return;
         }
 
-        Result result;
-        if (row.AddOnlyForTransaction)
-        {
-            result = _categoriser.MatchOnce(row.Transaction, header!, row.MatchOn, row.OverrideDescription);
-        }
-        else
-        {
-            if (row.MatchOn.IsNullOrEmpty())
+        _transactionsModel.ChangeModel(
+            fnPerform: c =>
             {
-                _UpdateLastActionResult("Match On must be defined");
-                return;
-            }
-            result = _categoriser.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription);
-        }
-        _UpdateLastActionResult(result);
-        if (!result.IsSuccess)
-        {
-            return;
-        }
-
-        _ReRunTransactionMatching();
+                if (row.AddOnlyForTransaction)
+                {
+                    return c.MatchOnce(row.Transaction, header!, row.MatchOn, row.OverrideDescription);
+                }
+                else
+                {
+                    if (row.MatchOn.IsNullOrEmpty())
+                    {
+                        return Result.Fail("Match On must be defined");
+                    }
+                    return c.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription);
+                }
+            },
+            onSuccess: () => _ReRunTransactionMatching());
     }
 
     public void ClearMatch(TransactionRowMatched row)
@@ -240,16 +274,13 @@ public class HomeViewModel
             _UpdateLastActionResult("Empty section or empty matches");
             return;
         }
-
-        var result = _categoriser.DeleteMatch(row.Section!, row.LatestMatch!);
-        _UpdateLastActionResult(result);
-        _ReRunTransactionMatching();
+        _transactionsModel.ChangeModel(
+            fnPerform: c => c.DeleteMatch(row.Section!, row.LatestMatch!),
+            onSuccess: () => _ReRunTransactionMatching());
     }
 
     public async Task LoadTransactionsAndCategorise(Func<Task<WrappedResult<ImmutableArray<Transaction>>>> fnLoad)
     {
-        _transactionsModel.ClearTransactionsAndCategorisations();
-        
         var transactionResult = await fnLoad();
         _UpdateLastActionResult(transactionResult);
         if (!transactionResult.IsSuccess)
@@ -266,11 +297,14 @@ public class HomeViewModel
         _RefreshCategoriesAndMatchedTransactions();
     }
 
-    private void _RefreshCategoriesAndMatchedTransactions()
-    {
-        _transactionsModel.RefreshCategories(_categoriser.GetSelectorData(_transactionsModel.Month));
-        _ReRunTransactionMatching();
-    }
+    private void _RefreshCategoriesAndMatchedTransactions() =>
+        _transactionsModel.ChangeModel(
+            fnPerform: c => c.GetSelectorData(_transactionsModel.Month),
+            withResult: data =>
+            {
+                _transactionsModel.UpdateCategories(data);
+                _ReRunTransactionMatching();
+            });
 
     private void _ReRunTransactionMatching()
     {
@@ -278,8 +312,9 @@ public class HomeViewModel
         {
             return;
         }
-        var result = _categoriser.Categorise(_transactionsModel.LoadedTransactions!.Value, month: _transactionsModel.Month);
-        _transactionsModel.UpdateFromCategorisationResult(result);
+        _transactionsModel.ChangeModel(
+            fnPerform: c => c.Categorise(_transactionsModel.LoadedTransactions!.Value, month: _transactionsModel.Month),
+            withResult: r => _transactionsModel.UpdateFromCategorisationResult(r));
     }
 
     private void _UpdateLastActionResult(string error) =>
