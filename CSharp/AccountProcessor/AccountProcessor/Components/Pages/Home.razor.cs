@@ -17,16 +17,134 @@ public static class SelectorConstants
 public partial class Home
 {
     [Inject]
-    private IExcelFileHandler ExcelFileHandler { get; init; }
+    private IExcelFileHandler _excellFileHandler { get; init; }
     [Inject]
-    private ITransactionCategoriser Categoriser { get; init; }
+    private ITransactionCategoriser _categoriser { get; init; }
+
+    private HomeViewModel Model;
 
     /// <summary> Display message after any action invoked </summary>
-    private Result? LastActionResult;
+    private Result? LastActionResult => Model.LastActionResult;
 
     /// <remarks> Initial Id should be the "Choose Category" option </remarks>
-    private string? NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
-    private string? NewSectionName;
+    private string? NewSectionCategoryName => Model.NewSectionCategoryName;
+    private string? NewSectionName => Model.NewSectionName;
+
+    private DateOnly Month => Model.Month;
+    private ImmutableArray<CategoryHeader>? Categories => Model.Categories;
+    private ImmutableArray<SectionSelectorRow>? AllSections => Model.AllSections;
+    private ImmutableArray<Transaction>? LoadedTransactions => Model.LoadedTransactions;
+    private TransactionResultViewModel? TransactionResultViewModel => Model.TransactionResultViewModel;
+
+    protected override Task OnInitializedAsync()
+    {
+        Model = new HomeViewModel(_categoriser);
+        Model.Initialise();
+        return Task.CompletedTask;
+    }
+
+    private bool TransactionsAreFullyLoaded() =>
+        Categories.HasValue && AllSections.HasValue && TransactionResultViewModel != null;
+
+    private void OnSetMonth(string? yearAndMonth) =>
+        Model.OnSetMonth(yearAndMonth);
+
+    private void SkipMonth(int months) =>
+        Model.SkipMonth(months);
+
+    private void SetNewSectionCategory(string? category) =>
+        Model.NewSectionCategoryName = category;
+
+    private void SetNewSectionName(string? name) =>
+        Model.NewSectionName= name;
+
+    private void CreateNewSection() =>
+        Model.CreateNewSection();
+
+    private void AddNewMatchForRow(TransactionRowUnMatched row) =>
+        Model.AddNewMatchForRow(row);
+
+    private void ClearMatch(TransactionRowMatched row) =>
+        Model.ClearMatch(row);
+
+    private async Task ExportCategorisedTransactions()
+    {
+        var categorisationResult = Model.LatestCategorisationResult;
+        if (categorisationResult == null)
+        {
+            return;
+        }
+
+        var result = await _excellFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!);
+        Model.UpdateLastActionResult(result);
+        if (!result.IsSuccess)
+        {
+            return;
+        }
+        await _DownloadBytes(
+            fileName: $"CategorisedTransactions_{Model.Month:yyyy-MM}.xlsx",
+            bytes: result.Result!);
+    }
+
+    private Task LoadTransactionsAndCategorise(InputFileChangeEventArgs e) =>
+        Model.LoadTransactionsAndCategorise(fnLoad: async () =>
+        {
+            using var inputStream = await e.CopyToMemoryStreamAsync();
+            return await _excellFileHandler.LoadTransactionsFromExcel(inputStream);
+        });
+
+    private Task CoopBankReverseFile(InputFileChangeEventArgs e) =>
+        _ProcessBankFileExtraction(e,
+            fnProcess: s => _excellFileHandler.CoopBank_ExtractCsvTransactionsToExcel(s),
+            filePrefix: "CoopBank_Extract");
+
+    private Task SantanderProcessFile(InputFileChangeEventArgs e) =>
+        _ProcessBankFileExtraction(e,
+            fnProcess: s => _excellFileHandler.Santander_ExtractExcelTransactionsToExcel(s),
+            filePrefix: "Santander_Extract");
+
+    private async Task _ProcessBankFileExtraction(
+        InputFileChangeEventArgs e,
+        Func<Stream, Task<WrappedResult<byte[]>>> fnProcess,
+        string filePrefix)
+    {
+        using var inputStream = await e.CopyToMemoryStreamAsync();
+        var result = await fnProcess(inputStream);
+        Model.UpdateLastActionResult(result);
+        if (!result.IsSuccess)
+        {
+            return;
+        }
+        await _DownloadBytes(
+            fileName: $"{filePrefix}_{e.File.Name}.xlsx",
+            bytes: result.Result!);
+    }
+
+    private async Task _DownloadBytes(string fileName, byte[] bytes) =>
+        await JS.InvokeAsync<object>(
+            "jsSaveAsFile",
+            args: [fileName, Convert.ToBase64String(bytes)]);
+}
+
+public class HomeViewModel
+{
+    public HomeViewModel(ITransactionCategoriser categoriser) =>
+        Categoriser = categoriser;
+
+    private readonly ITransactionCategoriser Categoriser;
+
+    public Result? LastActionResult;
+
+    /// <remarks> Initial Id should be the "Choose Category" option </remarks>
+    public string? NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
+    public string? NewSectionName;
+
+    public DateOnly Month => Model.Month;
+    public ImmutableArray<CategoryHeader>? Categories => Model.Categories;
+    public ImmutableArray<SectionSelectorRow>? AllSections => Model.AllSections;
+    public ImmutableArray<Transaction>? LoadedTransactions => Model.LoadedTransactions;
+    public TransactionResultViewModel? TransactionResultViewModel => Model.TransactionResultViewModel;
+    public CategorisationResult? LatestCategorisationResult => Model.LatestCategorisationResult;
 
     private StateModel Model = new();
 
@@ -68,45 +186,16 @@ public partial class Home
         }
     }
 
-    protected override Task OnInitializedAsync()
-    {
-        _SetMonth(_InitialiseMonth());
-        return Task.CompletedTask;
-    }
-
-    private bool TransactionsAreFullyLoaded() =>
+    public bool TransactionsAreFullyLoaded() =>
         Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
 
-    private static DateOnly _InitialiseMonth()
-    {
-        var now = DateTime.Now;
-        return new DateOnly(now.Year, now.Month, 1).AddMonths(-1);
-    }
+    public void Initialise() =>
+        _SetMonth(_InitialiseMonth());
 
-    private void OnSetMonth(string? yearAndMonth)
-    {
-        if (DateOnly.TryParseExact(yearAndMonth, "yyyy-MM", out var parsed))
-        {
-            _SetMonth(parsed);
-        }
-    }
+    public void UpdateLastActionResult(Result result) =>
+        _UpdateLastActionResult(result);
 
-    private void SkipMonth(int months) =>
-        _SetMonth(Model.Month.AddMonths(months));
-
-    private void _SetMonth(DateOnly month)
-    {
-        Model.Month = month;
-        _RefreshCategoriesAndMatchedTransactions();
-    }
-
-    private void _RefreshCategoriesAndMatchedTransactions()
-    {
-        Model.RefreshCategories(Categoriser.GetSelectorData(Model.Month));
-        _ReRunTransactionMatching();
-    }
-
-    private void CreateNewSection()
+    public void CreateNewSection()
     {
         var category = Model.Categories?.SingleOrDefault(x => x.Name == NewSectionCategoryName);
         if (category == null || NewSectionName.IsNullOrWhiteSpace())
@@ -121,7 +210,18 @@ public partial class Home
         NewSectionName = null;
     }
 
-    private async void AddNewMatchForRow(TransactionRowUnMatched row)
+    public void OnSetMonth(string? yearAndMonth)
+    {
+        if (DateOnly.TryParseExact(yearAndMonth, "yyyy-MM", out var parsed))
+        {
+            _SetMonth(parsed);
+        }
+    }
+
+    public void SkipMonth(int months) =>
+        _SetMonth(Model.Month.AddMonths(months));
+
+    public void AddNewMatchForRow(TransactionRowUnMatched row)
     {
         var found = Model.AllSections?.SingleOrDefault(x => x.Id == row.SelectionId);
         var header = found?.Header;
@@ -154,7 +254,7 @@ public partial class Home
         _ReRunTransactionMatching();
     }
 
-    private void ClearMatch(TransactionRowMatched row)
+    public void ClearMatch(TransactionRowMatched row)
     {
         if (row.Section == null || row.LatestMatch == null)
         {
@@ -167,69 +267,35 @@ public partial class Home
         _ReRunTransactionMatching();
     }
 
-    private Task CoopBankReverseFile(InputFileChangeEventArgs e) =>
-        _ProcessBankFileExtraction(e,
-            fnProcess: s => ExcelFileHandler.CoopBank_ExtractCsvTransactionsToExcel(s),
-            filePrefix: "CoopBank_Extract");
-
-    private Task SantanderProcessFile(InputFileChangeEventArgs e) =>
-        _ProcessBankFileExtraction(e,
-            fnProcess: s => ExcelFileHandler.Santander_ExtractExcelTransactionsToExcel(s),
-            filePrefix: "Santander_Extract");
-
-    private async Task _ProcessBankFileExtraction(
-    InputFileChangeEventArgs e,
-        Func<Stream, Task<WrappedResult<byte[]>>> fnProcess,
-        string filePrefix)
-    {
-        using var inputStream = await _CopyToMemoryStreamAsync(e);
-        var result = await fnProcess(inputStream);
-        _UpdateLastActionResult(result);
-        if (!result.IsSuccess)
-        {
-            return;
-        }
-        await _DownloadBytes(
-            fileName: $"{filePrefix}_{e.File.Name}.xlsx",
-            bytes: result.Result!);
-    }
-
-    private async Task ExportCategorisedTransactions()
-    {
-        var categorisationResult = Model.LatestCategorisationResult;
-        if (categorisationResult == null)
-        {
-            return;
-        }
-
-        var result = await ExcelFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!);
-        _UpdateLastActionResult(result);
-        if (!result.IsSuccess)
-        {
-            return;
-        }
-        await _DownloadBytes(
-            fileName: $"CategorisedTransactions_{Model.Month:yyyy-MM}.xlsx",
-            bytes: result.Result!);
-    }
-
-    private async Task _DownloadBytes(string fileName, byte[] bytes) =>
-        await JS.InvokeAsync<object>(
-            "jsSaveAsFile",
-            args: [fileName, Convert.ToBase64String(bytes)]);
-
-    private async Task LoadTransactionsAndCategorise(InputFileChangeEventArgs e)
+    public async Task LoadTransactionsAndCategorise(Func<Task<WrappedResult<ImmutableArray<Transaction>>>> fnLoad)
     {
         Model.ClearTransactionsAndCategorisations();
         
-        using var inputStream = await _CopyToMemoryStreamAsync(e);
-        var transactionResult = await ExcelFileHandler.LoadTransactionsFromExcel(inputStream);
+        var transactionResult = await fnLoad();
         _UpdateLastActionResult(transactionResult);
         if (!transactionResult.IsSuccess)
         {
             return;
         }
         Model.UpdateLoadedTransactions(transactionResult.Result);
+        _ReRunTransactionMatching();
+    }
+
+    private static DateOnly _InitialiseMonth()
+    {
+        var now = DateTime.Now;
+        return new DateOnly(now.Year, now.Month, 1).AddMonths(-1);
+    }
+
+    private void _SetMonth(DateOnly month)
+    {
+        Model.Month = month;
+        _RefreshCategoriesAndMatchedTransactions();
+    }
+
+    private void _RefreshCategoriesAndMatchedTransactions()
+    {
+        Model.RefreshCategories(Categoriser.GetSelectorData(Model.Month));
         _ReRunTransactionMatching();
     }
 
@@ -243,12 +309,21 @@ public partial class Home
         Model.UpdateFromCategorisationResult(result);
     }
 
+    private void _UpdateLastActionResult(string error) =>
+        LastActionResult = Result.Fail(error);
+
+    private void _UpdateLastActionResult(Result result) =>
+        LastActionResult = result;
+}
+
+public static class HomeExstensions
+{
     /// <summary>
     ///  Must copy to memory stream as otherwise can raise:
     ///  "System.NotSupportedException: Synchronous reads are not supported."
     ///  when passing to service
     ///  </summary>
-    private async Task<MemoryStream> _CopyToMemoryStreamAsync(InputFileChangeEventArgs e)
+    public static async Task<MemoryStream> CopyToMemoryStreamAsync(this InputFileChangeEventArgs e)
     {
         var inputStream = new MemoryStream();
         var stream = e.File.OpenReadStream();
@@ -256,10 +331,4 @@ public partial class Home
         inputStream.Position = 0;
         return inputStream;
     }
-
-    private void _UpdateLastActionResult(string error) =>
-        LastActionResult = Result.Fail(error);
-
-    private void _UpdateLastActionResult(Result result) =>
-        LastActionResult = result;
 }
