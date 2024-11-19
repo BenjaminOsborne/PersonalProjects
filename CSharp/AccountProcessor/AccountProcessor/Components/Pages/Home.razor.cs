@@ -76,7 +76,7 @@ public partial class Home
         return Task.CompletedTask;
     }
 
-    private bool TransactionsFullyLoaded() =>
+    private bool TransactionsAreFullyLoaded() =>
         Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
 
     private static DateOnly _InitialiseMonth()

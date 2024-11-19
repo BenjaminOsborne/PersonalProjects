@@ -73,7 +73,7 @@
                 <td><label>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </label></td>
             </tr>
 
-            @if (TransactionsFullyLoaded()) //Only display export button if transactions have been loaded
+            @if (TransactionsAreFullyLoaded()) //Only display export button if transactions have been loaded
             {
                 <!-- Export categorised -->
                 <tr class="border-top">
@@ -96,7 +96,7 @@
 <button @onclick="() => SkipMonth(+1)"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
 <p/>
 
-@if (TransactionsFullyLoaded())
+@if (TransactionsAreFullyLoaded())
 {
     <hr />
 
