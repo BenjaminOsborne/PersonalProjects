@@ -185,10 +185,7 @@ public class HomeViewModel
             TransactionResultViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, AllSections!.Value);
         }
     }
-
-    public bool TransactionsAreFullyLoaded() =>
-        Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
-
+    
     public void Initialise() =>
         _SetMonth(_InitialiseMonth());
 
