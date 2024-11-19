@@ -1,4 +1,5 @@
 ﻿using AccountProcessor.Components.Services;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Collections.Immutable;
 
@@ -15,6 +16,11 @@ public static class SelectorConstants
 
 public partial class Home
 {
+    [Inject]
+    private IExcelFileHandler ExcelFileHandler { get; init; }
+    [Inject]
+    private ITransactionCategoriser Categoriser { get; init; }
+
     /// <summary> Display message after any action invoked </summary>
     private Result? LastActionResult;
 
@@ -61,7 +67,7 @@ public partial class Home
     /// <remarks> Initial Id should be the "Choose Category" option </remarks>
     private string? NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
     private string? NewSectionName;
-    
+
     protected override Task OnInitializedAsync()
     {
         Model = new StateModel { Month = _InitialiseMonth() };
@@ -195,12 +201,13 @@ public partial class Home
 
     private async Task ExportCategorisedTransactions()
     {
-        if (Model.LatestCategorisationResult == null)
+        var categorisationResult = Model.LatestCategorisationResult;
+        if (categorisationResult == null)
         {
             return;
         }
 
-        var result = await ExcelFileHandler.ExportCategorisedTransactionsToExcel(Model.LatestCategorisationResult!);
+        var result = await ExcelFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!);
         _UpdateLastActionResult(result);
         if (!result.IsSuccess)
         {
