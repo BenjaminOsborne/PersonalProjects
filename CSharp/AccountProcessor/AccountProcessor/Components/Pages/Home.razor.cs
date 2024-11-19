@@ -43,16 +43,9 @@ public partial class Home
         {
             return;
         }
-
-        var result = await _excelFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!);
-        Model.OnFileExtractResult(result);
-        if (!result.IsSuccess)
-        {
-            return;
-        }
-        await _DownloadBytes(
-            fileName: $"CategorisedTransactions_{Model.Month:yyyy-MM}.xlsx",
-            bytes: result.Result!);
+        await _OnFileResultDownloadBytes(
+            result: await _excelFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!),
+            fileName: $"CategorisedTransactions_{Model.Month:yyyy-MM}.xlsx");
     }
 
     private Task LoadTransactionsAndCategorise(InputFileChangeEventArgs e) =>
@@ -78,21 +71,22 @@ public partial class Home
         string filePrefix)
     {
         using var inputStream = await e.CopyToMemoryStreamAsync();
-        var result = await fnProcess(inputStream);
+        await _OnFileResultDownloadBytes(
+            result: await fnProcess(inputStream),
+            fileName: $"{filePrefix}_{e.File.Name}.xlsx");
+    }
+
+    private async Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
+    {
         Model.OnFileExtractResult(result);
         if (!result.IsSuccess)
         {
             return;
         }
-        await _DownloadBytes(
-            fileName: $"{filePrefix}_{e.File.Name}.xlsx",
-            bytes: result.Result!);
-    }
-
-    private async Task _DownloadBytes(string fileName, byte[] bytes) =>
         await _jsInterop.InvokeAsync<object>(
             "jsSaveAsFile",
-            args: [fileName, Convert.ToBase64String(bytes)]);
+            args: [fileName, Convert.ToBase64String(result.Result!)]);
+    }
 }
 
 /// <summary> Separate class from <see cref="Home"/> so that state transitions & data access can be controlled explicitly </summary>
@@ -248,10 +242,8 @@ public class HomeViewModel
             {
                 var allData = _categoriser.GetSelectorData(Month);
                 Categories = allData.Categories;
-                AllSections = allData.Sections
-                    .ToImmutableArray(s => new SectionSelectorRow(s, ToDisplay(s), Guid.NewGuid().ToString())); //Arbitrary Id
-                
-                static string ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
+                AllSections = allData.Sections.ToImmutableArray(secHead =>
+                    new SectionSelectorRow(secHead, Display: $"{secHead.Parent.Name}: {secHead.Name}", Id: Guid.NewGuid().ToString())); //Arbitrary Id
             }
 
             //Always try refresh (if Transactions and Sections loaded)
@@ -261,7 +253,7 @@ public class HomeViewModel
             {
                 return;
             }
-            var categorisationResult = _categoriser.Categorise(loadedTransactions!.Value, month: Month);
+            var categorisationResult = _categoriser.Categorise(loadedTransactions!.Value, Month);
             LatestCategorisationResult = categorisationResult;
             TransactionResultViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
         }
