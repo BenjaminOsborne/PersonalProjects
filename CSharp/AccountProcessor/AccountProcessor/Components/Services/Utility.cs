@@ -4,6 +4,12 @@ using System.Text.Json;
 
 namespace AccountProcessor.Components.Services
 {
+    public class Unit
+    {
+        private Unit() { }
+        public static Unit Instance { get; } = new Unit();
+    }
+
     public static class WrappedResult
     {
         public static WrappedResult<T> Create<T>(T result) =>
@@ -20,6 +26,9 @@ namespace AccountProcessor.Components.Services
 
         public static Result Success { get; } = new Result { IsSuccess = true };
         public static Result Fail(string error) => new Result { Error = error };
+
+        public WrappedResult<Unit> ToWrappedUnit() =>
+            IsSuccess ? WrappedResult.Create(Unit.Instance) : WrappedResult.Fail<Unit>(Error!);
     }
 
     public class WrappedResult<T> : Result
