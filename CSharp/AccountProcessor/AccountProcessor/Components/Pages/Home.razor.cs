@@ -24,6 +24,10 @@ public partial class Home
     /// <summary> Display message after any action invoked </summary>
     private Result? LastActionResult;
 
+    /// <remarks> Initial Id should be the "Choose Category" option </remarks>
+    private string? NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
+    private string? NewSectionName;
+
     private StateModel Model = new();
 
     private class StateModel
@@ -63,10 +67,6 @@ public partial class Home
             TransactionResultViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, AllSections!.Value);
         }
     }
-
-    /// <remarks> Initial Id should be the "Choose Category" option </remarks>
-    private string? NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
-    private string? NewSectionName;
 
     protected override Task OnInitializedAsync()
     {
