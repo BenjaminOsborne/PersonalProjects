@@ -24,7 +24,7 @@ public partial class Home
     /// <summary> Display message after any action invoked </summary>
     private Result? LastActionResult;
 
-    private StateModel Model;
+    private StateModel Model = new();
 
     private class StateModel
     {
@@ -70,9 +70,7 @@ public partial class Home
 
     protected override Task OnInitializedAsync()
     {
-        Model = new StateModel { Month = _InitialiseMonth() };
-        _RefreshCategories();
-
+        _SetMonth(_InitialiseMonth());
         return Task.CompletedTask;
     }
 
@@ -84,9 +82,6 @@ public partial class Home
         var now = DateTime.Now;
         return new DateOnly(now.Year, now.Month, 1).AddMonths(-1);
     }
-
-    private void _RefreshCategories() =>
-        Model.RefreshCategories(Categoriser.GetSelectorData(Model.Month));
 
     private void OnSetMonth(string? yearAndMonth)
     {
@@ -107,7 +102,7 @@ public partial class Home
 
     private void _RefreshCategoriesAndMatchedTransactions()
     {
-        _RefreshCategories();
+        Model.RefreshCategories(Categoriser.GetSelectorData(Model.Month));
         _ReRunTransactionMatching();
     }
 
