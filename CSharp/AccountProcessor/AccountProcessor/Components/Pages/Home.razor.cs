@@ -23,19 +23,6 @@ public partial class Home
 
     private HomeViewModel Model;
 
-    /// <summary> Display message after any action invoked </summary>
-    private Result? LastActionResult => Model.LastActionResult;
-
-    /// <remarks> Initial Id should be the "Choose Category" option </remarks>
-    private string? NewSectionCategoryName => Model.NewSectionCategoryName;
-    private string? NewSectionName => Model.NewSectionName;
-
-    private DateOnly Month => Model.Month;
-    private ImmutableArray<CategoryHeader>? Categories => Model.Categories;
-    private ImmutableArray<SectionSelectorRow>? AllSections => Model.AllSections;
-    private ImmutableArray<Transaction>? LoadedTransactions => Model.LoadedTransactions;
-    private TransactionResultViewModel? TransactionResultViewModel => Model.TransactionResultViewModel;
-
     protected override Task OnInitializedAsync()
     {
         Model = new HomeViewModel(_categoriser);
@@ -44,32 +31,11 @@ public partial class Home
     }
 
     private bool TransactionsAreFullyLoaded() =>
-        Categories.HasValue && AllSections.HasValue && TransactionResultViewModel != null;
-
-    private void OnSetMonth(string? yearAndMonth) =>
-        Model.OnSetMonth(yearAndMonth);
-
-    private void SkipMonth(int months) =>
-        Model.SkipMonth(months);
-
-    private void SetNewSectionCategory(string? category) =>
-        Model.NewSectionCategoryName = category;
-
-    private void SetNewSectionName(string? name) =>
-        Model.NewSectionName= name;
-
-    private void CreateNewSection() =>
-        Model.CreateNewSection();
-
-    private void AddNewMatchForRow(TransactionRowUnMatched row) =>
-        Model.AddNewMatchForRow(row);
-
-    private void ClearMatch(TransactionRowMatched row) =>
-        Model.ClearMatch(row);
+        Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
 
     private async Task ExportCategorisedTransactions()
     {
-        var categorisationResult = Model.LatestCategorisationResult;
+        var categorisationResult = Model.GetLatestCategorisationResult();
         if (categorisationResult == null)
         {
             return;
@@ -128,27 +94,28 @@ public partial class Home
 
 public class HomeViewModel
 {
-    public HomeViewModel(ITransactionCategoriser categoriser) =>
-        Categoriser = categoriser;
-
     private readonly ITransactionCategoriser Categoriser;
+    private readonly TransactionsModel _transactionsModel;
 
-    public Result? LastActionResult;
+    public HomeViewModel(ITransactionCategoriser categoriser)
+    {
+        Categoriser = categoriser;
+        _transactionsModel = new TransactionsModel();
+    }
+
+    /// <summary> Display message after any action invoked </summary>
+    public Result? LastActionResult { get; private set; }
 
     /// <remarks> Initial Id should be the "Choose Category" option </remarks>
-    public string? NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
-    public string? NewSectionName;
+    public string? NewSectionCategoryName { get; private set; } = SelectorConstants.ChooseCategoryDefaultId;
+    public string? NewSectionName { get; private set; }
 
-    public DateOnly Month => Model.Month;
-    public ImmutableArray<CategoryHeader>? Categories => Model.Categories;
-    public ImmutableArray<SectionSelectorRow>? AllSections => Model.AllSections;
-    public ImmutableArray<Transaction>? LoadedTransactions => Model.LoadedTransactions;
-    public TransactionResultViewModel? TransactionResultViewModel => Model.TransactionResultViewModel;
-    public CategorisationResult? LatestCategorisationResult => Model.LatestCategorisationResult;
+    public DateOnly Month => _transactionsModel.Month;
+    public ImmutableArray<CategoryHeader>? Categories => _transactionsModel.Categories;
+    public ImmutableArray<SectionSelectorRow>? AllSections => _transactionsModel.AllSections;
+    public TransactionResultViewModel? TransactionResultViewModel => _transactionsModel.TransactionResultViewModel;
 
-    private StateModel Model = new();
-
-    private class StateModel
+    private class TransactionsModel
     {
         public DateOnly Month;
 
@@ -185,21 +152,29 @@ public class HomeViewModel
             TransactionResultViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, AllSections!.Value);
         }
     }
-    
+
+    public CategorisationResult? GetLatestCategorisationResult() => _transactionsModel.LatestCategorisationResult;
+
     public void Initialise() =>
         _SetMonth(_InitialiseMonth());
 
     public void UpdateLastActionResult(Result result) =>
         _UpdateLastActionResult(result);
 
+    public void SetNewSectionCategory(string? category) =>
+        NewSectionCategoryName = category;
+
+    public void SetNewSectionName(string? name) =>
+        NewSectionName = name;
+
     public void CreateNewSection()
     {
-        var category = Model.Categories?.SingleOrDefault(x => x.Name == NewSectionCategoryName);
+        var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == NewSectionCategoryName);
         if (category == null || NewSectionName.IsNullOrWhiteSpace())
         {
             return;
         }
-        Categoriser.AddSection(category, NewSectionName!, matchMonthOnly: Model.Month);
+        Categoriser.AddSection(category, NewSectionName!, matchMonthOnly: _transactionsModel.Month);
 
         _RefreshCategoriesAndMatchedTransactions();
 
@@ -216,11 +191,11 @@ public class HomeViewModel
     }
 
     public void SkipMonth(int months) =>
-        _SetMonth(Model.Month.AddMonths(months));
+        _SetMonth(_transactionsModel.Month.AddMonths(months));
 
     public void AddNewMatchForRow(TransactionRowUnMatched row)
     {
-        var found = Model.AllSections?.SingleOrDefault(x => x.Id == row.SelectionId);
+        var found = _transactionsModel.AllSections?.SingleOrDefault(x => x.Id == row.SelectionId);
         var header = found?.Header;
         if (header == null)
         {
@@ -266,7 +241,7 @@ public class HomeViewModel
 
     public async Task LoadTransactionsAndCategorise(Func<Task<WrappedResult<ImmutableArray<Transaction>>>> fnLoad)
     {
-        Model.ClearTransactionsAndCategorisations();
+        _transactionsModel.ClearTransactionsAndCategorisations();
         
         var transactionResult = await fnLoad();
         _UpdateLastActionResult(transactionResult);
@@ -274,7 +249,7 @@ public class HomeViewModel
         {
             return;
         }
-        Model.UpdateLoadedTransactions(transactionResult.Result);
+        _transactionsModel.UpdateLoadedTransactions(transactionResult.Result);
         _ReRunTransactionMatching();
     }
 
@@ -286,24 +261,24 @@ public class HomeViewModel
 
     private void _SetMonth(DateOnly month)
     {
-        Model.Month = month;
+        _transactionsModel.Month = month;
         _RefreshCategoriesAndMatchedTransactions();
     }
 
     private void _RefreshCategoriesAndMatchedTransactions()
     {
-        Model.RefreshCategories(Categoriser.GetSelectorData(Model.Month));
+        _transactionsModel.RefreshCategories(Categoriser.GetSelectorData(_transactionsModel.Month));
         _ReRunTransactionMatching();
     }
 
     private void _ReRunTransactionMatching()
     {
-        if (Model.LoadedTransactions.HasValue == false || Model.AllSections.HasValue == false)
+        if (_transactionsModel.LoadedTransactions.HasValue == false || _transactionsModel.AllSections.HasValue == false)
         {
             return;
         }
-        var result = Categoriser.Categorise(Model.LoadedTransactions!.Value, month: Model.Month);
-        Model.UpdateFromCategorisationResult(result);
+        var result = Categoriser.Categorise(_transactionsModel.LoadedTransactions!.Value, month: _transactionsModel.Month);
+        _transactionsModel.UpdateFromCategorisationResult(result);
     }
 
     private void _UpdateLastActionResult(string error) =>
