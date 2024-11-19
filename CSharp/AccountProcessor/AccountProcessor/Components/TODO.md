@@ -1,2 +1,5 @@
-- Spike into making observable? Some state view model intermediate?
--> Start by embodying the state transitions in a view model class with some tighter control
+- Display "earliest" and "latest" transactions
+- How to split out sub-views?
+- File selector to limit down the types? e.g. (*.coop.svc*) (*.sant.xlsx*)
+
+- Spike into usings observable? That useful/needed?
