@@ -172,16 +172,13 @@ public class HomeViewModel
                         ? cat.MatchOnce(row.Transaction, header!, row.MatchOn, row.OverrideDescription)
                         : !row.MatchOn.IsNullOrEmpty()
                             ? cat.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription)
-                            : Result.Fail("Match On must be defined")
+                            : Result.Fail("'Match On' pattern empty")
                     : Result.Fail("Could not find Section");
             });
 
     public void ClearMatch(TransactionRowMatched row) =>
         _transactionsModel.ChangeMatchModel(
-            fnPerform: c =>
-                row.Section != null && row.LatestMatch != null
-                    ? c.DeleteMatch(row.Section!, row.LatestMatch!)
-                    : Result.Fail("Empty section or empty matches"));
+            fnPerform: c => c.DeleteMatch(row.Section, row.LatestMatch));
 
     public async Task LoadTransactionsAndCategorise(Func<Task<WrappedResult<ImmutableArray<Transaction>>>> fnLoad) =>
         _transactionsModel.UpdateLoadedTransactions(await fnLoad());

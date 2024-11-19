@@ -32,7 +32,7 @@ namespace AccountProcessor.Components.Pages
                     var section = x.SectionMatch.Section;
                     var match = x.SectionMatch.Match;
                     var category = section.Parent;
-                    return (Tr: x.Transaction, Matches: match, Section: section, Category: category, CategoryKey: category.Order);
+                    return (Tr: x.Transaction, Match: match, Section: section, Category: category, CategoryKey: category.Order);
                 })
                 .GroupBy(x => x.CategoryKey)
                 .OrderBy(x => x.Key)
@@ -50,7 +50,7 @@ namespace AccountProcessor.Components.Pages
                             t.Tr,
                             DisplayAmount(t.Tr),
                             StyleColor(t.Tr),
-                            t.Matches));
+                            t.Match));
                 });
 
             return new TransactionResultViewModel(unmatched, matched);

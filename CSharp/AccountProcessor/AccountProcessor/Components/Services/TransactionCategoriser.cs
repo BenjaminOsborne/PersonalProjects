@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace AccountProcessor.Components.Services
 {
@@ -108,14 +107,14 @@ namespace AccountProcessor.Components.Services
         public Result ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription)
         {
             var match = new Match(matchOn, overrideDescription, null);
-            return _ApplyMatch(transaction, section, match);
+            return _AddNewMatch(transaction, section, match);
         }
 
         /// <remarks> Note: It is valid to specify <see cref="matchOn"/> (which may have a wild-card) as this can mean future transactions get a "suggestion", even if need to be confirmed. </remarks>
         public Result MatchOnce(Transaction transaction, SectionHeader section, string? matchOn, string? overrideDescription)
         {
             var match = new Match(matchOn ?? transaction.Description, overrideDescription, transaction.Date);
-            return _ApplyMatch(transaction, section, match);
+            return _AddNewMatch(transaction, section, match);
         }
 
         public Result DeleteMatch(SectionHeader section, Match match)
@@ -130,13 +129,14 @@ namespace AccountProcessor.Components.Services
             return result;
         }
 
-        private static Result _ApplyMatch(Transaction transaction, SectionHeader section, Match match)
+        private static Result _AddNewMatch(Transaction transaction, SectionHeader section, Match match)
         {
-            if (!Match.IsValidPattern(match.Pattern))
+            var valid = match.GetIsValidResult();
+            if (!valid.IsSuccess)
             {
-                return Result.Fail("Match should contain at least 3 characters");
+                return valid;
             }
-
+            
             var sectionMatches = _FindSection(section);
             if (!sectionMatches.IsSuccess)
             {
@@ -362,12 +362,6 @@ namespace AccountProcessor.Components.Services
         private readonly Lazy<System.Text.RegularExpressions.Regex> _regex;
         private readonly int _wildCardCount;
 
-        /// <summary> Must contain at least 3 letters or numbers (i.e. not whitespace or wildcard) </summary>
-        public static bool IsValidPattern(string pattern) =>
-            pattern?.Count(char.IsLetterOrDigit) >= 3;
-
-        public static Match FromPatternOnly(string pattern) => new (pattern, null, null);
-
         public Match(string pattern, string? overrideDescription, DateOnly? exactDate)
         {
             Pattern = pattern;
@@ -375,6 +369,23 @@ namespace AccountProcessor.Components.Services
             ExactDate = exactDate;
             _wildCardCount = pattern.Count(c => c == '*');
             _regex = LazyHelper.Create(() => _BuildRegex(pattern));
+        }
+
+        /// <summary>
+        /// - <see cref="Pattern"/> must contain at least 3 letters or numbers (i.e. not just whitespace / wildcard)
+        /// - <see cref="OverrideDescription"/> can be null, but if set, must be at least 3 characters (i.e. not just whitespace / wildcard)
+        /// </summary>
+        public Result GetIsValidResult()
+        {
+            if (Pattern == null || Pattern.Count(char.IsLetterOrDigit) < 3)
+            {
+                return Result.Fail("Match Pattern should contain at least 3 characters");
+            }
+            if (OverrideDescription != null && OverrideDescription.Count(char.IsLetterOrDigit) < 3)
+            {
+                return Result.Fail("If Match Override Description defined, must be at least 3 characters");
+            }
+            return Result.Success;
         }
 
         public string Pattern { get; }
