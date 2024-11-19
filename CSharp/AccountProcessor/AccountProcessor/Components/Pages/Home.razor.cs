@@ -155,8 +155,11 @@ public class HomeViewModel
 
     public CategorisationResult? GetLatestCategorisationResult() => _transactionsModel.LatestCategorisationResult;
 
-    public void Initialise() =>
-        _SetMonth(_InitialiseMonth());
+    public void Initialise()
+    {
+        var now = DateTime.Now;
+        _SetMonth(new DateOnly(now.Year, now.Month, 1).AddMonths(-1));
+    }
 
     public void UpdateLastActionResult(Result result) =>
         _UpdateLastActionResult(result);
@@ -182,7 +185,6 @@ public class HomeViewModel
         }
 
         _RefreshCategoriesAndMatchedTransactions();
-
         NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
         NewSectionName = null;
     }
@@ -256,12 +258,6 @@ public class HomeViewModel
         }
         _transactionsModel.UpdateLoadedTransactions(transactionResult.Result);
         _ReRunTransactionMatching();
-    }
-
-    private static DateOnly _InitialiseMonth()
-    {
-        var now = DateTime.Now;
-        return new DateOnly(now.Year, now.Month, 1).AddMonths(-1);
     }
 
     private void _SetMonth(DateOnly month)
