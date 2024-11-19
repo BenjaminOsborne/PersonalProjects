@@ -21,6 +21,8 @@ public partial class Home
     private IExcelFileHandler _excelFileHandler { get; init; }
     [Inject]
     private ITransactionCategoriser _categoriser { get; init; }
+    [Inject]
+    private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; }
 
     private HomeViewModel Model;
 
@@ -88,7 +90,7 @@ public partial class Home
     }
 
     private async Task _DownloadBytes(string fileName, byte[] bytes) =>
-        await JS.InvokeAsync<object>(
+        await _jsInterop.InvokeAsync<object>(
             "jsSaveAsFile",
             args: [fileName, Convert.ToBase64String(bytes)]);
 }
