@@ -151,7 +151,7 @@ public class HomeViewModel
                 var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == NewSectionCategoryName);
                 return category != null && !NewSectionName.IsNullOrWhiteSpace()
                     ? cat.AddSection(category, NewSectionName!, matchMonthOnly: _transactionsModel.Month)
-                    : WrappedResult.Fail<SectionHeader>("Invalid Category or empty Section Name");
+                    : Result.Fail("Invalid Category or empty Section Name");
             },
             refreshCategories: true,
             onSuccess: () =>
@@ -212,60 +212,52 @@ public class HomeViewModel
         public CategorisationResult? LatestCategorisationResult { get; private set; }
         public TransactionResultViewModel? TransactionResultViewModel { get; private set; }
 
-        public void UpdateMonth(WrappedResult<DateOnly> result)
-        {
-            _onActionHandleResult(result);
-            if (!result.IsSuccess)
-            {
-                return;
-            }
-            Month = result.Result;
-            _RefreshCategories();
-        }
+        public void UpdateMonth(WrappedResult<DateOnly> result) =>
+            _OnStateChange(
+                fnGetResult: () => result,
+                onSuccess: r => Month = r,
+                refreshCategories: true //categories can be month-specific so must refresh
+                );
 
-        public void UpdateLoadedTransactions(WrappedResult<ImmutableArray<Transaction>> result)
-        {
-            _onActionHandleResult(result);
-            if (!result.IsSuccess)
-            {
-                return;
-            }
-            LoadedTransactions = result.Result;
-            _ReRunTransactionMatching();
-        }
+        public void UpdateLoadedTransactions(WrappedResult<ImmutableArray<Transaction>> result) =>
+            _OnStateChange(
+                fnGetResult: () => result,
+                onSuccess: r => LoadedTransactions = r,
+                refreshCategories: false //No change to categories
+                );
 
         public void ChangeMatchModel(Func<ITransactionCategoriser, Result> fnPerform,
-            bool refreshCategories = false,
-            Action? onSuccess = null)
+            Action? onSuccess = null,
+            bool refreshCategories = false) =>
+                _OnStateChange(
+                    fnGetResult: () => fnPerform(_categoriser).ToWrappedUnit(),
+                    onSuccess: _ => onSuccess?.Invoke(),
+                    refreshCategories: refreshCategories);
+
+        private void _OnStateChange<T>(
+            Func<WrappedResult<T>> fnGetResult,
+            Action<T>? onSuccess = null,
+            bool refreshCategories = false)
         {
-            var result = fnPerform(_categoriser);
+            var result = fnGetResult();
             _onActionHandleResult(result);
             if (!result.IsSuccess)
             {
                 return;
             }
+            onSuccess?.Invoke(result.Result!);
+            
             if (refreshCategories)
             {
-                _RefreshCategories();
+                var allData = _categoriser.GetSelectorData(Month);
+                Categories = allData.Categories;
+                AllSections = allData.Sections
+                    .ToImmutableArray(s => new SectionSelectorRow(s, ToDisplay(s), Guid.NewGuid().ToString())); //Arbitrary Id
+                
+                static string ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
             }
-            onSuccess?.Invoke();
-            _ReRunTransactionMatching();
-        }
 
-        private void _RefreshCategories()
-        {
-            var allData = _categoriser.GetSelectorData(Month);
-            Categories = allData.Categories;
-            AllSections = allData.Sections
-                .ToImmutableArray(s => new SectionSelectorRow(s, ToDisplay(s), Guid.NewGuid().ToString())); //Arbitrary Id
-
-            _ReRunTransactionMatching(); //Re-run if transactions loaded
-
-            static string ToDisplay(SectionHeader s) => $"{s.Parent.Name}: {s.Name}";
-        }
-
-        private void _ReRunTransactionMatching()
-        {
+            //Always try refresh (if Transactions and Sections loaded)
             var loadedTransactions = LoadedTransactions;
             var allSections = AllSections;
             if (loadedTransactions.HasValue == false || allSections.HasValue == false)
@@ -277,7 +269,6 @@ public class HomeViewModel
             TransactionResultViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
         }
     }
-
 }
 
 public static class HomeExstensions
