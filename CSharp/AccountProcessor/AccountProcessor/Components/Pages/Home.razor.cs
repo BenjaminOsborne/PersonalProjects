@@ -94,12 +94,12 @@ public partial class Home
 
 public class HomeViewModel
 {
-    private readonly ITransactionCategoriser Categoriser;
+    private readonly ITransactionCategoriser _categoriser;
     private readonly TransactionsModel _transactionsModel;
 
     public HomeViewModel(ITransactionCategoriser categoriser)
     {
-        Categoriser = categoriser;
+        _categoriser = categoriser;
         _transactionsModel = new TransactionsModel();
     }
 
@@ -174,7 +174,12 @@ public class HomeViewModel
         {
             return;
         }
-        Categoriser.AddSection(category, NewSectionName!, matchMonthOnly: _transactionsModel.Month);
+        var result = _categoriser.AddSection(category, NewSectionName!, matchMonthOnly: _transactionsModel.Month);
+        _UpdateLastActionResult(result);
+        if (!result.IsSuccess)
+        {
+            return;
+        }
 
         _RefreshCategoriesAndMatchedTransactions();
 
@@ -206,7 +211,7 @@ public class HomeViewModel
         Result result;
         if (row.AddOnlyForTransaction)
         {
-            result = Categoriser.MatchOnce(row.Transaction, header!, row.MatchOn, row.OverrideDescription);
+            result = _categoriser.MatchOnce(row.Transaction, header!, row.MatchOn, row.OverrideDescription);
         }
         else
         {
@@ -215,7 +220,7 @@ public class HomeViewModel
                 _UpdateLastActionResult("Match On must be defined");
                 return;
             }
-            result = Categoriser.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription);
+            result = _categoriser.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription);
         }
         _UpdateLastActionResult(result);
         if (!result.IsSuccess)
@@ -234,7 +239,7 @@ public class HomeViewModel
             return;
         }
 
-        var result = Categoriser.DeleteMatch(row.Section!, row.LatestMatch!);
+        var result = _categoriser.DeleteMatch(row.Section!, row.LatestMatch!);
         _UpdateLastActionResult(result);
         _ReRunTransactionMatching();
     }
@@ -267,7 +272,7 @@ public class HomeViewModel
 
     private void _RefreshCategoriesAndMatchedTransactions()
     {
-        _transactionsModel.RefreshCategories(Categoriser.GetSelectorData(_transactionsModel.Month));
+        _transactionsModel.RefreshCategories(_categoriser.GetSelectorData(_transactionsModel.Month));
         _ReRunTransactionMatching();
     }
 
@@ -277,7 +282,7 @@ public class HomeViewModel
         {
             return;
         }
-        var result = Categoriser.Categorise(_transactionsModel.LoadedTransactions!.Value, month: _transactionsModel.Month);
+        var result = _categoriser.Categorise(_transactionsModel.LoadedTransactions!.Value, month: _transactionsModel.Month);
         _transactionsModel.UpdateFromCategorisationResult(result);
     }
 
