@@ -39,13 +39,13 @@
     public record ViewModel(ImmutableArray<TransactionRowMatched> MatchedRows);
 
     [Parameter]
-    public Action<TransactionRowMatched> ClearMatch { get; init; }
+    public required Action<TransactionRowMatched> ClearMatch { get; init; }
     [Parameter]
-    public ViewModel Model { get; set; }
+    public required ViewModel Model { get; set; }
 
     public void UpdateModel(ViewModel model)
     {
         Model = model;
-        StateHasChanged();
+        StateHasChanged(); //Must trigger state change, as Blazor requires triggering if an interaction in the other table child view initiated the change
     }
 }
