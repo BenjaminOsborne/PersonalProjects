@@ -17,6 +17,8 @@ public static class SelectorConstants
 /// <summary> Code-behind for Home.razor - gives logical split between html-render code and c# data processing </summary>
 public partial class Home
 {
+    private const string _extractedTransactionsFileExtension = ".extract.xlsx";
+
     [Inject]
     private IExcelFileHandler _excelFileHandler { get; init; }
     [Inject]
@@ -25,7 +27,7 @@ public partial class Home
     private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; }
 
     private HomeViewModel Model;
-
+    
     protected override Task OnInitializedAsync()
     {
         Model = new HomeViewModel(_categoriser);
@@ -73,7 +75,7 @@ public partial class Home
         using var inputStream = await e.CopyToMemoryStreamAsync();
         await _OnFileResultDownloadBytes(
             result: await fnProcess(inputStream),
-            fileName: $"{filePrefix}_{e.File.Name}.xlsx");
+            fileName: $"{filePrefix}_{e.File.Name}{_extractedTransactionsFileExtension}"); //Note: The ".extract." aspect enables further limitation just to these files on the file picker!
     }
 
     private async Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)

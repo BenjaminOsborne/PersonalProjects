@@ -66,7 +66,8 @@
                 <td><label><strong>Categorise: </strong></label></td>
                 <td>
                     <button class="btn btn-primary">
-                        <InputFile OnChange="@LoadTransactionsAndCategorise" accept=".xlsx" />
+                        <!-- ".extract.xlsx" filter works as Co-op/Santander files written as ".extract.xlsx" -->
+                        <InputFile OnChange="@LoadTransactionsAndCategorise" accept=@_extractedTransactionsFileExtension />
                     </button>
                 </td>
                 <td><label>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </label></td>
