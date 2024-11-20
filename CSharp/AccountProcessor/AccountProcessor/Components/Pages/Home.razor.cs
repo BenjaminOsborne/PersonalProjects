@@ -39,15 +39,6 @@ public partial class Home
         return Task.CompletedTask;
     }
 
-    private UnMatchedRowsTable.ViewModel CreateUnMatchedModel() => new(
-        Model.AllSections!.Value,
-        Model.TransactionResultViewModel!.UnMatchedRows,
-        Model.AddNewMatchForRow);
-
-    private MatchedRowsTable.ViewModel CreateMatchedModel() => new(
-        Model.TransactionResultViewModel!.MatchedRows,
-        Model.ClearMatch);
-
     private bool TransactionsAreFullyLoaded() =>
         Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
 
@@ -105,14 +96,23 @@ public partial class Home
 
     private void _OnModelStateChangeRebuildChildren()
     {
-        if (TransactionsAreFullyLoaded())
+        var unMatched = Model.UnMatchedModel;
+        if (unMatched != null)
         {
-            UnMatchedRowsTable?.UpdateModel(CreateUnMatchedModel());
-            MatchedRowsTable?.UpdateModel(CreateMatchedModel());
+            UnMatchedRowsTable?.UpdateModel(unMatched); //If class null, will be initialised correctly when view first renders
         }
         else
         {
             UnMatchedRowsTable = null;
+        }
+
+        var matched = Model.MatchedModel;
+        if (matched != null)
+        {
+            MatchedRowsTable?.UpdateModel(matched); //If class null, will be initialised correctly when view first renders
+        }
+        else
+        {
             MatchedRowsTable = null;
         }
     }
@@ -142,6 +142,9 @@ public class HomeViewModel
     public ImmutableArray<CategoryHeader>? Categories => _transactionsModel.Categories;
     public ImmutableArray<SectionSelectorRow>? AllSections => _transactionsModel.AllSections;
     public TransactionResultViewModel? TransactionResultViewModel => _transactionsModel.TransactionResultViewModel;
+    
+    public UnMatchedRowsTable.ViewModel? UnMatchedModel => _transactionsModel.UnMatchedModel;
+    public MatchedRowsTable.ViewModel? MatchedModel => _transactionsModel.MatchedModel;
 
     public void Initialise()
     {
@@ -240,6 +243,9 @@ public class HomeViewModel
         public CategorisationResult? LatestCategorisationResult { get; private set; }
         public TransactionResultViewModel? TransactionResultViewModel { get; private set; }
 
+        public UnMatchedRowsTable.ViewModel? UnMatchedModel { get; private set; }
+        public MatchedRowsTable.ViewModel? MatchedModel { get; private set; }
+
         public void UpdateMonth(WrappedResult<DateOnly> result) =>
             _OnStateChange(
                 fnGetResult: () => result,
@@ -297,7 +303,11 @@ public class HomeViewModel
             }
             var categorisationResult = _categoriser.Categorise(loadedTransactions!.Value, Month);
             LatestCategorisationResult = categorisationResult;
-            TransactionResultViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
+            var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
+            TransactionResultViewModel = trViewModel;
+
+            UnMatchedModel = trViewModel.UnMatchedRows.Any() ? new(allSections!.Value, trViewModel.UnMatchedRows) : null;
+            MatchedModel = trViewModel.MatchedRows.Any() ? new(trViewModel.MatchedRows) : null;
 
             _onStateChanged();
         }

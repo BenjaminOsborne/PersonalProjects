@@ -118,16 +118,16 @@
     <button class="btn" @onclick="Model.CreateNewSection"><i class="fa fa-plus"></i></button>
 
     /* UnMatched Rows */
-    @if (Model.TransactionResultViewModel!.UnMatchedRows.Any())
+    @if (Model.UnMatchedModel != null)
     {
         <hr />
-        <UnMatchedRowsTable @ref="UnMatchedRowsTable" Model=@CreateUnMatchedModel() />
+        <UnMatchedRowsTable @ref="UnMatchedRowsTable" Model=@Model.UnMatchedModel AddNewMatchForRow=@Model.AddNewMatchForRow />
     }
 
     /* Matched Rows */
-    @if (Model.TransactionResultViewModel!.MatchedRows.Any())
+    @if (Model.MatchedModel != null)
     {
         <hr />
-        <MatchedRowsTable @ref="MatchedRowsTable" Model=@CreateMatchedModel() />
+        <MatchedRowsTable @ref="MatchedRowsTable" Model=@Model.MatchedModel ClearMatch=@Model.ClearMatch />
     }
 }

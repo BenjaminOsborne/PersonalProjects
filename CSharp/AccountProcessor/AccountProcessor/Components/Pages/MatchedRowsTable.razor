@@ -27,7 +27,7 @@
                 <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
                 <td class="fitwidth" style="color:darkslategray">@row.MatchPattern</td>
                 <td>
-                    <button class="btn" @onclick="() => Model.ClearMatch(row)"><i class="fa fa-trash"></i></button>
+                    <button class="btn" @onclick="() => ClearMatch(row)"><i class="fa fa-trash"></i></button>
                 </td>
             </tr>
         }
@@ -36,13 +36,16 @@
 
 @code {
 
-    public record ViewModel(
-        ImmutableArray<TransactionRowMatched> MatchedRows,
-        Action<TransactionRowMatched> ClearMatch);
+    public record ViewModel(ImmutableArray<TransactionRowMatched> MatchedRows);
 
+    [Parameter]
+    public Action<TransactionRowMatched> ClearMatch { get; init; }
     [Parameter]
     public ViewModel Model { get; set; }
 
-    public void UpdateModel(ViewModel model) =>
+    public void UpdateModel(ViewModel model)
+    {
         Model = model;
+        StateHasChanged();
+    }
 }

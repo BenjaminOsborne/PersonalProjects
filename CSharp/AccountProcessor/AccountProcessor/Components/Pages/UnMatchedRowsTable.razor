@@ -44,7 +44,7 @@
                     <input type="checkbox" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value">
                 </td>
                 <td>
-                    <button class="btn" @onclick="() => Model.AddNewMatchForRow(row)"><i class="fa fa-plus"></i></button>
+                    <button class="btn" @onclick="() => AddNewMatchForRow(row)"><i class="fa fa-plus"></i></button>
                 </td>
             </tr>
         }
@@ -55,12 +55,18 @@
 
     public record ViewModel(
         ImmutableArray<SectionSelectorRow> AllSections,
-        ImmutableArray<TransactionRowUnMatched> UnMatchedRows,
-        Action<TransactionRowUnMatched> AddNewMatchForRow);
+        ImmutableArray<TransactionRowUnMatched> UnMatchedRows);
 
     [Parameter]
     public ViewModel Model { get; set; }
 
-    public void UpdateModel(ViewModel model) =>
+    [Parameter]
+    public Action<TransactionRowUnMatched> AddNewMatchForRow { get; init; }
+
+    public void UpdateModel(ViewModel model)
+    {
         Model = model;
+        StateHasChanged();
+    }
+
 }
