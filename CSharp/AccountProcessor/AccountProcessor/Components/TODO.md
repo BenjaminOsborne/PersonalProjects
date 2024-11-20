@@ -1,1 +1,2 @@
-- Spike into usings observable? That useful/needed?
+- Convert buttons to selector for picking different source accounts
+- Future: Consider trying a few other account types (Santander Current, Natwest, Nationwide, Starling?) to see if import generic?
