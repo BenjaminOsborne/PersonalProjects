@@ -107,6 +107,8 @@ public class HomeViewModel
     public string? NewSectionName { get; private set; }
 
     public DateOnly Month => _transactionsModel.Month;
+    public DateOnly? EarliestTransaction => _transactionsModel.EarliestTransaction;
+    public DateOnly? LatestTransaction => _transactionsModel.LatestTransaction;
     public ImmutableArray<CategoryHeader>? Categories => _transactionsModel.Categories;
     public ImmutableArray<SectionSelectorRow>? AllSections => _transactionsModel.AllSections;
     public TransactionResultViewModel? TransactionResultViewModel => _transactionsModel.TransactionResultViewModel;
@@ -199,6 +201,8 @@ public class HomeViewModel
         public ImmutableArray<SectionSelectorRow>? AllSections { get; private set; }
 
         public ImmutableArray<Transaction>? LoadedTransactions { get; private set; }
+        public DateOnly? EarliestTransaction { get; private set; }
+        public DateOnly? LatestTransaction { get; private set; }
 
         public CategorisationResult? LatestCategorisationResult { get; private set; }
         public TransactionResultViewModel? TransactionResultViewModel { get; private set; }
@@ -213,7 +217,12 @@ public class HomeViewModel
         public void UpdateLoadedTransactions(WrappedResult<ImmutableArray<Transaction>> result) =>
             _OnStateChange(
                 fnGetResult: () => result,
-                onSuccess: r => LoadedTransactions = r,
+                onSuccess: r =>
+                {
+                    LoadedTransactions = r;
+                    EarliestTransaction = r.Any() ? r.Select(x => x.Date).Min() : null;
+                    LatestTransaction = r.Any() ? r.Select(x => x.Date).Max() : null;
+                },
                 refreshCategories: false //No change to categories
                 );
 

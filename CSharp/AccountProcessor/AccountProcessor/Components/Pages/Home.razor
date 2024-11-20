@@ -97,6 +97,10 @@
 
 @if (TransactionsAreFullyLoaded())
 {
+    <label>
+        <strong>Transactions Period:</strong> @Model.EarliestTransaction?.ToString("dd MMM") to @Model.LatestTransaction?.ToString("dd MMM")
+    </label>
+    
     <hr />
 
     <label ><strong>Add New Section:</strong></label>
