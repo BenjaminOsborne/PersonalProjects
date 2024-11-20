@@ -36,6 +36,23 @@ public partial class Home
     private bool TransactionsAreFullyLoaded() =>
         Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
 
+    private Task CoopBankReverseFile(InputFileChangeEventArgs e) =>
+        _ProcessBankFileExtraction(e,
+            fnProcess: s => _excelFileHandler.CoopBank_ExtractCsvTransactionsToExcel(s),
+            filePrefix: "CoopBank_Extract");
+
+    private Task SantanderProcessFile(InputFileChangeEventArgs e) =>
+        _ProcessBankFileExtraction(e,
+            fnProcess: s => _excelFileHandler.Santander_ExtractExcelTransactionsToExcel(s),
+            filePrefix: "Santander_Extract");
+
+    private Task LoadTransactionsAndCategorise(InputFileChangeEventArgs e) =>
+        Model.LoadTransactionsAndCategorise(fnLoad: async () =>
+        {
+            using var inputStream = await e.CopyToMemoryStreamAsync();
+            return await _excelFileHandler.LoadTransactionsFromExcel(inputStream);
+        });
+
     private async Task ExportCategorisedTransactions()
     {
         var categorisationResult = Model.GetLatestCategorisationResultForExport();
@@ -47,23 +64,6 @@ public partial class Home
             result: await _excelFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!),
             fileName: $"CategorisedTransactions_{Model.Month:yyyy-MM}.xlsx");
     }
-
-    private Task LoadTransactionsAndCategorise(InputFileChangeEventArgs e) =>
-        Model.LoadTransactionsAndCategorise(fnLoad: async () =>
-        {
-            using var inputStream = await e.CopyToMemoryStreamAsync();
-            return await _excelFileHandler.LoadTransactionsFromExcel(inputStream);
-        });
-
-    private Task CoopBankReverseFile(InputFileChangeEventArgs e) =>
-        _ProcessBankFileExtraction(e,
-            fnProcess: s => _excelFileHandler.CoopBank_ExtractCsvTransactionsToExcel(s),
-            filePrefix: "CoopBank_Extract");
-
-    private Task SantanderProcessFile(InputFileChangeEventArgs e) =>
-        _ProcessBankFileExtraction(e,
-            fnProcess: s => _excelFileHandler.Santander_ExtractExcelTransactionsToExcel(s),
-            filePrefix: "Santander_Extract");
 
     private async Task _ProcessBankFileExtraction(
         InputFileChangeEventArgs e,
