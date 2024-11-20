@@ -27,13 +27,26 @@ public partial class Home
     private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; }
 
     private HomeViewModel Model;
-    
+
+    private UnMatchedRowsTable? UnMatchedRowsTable;
+    private MatchedRowsTable? MatchedRowsTable;
+
     protected override Task OnInitializedAsync()
     {
-        Model = new HomeViewModel(_categoriser);
+        Model = new HomeViewModel(_categoriser,
+            onStateChanged: _OnModelStateChangeRebuildChildren);
         Model.Initialise();
         return Task.CompletedTask;
     }
+
+    private UnMatchedRowsTable.ViewModel CreateUnMatchedModel() => new(
+        Model.AllSections!.Value,
+        Model.TransactionResultViewModel!.UnMatchedRows,
+        Model.AddNewMatchForRow);
+
+    private MatchedRowsTable.ViewModel CreateMatchedModel() => new(
+        Model.TransactionResultViewModel!.MatchedRows,
+        Model.ClearMatch);
 
     private bool TransactionsAreFullyLoaded() =>
         Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
@@ -89,6 +102,20 @@ public partial class Home
             "jsSaveAsFile",
             args: [fileName, Convert.ToBase64String(result.Result!)]);
     }
+
+    private void _OnModelStateChangeRebuildChildren()
+    {
+        if (TransactionsAreFullyLoaded())
+        {
+            UnMatchedRowsTable?.UpdateModel(CreateUnMatchedModel());
+            MatchedRowsTable?.UpdateModel(CreateMatchedModel());
+        }
+        else
+        {
+            UnMatchedRowsTable = null;
+            MatchedRowsTable = null;
+        }
+    }
 }
 
 /// <summary> Separate class from <see cref="Home"/> so that state transitions & data access can be controlled explicitly </summary>
@@ -96,10 +123,11 @@ public class HomeViewModel
 {
     private readonly TransactionsModel _transactionsModel;
 
-    public HomeViewModel(ITransactionCategoriser categoriser) =>
+    public HomeViewModel(ITransactionCategoriser categoriser, Action onStateChanged) =>
         _transactionsModel = new(
             categoriser,
-            onActionHandleResult: _UpdateLastActionResult);
+            onActionHandleResult: _UpdateLastActionResult,
+            onStateChanged);
 
     /// <summary> Display message after any action invoked </summary>
     public Result? LastActionResult { get; private set; }
@@ -189,12 +217,15 @@ public class HomeViewModel
     {
         private readonly ITransactionCategoriser _categoriser;
         private readonly Action<Result> _onActionHandleResult;
+        private readonly Action _onStateChanged;
 
         public TransactionsModel(ITransactionCategoriser categoriser,
-            Action<Result> onActionHandleResult)
+            Action<Result> onActionHandleResult,
+            Action onStateChanged)
         {
             _categoriser = categoriser;
             _onActionHandleResult = onActionHandleResult;
+            _onStateChanged = onStateChanged;
         }
 
         public DateOnly Month { get; private set; }
@@ -267,6 +298,8 @@ public class HomeViewModel
             var categorisationResult = _categoriser.Categorise(loadedTransactions!.Value, Month);
             LatestCategorisationResult = categorisationResult;
             TransactionResultViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
+
+            _onStateChanged();
         }
     }
 }

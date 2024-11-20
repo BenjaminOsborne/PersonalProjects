@@ -1,0 +1,66 @@
+﻿@using System.Collections.Immutable;
+@rendermode InteractiveServer
+
+<label style="color:red; font-size:large"><strong>UnMatched</strong></label>
+
+<table style="width:auto" cellpadding="5">
+    <thead>
+        <tr class="border-bottom-thick">
+            <th>Date</th>
+            <th>Transaction</th>
+            <th class="border-right">Amount (£)</th>
+            <th>Category</th>
+            <th>Match On</th>
+            <th>Description</th>
+            <th>Once</th>
+            <th>Match</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in Model.UnMatchedRows)
+        {
+            <tr class="border-bottom">
+                <td class="fitwidth">@row.Transaction.Date.ToString("dd/MM")</td>
+                <td class="fitwidth">@row.Transaction.Description</td>
+                <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
+
+                <td>
+                    <select value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
+                        <option value="@SelectorConstants.ChooseSectionDefaultId" selected>Choose Section</option>
+                        @foreach (var cat in Model.AllSections)
+                        {
+                            <option value="@cat.Id">@cat.Display</option>
+                        }
+                    </select>
+                </td>
+
+                <td>
+                    <input placeholder="Match on" value="@row.MatchOn" @onchange="e => row.MatchOn = (string?)e.Value" />
+                </td>
+                <td>
+                    <input placeholder="Override Description" value="@row.OverrideDescription" @onchange="e => row.OverrideDescription = (string?)e.Value" />
+                </td>
+                <td>
+                    <input type="checkbox" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value">
+                </td>
+                <td>
+                    <button class="btn" @onclick="() => Model.AddNewMatchForRow(row)"><i class="fa fa-plus"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    public record ViewModel(
+        ImmutableArray<SectionSelectorRow> AllSections,
+        ImmutableArray<TransactionRowUnMatched> UnMatchedRows,
+        Action<TransactionRowUnMatched> AddNewMatchForRow);
+
+    [Parameter]
+    public ViewModel Model { get; set; }
+
+    public void UpdateModel(ViewModel model) =>
+        Model = model;
+}

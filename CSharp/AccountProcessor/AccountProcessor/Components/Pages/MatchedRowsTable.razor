@@ -1,0 +1,48 @@
+﻿@using System.Collections.Immutable;
+@rendermode InteractiveServer
+
+<label style="color:green; font-size:large"><strong>Matched</strong></label>
+
+<table style="width:auto" cellpadding="5">
+    <thead>
+        <tr class="border-bottom-thick">
+            <th class="border-right">Category: Section</th>
+            <th>Date</th>
+            <th>Transaction</th>
+            <th>Export As</th>
+            <th class="border-right">Amount (£)</th>
+            <th>Match Pattern</th>
+            <th>Clear</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in Model.MatchedRows)
+        {
+            var rowClassBottom = row.IsLastRowForCategory ? "border-bottom-thick" : "border-bottom";
+            <tr class=@rowClassBottom>
+                <td class="fitwidth border-right">@row.CategorySectionDisplay</td>
+                <td class="fitwidth">@row.Transaction.Date.ToString("dd/MM")</td>
+                <td class="fitwidth">@row.Transaction.Description</td>
+                <td class="fitwidth">@row.MatchDescription</td>
+                <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
+                <td class="fitwidth" style="color:darkslategray">@row.MatchPattern</td>
+                <td>
+                    <button class="btn" @onclick="() => Model.ClearMatch(row)"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    public record ViewModel(
+        ImmutableArray<TransactionRowMatched> MatchedRows,
+        Action<TransactionRowMatched> ClearMatch);
+
+    [Parameter]
+    public ViewModel Model { get; set; }
+
+    public void UpdateModel(ViewModel model) =>
+        Model = model;
+}
