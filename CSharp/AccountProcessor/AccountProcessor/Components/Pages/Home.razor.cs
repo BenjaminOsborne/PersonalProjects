@@ -129,8 +129,8 @@ public class HomeViewModel
     public void OnFileExtractResult(Result result) =>
         _UpdateLastActionResult(result);
 
-    public void OnTransactionsImport(Result result) =>
-        _transactionsModel.OnTransactionsImport(result);
+    public void OnAccountFileConverted(Result result) =>
+        _UpdateLastActionResult(result);
 
     public void SetMonth(string? yearAndMonth) =>
         _transactionsModel.UpdateMonth(
@@ -249,11 +249,6 @@ public class HomeViewModel
                     fnGetResult: () => fnPerform(_categoriser).ToWrappedUnit(),
                     onSuccess: _ => onSuccess?.Invoke(),
                     refreshCategories: refreshCategories);
-        
-        public void OnTransactionsImport(Result result) =>
-            _OnStateChange(
-                fnGetResult: result.ToWrappedUnit,
-                refreshCategories: true);
 
         private void _OnStateChange<T>(
             Func<WrappedResult<T>> fnGetResult,

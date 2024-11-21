@@ -34,8 +34,8 @@ namespace AccountProcessor.Components.Pages
         private AccountTypeData SelectedAccountType = SelectableAccountTypes[0];
 
         [Parameter]
-        public required Action<Result> OnTransactionsImport { get; init; }
-
+        public required Action<Result> OnAccountFileConverted { get; init; }
+        
         private void SetAccountType(string id) =>
             SelectedAccountType = SelectableAccountTypes.Single(x => x.Id == id);
 
@@ -64,7 +64,7 @@ namespace AccountProcessor.Components.Pages
 
         private Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
         {
-            OnTransactionsImport.Invoke(result);
+            OnAccountFileConverted.Invoke(result);
             return result.IsSuccess
                 ? _jsInterop.SaveAsFileAsync(fileName, result.Result!)
                 : Task.CompletedTask;

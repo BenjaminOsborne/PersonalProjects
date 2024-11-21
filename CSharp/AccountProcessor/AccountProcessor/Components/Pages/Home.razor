@@ -38,8 +38,10 @@
 
 <p style="border:thin">
 
-    <!-- Load & Categorise transaction files -->
-    <AccountConverter OnTransactionsImport=@Model.OnTransactionsImport />
+    <!-- Convert & download account files -->
+    <AccountConverter OnAccountFileConverted=@Model.OnAccountFileConverted />
+
+    <hr />
 
     <table style="width:auto" cellpadding="5">
         <tbody>
