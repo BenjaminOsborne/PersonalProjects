@@ -43,10 +43,10 @@
 
     <hr />
 
-    <table style="width:auto" cellpadding="5">
+    <table style="width:auto" cellpadding="5" border="0">
         <tbody>
             <!-- Load & Categorise transaction files -->
-            <tr class="border-top">
+            <tr>
                 <td><label><strong>Categorise: </strong></label></td>
                 <td>
                     <button class="btn btn-primary">
@@ -60,7 +60,7 @@
             @if (TransactionsAreFullyLoaded()) //Only display export button if transactions have been loaded
             {
                 <!-- Export categorised -->
-                <tr class="border-top">
+                <tr>
                     <td><label><strong>Export Categorised</strong></label></td>
                     <td>
                         <button class="btn btn-primary" @onclick="() => ExportCategorisedTransactions()">Export</button>

@@ -1,8 +1,8 @@
 ﻿@rendermode InteractiveServer
 
-<table style="width:auto" cellpadding="5">
+<table style="width:auto" cellpadding="5" border="0">
     <tbody>
-        <tr class="border-top">
+        <tr>
             <td><label><strong>Create Transactions File: </strong></label></td>
             <td>
                 <select style="margin-right: 5px" value=@SelectedAccountType.Id @onchange="e => SetAccountType((string?)e.Value)">
