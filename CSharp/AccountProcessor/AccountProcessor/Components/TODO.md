@@ -1,2 +1,3 @@
 - Convert buttons to selector for picking different source accounts
+- Summary: Order by size? Group by description?
 - Future: Consider trying a few other account types (Santander Current, Natwest, Nationwide, Starling?) to see if import generic?
