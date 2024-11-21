@@ -14,11 +14,14 @@ public static class SelectorConstants
     public static readonly string ChooseSectionDefaultId = Guid.NewGuid().ToString();
 }
 
+public static class FileConstants
+{
+    public const string ExtractedTransactionsFileExtension = ".extract.xlsx";
+}
+
 /// <summary> Code-behind for Home.razor - gives logical split between html-render code and c# data processing </summary>
 public partial class Home
 {
-    private const string _extractedTransactionsFileExtension = ".extract.xlsx";
-
     [Inject]
     private IExcelFileHandler _excelFileHandler { get; init; }
     [Inject]
@@ -41,16 +44,6 @@ public partial class Home
     private bool TransactionsAreFullyLoaded() =>
         Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
 
-    private Task CoopBankReverseFile(InputFileChangeEventArgs e) =>
-        _ProcessBankFileExtraction(e,
-            fnProcess: s => _excelFileHandler.CoopBank_ExtractCsvTransactionsToExcel(s),
-            filePrefix: "CoopBank_Extract");
-
-    private Task SantanderProcessFile(InputFileChangeEventArgs e) =>
-        _ProcessBankFileExtraction(e,
-            fnProcess: s => _excelFileHandler.Santander_ExtractExcelTransactionsToExcel(s),
-            filePrefix: "Santander_Extract");
-
     private Task LoadTransactionsAndCategorise(InputFileChangeEventArgs e) =>
         Model.LoadTransactionsAndCategorise(fnLoad: async () =>
         {
@@ -70,27 +63,12 @@ public partial class Home
             fileName: $"CategorisedTransactions_{Model.Month:yyyy-MM}.xlsx");
     }
 
-    private async Task _ProcessBankFileExtraction(
-        InputFileChangeEventArgs e,
-        Func<Stream, Task<WrappedResult<byte[]>>> fnProcess,
-        string filePrefix)
-    {
-        using var inputStream = await e.CopyToMemoryStreamAsync();
-        await _OnFileResultDownloadBytes(
-            result: await fnProcess(inputStream),
-            fileName: $"{filePrefix}_{e.File.Name}{_extractedTransactionsFileExtension}"); //Note: The ".extract." aspect enables further limitation just to these files on the file picker!
-    }
-
-    private async Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
+    private Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
     {
         Model.OnFileExtractResult(result);
-        if (!result.IsSuccess)
-        {
-            return;
-        }
-        await _jsInterop.InvokeAsync<object>(
-            "jsSaveAsFile",
-            args: [fileName, Convert.ToBase64String(result.Result!)]);
+        return result.IsSuccess
+            ? _jsInterop.SaveAsFileAsync(fileName, result.Result!)
+            : Task.CompletedTask;
     }
 
     private void _OnModelStateChangeRebuildChildren()
@@ -150,6 +128,9 @@ public class HomeViewModel
     /// <summary> Only actions not managed by this model are the Excel file extracts - this method enables result to display </summary>
     public void OnFileExtractResult(Result result) =>
         _UpdateLastActionResult(result);
+
+    public void OnTransactionsImport(Result result) =>
+        _transactionsModel.OnTransactionsImport(result);
 
     public void SetMonth(string? yearAndMonth) =>
         _transactionsModel.UpdateMonth(
@@ -268,6 +249,11 @@ public class HomeViewModel
                     fnGetResult: () => fnPerform(_categoriser).ToWrappedUnit(),
                     onSuccess: _ => onSuccess?.Invoke(),
                     refreshCategories: refreshCategories);
+        
+        public void OnTransactionsImport(Result result) =>
+            _OnStateChange(
+                fnGetResult: result.ToWrappedUnit,
+                refreshCategories: true);
 
         private void _OnStateChange<T>(
             Func<WrappedResult<T>> fnGetResult,
@@ -325,4 +311,11 @@ public static class HomeExstensions
         inputStream.Position = 0;
         return inputStream;
     }
+
+    public static async Task SaveAsFileAsync(this Microsoft.JSInterop.IJSRuntime jsInterop,
+        string fileName,
+        byte[] file) =>
+        await jsInterop.InvokeAsync<object>(
+            "jsSaveAsFile",
+            args: [fileName, Convert.ToBase64String(file)]);
 }

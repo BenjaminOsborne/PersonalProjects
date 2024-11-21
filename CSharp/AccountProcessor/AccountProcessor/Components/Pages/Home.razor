@@ -37,37 +37,18 @@
 <hr />
 
 <p style="border:thin">
+
+    <TransactionsImport OnTransactionsImport=@Model.OnTransactionsImport />
+
     <table style="width:auto" cellpadding="5">
         <tbody>
-            <!-- Coop Bank extract -->
-            <tr>
-                <td><label><strong>Coop Bank: Reverse File</strong></label></td>
-                <td>
-                    <button class="btn btn-primary">
-                        <InputFile OnChange="@CoopBankReverseFile" accept=".csv" />
-                    </button>
-                </td>
-                <td><label>Takes a raw CSV from Co-op Bank, reverses the transactions and downloads in standard format</label></td>
-            </tr>
-
-            <!-- Santander Bank extract -->
-            <tr>
-                <td><label><strong>Santander: Extract</strong></label></td>
-                <td>
-                    <button class="btn btn-primary">
-                        <InputFile OnChange="@SantanderProcessFile" accept=".xlsx" />
-                    </button>
-                </td>
-                <td><label>Takes a converted xlsx from Santander and downloads in standard format. (Must be saved to xlsx manually)</label></td>
-            </tr>
-
-            <!-- Categorise transaction files -->
+            <!-- Load & Categorise transaction files -->
             <tr class="border-top">
                 <td><label><strong>Categorise: </strong></label></td>
                 <td>
                     <button class="btn btn-primary">
                         <!-- ".extract.xlsx" filter works as Co-op/Santander files written as ".extract.xlsx" -->
-                        <InputFile OnChange="@LoadTransactionsAndCategorise" accept=@_extractedTransactionsFileExtension />
+                        <InputFile OnChange="@LoadTransactionsAndCategorise" accept=@FileConstants.ExtractedTransactionsFileExtension />
                     </button>
                 </td>
                 <td><label>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </label></td>
