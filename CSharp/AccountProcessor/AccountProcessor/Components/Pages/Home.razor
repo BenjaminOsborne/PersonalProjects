@@ -38,7 +38,8 @@
 
 <p style="border:thin">
 
-    <TransactionsImport OnTransactionsImport=@Model.OnTransactionsImport />
+    <!-- Load & Categorise transaction files -->
+    <AccountConverter OnTransactionsImport=@Model.OnTransactionsImport />
 
     <table style="width:auto" cellpadding="5">
         <tbody>

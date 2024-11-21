@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 
 namespace AccountProcessor.Components.Pages
 {
-    public partial class TransactionsImport
+    public partial class AccountConverter
     {
         private enum AccountType
         {
