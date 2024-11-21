@@ -44,6 +44,12 @@ public partial class Home
     private bool TransactionsAreFullyLoaded() =>
         Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
 
+    public void OnAccountFileConverted(Result result)
+    {
+        Model.OnFileExtractResult(result);
+        StateHasChanged(); //Child view triggers change to Result label to be re-rendered
+    }
+
     private Task LoadTransactionsAndCategorise(InputFileChangeEventArgs e) =>
         Model.LoadTransactionsAndCategorise(fnLoad: async () =>
         {
@@ -127,9 +133,6 @@ public class HomeViewModel
 
     /// <summary> Only actions not managed by this model are the Excel file extracts - this method enables result to display </summary>
     public void OnFileExtractResult(Result result) =>
-        _UpdateLastActionResult(result);
-
-    public void OnAccountFileConverted(Result result) =>
         _UpdateLastActionResult(result);
 
     public void SetMonth(string? yearAndMonth) =>
