@@ -35,7 +35,6 @@ public partial class Home
     {
         Model = new HomeViewModel(_categoriser,
             onStateChanged: _OnModelStateChangeRebuildChildren);
-        Model.Initialise();
         return Task.CompletedTask;
     }
 
@@ -146,12 +145,6 @@ public class HomeViewModel
     public UnMatchedRowsTable.ViewModel? UnMatchedModel => _transactionsModel.UnMatchedModel;
     public MatchedRowsTable.ViewModel? MatchedModel => _transactionsModel.MatchedModel;
 
-    public void Initialise()
-    {
-        var now = DateTime.Now;
-        _transactionsModel.UpdateMonth(WrappedResult.Create(new DateOnly(now.Year, now.Month, 1).AddMonths(-1)));
-    }
-
     public CategorisationResult? GetLatestCategorisationResultForExport() => _transactionsModel.LatestCategorisationResult;
 
     /// <summary> Only actions not managed by this model are the Excel file extracts - this method enables result to display </summary>
@@ -229,6 +222,9 @@ public class HomeViewModel
             _categoriser = categoriser;
             _onActionHandleResult = onActionHandleResult;
             _onStateChanged = onStateChanged;
+
+            var now = DateTime.Now;
+            Month = new DateOnly(now.Year, now.Month, 1).AddMonths(-1); //Initialise to last complete month (i.e. month before the current one)
         }
 
         public DateOnly Month { get; private set; }
