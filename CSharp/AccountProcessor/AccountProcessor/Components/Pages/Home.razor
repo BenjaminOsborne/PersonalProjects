@@ -37,35 +37,46 @@
 <hr />
 
 <p style="border:thin">
-
-    <!-- Convert & download account files -->
-    <AccountConverter OnAccountFileConverted=@OnAccountFileConverted />
-
-    <hr />
-
-    <table style="width:auto" cellpadding="5" border="0">
+    <table style="width:auto" cellpadding="5" cellspacing="0" border="1">
         <tbody>
+            
+            <!-- Convert & download account files -->
+            <tr style="align-content:center">
+                <td>
+                    <label><strong>[1] Create Transactions File  </strong></label>
+                </td>
+                <td>
+                    <AccountConverter OnAccountFileConverted=@OnAccountFileConverted />
+                </td>
+            </tr>
+
             <!-- Load & Categorise transaction files -->
-            <tr>
-                <td><label><strong>Categorise: </strong></label></td>
+            <tr style="align-content:center">
+                <td>
+                    <label><strong>[2] Categorise  </strong></label>
+                </td>
                 <td>
                     <button class="btn btn-primary">
                         <!-- ".extract.xlsx" filter works as Co-op/Santander files written as ".extract.xlsx" -->
                         <InputFile OnChange="@LoadTransactionsAndCategorise" accept=@FileConstants.ExtractedTransactionsFileExtension />
                     </button>
+                    <br />
+                    <i>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </i>
                 </td>
-                <td><label>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </label></td>
             </tr>
 
             @if (TransactionsAreFullyLoaded()) //Only display export button if transactions have been loaded
             {
                 <!-- Export categorised -->
-                <tr>
-                    <td><label><strong>Export Categorised</strong></label></td>
+                <tr style="align-content:center">
+                    <td>
+                        <label><strong>[3] Export Categorised  </strong></label>
+                    </td>
                     <td>
                         <button class="btn btn-primary" @onclick="() => ExportCategorisedTransactions()">Export</button>
+                        <br />
+                        <i>Finally, exports the categorised transactions by category, for storage in LifeOrganisation file. </i>
                     </td>
-                    <td><label>Finally, exports the categorised transactions by category, for storage in LifeOrganisation file. </label></td>
                 </tr>
             }
         </tbody>
@@ -88,7 +99,7 @@
     
     <hr />
 
-    <label ><strong>Add New Section:</strong></label>
+    <label><strong>Add New Section:</strong></label>
     <select style="margin-right: 5px" value="@Model.NewSectionCategoryName" @onchange="e => Model.SetNewSectionCategory((string?)e.Value)">
         <option value="@SelectorConstants.ChooseCategoryDefaultId" selected>Choose Category</option>
         @foreach (var cat in Model.Categories!.Value)

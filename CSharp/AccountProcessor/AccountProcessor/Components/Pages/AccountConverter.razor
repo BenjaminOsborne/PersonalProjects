@@ -1,27 +1,24 @@
 ﻿@rendermode InteractiveServer
 
-<table style="width:auto" cellpadding="5" border="0">
-    <tbody>
-        <tr>
-            <td><label><strong>Create Transactions File: </strong></label></td>
-            <td>
-                <select style="margin-right: 5px" value=@SelectedAccountType.Id @onchange="e => SetAccountType((string?)e.Value)">
-                    @foreach (var at in SelectableAccountTypes)
-                    {
-                        <option value="@at.Id">@at.Name</option>
-                    }
-                </select>
-            </td>
-            <td>
-                @if (SelectedAccountType.Type != AccountType.InitialSelect)
-                {
-                    <button class="btn btn-primary">
-                        <InputFile OnChange="@ProcessAccountFile" accept=@SelectedAccountType.FileAccept />
-                    </button>
-                    
-                }
-            </td>
-            <td><label>@SelectedAccountType.Description</label></td>
-        </tr>
-    </tbody>
-</table>
+<select style="margin-right: 5px" value=@SelectedAccountType.Id @onchange="e => SetAccountType((string?)e.Value)">
+    @foreach (var at in SelectableAccountTypes)
+    {
+        <option value="@at.Id">@at.Name</option>
+    }
+</select>
+
+@if(SelectedAccountType.Type != AccountType.InitialSelect)
+{
+    <button class="btn btn-primary">
+        <InputFile OnChange="@ProcessAccountFile" accept=@SelectedAccountType.FileAccept />
+    </button>
+}
+else
+{
+    <button class="btn btn-primary" disabled>
+        <InputFile/>
+    </button>
+}
+
+<br />
+<i>@SelectedAccountType.Description</i>

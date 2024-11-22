@@ -25,7 +25,8 @@ namespace AccountProcessor.Components.Pages
         private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; }
 
         private static readonly ImmutableArray<AccountTypeData> SelectableAccountTypes = ImmutableArray.Create(
-                new AccountTypeData(AccountType.InitialSelect, "Choose Account Type", "", ""),
+                new AccountTypeData(AccountType.InitialSelect, "Choose Account Type", "", Description:
+                    "Please select account type"),
                 new AccountTypeData(AccountType.CoopBank, "Coop Bank", ".csv", Description:
                     "Takes a raw CSV from Co-op Bank, reverses the transactions and downloads in standard format"),
                 new AccountTypeData(AccountType.SantanderCreditCard, "Santander Credit Card", ".xlsx", Description:
