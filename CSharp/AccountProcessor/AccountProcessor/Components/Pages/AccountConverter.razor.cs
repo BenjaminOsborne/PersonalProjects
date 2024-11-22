@@ -57,9 +57,10 @@ namespace AccountProcessor.Components.Pages
             string filePrefix)
         {
             using var inputStream = await e.CopyToMemoryStreamAsync();
+            var uniqueStamp = DateTime.MinValue.Add(DateTime.Now - new DateTime(2024, 11, 1)).Ticks;
             await _OnFileResultDownloadBytes(
                 result: await fnProcess(inputStream),
-                fileName: $"{filePrefix}_{e.File.Name}{FileConstants.ExtractedTransactionsFileExtension}"); //Note: The ".extract." aspect enables further limitation just to these files on the file picker!
+                fileName: $"{filePrefix}_{e.File.Name}_{uniqueStamp}{FileConstants.ExtractedTransactionsFileExtension}"); //Note: The ".extract." aspect enables further limitation just to these files on the file picker!
         }
 
         private Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
