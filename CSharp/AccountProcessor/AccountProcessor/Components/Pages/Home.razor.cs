@@ -242,7 +242,7 @@ public class HomeViewModel
                     EarliestTransaction = r.Any() ? r.Select(x => x.Date).Min() : null;
                     LatestTransaction = r.Any() ? r.Select(x => x.Date).Max() : null;
                 },
-                refreshCategories: false //No change to categories
+                refreshCategories: true //Categories loaded
                 );
 
         public void ChangeMatchModel(Func<ITransactionCategoriser, Result> fnPerform,
