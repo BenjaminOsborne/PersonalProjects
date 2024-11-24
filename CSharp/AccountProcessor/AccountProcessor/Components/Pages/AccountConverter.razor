@@ -7,7 +7,7 @@
     }
 </select>
 
-@if(SelectedAccountType.Type != AccountType.InitialSelect)
+@if (SelectedAccountType.Type != AccountType.InitialSelect)
 {
     <button class="btn btn-primary">
         <InputFile OnChange="@ProcessAccountFile" accept=@SelectedAccountType.FileAccept />
