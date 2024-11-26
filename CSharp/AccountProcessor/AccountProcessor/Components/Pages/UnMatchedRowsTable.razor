@@ -41,7 +41,7 @@
                     <input placeholder="Override Description" value="@row.OverrideDescription" @onchange="e => row.OverrideDescription = (string?)e.Value" />
                 </td>
                 <td>
-                    <input type="checkbox" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value">
+                    <input type="checkbox" checked="@row.AddOnlyForTransaction" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value">
                 </td>
                 <td>
                     <button class="btn" @onclick="() => AddNewMatchForRow(row)"><i class="fa fa-plus"></i></button>
