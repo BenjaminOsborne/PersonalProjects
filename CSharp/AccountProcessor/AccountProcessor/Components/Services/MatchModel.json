@@ -23,6 +23,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "Brookes Sian*LOAN INTEREST",
+              "OverrideDescription": "Brookes Loan",
+              "ExactDate": null
+            },
+            {
               "Pattern": "HMRC CHILD BENEFIT OSBORNEELIZA870505",
               "OverrideDescription": "Child Benefit",
               "ExactDate": null
@@ -54,6 +59,11 @@
           "SectionName": "House",
           "Month": null,
           "Matches": [
+            {
+              "Pattern": "WOLLATON AUTO CENT",
+              "OverrideDescription": "Car Service: Wollaton Auto",
+              "ExactDate": null
+            },
             {
               "Pattern": "NATWEST BANK       83899140/2491297",
               "OverrideDescription": "Natwest Mortgage",
@@ -91,6 +101,26 @@
               "ExactDate": null
             },
             {
+              "Pattern": "MRS PATRICIA A HOP OSBORNE",
+              "OverrideDescription": "Patricia A Hop: Spirit Direc.",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "VIRGIN MEDIA PYMTS 803075902001",
+              "OverrideDescription": "Virgin Media",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "H3G*974890453001170340",
+              "OverrideDescription": "3 Mobile",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "VANGUARD ASSET MAN VG0120180000478641",
+              "OverrideDescription": "Vanguard Fees",
+              "ExactDate": null
+            },
+            {
               "Pattern": "TV LICENCE MBP*",
               "OverrideDescription": "TV Licence",
               "ExactDate": null
@@ -98,6 +128,16 @@
             {
               "Pattern": "OCTOPUS ENERGY*",
               "OverrideDescription": "Octopus Energy",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "H3G*940276334702100101",
+              "OverrideDescription": "3 Mobile",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "GOCARDLESS*NCASUALSRFC-*",
+              "OverrideDescription": "Rugby Membership ",
               "ExactDate": null
             }
           ]
@@ -120,6 +160,11 @@
               "Pattern": "Movember Foundatio",
               "OverrideDescription": "Movember Gift",
               "ExactDate": "2024-11-15"
+            },
+            {
+              "Pattern": "WOVEN CHURCHES JOI OSBORNE CHRISTMAS",
+              "OverrideDescription": "Woven Christmas Gift",
+              "ExactDate": "2024-11-18"
             },
             {
               "Pattern": "CAMBRIDGE YFC",
@@ -211,6 +256,11 @@
           "Month": null,
           "Matches": [
             {
+              "Pattern": "ACTIVE NOTTINGHAM",
+              "OverrideDescription": "Active Nottingham",
+              "ExactDate": null
+            },
+            {
               "Pattern": "PLAY SPORTS LEAGUE",
               "OverrideDescription": "Netball",
               "ExactDate": null
@@ -244,6 +294,16 @@
             {
               "Pattern": "SMOL LIMITED",
               "OverrideDescription": "Smol Ltd",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "SP SPLOSH.COM",
+              "OverrideDescription": "Splosh.com",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "nakedwines.com",
+              "OverrideDescription": "Nakedwines",
               "ExactDate": null
             },
             {
@@ -330,6 +390,11 @@
             {
               "Pattern": "GREGGS PLC",
               "OverrideDescription": "Greggs",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "Masala Junction",
+              "OverrideDescription": "Masala Junction",
               "ExactDate": null
             },
             {
@@ -443,6 +508,16 @@
               "Pattern": "TFL TRAVEL CH",
               "OverrideDescription": "TFL Travel",
               "ExactDate": null
+            },
+            {
+              "Pattern": "CP PLUS LIMITED",
+              "OverrideDescription": "Parking",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "UBER*TRIP",
+              "OverrideDescription": "Uber",
+              "ExactDate": null
             }
           ]
         },
@@ -488,6 +563,16 @@
           "Month": null,
           "Matches": [
             {
+              "Pattern": "B.OSB SANTANDER",
+              "OverrideDescription": "Massage (Cash)",
+              "ExactDate": "2024-11-26"
+            },
+            {
+              "Pattern": "NOTTINGHAM MUSEUMS",
+              "OverrideDescription": "Nottingham Museums",
+              "ExactDate": "2024-11-25"
+            },
+            {
               "Pattern": "FIXR.CO* TICKET 5B",
               "OverrideDescription": "Steely Dan",
               "ExactDate": "2024-11-11"
@@ -524,6 +609,21 @@
               "ExactDate": "2024-11-15"
             },
             {
+              "Pattern": "NEXT DIRECTORY GPA",
+              "OverrideDescription": "Next Refund",
+              "ExactDate": "2024-11-25"
+            },
+            {
+              "Pattern": "NEXT DIRECTORY GPA",
+              "OverrideDescription": "Next Refund",
+              "ExactDate": "2024-11-21"
+            },
+            {
+              "Pattern": "NEXT DIRECTORY GPA",
+              "OverrideDescription": "Next Refund",
+              "ExactDate": "2024-11-22"
+            },
+            {
               "Pattern": "eBay O*08-12311-73",
               "OverrideDescription": "Ebay Furniture",
               "ExactDate": "2024-11-12"
@@ -531,6 +631,16 @@
             {
               "Pattern": "WWW.ARGOS.CO.UK",
               "OverrideDescription": "Argos.co.uk",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "Etsy.com*",
+              "OverrideDescription": "Etsy.com",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "Prime Video*",
+              "OverrideDescription": "Prime Video",
               "ExactDate": null
             },
             {
@@ -579,7 +689,13 @@
         {
           "SectionName": "Manual Sort",
           "Month": null,
-          "Matches": []
+          "Matches": [
+            {
+              "Pattern": "TEMPLEPRIN* TEMPLE",
+              "OverrideDescription": "Templeprin* Temple",
+              "ExactDate": "2024-11-25"
+            }
+          ]
         },
         {
           "SectionName": "Internal",
