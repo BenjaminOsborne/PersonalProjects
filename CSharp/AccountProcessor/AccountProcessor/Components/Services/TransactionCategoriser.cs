@@ -377,9 +377,13 @@ namespace AccountProcessor.Components.Services
         /// </summary>
         public Result GetIsValidResult()
         {
-            if (Pattern == null || Pattern.Count(char.IsLetterOrDigit) < 3)
+            if (Pattern.IsNullOrEmpty())
             {
-                return Result.Fail("Match Pattern should contain at least 3 characters");
+                return Result.Fail("Pattern must be defined");
+            }
+            if (_wildCardCount > 0 && Pattern.Count(char.IsLetterOrDigit) < 3)
+            {
+                return Result.Fail("Match Pattern with wildcard(s) should contain at least 3 characters");
             }
             if (OverrideDescription != null && OverrideDescription.Count(char.IsLetterOrDigit) < 3)
             {
