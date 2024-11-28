@@ -116,13 +116,13 @@
     @if (Model.UnMatchedModel != null)
     {
         <hr />
-        <UnMatchedRowsTable @ref="UnMatchedRowsTable" Model=@Model.UnMatchedModel AddNewMatchForRow=@Model.AddNewMatchForRow />
+        <UnMatchedRowsTable @ref="UnMatchedRowsTable" Model=@Model.UnMatchedModel AddNewMatchForRow=@AddNewMatchForRow />
     }
 
     /* Matched Rows */
     @if (Model.MatchedModel != null)
     {
         <hr />
-        <MatchedRowsTable @ref="MatchedRowsTable" Model=@Model.MatchedModel ClearMatch=@Model.ClearMatch />
+        <MatchedRowsTable @ref="MatchedRowsTable" Model=@Model.MatchedModel ClearMatch=@ClearMatch />
     }
 }

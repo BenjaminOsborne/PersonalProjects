@@ -69,6 +69,18 @@ public partial class Home
             fileName: $"CategorisedTransactions_{Model.Month:yyyy-MM}.xlsx");
     }
 
+    private void AddNewMatchForRow(TransactionRowUnMatched row)
+    {
+        Model.AddNewMatchForRow(row);
+        StateHasChanged(); //Must call: child component can trigger update to error state.
+    }
+
+    private void ClearMatch(TransactionRowMatched row)
+    {
+        Model.ClearMatch(row);
+        StateHasChanged(); //Must call: child component can trigger update to error state.
+    }
+
     private Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
     {
         Model.OnFileExtractResult(result);
