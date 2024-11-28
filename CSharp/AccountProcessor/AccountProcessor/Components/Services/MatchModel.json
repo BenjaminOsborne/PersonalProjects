@@ -282,6 +282,16 @@
           "Month": null,
           "Matches": [
             {
+              "Pattern": "ALDI UK",
+              "OverrideDescription": "Aldi",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "SAINSBURYS",
+              "OverrideDescription": "Sainsburys",
+              "ExactDate": null
+            },
+            {
               "Pattern": "ASDA STORES",
               "OverrideDescription": "Asda",
               "ExactDate": null
@@ -588,6 +598,52 @@
           "SectionName": "Dad\u0027s Weekend",
           "Month": "2024-10-01",
           "Matches": []
+        },
+        {
+          "SectionName": "Buxton WedAnn",
+          "Month": "2024-11-01",
+          "Matches": [
+            {
+              "Pattern": "LOUNGERS",
+              "OverrideDescription": "Loungers",
+              "ExactDate": "2024-11-27"
+            },
+            {
+              "Pattern": "LA BRASSERIE",
+              "OverrideDescription": "La Brasserie",
+              "ExactDate": "2024-11-27"
+            },
+            {
+              "Pattern": "BUXTON CRESCENT HO",
+              "OverrideDescription": "Buxton Crescent",
+              "ExactDate": "2024-11-26"
+            },
+            {
+              "Pattern": "ITHACA GREEK RESTA",
+              "OverrideDescription": "Ithaca Greek",
+              "ExactDate": "2024-11-26"
+            },
+            {
+              "Pattern": "CHARLOTTES CHOCOLA",
+              "OverrideDescription": "Charlottes Cafe",
+              "ExactDate": "2024-11-27"
+            },
+            {
+              "Pattern": "B.OSB SANTANDER    CASH",
+              "OverrideDescription": "Massage (Cash)",
+              "ExactDate": "2024-11-26"
+            },
+            {
+              "Pattern": "Zettle_*RedWillow",
+              "OverrideDescription": "Red Willow Pub",
+              "ExactDate": "2024-11-27"
+            },
+            {
+              "Pattern": "Zettle_*RedWillow",
+              "OverrideDescription": "Red Willow Pub",
+              "ExactDate": "2024-11-26"
+            }
+          ]
         }
       ]
     },
@@ -674,6 +730,11 @@
           "SectionName": "Shops",
           "Month": null,
           "Matches": [
+            {
+              "Pattern": "MW",
+              "OverrideDescription": "MountainWarehouse",
+              "ExactDate": null
+            },
             {
               "Pattern": "CARD FACTORY",
               "OverrideDescription": "Card Factory",
