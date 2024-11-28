@@ -23,11 +23,6 @@
               "ExactDate": null
             },
             {
-              "Pattern": "Brookes Sian*LOAN INTEREST",
-              "OverrideDescription": "Brookes Loan",
-              "ExactDate": null
-            },
-            {
               "Pattern": "HMRC CHILD BENEFIT OSBORNEELIZA870505",
               "OverrideDescription": "Child Benefit",
               "ExactDate": null
@@ -35,6 +30,11 @@
             {
               "Pattern": "*ACCURX LIMITED PAY",
               "OverrideDescription": "Accurx Salary",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "Brookes Sian*LOAN INTEREST",
+              "OverrideDescription": "Brookes Loan",
               "ExactDate": null
             }
           ]
@@ -111,11 +111,6 @@
               "ExactDate": null
             },
             {
-              "Pattern": "H3G*974890453001170340",
-              "OverrideDescription": "3 Mobile",
-              "ExactDate": null
-            },
-            {
               "Pattern": "VANGUARD ASSET MAN VG0120180000478641",
               "OverrideDescription": "Vanguard Fees",
               "ExactDate": null
@@ -128,6 +123,11 @@
             {
               "Pattern": "OCTOPUS ENERGY*",
               "OverrideDescription": "Octopus Energy",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "H3G*974890453001170340",
+              "OverrideDescription": "3 Mobile",
               "ExactDate": null
             },
             {
@@ -627,6 +627,11 @@
               "Pattern": "eBay O*08-12311-73",
               "OverrideDescription": "Ebay Furniture",
               "ExactDate": "2024-11-12"
+            },
+            {
+              "Pattern": "Vinted",
+              "OverrideDescription": "Vinted",
+              "ExactDate": null
             },
             {
               "Pattern": "WWW.ARGOS.CO.UK",
