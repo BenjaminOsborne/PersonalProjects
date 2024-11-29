@@ -35,7 +35,7 @@ namespace AccountProcessor.Components.Services
             var sections = model.Categories
                 .SelectMany(x => x.Sections)
                 .Select(x => x.Section)
-                .Where(x => x.Month == null || x.Month == month)
+                .Where(x => x.CanUseInMonth(month))
                 .OrderBy(x => x.Parent.Order)
                 .ThenBy(x => x.Order)
                 .ToImmutableArray();
@@ -74,12 +74,11 @@ namespace AccountProcessor.Components.Services
             var unmatched = parition.PredicateFalse
                 .ToImmutableArray(unMatched =>
                 {
-                    var suggestedSection = unMatched.HistoricMatches
-                        .Select(x => x.Section.Section)
-                        .FirstOrDefault();
-                    var suggestedPattern = unMatched.HistoricMatches
-                        .Select(x => x.Match.Pattern)
-                        .FirstOrDefault();
+                    var firstSuggest = unMatched.HistoricMatches
+                        .Select(x => new { x.Section.Section, x.Match.Pattern })
+                        .FirstOrDefault(x => x.Section.CanUseInMonth(month));
+                    var suggestedSection = firstSuggest?.Section;
+                    var suggestedPattern = firstSuggest?.Pattern;
                     return new UnMatchedTransaction(unMatched.Transaction, suggestedSection, suggestedPattern);
                 });
             return new CategorisationResult(matched, unmatched);
@@ -318,6 +317,9 @@ namespace AccountProcessor.Components.Services
         /// </summary>
         public bool IsClashing(SectionHeader newSection) =>
             Name == newSection.Name && (Month == null || Month == newSection.Month);
+
+        public bool CanUseInMonth(DateOnly month) =>
+            Month == null || Month == month;
 
         private IComparable _GetKey() => (Order, Name, Month, Parent.Order, Parent.Name);
     }
