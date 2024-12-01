@@ -96,23 +96,45 @@
     <label>
         <strong>Transactions Period:</strong> @Model.EarliestTransaction?.ToString("dd MMM") to @Model.LatestTransaction?.ToString("dd MMM")
     </label>
-    
+
     <hr />
 
-    <label><strong>Add New Section:</strong></label>
-    <select style="margin-right: 5px" value="@Model.NewSection.CategoryName" @onchange="e => Model.SetNewSectionCategory((string?)e.Value)">
-        <option value="@SelectorConstants.ChooseCategoryDefaultId" selected>Choose Category</option>
-        @foreach (var cat in Model.Categories!.Value)
-        {
-            <option value="@cat.Name">@cat.Name</option>
-        }
-    </select>
-
-    <input style="margin-right: 5px" placeholder="Section Name..." value="@Model.NewSection.Name" @onchange="e => Model.SetNewSectionName((string?)e.Value)" />
-
-    <input type="checkbox" checked="@Model.NewSection.IsMonthSpecific" @onchange="e => Model.SetNewSectionIsMonthSpecific((bool)e.Value)">
-
-    <button class="btn" @onclick="Model.CreateNewSection"><i class="fa fa-plus"></i></button>
+    <table style="width:auto" cellpadding="5">
+        <thead>
+            <tr style="text-align:center">
+                <th/>
+                <th>Category</th>
+                <th>Section Name</th>
+                <th>Month Specific</th>
+                <th>Create</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="text-align:center">
+                <td>
+                    <strong>Add New Section</strong>
+                </td>
+                <td>
+                    <select style="margin-right: 5px" value="@Model.NewSection.CategoryName" @onchange="e => Model.SetNewSectionCategory((string?)e.Value)">
+                        <option value="@SelectorConstants.ChooseCategoryDefaultId" selected>Choose Category</option>
+                        @foreach (var cat in Model.Categories!.Value)
+                        {
+                            <option value="@cat.Name">@cat.Name</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <input style="margin-right: 5px" placeholder="Section Name..." value="@Model.NewSection.Name" @onchange="e => Model.SetNewSectionName((string?)e.Value)" />
+                </td>
+                <td>
+                    <input type="checkbox" checked="@Model.NewSection.IsMonthSpecific" @onchange="e => Model.SetNewSectionIsMonthSpecific((bool)e.Value)">
+                </td>
+                <td>
+                    <button class="btn" @onclick="Model.CreateNewSection"><i class="fa fa-plus"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
     /* UnMatched Rows */
     @if (Model.UnMatchedModel != null)
