@@ -13,18 +13,8 @@
               "ExactDate": null
             },
             {
-              "Pattern": "TFR 91020207031300",
-              "OverrideDescription": "Naomi Transfer",
-              "ExactDate": null
-            },
-            {
               "Pattern": "THE CHURCH COMMISS EL00100629-1",
               "OverrideDescription": "Lizzie Stipend",
-              "ExactDate": null
-            },
-            {
-              "Pattern": "Robert Soane \u0026 Ros 36 Thorpe Way",
-              "OverrideDescription": "36TW Rental",
               "ExactDate": null
             },
             {
@@ -35,11 +25,6 @@
             {
               "Pattern": "*ACCURX LIMITED PAY",
               "OverrideDescription": "Accurx Salary",
-              "ExactDate": null
-            },
-            {
-              "Pattern": "Brookes Sian*LOAN INTEREST",
-              "OverrideDescription": "Brookes Loan",
               "ExactDate": null
             }
           ]
@@ -63,6 +48,16 @@
               "Pattern": "PCC ST.LUKE        Thank you - SLKT",
               "OverrideDescription": "St Lukes Gift",
               "ExactDate": "2024-11-29"
+            },
+            {
+              "Pattern": "Robert Soane \u0026 Ros 36 Thorpe Way",
+              "OverrideDescription": "36TW Rental",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "Brookes Sian       LOAN INTEREST",
+              "OverrideDescription": "Brookes Loan",
+              "ExactDate": null
             }
           ]
         }
@@ -811,6 +806,11 @@
               "Pattern": "UNCHARGEABLE TRNFR",
               "OverrideDescription": "Unchargeable Trnfr",
               "ExactDate": "2024-11-22"
+            },
+            {
+              "Pattern": "TFR 91020207031300",
+              "OverrideDescription": "Naomi Transfer",
+              "ExactDate": "2024-11-01"
             },
             {
               "Pattern": "TEMPLEPRIN* TEMPLE",
