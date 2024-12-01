@@ -157,70 +157,70 @@
     },
     {
       "CategoryName": "Giving",
-        "Sections": [
+      "Sections": [
+        {
+          "SectionName": "Tithe",
+          "Month": null,
+          "Matches": [
             {
-                "SectionName": "Tithe",
-                "Month": null,
-                "Matches": [
-                    {
-                        "Pattern": "ST JOHN BILBOROUGH MR B I OSBORNE",
-                        "OverrideDescription": "St Johns Bilb",
-                        "ExactDate": null
-                    }
-                ]
+              "Pattern": "ST JOHN BILBOROUGH MR B I OSBORNE",
+              "OverrideDescription": "St Johns Bilb",
+              "ExactDate": null
+            }
+          ]
+        },
+        {
+          "SectionName": "Charity",
+          "Month": null,
+          "Matches": [
+            {
+              "Pattern": "XTREMECC",
+              "OverrideDescription": "XCC",
+              "ExactDate": "2024-10-02"
             },
             {
-                "SectionName": "Charity",
-                "Month": null,
-                "Matches": [
-                    {
-                        "Pattern": "XTREMECC",
-                        "OverrideDescription": "XCC",
-                        "ExactDate": "2024-10-02"
-                    },
-                    {
-                        "Pattern": "Movember Foundatio",
-                        "OverrideDescription": "Movember Gift",
-                        "ExactDate": "2024-11-15"
-                    },
-                    {
-                        "Pattern": "WOVEN CHURCHES JOI OSBORNE CHRISTMAS",
-                        "OverrideDescription": "Woven Christmas Gift",
-                        "ExactDate": "2024-11-18"
-                    },
-                    {
-                        "Pattern": "CAMBRIDGE YFC",
-                        "OverrideDescription": "Cambridge YFC",
-                        "ExactDate": null
-                    },
-                    {
-                        "Pattern": "CHARLES SIMEON",
-                        "OverrideDescription": "Charles Simeon",
-                        "ExactDate": null
-                    },
-                    {
-                        "Pattern": "CAMBRIDGE YFC      OSBORNE",
-                        "OverrideDescription": "Cambridge YFC",
-                        "ExactDate": null
-                    },
-                    {
-                        "Pattern": "COMPASSION UK      110421-",
-                        "OverrideDescription": "Compassion",
-                        "ExactDate": null
-                    },
-                    {
-                        "Pattern": "CHARLES SIMEON     OSBOURNE",
-                        "OverrideDescription": "Charles Simeon",
-                        "ExactDate": null
-                    },
-                    {
-                        "Pattern": "TOYBOX CHARITY*",
-                        "OverrideDescription": "Toybox",
-                        "ExactDate": null
-                    }
-                ]
+              "Pattern": "Movember Foundatio",
+              "OverrideDescription": "Movember Gift",
+              "ExactDate": "2024-11-15"
+            },
+            {
+              "Pattern": "WOVEN CHURCHES JOI OSBORNE CHRISTMAS",
+              "OverrideDescription": "Woven Christmas Gift",
+              "ExactDate": "2024-11-18"
+            },
+            {
+              "Pattern": "CAMBRIDGE YFC",
+              "OverrideDescription": "Cambridge YFC",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "CHARLES SIMEON",
+              "OverrideDescription": "Charles Simeon",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "CAMBRIDGE YFC      OSBORNE",
+              "OverrideDescription": "Cambridge YFC",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "COMPASSION UK      110421-",
+              "OverrideDescription": "Compassion",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "CHARLES SIMEON     OSBOURNE",
+              "OverrideDescription": "Charles Simeon",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "TOYBOX CHARITY*",
+              "OverrideDescription": "Toybox",
+              "ExactDate": null
             }
-        ]
+          ]
+        }
+      ]
     },
     {
       "CategoryName": "House",
@@ -808,6 +808,11 @@
               "ExactDate": "2024-11-22"
             },
             {
+              "Pattern": "St John Bilborough",
+              "OverrideDescription": "St John\u0027s Expenses",
+              "ExactDate": "2024-12-01"
+            },
+            {
               "Pattern": "TEMPLEPRIN* TEMPLE",
               "OverrideDescription": "Templeprin* Temple",
               "ExactDate": "2024-11-25"
@@ -826,6 +831,11 @@
             {
               "Pattern": "BENJAMIN OSBORNE",
               "OverrideDescription": "Benjamin Osborne",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "MARCUS SAVINGS ACC",
+              "OverrideDescription": "To Marcus",
               "ExactDate": null
             }
           ]
