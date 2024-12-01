@@ -18,6 +18,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "THE CHURCH COMMISS EL00100629-1",
+              "OverrideDescription": "Lizzie Stipend",
+              "ExactDate": null
+            },
+            {
               "Pattern": "Robert Soane \u0026 Ros 36 Thorpe Way",
               "OverrideDescription": "36TW Rental",
               "ExactDate": null
@@ -47,6 +52,17 @@
               "Pattern": "ACCURX LIMITED     BOSBORNE EMI",
               "OverrideDescription": "Accurx Ltd Shares",
               "ExactDate": "2024-11-04"
+            }
+          ]
+        },
+        {
+          "SectionName": "Other",
+          "Month": null,
+          "Matches": [
+            {
+              "Pattern": "PCC ST.LUKE        Thank you - SLKT",
+              "OverrideDescription": "St Lukes Gift",
+              "ExactDate": "2024-11-29"
             }
           ]
         }
@@ -388,6 +404,11 @@
           "Month": null,
           "Matches": [
             {
+              "Pattern": "THE OLD ORIGINAL B",
+              "OverrideDescription": "Old Original Bakewell",
+              "ExactDate": "2024-11-28"
+            },
+            {
               "Pattern": "CAMINO",
               "OverrideDescription": null,
               "ExactDate": null
@@ -456,6 +477,11 @@
             {
               "Pattern": "SUDAWK.CO.UK",
               "OverrideDescription": "Sudawk.co.uk",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "Gallery Cafe",
+              "OverrideDescription": "Gallery Cafe",
               "ExactDate": null
             },
             {
@@ -535,6 +561,11 @@
           "SectionName": "Petrol",
           "Month": null,
           "Matches": [
+            {
+              "Pattern": "RIDLEY HALL CAMBRI EXPENSES - RIDLEY",
+              "OverrideDescription": "Ridley Travel Expense",
+              "ExactDate": "2024-11-29"
+            },
             {
               "Pattern": "SAINSBURYS PETROL",
               "OverrideDescription": "Sainsburys Petrol",
@@ -629,6 +660,11 @@
               "ExactDate": "2024-11-27"
             },
             {
+              "Pattern": "BAKEWELL BRIDGE CA",
+              "OverrideDescription": "Bakewell Parking",
+              "ExactDate": "2024-11-28"
+            },
+            {
               "Pattern": "B.OSB SANTANDER    CASH",
               "OverrideDescription": "Massage (Cash)",
               "ExactDate": "2024-11-26"
@@ -642,6 +678,11 @@
               "Pattern": "Zettle_*RedWillow",
               "OverrideDescription": "Red Willow Pub",
               "ExactDate": "2024-11-26"
+            },
+            {
+              "Pattern": "CLR*BLOOMERS OF BA",
+              "OverrideDescription": "Bloomers Bakewell",
+              "ExactDate": "2024-11-28"
             }
           ]
         }
@@ -687,6 +728,11 @@
             {
               "Pattern": "Vinted",
               "OverrideDescription": "Vinted",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "Vistaprint",
+              "OverrideDescription": "Vistaprint",
               "ExactDate": null
             },
             {
@@ -736,6 +782,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "BOOTS 0006",
+              "OverrideDescription": "Boots",
+              "ExactDate": null
+            },
+            {
               "Pattern": "CARD FACTORY",
               "OverrideDescription": "Card Factory",
               "ExactDate": null
@@ -756,6 +807,11 @@
           "SectionName": "Manual Sort",
           "Month": null,
           "Matches": [
+            {
+              "Pattern": "UNCHARGEABLE TRNFR",
+              "OverrideDescription": "Unchargeable Trnfr",
+              "ExactDate": "2024-11-22"
+            },
             {
               "Pattern": "TEMPLEPRIN* TEMPLE",
               "OverrideDescription": "Templeprin* Temple",
