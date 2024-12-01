@@ -163,6 +163,9 @@ public class HomeViewModel
     public void SetNewSectionName(string? name) =>
         NewSection = NewSection with { Name = name };
 
+    public void SetNewSectionIsMonthSpecific(bool isMonthSpecific) =>
+        NewSection = NewSection with { IsMonthSpecific = isMonthSpecific };
+
     public void CreateNewSection() =>
         _transactionsModel.ChangeMatchModel(
             fnPerform: cat =>

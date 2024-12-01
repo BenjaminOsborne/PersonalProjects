@@ -110,6 +110,8 @@
 
     <input style="margin-right: 5px" placeholder="Section Name..." value="@Model.NewSection.Name" @onchange="e => Model.SetNewSectionName((string?)e.Value)" />
 
+    <input type="checkbox" checked="@Model.NewSection.IsMonthSpecific" @onchange="e => Model.SetNewSectionIsMonthSpecific((bool)e.Value)">
+
     <button class="btn" @onclick="Model.CreateNewSection"><i class="fa fa-plus"></i></button>
 
     /* UnMatched Rows */
