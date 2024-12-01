@@ -100,7 +100,7 @@
     <hr />
 
     <label><strong>Add New Section:</strong></label>
-    <select style="margin-right: 5px" value="@Model.NewSectionCategoryName" @onchange="e => Model.SetNewSectionCategory((string?)e.Value)">
+    <select style="margin-right: 5px" value="@Model.NewSection.CategoryName" @onchange="e => Model.SetNewSectionCategory((string?)e.Value)">
         <option value="@SelectorConstants.ChooseCategoryDefaultId" selected>Choose Category</option>
         @foreach (var cat in Model.Categories!.Value)
         {
@@ -108,7 +108,7 @@
         }
     </select>
 
-    <input style="margin-right: 5px" placeholder="Section Name..." value="@Model.NewSectionName" @onchange="e => Model.SetNewSectionName((string?)e.Value)" />
+    <input style="margin-right: 5px" placeholder="Section Name..." value="@Model.NewSection.Name" @onchange="e => Model.SetNewSectionName((string?)e.Value)" />
 
     <button class="btn" @onclick="Model.CreateNewSection"><i class="fa fa-plus"></i></button>
 

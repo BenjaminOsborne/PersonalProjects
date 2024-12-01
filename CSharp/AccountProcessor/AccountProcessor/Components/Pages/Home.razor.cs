@@ -116,6 +116,8 @@ public partial class Home
 /// <summary> Separate class from <see cref="Home"/> so that state transitions & data access can be controlled explicitly </summary>
 public class HomeViewModel
 {
+    private static readonly (string? CategoryName, string? Name, bool IsMonthSpecific) _newSectionDefault = (SelectorConstants.ChooseCategoryDefaultId, null, true);
+
     private readonly TransactionsModel _transactionsModel;
 
     public HomeViewModel(ITransactionCategoriser categoriser, Action onStateChanged) =>
@@ -128,8 +130,7 @@ public class HomeViewModel
     public Result? LastActionResult { get; private set; }
 
     /// <remarks> Initial Id should be the "Choose Category" option </remarks>
-    public string? NewSectionCategoryName { get; private set; } = SelectorConstants.ChooseCategoryDefaultId;
-    public string? NewSectionName { get; private set; }
+    public (string? CategoryName, string? Name, bool IsMonthSpecific) NewSection { get; private set; } = _newSectionDefault;
 
     public DateOnly Month => _transactionsModel.Month;
     public DateOnly? EarliestTransaction => _transactionsModel.EarliestTransaction;
@@ -157,26 +158,23 @@ public class HomeViewModel
         _transactionsModel.UpdateMonth(WrappedResult.Create(_transactionsModel.Month.AddMonths(months)));
 
     public void SetNewSectionCategory(string? category) =>
-        NewSectionCategoryName = category;
+        NewSection = NewSection with { CategoryName = category };
 
     public void SetNewSectionName(string? name) =>
-        NewSectionName = name;
+        NewSection = NewSection with { Name = name };
 
     public void CreateNewSection() =>
         _transactionsModel.ChangeMatchModel(
             fnPerform: cat =>
             {
-                var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == NewSectionCategoryName);
-                return category != null && !NewSectionName.IsNullOrWhiteSpace()
-                    ? cat.AddSection(category, NewSectionName!, matchMonthOnly: _transactionsModel.Month)
+                var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == NewSection.CategoryName);
+                return category != null && !NewSection.Name.IsNullOrWhiteSpace()
+                    ? cat.AddSection(category, NewSection.Name!,
+                        matchMonthOnly: NewSection.IsMonthSpecific ? _transactionsModel.Month : null)
                     : Result.Fail("Invalid Category or empty Section Name");
             },
             refreshCategories: true,
-            onSuccess: () =>
-            {
-                NewSectionCategoryName = SelectorConstants.ChooseCategoryDefaultId;
-                NewSectionName = null;
-            });
+            onSuccess: () => NewSection = _newSectionDefault);
 
     public void AddNewMatchForRow(TransactionRowUnMatched row) =>
         _transactionsModel.ChangeMatchModel(
