@@ -64,7 +64,8 @@ namespace AccountProcessor.Components.Services
                     new CategoryData(
                         c.Header.Name,
                         c.Sections
-                            .OrderBy(s => s.Section.Order)
+                            .OrderBy(s => s.Section.Month.HasValue) //Permananent sections (Month is null) first
+                            .ThenBy(s => s.Section.Order) //Then keep order of creation (NOT by alphabet)
                             .ToImmutableArray(s => new SectionMatchData(
                                 s.Section.Name,
                                 s.Section.Month,

@@ -30,17 +30,6 @@
           ]
         },
         {
-          "SectionName": "Accurx Shares",
-          "Month": "2024-11-01",
-          "Matches": [
-            {
-              "Pattern": "ACCURX LIMITED     BOSBORNE EMI",
-              "OverrideDescription": "Accurx Ltd Shares",
-              "ExactDate": "2024-11-04"
-            }
-          ]
-        },
-        {
           "SectionName": "Other",
           "Month": null,
           "Matches": [
@@ -58,6 +47,17 @@
               "Pattern": "Brookes Sian       LOAN INTEREST",
               "OverrideDescription": "Brookes Loan",
               "ExactDate": null
+            }
+          ]
+        },
+        {
+          "SectionName": "Accurx Shares",
+          "Month": "2024-11-01",
+          "Matches": [
+            {
+              "Pattern": "ACCURX LIMITED     BOSBORNE EMI",
+              "OverrideDescription": "Accurx Ltd Shares",
+              "ExactDate": "2024-11-04"
             }
           ]
         }
@@ -584,17 +584,6 @@
           ]
         },
         {
-          "SectionName": "France Holiday",
-          "Month": "2024-10-01",
-          "Matches": [
-            {
-              "Pattern": "R Broughton        HOLIDAY",
-              "OverrideDescription": "Broughton",
-              "ExactDate": "2024-10-01"
-            }
-          ]
-        },
-        {
           "SectionName": "Ad-hoc Trips",
           "Month": null,
           "Matches": [
@@ -617,6 +606,17 @@
               "Pattern": "RedKangaroo Nottin",
               "OverrideDescription": "RedKangaroo",
               "ExactDate": null
+            }
+          ]
+        },
+        {
+          "SectionName": "France Holiday",
+          "Month": "2024-10-01",
+          "Matches": [
+            {
+              "Pattern": "R Broughton        HOLIDAY",
+              "OverrideDescription": "Broughton",
+              "ExactDate": "2024-10-01"
             }
           ]
         },
@@ -808,14 +808,14 @@
               "ExactDate": "2024-11-22"
             },
             {
-              "Pattern": "TFR 91020207031300",
-              "OverrideDescription": "Naomi Transfer",
-              "ExactDate": "2024-11-01"
-            },
-            {
               "Pattern": "TEMPLEPRIN* TEMPLE",
               "OverrideDescription": "Templeprin* Temple",
               "ExactDate": "2024-11-25"
+            },
+            {
+              "Pattern": "TFR 91020207031300",
+              "OverrideDescription": "Naomi Transfer",
+              "ExactDate": null
             }
           ]
         },
