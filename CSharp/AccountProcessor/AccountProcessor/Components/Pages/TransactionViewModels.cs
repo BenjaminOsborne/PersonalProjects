@@ -18,13 +18,14 @@ namespace AccountProcessor.Components.Pages
                         ? selectorOptions.FirstOrDefault(s => s.Header.AreSame(x.SuggestedSection!))
                         : null;
                     var tr = x.Transaction;
-                    var hyperlink = $"https://www.google.com/search?q={Uri.EscapeDataString(tr.Description)}";
+                    var description = tr.Description;
+                    var hyperlink = _GenerateGoogleSearchForPhrase(description);
 
                     return new TransactionRowUnMatched(tr, hyperlink, DisplayAmount(tr), StyleColor(tr))
                     {
                         SelectionId = found?.Id ?? SelectorConstants.ChooseSectionDefaultId, //If none suggested, use the default "Choose Selection" option
-                        MatchOn = tr.Description,
-                        OverrideDescription = tr.Description.ToCamelCase()
+                        MatchOn = description,
+                        OverrideDescription = description.ToCamelCase()
                     };
                 });
 
@@ -63,6 +64,9 @@ namespace AccountProcessor.Components.Pages
             static string StyleColor(Transaction tr) =>
                 tr.Amount < 0 ? "color:red" : "color:black";
         }
+
+        private static string _GenerateGoogleSearchForPhrase(string phrase) =>
+            $"https://www.google.com/search?q={Uri.EscapeDataString(phrase)}";
     }
 
     public record TransactionRowUnMatched(
