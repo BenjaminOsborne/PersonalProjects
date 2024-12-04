@@ -21,7 +21,7 @@
         {
             <tr class="border-bottom">
                 <td class="fitwidth">@row.Transaction.Date.ToString("dd/MM")</td>
-                <td class="fitwidth">@row.Transaction.Description</td>
+                <td class="fitwidth"><a href=@row.Hyperlink target="_blank">@row.Transaction.Description</a></td>
                 <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
 
                 <td>

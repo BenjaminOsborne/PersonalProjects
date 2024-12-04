@@ -593,6 +593,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "MORR ROTHERHAM BRA",
+              "OverrideDescription": "Morrisons Petrol",
+              "ExactDate": null
+            },
+            {
               "Pattern": "TESCO PFS *",
               "OverrideDescription": "Tesco Petrol",
               "ExactDate": null

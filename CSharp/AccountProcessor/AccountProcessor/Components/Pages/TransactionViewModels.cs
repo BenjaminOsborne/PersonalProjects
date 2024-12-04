@@ -18,7 +18,9 @@ namespace AccountProcessor.Components.Pages
                         ? selectorOptions.FirstOrDefault(s => s.Header.AreSame(x.SuggestedSection!))
                         : null;
                     var tr = x.Transaction;
-                    return new TransactionRowUnMatched(tr, DisplayAmount(tr), StyleColor(tr))
+                    var hyperlink = $"https://www.google.com/search?q={Uri.EscapeDataString(tr.Description)}";
+
+                    return new TransactionRowUnMatched(tr, hyperlink, DisplayAmount(tr), StyleColor(tr))
                     {
                         SelectionId = found?.Id ?? SelectorConstants.ChooseSectionDefaultId, //If none suggested, use the default "Choose Selection" option
                         MatchOn = tr.Description,
@@ -65,6 +67,7 @@ namespace AccountProcessor.Components.Pages
 
     public record TransactionRowUnMatched(
         Transaction Transaction,
+        string Hyperlink,
         string DisplayAmount,
         string StyleColor)
     {
