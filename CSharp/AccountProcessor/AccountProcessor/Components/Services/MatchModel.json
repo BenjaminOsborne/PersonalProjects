@@ -152,6 +152,22 @@
               "ExactDate": null
             }
           ]
+        },
+        {
+          "SectionName": "Other",
+          "Month": null,
+          "Matches": [
+            {
+              "Pattern": "HASTINGS INSURANCE",
+              "OverrideDescription": "Hastings Car Insurance",
+              "ExactDate": "2024-12-02"
+            },
+            {
+              "Pattern": "TAX MANAGEMENT FOR 9231",
+              "OverrideDescription": "Clergy Tax Return",
+              "ExactDate": null
+            }
+          ]
         }
       ]
     },
@@ -421,6 +437,11 @@
             {
               "Pattern": "Masala Junction",
               "OverrideDescription": "Masala Junction",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "COOPLANDS BAKERY",
+              "OverrideDescription": "Cooplands Bakery",
               "ExactDate": null
             },
             {
@@ -736,6 +757,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "THE ENTERTAINER AM",
+              "OverrideDescription": "The Entertainer",
+              "ExactDate": null
+            },
+            {
               "Pattern": "Etsy.com*",
               "OverrideDescription": "Etsy.com",
               "ExactDate": null
@@ -787,6 +813,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "DIBLOW OPTICIANS",
+              "OverrideDescription": "Diblow Opticians",
+              "ExactDate": null
+            },
+            {
               "Pattern": "HOLLINS BUILDING S",
               "OverrideDescription": "Hollins Building Supplies",
               "ExactDate": null
@@ -821,6 +852,11 @@
               "Pattern": "TFR 91020207031300",
               "OverrideDescription": "Naomi Transfer",
               "ExactDate": null
+            },
+            {
+              "Pattern": "St John Bilborough Exp claim*",
+              "OverrideDescription": "St John\u0027s Expenses",
+              "ExactDate": null
             }
           ]
         },
@@ -835,6 +871,11 @@
             },
             {
               "Pattern": "MARCUS SAVINGS ACC",
+              "OverrideDescription": "To Marcus",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "MARCUS SAVINGS ACC OSBORNECOOPSAVINGS",
               "OverrideDescription": "To Marcus",
               "ExactDate": null
             }
