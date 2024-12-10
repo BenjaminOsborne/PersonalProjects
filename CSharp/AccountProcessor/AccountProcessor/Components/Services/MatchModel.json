@@ -249,6 +249,16 @@
               "Pattern": "Lanes Garden Centr",
               "OverrideDescription": "Lanes Garden Centre",
               "ExactDate": null
+            },
+            {
+              "Pattern": "Dunelm SoftFurnish",
+              "OverrideDescription": "Dunelm",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "AkzoNobel_Deco_UK_",
+              "OverrideDescription": "Delux Paint",
+              "ExactDate": null
             }
           ]
         },
@@ -379,6 +389,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "B.OSB SANTANDER    CCARD FOOD",
+              "OverrideDescription": "C.Card Food",
+              "ExactDate": null
+            },
+            {
               "Pattern": "LIDL GB*",
               "OverrideDescription": "Lidl",
               "ExactDate": null
@@ -448,6 +463,11 @@
               "Pattern": "Nazrul Brick Lane",
               "OverrideDescription": null,
               "ExactDate": null
+            },
+            {
+              "Pattern": "MOWGLI STREET FOOD",
+              "OverrideDescription": "Mowgli Street Food",
+              "ExactDate": null
             }
           ]
         },
@@ -476,6 +496,11 @@
               "ExactDate": "2024-10-04"
             },
             {
+              "Pattern": "Nottingham Trent S",
+              "OverrideDescription": "Nottingham Trent Drink",
+              "ExactDate": "2024-12-09"
+            },
+            {
               "Pattern": "TROCKEL",
               "OverrideDescription": "Trockel",
               "ExactDate": null
@@ -488,6 +513,11 @@
             {
               "Pattern": "CHAIIWALA",
               "OverrideDescription": "Chaiiwala",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "PENNY LANE",
+              "OverrideDescription": "Penny Lane Bar",
               "ExactDate": null
             },
             {
@@ -528,6 +558,11 @@
             {
               "Pattern": "SumUp  *Boathouse",
               "OverrideDescription": "Boathouse",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "GROSVENOR*CARRING",
+              "OverrideDescription": "Grosvenor Pub",
               "ExactDate": null
             },
             {
@@ -818,6 +853,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "WATERSTONES.COM",
+              "OverrideDescription": "Waterstones.com",
+              "ExactDate": null
+            },
+            {
               "Pattern": "DIBLOW OPTICIANS",
               "OverrideDescription": "Diblow Opticians",
               "ExactDate": null
@@ -825,6 +865,11 @@
             {
               "Pattern": "HOLLINS BUILDING S",
               "OverrideDescription": "Hollins Building Supplies",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "THE CHILDRENS SOCI",
+              "OverrideDescription": "The Childrens Society",
               "ExactDate": null
             }
           ]
