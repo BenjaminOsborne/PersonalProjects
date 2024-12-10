@@ -33,6 +33,9 @@ namespace AccountProcessor.Tests
         [TestCase("Test ", "Test", false)]
         [TestCase("Test ", "Test*", true)]
         [TestCase("Test ", "Test *", true)]
+        //Special character Tests
+        [TestCase("Test (Some", "Test *", true)]
+        [TestCase("Test (Some", "Test (Some", true)]
         public void Match(string transaction, string pattern, bool isMatch) =>
             _PatternAssert(pattern, transaction, isMatch ? MatchType.MatchExact : MatchType.NoMatch);
 

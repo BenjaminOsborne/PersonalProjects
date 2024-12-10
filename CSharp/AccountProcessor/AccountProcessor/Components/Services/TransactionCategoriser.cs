@@ -423,7 +423,18 @@ namespace AccountProcessor.Components.Services
         {
             var builder = new StringBuilder();
             builder.Append("^");
-            builder.Append(pattern.ToLower().Replace("*", ".*"));
+
+            var spl = pattern.ToLower().Split('*');
+            for (var nx = 0; nx < spl.Length; nx++)
+            {
+                if (nx > 0)
+                {
+                    builder.Append(".*"); //Inset wildcard between sections
+                }
+                //Escape regex (as text could contain other non-supported regex characters)
+                builder.Append(System.Text.RegularExpressions.Regex.Escape(spl[nx]));
+            }
+
             builder.Append("$");
             return new System.Text.RegularExpressions.Regex(builder.ToString());
         }
