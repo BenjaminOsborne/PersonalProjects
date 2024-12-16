@@ -283,7 +283,7 @@ public class HomeViewModel
             {
                 var allData = _categoriser.GetSelectorData(Month);
                 Categories = allData.Categories;
-                AllSections = allData.Sections.ToImmutableArray(secHead =>
+                AllSections = allData.Sections?.ToImmutableArray(secHead =>
                     new SectionSelectorRow(secHead, Display: $"{secHead.Parent.Name}: {secHead.Name}", Id: Guid.NewGuid().ToString())); //Arbitrary Id
             }
 

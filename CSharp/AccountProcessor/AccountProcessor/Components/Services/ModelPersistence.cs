@@ -5,24 +5,27 @@ namespace AccountProcessor.Components.Services
 {
     public static class ModelPersistence
     {
-        public static void WriteModel(MatchModel model)
-        {
-            var jsonPath = _GetModelJsonFilePath();
-            var persistenceData = _MapToPersistence(model);
-            var content = JsonHelper.Serialise(persistenceData, writeIndented: true);
-            File.WriteAllText(jsonPath, content);
-        }
+        public static bool CanLoadModel() =>
+            _GetModelJsonFilePath() != null;
 
         public static MatchModel LoadModel()
         {
-            var jsonPath = _GetModelJsonFilePath();
+            var jsonPath = _GetModelJsonFilePath() ?? throw new ApplicationException("Could not find MathModel.json");
             var loaded = JsonHelper.Deserialise<ModelData>(File.ReadAllText(jsonPath))
                 ?? throw new ApplicationException("Could not initialise model from json file");
             return _MapToDomainModel(loaded);
         }
 
+        public static void WriteModel(MatchModel model)
+        {
+            var jsonPath = _GetModelJsonFilePath() ?? throw new ApplicationException("Could not find MathModel.json");
+            var persistenceData = _MapToPersistence(model);
+            var content = JsonHelper.Serialise(persistenceData, writeIndented: true);
+            File.WriteAllText(jsonPath, content);
+        }
+
         /// <summary> Searches from current process path (running in "bin") up to the source directory, then down to a known path in source control. </summary>
-        private static string _GetModelJsonFilePath()
+        private static string? _GetModelJsonFilePath()
         {
             var processPath = Process.GetCurrentProcess().MainModule!.FileName;
             var dirPath = new FileInfo(processPath).Directory!.FullName;
@@ -34,7 +37,7 @@ namespace AccountProcessor.Components.Services
             var jsonPath = Path.Combine(dirInfo.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
             return File.Exists(jsonPath)
                 ? jsonPath
-                : throw new ApplicationException("Could not find MathModel.json");
+                : null;
         }
 
         private static MatchModel _MapToDomainModel(ModelData data)

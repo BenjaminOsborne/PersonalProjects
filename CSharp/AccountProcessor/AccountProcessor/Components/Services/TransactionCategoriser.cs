@@ -20,6 +20,11 @@ namespace AccountProcessor.Components.Services
     {
         public SelectorData GetSelectorData(DateOnly month)
         {
+            if (!ModelPersistence.CanLoadModel())
+            {
+                return new SelectorData(false, null, null);
+            }
+
             var model = _GetModel();
             var categories = model.Categories
                 .Select(x => x.Header)
@@ -32,7 +37,7 @@ namespace AccountProcessor.Components.Services
                 .OrderBy(x => x.Parent.Order)
                 .ThenBy(x => x.Order)
                 .ToImmutableArray();
-            return new SelectorData(categories, sections);
+            return new SelectorData(true, categories, sections);
         }
 
         public CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month)
@@ -186,7 +191,7 @@ namespace AccountProcessor.Components.Services
             Date.Year == month.Year && Date.Month == month.Month;
     }
 
-    public record SelectorData(ImmutableArray<CategoryHeader> Categories, ImmutableArray<SectionHeader> Sections);
+    public record SelectorData(bool IsModelLoaded, ImmutableArray<CategoryHeader>? Categories, ImmutableArray<SectionHeader>? Sections);
 
     public class UnMatchedTransaction
     {
