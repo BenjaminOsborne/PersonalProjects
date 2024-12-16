@@ -7,36 +7,30 @@ namespace AccountProcessor.Components.Services
     {
         public static void WriteModel(MatchModel model)
         {
-            var processPath = Process.GetCurrentProcess().MainModule!.FileName;
-            var outputPath = GetOutputPath();
+            var jsonPath = _GetModelJsonFilePath();
             var persistenceData = _MapToPersistence(model);
             var content = JsonHelper.Serialise(persistenceData, writeIndented: true);
-            File.WriteAllText(outputPath, content);
-
-            static string GetOutputPath()
-            {
-                var dir = new DirectoryInfo(_GetProcessDirectoryPath());
-                while (dir.Name != "CSharp")
-                {
-                    dir = dir.Parent!;
-                }
-                return Path.Combine(dir.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
-            }
+            File.WriteAllText(jsonPath, content);
         }
 
         public static MatchModel LoadModel()
         {
-            string dir = _GetProcessDirectoryPath();
-            var json = Path.Combine(dir, "Components", "Services", "MatchModel.json");
-            var loaded = JsonHelper.Deserialise<ModelData>(File.ReadAllText(json))
+            var jsonPath = _GetModelJsonFilePath();
+            var loaded = JsonHelper.Deserialise<ModelData>(File.ReadAllText(jsonPath))
                 ?? throw new ApplicationException("Could not initialise model from json file");
             return _MapToDomainModel(loaded);
         }
 
-        private static string _GetProcessDirectoryPath()
+        private static string _GetModelJsonFilePath()
         {
             var processPath = Process.GetCurrentProcess().MainModule!.FileName;
-            return new FileInfo(processPath).Directory!.FullName;
+            var dirPath = new FileInfo(processPath).Directory!.FullName;
+            var dirInfo = new DirectoryInfo(dirPath);
+            while (dirInfo.Name != "CSharp")
+            {
+                dirInfo = dirInfo.Parent!;
+            }
+            return Path.Combine(dirInfo.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
         }
 
         private static MatchModel _MapToDomainModel(ModelData data)
