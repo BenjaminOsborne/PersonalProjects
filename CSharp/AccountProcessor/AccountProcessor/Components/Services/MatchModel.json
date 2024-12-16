@@ -679,6 +679,11 @@
           "Month": null,
           "Matches": [
             {
+              "Pattern": "Toy Set",
+              "OverrideDescription": "Bilborough Fair Ride",
+              "ExactDate": "2024-12-13"
+            },
+            {
               "Pattern": "B.OSB SANTANDER",
               "OverrideDescription": "Massage (Cash)",
               "ExactDate": "2024-11-26"
@@ -689,9 +694,19 @@
               "ExactDate": "2024-11-25"
             },
             {
+              "Pattern": "SumUp  *WHITTLES",
+              "OverrideDescription": "Bilborough Fair Ride",
+              "ExactDate": "2024-12-13"
+            },
+            {
               "Pattern": "FIXR.CO* TICKET 5B",
               "OverrideDescription": "Steely Dan",
               "ExactDate": "2024-11-11"
+            },
+            {
+              "Pattern": "SumUp  *R   B Amus",
+              "OverrideDescription": "Bilborough Fair Ride",
+              "ExactDate": "2024-12-13"
             },
             {
               "Pattern": "RedKangaroo Nottin",
