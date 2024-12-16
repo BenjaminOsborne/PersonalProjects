@@ -246,6 +246,16 @@
           "Month": null,
           "Matches": [
             {
+              "Pattern": "SP MR. LOGS",
+              "OverrideDescription": "Mr. Logs",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "WICKES GLOUCESTER",
+              "OverrideDescription": "Wickes",
+              "ExactDate": null
+            },
+            {
               "Pattern": "Lanes Garden Centr",
               "OverrideDescription": "Lanes Garden Centre",
               "ExactDate": null
@@ -258,6 +268,11 @@
             {
               "Pattern": "AkzoNobel_Deco_UK_",
               "OverrideDescription": "Delux Paint",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "WWW.NOTTINGHAMCITY",
+              "OverrideDescription": "NottinghamCity",
               "ExactDate": null
             }
           ]
@@ -389,6 +404,11 @@
               "ExactDate": null
             },
             {
+              "Pattern": "SP WHO GIVES A CRA",
+              "OverrideDescription": "Who Gives a Crap",
+              "ExactDate": null
+            },
+            {
               "Pattern": "B.OSB SANTANDER    CCARD FOOD",
               "OverrideDescription": "C.Card Food",
               "ExactDate": null
@@ -447,6 +467,11 @@
             {
               "Pattern": "GREGGS PLC",
               "OverrideDescription": "Greggs",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "Ferry Boat",
+              "OverrideDescription": "Ferry Boat Pub",
               "ExactDate": null
             },
             {
@@ -616,6 +641,11 @@
               "Pattern": "RIDLEY HALL CAMBRI EXPENSES - RIDLEY",
               "OverrideDescription": "Ridley Travel Expense",
               "ExactDate": "2024-11-29"
+            },
+            {
+              "Pattern": "ESSO THE FOREST",
+              "OverrideDescription": "Esso",
+              "ExactDate": null
             },
             {
               "Pattern": "SAINSBURYS PETROL",
@@ -870,6 +900,11 @@
             {
               "Pattern": "THE CHILDRENS SOCI",
               "OverrideDescription": "The Childrens Society",
+              "ExactDate": null
+            },
+            {
+              "Pattern": "POST OFFICE COUNTE",
+              "OverrideDescription": "Post Office",
               "ExactDate": null
             }
           ]
