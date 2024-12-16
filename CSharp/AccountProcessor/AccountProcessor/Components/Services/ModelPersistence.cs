@@ -21,6 +21,7 @@ namespace AccountProcessor.Components.Services
             return _MapToDomainModel(loaded);
         }
 
+        /// <summary> Searches from current process path (running in "bin") up to the source directory, then down to a known path in source control. </summary>
         private static string _GetModelJsonFilePath()
         {
             var processPath = Process.GetCurrentProcess().MainModule!.FileName;
@@ -30,7 +31,10 @@ namespace AccountProcessor.Components.Services
             {
                 dirInfo = dirInfo.Parent!;
             }
-            return Path.Combine(dirInfo.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
+            var jsonPath = Path.Combine(dirInfo.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
+            return File.Exists(jsonPath)
+                ? jsonPath
+                : throw new ApplicationException("Could not find MathModel.json");
         }
 
         private static MatchModel _MapToDomainModel(ModelData data)
