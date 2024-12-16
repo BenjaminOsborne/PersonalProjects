@@ -18,16 +18,9 @@ namespace AccountProcessor.Components.Services
 
     public class TransactionCategoriser : ITransactionCategoriser
     {
-        /// <summary>
-        /// Current use case; only 1 instance linked to 1 file.
-        /// No intention to support multiple concurrent sessions distributed with many Clients.
-        /// This would require persistence, client sessions etc.
-        /// </summary>
-        public static readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(ModelPersistence.LoadModel);
-
         public SelectorData GetSelectorData(DateOnly month)
         {
-            var model = _singleModel.Value;
+            var model = _GetModel();
             var categories = model.Categories
                 .Select(x => x.Header)
                 .OrderBy(x => x.Order)
@@ -44,8 +37,7 @@ namespace AccountProcessor.Components.Services
 
         public CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month)
         {
-            var model = _singleModel.Value;
-
+            var model = _GetModel();
             var sections = model.Categories
                 .SelectMany(c => c.Sections)
                 .ToImmutableArrayMany(s => s.Matches.Select(m => new { Section = s, Match = m }));
@@ -170,11 +162,22 @@ namespace AccountProcessor.Components.Services
         }
 
         private static Category? _FindModelHeaderFor(CategoryHeader header) =>
-            _singleModel.Value.Categories
+            _GetModel().Categories
             .FirstOrDefault(x => x.Header.Name == header.Name);
 
+        private static MatchModel _GetModel() =>
+            _singleModel.Value;
+
+        /// <summary> Assumes singleton model instance. If this changes, would need to pass a model instance around. </summary>
         private static void _WriteModel() =>
-            ModelPersistence.WriteModel(_singleModel.Value);
+            ModelPersistence.WriteModel(_GetModel());
+
+        /// <summary>
+        /// Current use case; only 1 instance linked to 1 file.
+        /// No intention to support multiple concurrent sessions distributed with many Clients.
+        /// This would require persistence, client sessions etc.
+        /// </summary>
+        public static readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(ModelPersistence.LoadModel);
     }
 
     public record Transaction(DateOnly Date, string Description, decimal Amount)
