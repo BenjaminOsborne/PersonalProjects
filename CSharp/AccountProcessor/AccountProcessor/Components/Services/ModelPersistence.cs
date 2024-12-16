@@ -24,21 +24,9 @@ namespace AccountProcessor.Components.Services
             File.WriteAllText(jsonPath, content);
         }
 
-        /// <summary> Searches from current process path (running in "bin") up to the source directory, then down to a known path in source control. </summary>
-        private static string? _GetModelJsonFilePath()
-        {
-            var processPath = Process.GetCurrentProcess().MainModule!.FileName;
-            var dirPath = new FileInfo(processPath).Directory!.FullName;
-            var dirInfo = new DirectoryInfo(dirPath);
-            while (dirInfo.Name != "CSharp")
-            {
-                dirInfo = dirInfo.Parent!;
-            }
-            var jsonPath = Path.Combine(dirInfo.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
-            return File.Exists(jsonPath)
-                ? jsonPath
-                : null;
-        }
+        /// <remarks> Loads from GoogleDrive. Used to use: <see cref="DirectoryHelper.LoadModelFromSourceRepo"/> to load from source repo. </remarks>
+        private static string? _GetModelJsonFilePath() =>
+            DirectoryHelper.LoadModelFromGoogleDrive();
 
         private static MatchModel _MapToDomainModel(ModelData data)
         {
@@ -84,5 +72,35 @@ namespace AccountProcessor.Components.Services
         private record CategoryData(string CategoryName, ImmutableArray<SectionMatchData> Sections);
         private record SectionMatchData(string SectionName, DateOnly? Month, ImmutableArray<MatchData> Matches);
         private record MatchData(string Pattern, string? OverrideDescription, DateOnly? ExactDate);
+    }
+
+    public static class DirectoryHelper
+    {
+        /// <summary> Picks from: G:\My Drive\Finances\Accounting\AccountProcessor </summary>
+        public static string? LoadModelFromGoogleDrive()
+        {
+            var dir = new DirectoryInfo("G:");
+            var jsonPath = Path.Combine(dir.FullName, "My Drive", "Finances", "Accounting", "AccountProcessor", "MatchModel.json");
+            return File.Exists(jsonPath)
+                ? jsonPath
+                : null;
+        }
+
+        /// <summary> Legacy: When MatchModel.json used to be stored in source repo </summary>
+        /// <remarks> Searches from current process path (running in "bin") up to the source directory, then down to a known path in source control. </remarks>
+        public static string? LoadModelFromSourceRepo()
+        {
+            var processPath = Process.GetCurrentProcess().MainModule!.FileName;
+            var dirPath = new FileInfo(processPath).Directory!.FullName;
+            var dirInfo = new DirectoryInfo(dirPath);
+            while (dirInfo.Name != "CSharp")
+            {
+                dirInfo = dirInfo.Parent!;
+            }
+            var jsonPath = Path.Combine(dirInfo.FullName, "AccountProcessor", "AccountProcessor", "Components", "Services", "MatchModel.json");
+            return File.Exists(jsonPath)
+                ? jsonPath
+                : null;
+        }
     }
 }

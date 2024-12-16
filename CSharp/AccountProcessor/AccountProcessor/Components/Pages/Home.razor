@@ -50,34 +50,48 @@
                 </td>
             </tr>
 
-            <!-- Load & Categorise transaction files -->
-            <tr>
-                <td>
-                    <label><strong>[2] Categorise  </strong></label>
-                </td>
-                <td>
-                    <button class="btn btn-primary">
-                        <!-- ".extract.xlsx" filter works as Co-op/Santander files written as ".extract.xlsx" -->
-                        <InputFile OnChange="@LoadTransactionsAndCategorise" accept=@FileConstants.ExtractedTransactionsFileExtension />
-                    </button>
-                    <br />
-                    <i>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </i>
-                </td>
-            </tr>
-
-            @if (TransactionsAreFullyLoaded()) //Only display export button if transactions have been loaded
+            @if (!IsModelLocationKnown())
             {
-                <!-- Export categorised -->
                 <tr>
                     <td>
-                        <label><strong>[3] Export Categorised  </strong></label>
+                        <label><strong>[2] Missing Model File  </strong></label>
                     </td>
                     <td>
-                        <button class="btn btn-primary" @onclick="() => ExportCategorisedTransactions()">Export</button>
-                        <br />
-                        <i>Finally, exports the categorised transactions by category, for storage in LifeOrganisation file. </i>
+                        <i>Please configure where to load the model file (see ModelPersistence.cs)... </i>
                     </td>
                 </tr>
+            }
+            else
+            {
+                <!-- Load & Categorise transaction files -->
+                <tr>
+                    <td>
+                        <label><strong>[2] Categorise  </strong></label>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary">
+                            <!-- ".extract.xlsx" filter works as Co-op/Santander files written as ".extract.xlsx" -->
+                            <InputFile OnChange="@LoadTransactionsAndCategorise" accept=@FileConstants.ExtractedTransactionsFileExtension />
+                        </button>
+                        <br />
+                        <i>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </i>
+                    </td>
+                </tr>
+
+                @if (TransactionsAreFullyLoaded()) //Only display export button if transactions have been loaded
+                {
+                    <!-- Export categorised -->
+                    <tr>
+                        <td>
+                            <label><strong>[3] Export Categorised  </strong></label>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" @onclick="() => ExportCategorisedTransactions()">Export</button>
+                            <br />
+                            <i>Finally, exports the categorised transactions by category, for storage in LifeOrganisation file. </i>
+                        </td>
+                    </tr>
+                }
             }
         </tbody>
     </table>

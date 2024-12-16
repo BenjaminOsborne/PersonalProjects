@@ -5,6 +5,8 @@ namespace AccountProcessor.Components.Services
 {
     public interface ITransactionCategoriser
     {
+        bool IsModelLocationKnown();
+
         SelectorData GetSelectorData(DateOnly month);
         CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month);
 
@@ -18,6 +20,8 @@ namespace AccountProcessor.Components.Services
 
     public class TransactionCategoriser : ITransactionCategoriser
     {
+        public bool IsModelLocationKnown() => ModelPersistence.CanLoadModel();
+
         public SelectorData GetSelectorData(DateOnly month)
         {
             if (!ModelPersistence.CanLoadModel())

@@ -41,6 +41,9 @@ public partial class Home
         return Task.CompletedTask;
     }
 
+    private bool IsModelLocationKnown() =>
+        _categoriser.IsModelLocationKnown();
+
     private bool TransactionsAreFullyLoaded() =>
         Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
 
