@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-
 var file = fs.readFileSync('Day1.txt','utf8');
 
 const left = [] as number[];
