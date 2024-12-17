@@ -4,19 +4,19 @@ var fs = require("fs");
 var file = fs.readFileSync('Day1.txt', 'utf8');
 var left = [];
 var right = [];
-;
 file.split("\r\n")
-    .filter(function (l) { return l.length > 0; })
-    .forEach(function (l) {
-    var nums = l.split(/\s/).filter(function (t) { return t.length > 0; }).map(function (t) { return Number(t); });
+    .filter(function (line) { return line.length > 0; })
+    .forEach(function (line) {
+    var nums = line
+        .split(/\s+/) //match all whitespace
+        .map(function (t) { return Number(t); });
     left.push(nums[0]);
     right.push(nums[1]);
 });
 var orderedLeft = left.sort();
 var orderedRight = right.sort();
-var total = 0;
-for (var nx = 0; nx < orderedLeft.length; nx++) {
-    total += Math.abs(orderedLeft[nx] - orderedRight[nx]);
-}
-console.info(total); //2580760 (for text file)
+var total = orderedLeft
+    .map(function (val, nx) { return val - orderedRight[nx]; })
+    .reduce(function (agg, val) { return agg + Math.abs(val); });
+console.info(total); //2580760 (for Day1.txt)
 //# sourceMappingURL=Day1.js.map
