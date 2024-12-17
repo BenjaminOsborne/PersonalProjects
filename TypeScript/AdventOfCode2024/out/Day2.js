@@ -6,6 +6,21 @@ var countSafe = file.split('\r\n') //split on new line
     .filter(function (x) { return x.length > 0; })
     .filter(function (line) {
     var nums = line.split(/\s+/).map(function (x) { return Number(x); });
+    if (isValidReport(nums)) {
+        return true;
+    }
+    //part2 handling...
+    for (var nx = 0; nx < nums.length; nx++) {
+        var withRemovedIndex = isValidReport(nums.filter(function (x, localNx) { return localNx != nx; }));
+        if (withRemovedIndex) {
+            return true;
+        }
+    }
+    return false;
+})
+    .length;
+console.log("Result (part2): " + countSafe); //Part1: 332
+function isValidReport(nums) {
     var isUp = (nums[1] - nums[0]) > 0;
     for (var nx = 0; nx < nums.length - 1; nx++) {
         if (((nums[nx + 1] - nums[nx]) > 0) != isUp) {
@@ -17,7 +32,5 @@ var countSafe = file.split('\r\n') //split on new line
         }
     }
     return true;
-})
-    .length;
-console.log("Result (part1): " + countSafe);
+}
 //# sourceMappingURL=Day2.js.map
