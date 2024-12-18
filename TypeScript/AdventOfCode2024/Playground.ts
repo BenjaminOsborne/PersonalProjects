@@ -15,3 +15,6 @@ function parseCell(val: string) : LocationState2
 }
 
 console.info(parseCell('.').toString());
+
+var s = "190: 10 19".split(':')
+console.info("Num: " + Number(s[0]))
