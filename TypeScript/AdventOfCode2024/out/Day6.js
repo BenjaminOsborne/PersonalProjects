@@ -16,26 +16,37 @@ var LocationState;
 })(LocationState || (LocationState = {}));
 ;
 var file = fs.readFileSync('Day6.txt', 'utf8');
-var grid = file
+var originalGrid = file
     .split('\r\n')
     .map(function (arr) { return arr.split(''); })
     .map(function (row, verNx) {
     return row.map(function (val, horNx) { return ({
         location: { verticalIndex: verNx, horizontalIndex: horNx },
         state: parseCell(val),
+        history: [],
         currentDirection: parseDirection(val),
     }); });
 });
-var verticalCount = grid.length;
-var horizontalCount = grid[0].length;
-var initial = grid.flatMap(function (row) { return row.filter(function (c) { return c.state == LocationState.Visited; }); })[0];
-var nextResult = nextStep(grid, initial.location, initial.currentDirection); //initialise
-while (!nextResult.isFinished) {
-    nextResult = nextStep(nextResult.grid, nextResult.nextLoc, nextResult.direction);
+var verticalCount = originalGrid.length;
+var horizontalCount = originalGrid[0].length;
+var initial = originalGrid.flatMap(function (row) { return row.filter(function (c) { return c.state == LocationState.Visited; }); })[0];
+var totalLoopsCount = 0;
+for (var nv = 0; nv < verticalCount; nv++) {
+    for (var nh = 0; nh < horizontalCount; nh++) {
+        var current = originalGrid[nv][nh];
+        if (current.state != LocationState.Vacant) {
+            continue;
+        }
+        var copyGrid = originalGrid.map(function (row) { return row.map(function (r) { return ({ location: r.location, state: r.state, history: [] }); }); });
+        copyGrid[nv][nh].state = LocationState.Blocked;
+        var nextResult = nextStep(copyGrid, initial.location, initial.currentDirection); //initialise
+        while (!nextResult.isFinished && !nextResult.isLoop) {
+            nextResult = nextStep(nextResult.grid, nextResult.nextLoc, nextResult.direction);
+        }
+        totalLoopsCount += nextResult.isLoop ? 1 : 0;
+    }
 }
-var visitedCount = nextResult.grid
-    .flatMap(function (v) { return v.filter(function (r) { return r.state == LocationState.Visited; }); }).length;
-console.info("Result: " + visitedCount); //Part1: 5461
+console.info("Result: " + totalLoopsCount); //Part1: 5461
 function parseCell(val) {
     switch (val) {
         case '.':
@@ -64,15 +75,20 @@ function nextStep(grid, current, direction) {
     var nextLoc = getNextLocation(current, direction);
     if (isOutOfRange(nextLoc)) //if next is out of range, then finished!
      {
-        return { isFinished: true, grid: grid, nextLoc: current, direction: direction };
-    }
-    if (isBlocked(grid, nextLoc)) //If blocked, rotate at current
-     {
-        return { isFinished: false, grid: grid, nextLoc: current, direction: rotate(direction) };
+        return { isFinished: true, isLoop: false, grid: grid, nextLoc: current, direction: direction };
     }
     //mark visited
-    grid[nextLoc.verticalIndex][nextLoc.horizontalIndex] = { location: nextLoc, state: LocationState.Visited };
-    return { isFinished: false, grid: grid, nextLoc: nextLoc, direction: direction };
+    var currentLocInfo = grid[current.verticalIndex][current.horizontalIndex];
+    var nxtLocInfo = grid[nextLoc.verticalIndex][nextLoc.horizontalIndex];
+    if (isBlocked(grid, nextLoc)) //If blocked, rotate at current
+     {
+        var rotated = rotate(direction);
+        currentLocInfo.history.push(rotated); //track rotating at current position
+        return { isFinished: false, isLoop: isLoop(currentLocInfo.history), grid: grid, nextLoc: current, direction: rotated };
+    }
+    nxtLocInfo.state = LocationState.Visited;
+    nxtLocInfo.history.push(direction);
+    return { isFinished: false, isLoop: isLoop(nxtLocInfo.history), grid: grid, nextLoc: nextLoc, direction: direction };
 }
 function isOutOfRange(current) {
     return current.verticalIndex < 0 || current.verticalIndex >= verticalCount ||
@@ -81,6 +97,21 @@ function isOutOfRange(current) {
 function isBlocked(grid, current) {
     var locInfo = grid[current.verticalIndex][current.horizontalIndex];
     return locInfo.state == LocationState.Blocked;
+}
+function isLoop(history) {
+    if (history.length <= 1) {
+        return false;
+    }
+    var map = new Map();
+    for (var nx = 0; nx < history.length; nx++) {
+        var dir = history[nx];
+        var current = map.get(dir) || 0;
+        if (current > 0) {
+            return true;
+        }
+        map.set(dir, 1);
+    }
+    return false;
 }
 function getNextLocation(current, direction) {
     switch (direction) {
