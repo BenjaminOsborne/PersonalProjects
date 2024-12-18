@@ -37,6 +37,7 @@ for (var nv = 0; nv < verticalCount; nv++) {
         if (current.state != LocationState.Vacant) {
             continue;
         }
+        //Clone grid as mutates state in nextStep routine
         var copyGrid = originalGrid.map(function (row) { return row.map(function (r) { return ({ location: r.location, state: r.state, history: [] }); }); });
         copyGrid[nv][nh].state = LocationState.Blocked;
         var nextResult = nextStep(copyGrid, initial.location, initial.currentDirection); //initialise
@@ -46,7 +47,7 @@ for (var nv = 0; nv < verticalCount; nv++) {
         totalLoopsCount += nextResult.isLoop ? 1 : 0;
     }
 }
-console.info("Result: " + totalLoopsCount); //Part1: 5461
+console.info("Result: " + totalLoopsCount); //Part1: 5461. Part2: 1836
 function parseCell(val) {
     switch (val) {
         case '.':

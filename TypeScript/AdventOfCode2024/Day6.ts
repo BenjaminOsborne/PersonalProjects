@@ -37,6 +37,8 @@ for(var nv = 0; nv < verticalCount; nv++)
         {
             continue;
         }
+
+        //Clone grid as mutates state in nextStep routine
         var copyGrid = originalGrid.map(row => row.map(r => ({ location: r.location, state: r.state, history: [] } )));
         copyGrid[nv][nh].state = LocationState.Blocked;
 
@@ -49,7 +51,7 @@ for(var nv = 0; nv < verticalCount; nv++)
     }    
 }
 
-console.info("Result: " + totalLoopsCount); //Part1: 5461
+console.info("Result: " + totalLoopsCount); //Part1: 5461. Part2: 1836
 
 function parseCell(val: string) : LocationState
 {
