@@ -18,34 +18,34 @@ function canMakeValid(input: LoadedInputs) : boolean
 {
     var start = input.Inputs[0];
     var remain = input.Inputs.slice(1);
-    var possible = spawn([ { Start: start, Next: [] }], remain);
+    var possible = spawnCombinations([ { Start: start, Next: [] }], remain);
     
     for(var nx = 0; nx < possible.length; nx++)
     {
         var eq = possible[nx];
-        
         var first = eq.Next[0];
         var initial = apply(eq.Start, first.Operator, first.Value);
-        var result = eq.Next.slice(1).reduce((agg, x) => apply(agg, x.Operator, x.Value), initial)
-        if(result == input.Result)
+        var result = eq.Next.slice(1) //skip 1 as first taken out for initial value
+            .reduce((agg, x) => apply(agg, x.Operator, x.Value), initial)
+        if (result == input.Result)
         {
-            return true;
+            return true; //early exit when find first match
         }
     }
     return false;
 
-    function spawn(current: Equation[], remain: number[]) : Equation[]
+    function spawnCombinations(current: Equation[], remaining: number[]) : Equation[]
     {
-        if (remain.length == 0)
+        if (remaining.length == 0)
         {
             return current;
         }
-        var next = remain[0];
+        var next = remaining[0];
         var withNext = current.flatMap(e =>
             [Operator.Add, Operator.Multiply, Operator.Concat].map(op =>
                 ({ Start: e.Start, Next: e.Next.concat([{ Operator: op, Value: next }]) } as Equation)
             ));
-        return spawn(withNext, remain.slice(1));
+        return spawnCombinations(withNext, remaining.slice(1)); //remove first from remaining (as taken in this loop)
     } 
 }
 
