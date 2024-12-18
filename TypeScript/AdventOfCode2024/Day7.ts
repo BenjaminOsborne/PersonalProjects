@@ -3,7 +3,7 @@ import * as fs from 'fs';
 var file = fs.readFileSync('Day7.txt','utf8');
 
 type LoadedInputs = { Result: number, Inputs: number[] }
-enum Operator { Add = "+", Multiply = "*" }
+enum Operator { Add = "+", Multiply = "*", Concat = "||" }
 type OpPair = { Operator: Operator, Value: number }
 type Equation = { Start: number, Next: OpPair[] }
 
@@ -42,7 +42,7 @@ function canMakeValid(input: LoadedInputs) : boolean
         }
         var next = remain[0];
         var withNext = current.flatMap(e =>
-            [Operator.Add, Operator.Multiply].map(op =>
+            [Operator.Add, Operator.Multiply, Operator.Concat].map(op =>
                 ({ Start: e.Start, Next: e.Next.concat([{ Operator: op, Value: next }]) } as Equation)
             ));
         return spawn(withNext, remain.slice(1));
@@ -57,6 +57,8 @@ function apply(left: number, op: Operator, right: number) : number
             return left + right;
         case Operator.Multiply:
             return left * right;
+        case Operator.Concat:
+            return Number(left.toString() + right.toString()); //13 || 985 => 13985
     }
 }
 

@@ -6,6 +6,7 @@ var Operator;
 (function (Operator) {
     Operator["Add"] = "+";
     Operator["Multiply"] = "*";
+    Operator["Concat"] = "||";
 })(Operator || (Operator = {}));
 var summed = file
     .split('\r\n')
@@ -33,7 +34,7 @@ function canMakeValid(input) {
         }
         var next = remain[0];
         var withNext = current.flatMap(function (e) {
-            return [Operator.Add, Operator.Multiply].map(function (op) {
+            return [Operator.Add, Operator.Multiply, Operator.Concat].map(function (op) {
                 return ({ Start: e.Start, Next: e.Next.concat([{ Operator: op, Value: next }]) });
             });
         });
@@ -46,6 +47,8 @@ function apply(left, op, right) {
             return left + right;
         case Operator.Multiply:
             return left * right;
+        case Operator.Concat:
+            return Number(left.toString() + right.toString()); //13 || 985 => 13985
     }
 }
 function toLoadedInputs(line) {
