@@ -16,9 +16,7 @@ export default class FileHelper
 
     static LoadFileLinesWithMap<T>(location: string, fnMap: MapLambda<T>) : T[]
     {
-        return fs.readFileSync(location,'utf8')
-            .split("\r\n")
-            .map(fnMap);
+        return FileHelper.LoadFileLines(location).map(fnMap);
     }
     
 }

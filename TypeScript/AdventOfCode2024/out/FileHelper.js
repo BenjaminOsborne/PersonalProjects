@@ -11,9 +11,7 @@ var FileHelper = /** @class */ (function () {
         return fs.readFileSync(location, 'utf8').split("\r\n");
     };
     FileHelper.LoadFileLinesWithMap = function (location, fnMap) {
-        return fs.readFileSync(location, 'utf8')
-            .split("\r\n")
-            .map(fnMap);
+        return FileHelper.LoadFileLines(location).map(fnMap);
     };
     return FileHelper;
 }());
