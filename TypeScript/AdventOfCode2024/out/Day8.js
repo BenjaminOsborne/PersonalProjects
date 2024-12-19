@@ -15,24 +15,21 @@ var hLen = nodeGrid[0].length;
 grpAntenna.forEach(function (grp) {
     return grp.Items.forEach(function (ant1) {
         return grp.Items.forEach(function (ant2) {
-            return applyNode(ant1, ant2);
+            return applyNodes(ant1, ant2);
         });
     });
 });
 var result = nodeGrid.flatMap(function (x) { return x; }).filter(function (x) { return x; }).length;
 console.info("Result: " + result); //Part1: 361
-function applyNode(ant1, ant2) {
-    if (ant1 === ant2) {
+function applyNodes(ant1, ant2) {
+    if (ant1 === ant2) //Ignore if same node
+     {
         return;
     }
     var hGap = ant2.hLoc - ant1.hLoc;
     var vGap = ant2.vLoc - ant1.vLoc;
-    var hNode1 = ant1.hLoc - hGap;
-    var vNode1 = ant1.vLoc - vGap;
-    apply(hNode1, vNode1);
-    var hNode2 = ant2.hLoc + hGap;
-    var vNode2 = ant2.vLoc + vGap;
-    apply(hNode2, vNode2);
+    apply(ant1.hLoc - hGap, ant1.vLoc - vGap);
+    apply(ant2.hLoc + hGap, ant2.vLoc + vGap);
     function apply(v, h) {
         if (v < 0 || h < 0 || v >= vLen || h >= hLen) {
             return;
