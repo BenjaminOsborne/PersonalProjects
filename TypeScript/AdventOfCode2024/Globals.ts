@@ -34,8 +34,10 @@ Array.prototype.any = function<T>(pred: Predicate<T>): boolean
 
 Array.prototype.groupBy = function<TKey, T>(fnSelect: Selector<T, TKey>): GroupedItem<TKey, T>[]
 {
-   var map = new Map<TKey, T[]>();
-   var results = [];
+   //GroupItems tracked locally in map for (O(1)) lookup in loop.
+   //Results in array to ensure returned stably in order of first encounter.
+   var map = new Map<TKey, GroupedItem<TKey, T>>();
+   var results = [] as GroupedItem<TKey, T>[];
    for(var nx = 0; nx < this.length; nx++)
    {
       var item = this[nx];
@@ -43,13 +45,13 @@ Array.prototype.groupBy = function<TKey, T>(fnSelect: Selector<T, TKey>): Groupe
       var current = map.get(key);
       if(current === undefined)
       {
-         var arr = [item];
-         map.set(key, arr)
-         results.push({ Key: key, Items: arr })
+         var grpItem = { Key: key, Items: [item] };
+         map.set(key, grpItem)
+         results.push(grpItem)
       }
       else
       {
-         current.push(item);
+         current.Items.push(item); //push into existing grpResult
       }
    }
 

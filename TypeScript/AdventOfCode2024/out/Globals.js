@@ -12,6 +12,8 @@ Array.prototype.any = function (pred) {
     return false;
 };
 Array.prototype.groupBy = function (fnSelect) {
+    //GroupItems tracked locally in map for (O(1)) lookup in loop.
+    //Results in array to ensure returned stably in order of first encounter.
     var map = new Map();
     var results = [];
     for (var nx = 0; nx < this.length; nx++) {
@@ -19,12 +21,12 @@ Array.prototype.groupBy = function (fnSelect) {
         var key = fnSelect(item);
         var current = map.get(key);
         if (current === undefined) {
-            var arr = [item];
-            map.set(key, arr);
-            results.push({ Key: key, Items: arr });
+            var grpItem = { Key: key, Items: [item] };
+            map.set(key, grpItem);
+            results.push(grpItem);
         }
         else {
-            current.push(item);
+            current.Items.push(item); //push into existing grpResult
         }
     }
     return results;
