@@ -29,4 +29,8 @@ console.info("Any: " + [1, 2, 3].any(x => x > 3));
 
 var arr = [];
 arr[7] = "Hey";
-console.info("Array: " + arr)
+console.info("Array: " + arr);
+
+console.info("Filled: " + (new Array<number>(5)).fill(0, 0, 5))
+
+console.info("Reversed: " + [0, 1, 2].sort((a,b) => b - a));
