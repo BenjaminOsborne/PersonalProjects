@@ -7,6 +7,7 @@ declare global
    interface Array<T> {
        sum(): number;
        any(pred: (val: T) => boolean): boolean;
+       first(pred: (val: T) => boolean): T;
        groupBy<TKey>(fnSelect: (input: T) => TKey): GroupedItem<TKey, T>[];
        popOffFirst(): { first: T, rest: T[]};
     }
@@ -26,6 +27,19 @@ Array.prototype.any = function<T>(pred: (val: T) => boolean): boolean
       }
    }
    return false;
+}
+
+Array.prototype.first = function<T>(pred: (val: T) => boolean): T
+{
+   for(var nx = 0; nx < this.length; nx++)
+   {
+      var item = this[nx];
+      if(pred(item))
+      {
+         return item;
+      }
+   }
+   return undefined;
 }
 
 Array.prototype.groupBy = function<TKey, T>(fnSelect: (input: T) => TKey): GroupedItem<TKey, T>[]

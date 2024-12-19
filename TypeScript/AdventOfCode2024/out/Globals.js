@@ -11,6 +11,15 @@ Array.prototype.any = function (pred) {
     }
     return false;
 };
+Array.prototype.first = function (pred) {
+    for (var nx = 0; nx < this.length; nx++) {
+        var item = this[nx];
+        if (pred(item)) {
+            return item;
+        }
+    }
+    return undefined;
+};
 Array.prototype.groupBy = function (fnSelect) {
     //GroupItems tracked locally in map for (O(1)) lookup in loop.
     //Results in array to ensure returned stably in order of first encounter.
