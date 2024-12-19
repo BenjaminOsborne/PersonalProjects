@@ -22,5 +22,6 @@ function parseCell(val) {
 console.info(parseCell('.').toString());
 var s = "190: 10 19".split(':');
 console.info("Num: " + Number(s[0]));
-console.info([1, 2, 3].sum());
+console.info("Sum: " + [1, 2, 3].sum());
+console.info("Any: " + [1, 2, 3].any(function (x) { return x > 3; }));
 //# sourceMappingURL=Playground.js.map

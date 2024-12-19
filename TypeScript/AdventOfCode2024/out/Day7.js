@@ -1,34 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = require("fs");
-var file = fs.readFileSync('Day7.txt', 'utf8');
+require("./Globals");
+var FileHelper_1 = require("./FileHelper");
+var fileLines = FileHelper_1.default.LoadFileLines('Day7.txt');
 var Operator;
 (function (Operator) {
     Operator["Add"] = "+";
     Operator["Multiply"] = "*";
     Operator["Concat"] = "||";
 })(Operator || (Operator = {}));
-var summed = file
-    .split('\r\n')
+var summed = fileLines
     .map(toLoadedInputs)
     .filter(canMakeValid)
     .reduce(function (agg, x) { return agg + x.Result; }, 0);
 console.info("Result: " + summed); //Part2: 92148721834692
 function canMakeValid(input) {
-    var start = input.Inputs[0];
-    var remain = input.Inputs.slice(1);
-    var possible = spawnCombinations([{ Start: start, Next: [] }], remain);
-    for (var nx = 0; nx < possible.length; nx++) {
-        var eq = possible[nx];
-        var first = eq.Next[0];
-        var initial = apply(eq.Start, first.Operator, first.Value);
-        var result = eq.Next.slice(1) //skip 1 as first taken out for initial value
+    var inputPop = input.Inputs.popOffFirst();
+    var possible = spawnCombinations([{ Start: inputPop.first, Next: [] }], inputPop.rest);
+    return possible.any(function (eq) {
+        var eqPop = eq.Next.popOffFirst();
+        var initial = apply(eq.Start, eqPop.first.Operator, eqPop.first.Value);
+        var result = eqPop.rest //skip first as taken out for initial value
             .reduce(function (agg, x) { return apply(agg, x.Operator, x.Value); }, initial);
-        if (result == input.Result) {
-            return true; //early exit when find first match
-        }
-    }
-    return false;
+        return result == input.Result;
+    });
     function spawnCombinations(current, remaining) {
         if (remaining.length == 0) {
             return current;

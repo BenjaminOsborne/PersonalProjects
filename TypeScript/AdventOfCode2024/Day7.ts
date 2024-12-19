@@ -1,14 +1,13 @@
-import * as fs from 'fs';
-
-var file = fs.readFileSync('Day7.txt','utf8');
+import './Globals'
+import FileHelper from './FileHelper';
+var fileLines = FileHelper.LoadFileLines('Day7.txt');
 
 type LoadedInputs = { Result: number, Inputs: number[] }
 enum Operator { Add = "+", Multiply = "*", Concat = "||" }
 type OpPair = { Operator: Operator, Value: number }
 type Equation = { Start: number, Next: OpPair[] }
 
-var summed = file
-    .split('\r\n')
+var summed = fileLines
     .map(toLoadedInputs)
     .filter(canMakeValid)
     .reduce((agg, x) => agg + x.Result, 0);
@@ -16,23 +15,16 @@ console.info("Result: " + summed); //Part2: 92148721834692
 
 function canMakeValid(input: LoadedInputs) : boolean
 {
-    var start = input.Inputs[0];
-    var remain = input.Inputs.slice(1);
-    var possible = spawnCombinations([ { Start: start, Next: [] }], remain);
-    
-    for(var nx = 0; nx < possible.length; nx++)
+    var inputPop = input.Inputs.popOffFirst();
+    var possible = spawnCombinations([ { Start: inputPop.first, Next: [] }], inputPop.rest);
+    return possible.any(eq =>
     {
-        var eq = possible[nx];
-        var first = eq.Next[0];
-        var initial = apply(eq.Start, first.Operator, first.Value);
-        var result = eq.Next.slice(1) //skip 1 as first taken out for initial value
+        var eqPop = eq.Next.popOffFirst();
+        var initial = apply(eq.Start, eqPop.first.Operator, eqPop.first.Value);
+        var result = eqPop.rest //skip first as taken out for initial value
             .reduce((agg, x) => apply(agg, x.Operator, x.Value), initial)
-        if (result == input.Result)
-        {
-            return true; //early exit when find first match
-        }
-    }
-    return false;
+        return result == input.Result;
+    });
 
     function spawnCombinations(current: Equation[], remaining: number[]) : Equation[]
     {
