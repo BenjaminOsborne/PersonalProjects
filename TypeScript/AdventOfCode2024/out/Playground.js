@@ -24,4 +24,10 @@ var s = "190: 10 19".split(':');
 console.info("Num: " + Number(s[0]));
 console.info("Sum: " + [1, 2, 3].sum());
 console.info("Any: " + [1, 2, 3].any(function (x) { return x > 3; }));
+[17, 1, 2, 3, 1, 5, 5, 17]
+    .groupBy(function (x) { return x; })
+    .forEach(function (grp) { return console.info("Group Key: " + grp.Key + " | Items: " + grp.Items); });
+var arr = [];
+arr[7] = "Hey";
+console.info("Array: " + arr);
 //# sourceMappingURL=Playground.js.map

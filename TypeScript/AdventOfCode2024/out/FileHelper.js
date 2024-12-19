@@ -8,7 +8,9 @@ var FileHelper = /** @class */ (function () {
         return fs.readFileSync(location, 'utf8');
     };
     FileHelper.LoadFileLines = function (location) {
-        return fs.readFileSync(location, 'utf8').split("\r\n");
+        return fs.readFileSync(location, 'utf8')
+            .split("\r\n")
+            .filter(function (x) { return x.length > 0; }); //removes empty lines
     };
     FileHelper.LoadFileLinesWithMap = function (location, fnMap) {
         return FileHelper.LoadFileLines(location).map(fnMap);

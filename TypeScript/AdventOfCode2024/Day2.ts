@@ -3,8 +3,8 @@ import FileHelper from './FileHelper';
 var fileLines = FileHelper.LoadFileLines('Day2.txt');
 
 var countSafe = fileLines
-    .filter(x => x.length > 0)
-    .filter(line =>{
+    .filter(line =>
+    {
         var nums = line.split(/\s+/).map(x => Number(x));
         if(isValidReport(nums))
         {

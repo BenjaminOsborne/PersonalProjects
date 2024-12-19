@@ -11,7 +11,9 @@ export default class FileHelper
 
     static LoadFileLines(location: string) : string[]
     {
-        return fs.readFileSync(location,'utf8').split("\r\n");
+        return fs.readFileSync(location,'utf8')
+            .split("\r\n")
+            .filter(x => x.length > 0); //removes empty lines
     }
 
     static LoadFileLinesWithMap<T>(location: string, fnMap: MapLambda<T>) : T[]
