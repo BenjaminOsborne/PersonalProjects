@@ -3,34 +3,54 @@ import FileHelper from './FileHelper';
 
 const rawLengths = [];
 const gaps = [];
-FileHelper.LoadFile('Day9.txt')
+FileHelper.LoadFile('Day9_Test.txt')
     .trim()
     .split('')
     .forEach((val, nx) =>
         (nx % 2 == 0 ? rawLengths : gaps).push(Number(val)));
 
-type FileBlock = { FileId: number, OriginalLength: number, Remaining: number }
+type FileBlock = { FileId: number, OriginalLength: number, Handled: boolean, CanMove: boolean }
 
 const lengths = rawLengths
-    .map((x,nx) => ({ FileId: nx, OriginalLength: x, Remaining: x } as FileBlock));
-const lengthsReverse = lengths.slice().sort((a,b) => b.FileId - a.FileId);
+    .map((x,nx) => ({ FileId: nx, OriginalLength: x, Handled: false, CanMove: true } as FileBlock));
+const lengthsReverse = lengths
+    .slice() //shallow clone as require 2 distinct arrays.
+    .sort((a,b) => b.FileId - a.FileId);
 
 const finalDisk: number[] = [];
 
 //Add first
-addFullFileBlock(lengths[0])
+var currentIndex = addFullFileBlock(lengths[0], 0);
 
 //Enumerate gaps
 for(var gNx = 0; gNx < gaps.length; gNx++)
 {
-    //Fill in gap
-    processNextGap(gaps[gNx]);
+    //Try fill in gap
+    var gap = gaps[gNx];
+    while(true)
+    {
+        var firstFillIn = scanForFileFromEndToFillGap(gap);
+        if(firstFillIn !== undefined)
+        {
+            currentIndex = addFullFileBlock(firstFillIn, currentIndex);
+            gap -= firstFillIn.OriginalLength;
+            if(gap == 0)
+            {
+                break;
+            }
+        }
+        else
+        {
+            currentIndex += gap;
+            break;
+        }
+    }
 
     //Then take the next item
-    var nextFillIn = lengths.filter(x => x.Remaining > 0)[0];
-    if(nextFillIn !== undefined)
+    var nextFillIn = lengths.filter(x => !x.Handled)[0];
+    if (nextFillIn !== undefined)
     {
-        addFullFileBlock(nextFillIn);
+        currentIndex = addFullFileBlock(nextFillIn, currentIndex);
     }
     else
     {
@@ -38,42 +58,39 @@ for(var gNx = 0; gNx < gaps.length; gNx++)
     }
 }
 
+console.info("FinalDisk: " + finalDisk)
+
 var result = finalDisk
-    .map((x,nx) => x * nx)
+    .map((x,nx) => x > 0 ? x * nx : 0) //Also handles "undefined" when gaps
     .sum();
 console.info("Result: " + result); //Part1: 6242766523059
 
-function processNextGap(gap: number)
+function scanForFileFromEndToFillGap(gap: number) : FileBlock
 {
-    var remainingGap = gap;
-    while(true)
+    for(var nx = 0; nx < lengthsReverse.length; nx++)
     {
-        var usable = lengthsReverse.filter(x => x.Remaining > 0);
-        if(usable.length == 0)
+        var item = lengthsReverse[nx];
+        if( item.Handled)
         {
-            return;
+            continue;
         }
-        var took = addFileBlockUpTo(usable[0], remainingGap);
-        remainingGap -= took;
-        if(remainingGap == 0)
+        if (item.CanMove && item.OriginalLength <= gap)
         {
-            return;
+            return item;
         }
+        item.CanMove = false;
     }
+    return undefined;
 }
 
-function addFullFileBlock(block: FileBlock)
+//Returns next index
+function addFullFileBlock(block: FileBlock, startIndex: number)
 {
-    addFileBlockUpTo(block, block.Remaining);
-}
-
-function addFileBlockUpTo(block: FileBlock, maxTake: number) : number
-{
-    var take = Math.min(maxTake, block.Remaining);
-    for(var nx = 0; nx < take; nx++)
+    for(var nx = 0; nx < block.OriginalLength; nx++)
     {
-        finalDisk.push(block.FileId)
+        finalDisk[startIndex+nx] = block.FileId;
     }
-    block.Remaining = block.Remaining - take;
-    return take;
+    block.Handled = true;
+    block.CanMove = false;
+    return startIndex + block.OriginalLength;
 }
