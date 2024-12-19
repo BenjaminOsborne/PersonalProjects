@@ -16,11 +16,12 @@ grpAntenna.forEach(function (grp) {
     return grp.Items.forEach(function (ant1) {
         return grp.Items.forEach(function (ant2) {
             return applyNodes(ant1, ant2);
-        });
+        } //Same one ignored in method
+        );
     });
 });
 var result = nodeGrid.flatMap(function (x) { return x; }).filter(function (x) { return x; }).length;
-console.info("Result: " + result); //Part1: 361
+console.info("Result (Part 2): " + result); //Part1: 361. Part2: 1249.
 function applyNodes(ant1, ant2) {
     if (ant1 === ant2) //Ignore if same node
      {
@@ -28,13 +29,24 @@ function applyNodes(ant1, ant2) {
     }
     var hGap = ant2.hLoc - ant1.hLoc;
     var vGap = ant2.vLoc - ant1.vLoc;
-    apply(ant1.hLoc - hGap, ant1.vLoc - vGap);
-    apply(ant2.hLoc + hGap, ant2.vLoc + vGap);
-    function apply(v, h) {
+    applyWithOperator(ant1, function (loc, dist) { return loc - dist; });
+    applyWithOperator(ant2, function (loc, dist) { return loc + dist; });
+    function applyWithOperator(ant, op) {
+        var cont = true;
+        var antH = ant.hLoc;
+        var antV = ant.vLoc;
+        while (cont) {
+            cont = markNode(antH, antV); //Also applies at antennas themselves now
+            antH = op(antH, hGap);
+            antV = op(antV, vGap);
+        }
+    }
+    function markNode(v, h) {
         if (v < 0 || h < 0 || v >= vLen || h >= hLen) {
-            return;
+            return false;
         }
         nodeGrid[v][h] = true;
+        return true;
     }
 }
 //# sourceMappingURL=Day8.js.map

@@ -19,11 +19,11 @@ var hLen = nodeGrid[0].length;
 grpAntenna.forEach(grp =>
     grp.Items.forEach(ant1 =>
         grp.Items.forEach(ant2 =>
-            applyNodes(ant1, ant2)
+            applyNodes(ant1, ant2) //Same one ignored in method
     )))
 
 var result = nodeGrid.flatMap(x => x).filter(x => x).length;
-console.info("Result: " + result); //Part1: 361
+console.info("Result (Part 2): " + result); //Part1: 361. Part2: 1249.
 
 function applyNodes(ant1: Antenna, ant2: Antenna)
 {
@@ -33,15 +33,30 @@ function applyNodes(ant1: Antenna, ant2: Antenna)
     }
     var hGap = ant2.hLoc - ant1.hLoc;
     var vGap = ant2.vLoc - ant1.vLoc;
-    apply(ant1.hLoc - hGap, ant1.vLoc - vGap);
-    apply(ant2.hLoc + hGap, ant2.vLoc + vGap);
+
+    applyWithOperator(ant1, (loc, dist) => loc - dist);
+    applyWithOperator(ant2, (loc, dist) => loc + dist);
     
-    function apply(v: number, h: number)
+    function applyWithOperator(ant: Antenna, op: (a: number, b: number) => number)
+    {
+        var cont = true;
+        var antH = ant.hLoc;
+        var antV = ant.vLoc;
+        while(cont)
+        {
+            cont = markNode(antH, antV); //Also applies at antennas themselves now
+            antH = op(antH, hGap);
+            antV = op(antV, vGap);
+        }
+    }
+
+    function markNode(v: number, h: number)
     {
         if(v < 0 || h < 0 || v >= vLen || h >= hLen)
         {
-            return;
+            return false;
         }
         nodeGrid[v][h] = true;
+        return true;
     }
 }
