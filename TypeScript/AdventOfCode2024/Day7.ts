@@ -12,7 +12,7 @@ var summed = file
     .map(toLoadedInputs)
     .filter(canMakeValid)
     .reduce((agg, x) => agg + x.Result, 0);
-console.info("Result: " + summed);
+console.info("Result: " + summed); //Part2: 92148721834692
 
 function canMakeValid(input: LoadedInputs) : boolean
 {

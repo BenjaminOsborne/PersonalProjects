@@ -9,8 +9,8 @@ file.split(/\s+/) //split on all whitespace (newlines AND spaces between numbers
     .forEach((num, nx) => //every other number alternates which array
         (nx % 2 == 0 ? left : right).push(num));
 
-var orderedLeft = left.sort((a, b) => a - b);
-var orderedRight = right.sort((a, b) => a - b);
+var orderedLeft = left.sort();
+var orderedRight = right.sort();
 
 var totalPart1 = orderedLeft
     .map((val, nx) => val - orderedRight[nx])

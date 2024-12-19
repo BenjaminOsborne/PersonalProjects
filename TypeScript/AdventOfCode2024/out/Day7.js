@@ -13,7 +13,7 @@ var summed = file
     .map(toLoadedInputs)
     .filter(canMakeValid)
     .reduce(function (agg, x) { return agg + x.Result; }, 0);
-console.info("Result: " + summed);
+console.info("Result: " + summed); //Part2: 92148721834692
 function canMakeValid(input) {
     var start = input.Inputs[0];
     var remain = input.Inputs.slice(1);
