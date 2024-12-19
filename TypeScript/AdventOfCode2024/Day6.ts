@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import FileHelper from './FileHelper';
 
 enum Direction { Up = '^', Right = '>', Down = 'v', Left = '<' }
 type LocationCoords = { verticalIndex: number, horizontalIndex: number }
@@ -7,11 +7,9 @@ type LocationInfo = { location: LocationCoords, state: LocationState, history: D
 
 type StepResult = { isFinished: boolean, isLoop: boolean, grid: LocationInfo[][], nextLoc: LocationCoords, direction: Direction }
 
-var file = fs.readFileSync('Day6.txt','utf8');
+var fileLines = FileHelper.LoadFileLinesWithMap('Day6.txt', l => l.split(''));
 
-var originalGrid = file
-    .split('\r\n')
-    .map(arr => arr.split(''))
+var originalGrid = fileLines
     .map((row, verNx) =>
         row.map((val, horNx) => (
             {

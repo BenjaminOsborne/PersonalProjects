@@ -1,9 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = require("fs");
-var file = fs.readFileSync('Day4.txt', 'utf8');
-var map = file.split('\r\n')
-    .map(function (l) { return l.split(''); });
+var FileHelper_1 = require("./FileHelper");
+var map = FileHelper_1.default.LoadFileLinesWithMap('Day4.txt', function (l) { return l.split(''); });
 var xRange = map.length;
 var yRange = map[0].length;
 var counter = 0;

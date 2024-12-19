@@ -1,6 +1,8 @@
-import * as fs from 'fs';
-var file = fs.readFileSync('Day3.txt','utf8');
-var oneLine = file.split('\r\n')
+import FileHelper from './FileHelper';
+
+var fileLines = FileHelper.LoadFileLines('Day3.txt');
+
+var oneLine = fileLines
      .reduce((a,b) => a + b);
 
 var forDoBlocks = oneLine

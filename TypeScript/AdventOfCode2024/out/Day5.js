@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = require("fs");
-var file = fs.readFileSync('Day5.txt', 'utf8');
-var allLines = file.split('\r\n');
+var FileHelper_1 = require("./FileHelper");
+var allLines = FileHelper_1.default.LoadFileLines('Day5.txt');
 var rules = allLines
     .filter(function (l) { return l.includes('|'); })
     .map(function (l) {

@@ -1,7 +1,8 @@
-import * as fs from 'fs';
-var file = fs.readFileSync('Day2.txt','utf8');
+import FileHelper from './FileHelper';
 
-var countSafe = file.split('\r\n') //split on new line
+var fileLines = FileHelper.LoadFileLines('Day2.txt');
+
+var countSafe = fileLines
     .filter(x => x.length > 0)
     .filter(line =>{
         var nums = line.split(/\s+/).map(x => Number(x));

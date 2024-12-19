@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = require("fs");
-var file = fs.readFileSync('Day2.txt', 'utf8');
-var countSafe = file.split('\r\n') //split on new line
+var FileHelper_1 = require("./FileHelper");
+var fileLines = FileHelper_1.default.LoadFileLines('Day2.txt');
+var countSafe = fileLines
     .filter(function (x) { return x.length > 0; })
     .filter(function (line) {
     var nums = line.split(/\s+/).map(function (x) { return Number(x); });

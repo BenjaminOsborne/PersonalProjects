@@ -1,3 +1,5 @@
+import './Globals'
+
 enum LocationState2 { Vacant, Visited, Blocked };
 
 function parseCell(val: string) : LocationState2
@@ -18,3 +20,5 @@ console.info(parseCell('.').toString());
 
 var s = "190: 10 19".split(':')
 console.info("Num: " + Number(s[0]))
+
+console.info([1, 2, 3].sum());

@@ -1,8 +1,6 @@
-import * as fs from 'fs';
-var file = fs.readFileSync('Day4.txt','utf8');
+import FileHelper from './FileHelper';
 
-var map = file.split('\r\n')
-    .map(l => l.split(''));
+var map = FileHelper.LoadFileLinesWithMap('Day4.txt', l => l.split(''));
 
 var xRange = map.length;
 var yRange = map[0].length;

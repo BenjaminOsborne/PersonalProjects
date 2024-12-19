@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = require("fs");
-var file = fs.readFileSync('Day1.txt', 'utf8');
+var FileHelper_1 = require("./FileHelper");
+var file = FileHelper_1.default.LoadFile('Day1.txt');
 var left = [];
 var right = [];
 file.split(/\s+/) //split on all whitespace (newlines AND spaces between numbers)

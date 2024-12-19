@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-var file = fs.readFileSync('Day1.txt','utf8');
+import FileHelper from './FileHelper';
+var file = FileHelper.LoadFile('Day1.txt');
 
 const left = [] as number[];
 const right = [] as number[];

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = require("fs");
+var FileHelper_1 = require("./FileHelper");
 var Direction;
 (function (Direction) {
     Direction["Up"] = "^";
@@ -15,10 +15,8 @@ var LocationState;
     LocationState[LocationState["Blocked"] = 2] = "Blocked";
 })(LocationState || (LocationState = {}));
 ;
-var file = fs.readFileSync('Day6.txt', 'utf8');
-var originalGrid = file
-    .split('\r\n')
-    .map(function (arr) { return arr.split(''); })
+var fileLines = FileHelper_1.default.LoadFileLinesWithMap('Day6.txt', function (l) { return l.split(''); });
+var originalGrid = fileLines
     .map(function (row, verNx) {
     return row.map(function (val, horNx) { return ({
         location: { verticalIndex: verNx, horizontalIndex: horNx },

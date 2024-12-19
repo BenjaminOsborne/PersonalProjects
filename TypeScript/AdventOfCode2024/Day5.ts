@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-var file = fs.readFileSync('Day5.txt','utf8');
-var allLines = file.split('\r\n');
+import FileHelper from './FileHelper';
+
+var allLines = FileHelper.LoadFileLines('Day5.txt');
 
 type Rule = { left: number; right: number };
 type ReorderResult = { update: number[]; isReordered: boolean };

@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("./Globals");
 var LocationState2;
 (function (LocationState2) {
     LocationState2[LocationState2["Vacant"] = 0] = "Vacant";
@@ -19,4 +22,5 @@ function parseCell(val) {
 console.info(parseCell('.').toString());
 var s = "190: 10 19".split(':');
 console.info("Num: " + Number(s[0]));
+console.info([1, 2, 3].sum());
 //# sourceMappingURL=Playground.js.map
