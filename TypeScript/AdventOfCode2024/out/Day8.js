@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./Globals");
 var FileHelper_1 = require("./FileHelper");
-var fileCells = FileHelper_1.default.LoadFileLinesWithMap('Day8.txt', function (x) { return x.split(''); });
+var fileCells = FileHelper_1.default.LoadFileLinesAndCharacters('Day8.txt');
 var grpAntenna = fileCells
     .flatMap(function (row, v) { return row
     .map(function (val, h) { return ({ Freq: val, vLoc: v, hLoc: h }); })

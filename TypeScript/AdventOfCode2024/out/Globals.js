@@ -43,4 +43,10 @@ Array.prototype.groupBy = function (fnSelect) {
 Array.prototype.popOffFirst = function () {
     return { first: this[0], rest: this.slice(1) };
 };
+Array.prototype.distinct = function () {
+    var _this = this;
+    return this.filter(function (value, index) {
+        return _this.indexOf(value) === index;
+    });
+};
 //# sourceMappingURL=Globals.js.map

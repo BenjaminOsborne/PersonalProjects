@@ -10,6 +10,7 @@ declare global
        first(pred: (val: T) => boolean): T;
        groupBy<TKey>(fnSelect: (input: T) => TKey): GroupedItem<TKey, T>[];
        popOffFirst(): { first: T, rest: T[]};
+       distinct(): T[];
     }
 }
  
@@ -72,4 +73,10 @@ Array.prototype.groupBy = function<TKey, T>(fnSelect: (input: T) => TKey): Group
 Array.prototype.popOffFirst = function()
 {
    return { first: this[0], rest: this.slice(1) };
+}
+
+Array.prototype.distinct = function()
+{
+   return this.filter((value, index) =>
+      this.indexOf(value) === index);
 }

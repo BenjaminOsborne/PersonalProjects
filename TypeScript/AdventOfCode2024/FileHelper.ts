@@ -16,6 +16,11 @@ export default class FileHelper
             .filter(x => x.length > 0); //removes empty lines
     }
 
+    static LoadFileLinesAndCharacters(location: string) : string[][]
+    {
+        return FileHelper.LoadFileLinesWithMap(location, x => x.split(''));
+    }
+
     static LoadFileLinesWithMap<T>(location: string, fnMap: MapLambda<T>) : T[]
     {
         return FileHelper.LoadFileLines(location).map(fnMap);
