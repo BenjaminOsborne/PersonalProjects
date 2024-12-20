@@ -33,4 +33,8 @@ console.info("Array: " + arr);
 console.info("Filled: " + (new Array(5)).fill(0, 0, 5));
 console.info("Reversed: " + [0, 1, 2].sort(function (a, b) { return b - a; }));
 console.info("Distinct: " + [17, 1, 2, 3, 1, 5, 5, 17].distinct());
+var i1 = { a: 1, b: "Hey" };
+var i2 = { a: 1, b: "Diff" };
+var i3 = { a: 2, b: "Hey" };
+console.info("Distinct 2: " + [i1, i2, i1, i3, i2].distinct().map(function (x) { return x.a + "|" + x.b; }));
 //# sourceMappingURL=Playground.js.map

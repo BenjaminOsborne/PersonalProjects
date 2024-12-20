@@ -44,9 +44,15 @@ Array.prototype.popOffFirst = function () {
     return { first: this[0], rest: this.slice(1) };
 };
 Array.prototype.distinct = function () {
-    var _this = this;
-    return this.filter(function (value, index) {
-        return _this.indexOf(value) === index;
+    if (this.length <= 1) {
+        return this.slice(); //if 0 or 1, can just return shallow copy. (MUST copy as caller expects new reference)
+    }
+    var results = [];
+    this.forEach(function (item) {
+        if (results.indexOf(item) < 0) {
+            results.push(item);
+        }
     });
+    return results;
 };
 //# sourceMappingURL=Globals.js.map
