@@ -8,7 +8,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped<IExcelFileHandler, ExcelFileHandler>();
-builder.Services.AddScoped<ITransactionCategoriser, TransactionCategoriser>();
+builder.Services.AddScoped<ITransactionCategoriserScoped, TransactionCategoriserScoped>();
 
 var app = builder.Build();
 

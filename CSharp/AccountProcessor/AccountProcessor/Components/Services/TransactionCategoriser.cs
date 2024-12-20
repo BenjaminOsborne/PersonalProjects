@@ -3,6 +3,17 @@ using System.Text;
 
 namespace AccountProcessor.Components.Services
 {
+    public interface ITransactionCategoriserScoped
+    {
+        ITransactionCategoriser GetScope();
+    }
+
+    public class TransactionCategoriserScoped : ITransactionCategoriserScoped
+    {
+        public ITransactionCategoriser GetScope() =>
+            new TransactionCategoriser();
+    }
+
     public interface ITransactionCategoriser
     {
         bool IsModelLocationKnown();
@@ -129,7 +140,7 @@ namespace AccountProcessor.Components.Services
             return result;
         }
 
-        private static Result _AddNewMatch(Transaction transaction, SectionHeader section, Match match)
+        private Result _AddNewMatch(Transaction transaction, SectionHeader section, Match match)
         {
             var valid = match.GetIsValidResult();
             if (!valid.IsSuccess)
@@ -154,7 +165,7 @@ namespace AccountProcessor.Components.Services
             return Result.Success;
         }
 
-        private static WrappedResult<SectionMatches> _FindSection(SectionHeader section)
+        private WrappedResult<SectionMatches> _FindSection(SectionHeader section)
         {
             var category = _FindModelHeaderFor(section.Parent);
             if (category == null)
@@ -170,23 +181,24 @@ namespace AccountProcessor.Components.Services
             return WrappedResult.Create(found);
         }
 
-        private static Category? _FindModelHeaderFor(CategoryHeader header) =>
+        private Category? _FindModelHeaderFor(CategoryHeader header) =>
             _GetModel().Categories
             .FirstOrDefault(x => x.Header.Name == header.Name);
 
-        private static MatchModel _GetModel() =>
+        private MatchModel _GetModel() =>
             _singleModel.Value;
 
-        /// <summary> Assumes singleton model instance. If this changes, would need to pass a model instance around. </summary>
-        private static void _WriteModel() =>
+        /// <summary> Assumes stable model instance for lifetime of calling scope. If this changes, would need to pass a model instance around. </summary>
+        private void _WriteModel() =>
             ModelPersistence.WriteModel(_GetModel());
 
         /// <summary>
         /// Current use case; only 1 instance linked to 1 file.
         /// No intention to support multiple concurrent sessions distributed with many Clients.
         /// This would require persistence, client sessions etc.
+        /// This instance is kept for lifetime of scope, which is created fresh for each action - so file implicitly re-loads for each UI action.
         /// </summary>
-        public static readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(ModelPersistence.LoadModel);
+        private readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(ModelPersistence.LoadModel);
     }
 
     public record Transaction(DateOnly Date, string Description, decimal Amount)

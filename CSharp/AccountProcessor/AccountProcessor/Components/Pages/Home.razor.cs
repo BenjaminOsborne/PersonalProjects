@@ -25,7 +25,7 @@ public partial class Home
     [Inject]
     private IExcelFileHandler _excelFileHandler { get; init; }
     [Inject]
-    private ITransactionCategoriser _categoriser { get; init; }
+    private ITransactionCategoriserScoped _categoriser { get; init; }
     [Inject]
     private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; }
 
@@ -42,7 +42,7 @@ public partial class Home
     }
 
     private bool IsModelLocationKnown() =>
-        _categoriser.IsModelLocationKnown();
+        _categoriser.GetScope().IsModelLocationKnown();
 
     private bool TransactionsAreFullyLoaded() =>
         Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
@@ -123,7 +123,7 @@ public class HomeViewModel
 
     private readonly TransactionsModel _transactionsModel;
 
-    public HomeViewModel(ITransactionCategoriser categoriser, Action onStateChanged) =>
+    public HomeViewModel(ITransactionCategoriserScoped categoriser, Action onStateChanged) =>
         _transactionsModel = new(
             categoriser,
             onActionHandleResult: _UpdateLastActionResult,
@@ -211,11 +211,11 @@ public class HomeViewModel
     /// <summary> Class manages storage-of & changes-of state. Ensures transactions re-categorised when match-model changes etc. </summary>
     private class TransactionsModel
     {
-        private readonly ITransactionCategoriser _categoriser;
+        private readonly ITransactionCategoriserScoped _categoriser;
         private readonly Action<Result> _onActionHandleResult;
         private readonly Action _onStateChanged;
 
-        public TransactionsModel(ITransactionCategoriser categoriser,
+        public TransactionsModel(ITransactionCategoriserScoped categoriser,
             Action<Result> onActionHandleResult,
             Action onStateChanged)
         {
@@ -265,7 +265,7 @@ public class HomeViewModel
             Action? onSuccess = null,
             bool refreshCategories = false) =>
                 _OnStateChange(
-                    fnGetResult: () => fnPerform(_categoriser).ToWrappedUnit(),
+                    fnGetResult: () => fnPerform(_GetCategoriser()).ToWrappedUnit(),
                     onSuccess: _ => onSuccess?.Invoke(),
                     refreshCategories: refreshCategories);
 
@@ -284,7 +284,7 @@ public class HomeViewModel
             
             if (refreshCategories)
             {
-                var allData = _categoriser.GetSelectorData(Month);
+                var allData = _GetCategoriser().GetSelectorData(Month);
                 Categories = allData.Categories;
                 AllSections = allData.Sections?.ToImmutableArray(secHead =>
                     new SectionSelectorRow(secHead, Display: $"{secHead.Parent.Name}: {secHead.Name}", Id: Guid.NewGuid().ToString())); //Arbitrary Id
@@ -297,7 +297,7 @@ public class HomeViewModel
             {
                 return;
             }
-            var categorisationResult = _categoriser.Categorise(loadedTransactions!.Value, Month);
+            var categorisationResult = _GetCategoriser().Categorise(loadedTransactions!.Value, Month);
             LatestCategorisationResult = categorisationResult;
             var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
             TransactionResultViewModel = trViewModel;
@@ -307,6 +307,8 @@ public class HomeViewModel
 
             _onStateChanged();
         }
+
+        private ITransactionCategoriser _GetCategoriser() => _categoriser.GetScope();
     }
 }
 
