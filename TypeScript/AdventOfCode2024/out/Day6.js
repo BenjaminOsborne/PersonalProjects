@@ -15,7 +15,7 @@ var LocationState;
     LocationState[LocationState["Blocked"] = 2] = "Blocked";
 })(LocationState || (LocationState = {}));
 ;
-var fileLines = FileHelper_1.default.LoadFileLinesWithMap('Day6.txt', function (l) { return l.split(''); });
+var fileLines = FileHelper_1.default.LoadFileLinesWithMap('Inputs\\Day6.txt', function (l) { return l.split(''); });
 var originalGrid = fileLines
     .map(function (row, verNx) {
     return row.map(function (val, horNx) { return ({

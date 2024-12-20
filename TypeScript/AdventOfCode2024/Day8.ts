@@ -3,7 +3,7 @@ import FileHelper from './FileHelper';
 
 type Antenna = { Freq: string, vLoc: number, hLoc: number }
 
-var fileCells = FileHelper.LoadFileLinesAndCharacters('Day8.txt');
+var fileCells = FileHelper.LoadFileLinesAndCharacters('Inputs\\Day8.txt');
 
 var grpAntenna = fileCells
     .flatMap((row, v) => row

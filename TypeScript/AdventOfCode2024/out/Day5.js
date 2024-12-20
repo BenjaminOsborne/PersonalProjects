@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var FileHelper_1 = require("./FileHelper");
-var allLines = FileHelper_1.default.LoadFileLines('Day5.txt');
+var allLines = FileHelper_1.default.LoadFileLines('Inputs\\Day5.txt');
 var rules = allLines
     .filter(function (l) { return l.includes('|'); })
     .map(function (l) {

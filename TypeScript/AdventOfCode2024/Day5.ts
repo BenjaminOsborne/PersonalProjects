@@ -1,6 +1,6 @@
 import FileHelper from './FileHelper';
 
-var allLines = FileHelper.LoadFileLines('Day5.txt');
+var allLines = FileHelper.LoadFileLines('Inputs\\Day5.txt');
 
 type Rule = { left: number; right: number };
 type ReorderResult = { update: number[]; isReordered: boolean };

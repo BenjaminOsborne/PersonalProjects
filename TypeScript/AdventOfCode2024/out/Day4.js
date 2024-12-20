@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var FileHelper_1 = require("./FileHelper");
-var map = FileHelper_1.default.LoadFileLinesWithMap('Day4.txt', function (l) { return l.split(''); });
+var map = FileHelper_1.default.LoadFileLinesWithMap('Inputs\\Day4.txt', function (l) { return l.split(''); });
 var xRange = map.length;
 var yRange = map[0].length;
 var counter = 0;

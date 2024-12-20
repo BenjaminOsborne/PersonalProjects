@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var FileHelper_1 = require("./FileHelper");
-var fileLines = FileHelper_1.default.LoadFileLines('Day3.txt');
+var fileLines = FileHelper_1.default.LoadFileLines('Inputs\\Day3.txt');
 var oneLine = fileLines
     .reduce(function (a, b) { return a + b; });
 var forDoBlocks = oneLine

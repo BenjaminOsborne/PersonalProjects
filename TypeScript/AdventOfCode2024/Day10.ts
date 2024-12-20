@@ -3,7 +3,7 @@ import FileHelper from './FileHelper';
 
 type Cell = { Value: number, VLoc: number, HLoc: number };
 
-var cells = FileHelper.LoadFileLinesAndCharacters('Day10.txt')
+var cells = FileHelper.LoadFileLinesAndCharacters('Inputs\\Day10.txt')
     .map((row, vLoc) =>
         row.map((c, hLoc) => (
             { Value: Number(c), VLoc: vLoc, HLoc: hLoc } as Cell

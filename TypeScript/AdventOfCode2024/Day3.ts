@@ -1,6 +1,6 @@
 import FileHelper from './FileHelper';
 
-var fileLines = FileHelper.LoadFileLines('Day3.txt');
+var fileLines = FileHelper.LoadFileLines('Inputs\\Day3.txt');
 
 var oneLine = fileLines
      .reduce((a,b) => a + b);

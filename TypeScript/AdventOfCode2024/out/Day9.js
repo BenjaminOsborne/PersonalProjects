@@ -4,7 +4,7 @@ require("./Globals");
 var FileHelper_1 = require("./FileHelper");
 var rawLengths = [];
 var rawGaps = [];
-FileHelper_1.default.LoadFile('Day9.txt')
+FileHelper_1.default.LoadFile('Inputs\\Day9.txt')
     .trim()
     .split('')
     .forEach(function (val, nx) {

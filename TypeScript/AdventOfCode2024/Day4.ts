@@ -1,6 +1,6 @@
 import FileHelper from './FileHelper';
 
-var map = FileHelper.LoadFileLinesWithMap('Day4.txt', l => l.split(''));
+var map = FileHelper.LoadFileLinesWithMap('Inputs\\Day4.txt', l => l.split(''));
 
 var xRange = map.length;
 var yRange = map[0].length;

@@ -3,7 +3,7 @@ import FileHelper from './FileHelper';
 
 const rawLengths = [];
 const rawGaps = [];
-FileHelper.LoadFile('Day9.txt')
+FileHelper.LoadFile('Inputs\\Day9.txt')
     .trim()
     .split('')
     .forEach((val, nx) =>

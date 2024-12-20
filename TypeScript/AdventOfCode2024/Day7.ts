@@ -1,6 +1,6 @@
 import './Globals'
 import FileHelper from './FileHelper';
-var fileLines = FileHelper.LoadFileLines('Day7.txt');
+var fileLines = FileHelper.LoadFileLines('Inputs\\Day7.txt');
 
 type LoadedInputs = { Result: number, Inputs: number[] }
 enum Operator { Add = "+", Multiply = "*", Concat = "||" }

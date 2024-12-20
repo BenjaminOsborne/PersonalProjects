@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./Globals");
 var FileHelper_1 = require("./FileHelper");
-var cells = FileHelper_1.default.LoadFileLinesAndCharacters('Day10.txt')
+var cells = FileHelper_1.default.LoadFileLinesAndCharacters('Inputs\\Day10.txt')
     .map(function (row, vLoc) {
     return row.map(function (c, hLoc) { return ({ Value: Number(c), VLoc: vLoc, HLoc: hLoc }); });
 });

@@ -7,7 +7,7 @@ type LocationInfo = { location: LocationCoords, state: LocationState, history: D
 
 type StepResult = { isFinished: boolean, isLoop: boolean, grid: LocationInfo[][], nextLoc: LocationCoords, direction: Direction }
 
-var fileLines = FileHelper.LoadFileLinesWithMap('Day6.txt', l => l.split(''));
+var fileLines = FileHelper.LoadFileLinesWithMap('Inputs\\Day6.txt', l => l.split(''));
 
 var originalGrid = fileLines
     .map((row, verNx) =>

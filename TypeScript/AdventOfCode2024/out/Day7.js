@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./Globals");
 var FileHelper_1 = require("./FileHelper");
-var fileLines = FileHelper_1.default.LoadFileLines('Day7.txt');
+var fileLines = FileHelper_1.default.LoadFileLines('Inputs\\Day7.txt');
 var Operator;
 (function (Operator) {
     Operator["Add"] = "+";

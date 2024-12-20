@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var FileHelper_1 = require("./FileHelper");
-var fileLines = FileHelper_1.default.LoadFileLines('Day2.txt');
+var fileLines = FileHelper_1.default.LoadFileLines('Inputs\\Day2.txt');
 var countSafe = fileLines
     .filter(function (line) {
     var nums = line.split(/\s+/).map(function (x) { return Number(x); });

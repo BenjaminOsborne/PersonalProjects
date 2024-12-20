@@ -1,6 +1,6 @@
 import FileHelper from './FileHelper';
 
-var fileLines = FileHelper.LoadFileLines('Day2.txt');
+var fileLines = FileHelper.LoadFileLines('Inputs\\Day2.txt');
 
 var countSafe = fileLines
     .filter(line =>

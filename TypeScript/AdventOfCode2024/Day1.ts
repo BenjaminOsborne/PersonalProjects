@@ -1,5 +1,5 @@
 import FileHelper from './FileHelper';
-var file = FileHelper.LoadFile('Day1.txt');
+var file = FileHelper.LoadFile('Inputs\\Day1.txt');
 
 const left = [] as number[];
 const right = [] as number[];
