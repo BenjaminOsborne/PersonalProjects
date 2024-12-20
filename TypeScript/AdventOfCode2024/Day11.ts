@@ -1,37 +1,54 @@
 import './Globals'
 import FileHelper from './FileHelper';
 
-type Num = { num: number, asString: string };
+type Num = { val: number, asString: string };
+type NumScale = { num: Num, multiplier: number };
+
 var loaded = FileHelper.LoadFile('Inputs\\Day11.txt')
     .split(' ')
-    .map(x => ({ num: Number(x), asString: x } as Num));
+    .map(x => ({ num: toNum(Number(x)), multiplier: 1 } as NumScale));
 
 var input = loaded;
-
 for(var n = 0; n < 75; n++)
 {
-    input = input.flatMap(getNext);
-    console.info("Loop: " + (n+1) + ". Count: " + input.length)
+    input = blink(input);
+    console.info("Loop: " + (n+1) + ". UniqueNumbers: " + input.length + ". Total: " + input.sumFrom(x => x.multiplier));
 }
 
-console.info("Result: " + input.length)
+console.info("Result: " + input.sumFrom(x => x.multiplier)) //Part2: 219838428124832
 
-function getNext(num : Num) : Num[]
+function blink(current: NumScale[]) : NumScale[]
 {
-    if(num.num == 0)
+    return current
+        .flatMap(x =>
+            processNumberRules(x.num)
+            .map(n =>
+                ({ num: n, multiplier: x.multiplier } as NumScale)))
+        .groupBy(x => x.num.val)
+        .map(x =>
+        {
+            var first = x.Items[0];
+            return x.Items.length == 1
+                ? first
+                : ({ num: first.num, multiplier: x.Items.sumFrom(i => i.multiplier) });
+        });
+}
+
+function processNumberRules(num : Num) : Num[]
+{
+    if(num.val == 0)
     {
-        return [{ num: 1, asString: "1" }]
+        return [ toNum(1) ]
     }
     const numLen = num.asString.length;
     if(numLen %2 == 0)
     {
-        var num1 = Number(num.asString.slice(0, numLen / 2));
-        var num2 = Number(num.asString.slice(numLen / 2));
         return [
-            { num: num1, asString: num1.toString() },
-            { num: num2, asString: num2.toString() }
-        ]
+            toNum(Number(num.asString.slice(0, numLen / 2))),
+            toNum(Number(num.asString.slice(numLen / 2)))
+        ];
     }
-    var next = num.num * 2024;
-    return [{ num: next, asString: next.toString() },]
+    return [ toNum(num.val * 2024)]
 }
+
+function toNum(num: number) : Num { return { val: num, asString: num.toString() } }

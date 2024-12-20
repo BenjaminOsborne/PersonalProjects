@@ -3,6 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 Array.prototype.sum = function () {
     return this.reduce(function (acc, x) { return acc + x; }, 0);
 };
+Array.prototype.sumFrom = function (select) {
+    return this.map(select).reduce(function (acc, x) { return acc + x; }, 0);
+};
 Array.prototype.any = function (pred) {
     for (var nx = 0; nx < this.length; nx++) {
         if (pred(this[nx])) {

@@ -6,6 +6,7 @@ declare global
 
    interface Array<T> {
        sum(): number;
+       sumFrom(select: (val: T) => number): number;
        any(pred: (val: T) => boolean): boolean;
        first(pred: (val: T) => boolean): T;
        groupBy<TKey>(fnSelect: (input: T) => TKey): GroupedItem<TKey, T>[];
@@ -16,6 +17,11 @@ declare global
  
 Array.prototype.sum = function(): number {
    return this.reduce((acc, x) => acc + x, 0);
+}
+
+Array.prototype.sumFrom = function<T>(select: (val: T) => number): number
+{
+   return this.map(select).reduce((acc, x) => acc + x, 0);
 }
 
 Array.prototype.any = function<T>(pred: (val: T) => boolean): boolean
