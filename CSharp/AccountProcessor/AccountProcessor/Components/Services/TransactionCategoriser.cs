@@ -448,15 +448,26 @@ namespace AccountProcessor.Components.Services
             var builder = new StringBuilder();
             builder.Append("^");
 
-            var spl = pattern.ToLower().Split('*');
-            for (var nx = 0; nx < spl.Length; nx++)
+            var wildLiteral = "\\*"; //support escaping * so can match
+            var splitWildLiteral = pattern.ToLower().Split(wildLiteral);
+            for (var outNx = 0; outNx < splitWildLiteral.Length; outNx++)
             {
-                if (nx > 0)
+                var outer = splitWildLiteral[outNx];
+                if(outNx > 0)
                 {
-                    builder.Append(".*"); //Inset wildcard between sections
+                    builder.Append(wildLiteral);
                 }
-                //Escape regex (as text could contain other non-supported regex characters)
-                builder.Append(System.Text.RegularExpressions.Regex.Escape(spl[nx]));
+
+                var spl = outer.ToLower().Split('*');
+                for (var inNx = 0; inNx < spl.Length; inNx++)
+                {
+                    if (inNx > 0)
+                    {
+                        builder.Append(".*"); //Inset regex wildcard between sections
+                    }
+                    //Escape regex (as text could contain other non-supported regex characters)
+                    builder.Append(System.Text.RegularExpressions.Regex.Escape(spl[inNx]));
+                }
             }
 
             builder.Append("$");

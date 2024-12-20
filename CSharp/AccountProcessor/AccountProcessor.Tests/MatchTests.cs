@@ -36,6 +36,18 @@ namespace AccountProcessor.Tests
         //Special character Tests
         [TestCase("Test (Some", "Test *", true)]
         [TestCase("Test (Some", "Test (Some", true)]
+        
+        //* Literal tests with "*" in transaction as well! [To literally match a "*" escape with "\*"]
+        [TestCase("Test*", "Test*", true)]
+        [TestCase("Test*", "Test\\*", true)]
+        [TestCase("Test*", "Test\\*a", false)] //Is now literal, so should not match
+        [TestCase("Test**", "Test\\*\\*", true)]
+        [TestCase("Test*Some", "Test\\**", true)]
+        
+        [TestCase("Test*Multiple*s", "Test*", true)]
+        [TestCase("Test*Multiple*s", "Test\\*Multiple\\*s", true)]
+        [TestCase("Test*Multiple*s", "Test\\*Mul*e\\*s", true)]
+        [TestCase("AMAZON* PN3VT6DC5", "Amazon\\**", true)] //real example where want to 
         public void Match(string transaction, string pattern, bool isMatch) =>
             _PatternAssert(pattern, transaction, isMatch ? MatchType.MatchExact : MatchType.NoMatch);
 
