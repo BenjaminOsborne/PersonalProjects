@@ -45,7 +45,7 @@ public partial class Home
         _categoriser.GetScope().IsModelLocationKnown();
 
     private bool TransactionsAreFullyLoaded() =>
-        Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
+        Model.Month.HasValue && Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
 
     public void OnAccountFileConverted(Result result)
     {
@@ -69,7 +69,7 @@ public partial class Home
         }
         await _OnFileResultDownloadBytes(
             result: await _excelFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!),
-            fileName: $"CategorisedTransactions_{Model.Month:yyyy-MM}.xlsx");
+            fileName: $"CategorisedTransactions_{Model.Month!.Value:yyyy-MM}.xlsx");
     }
 
     private void AddNewMatchForRow(TransactionRowUnMatched row)
@@ -135,7 +135,7 @@ public class HomeViewModel
     /// <remarks> Initial Id should be the "Choose Category" option </remarks>
     public (string? CategoryName, string? Name, bool IsMonthSpecific) NewSection { get; private set; } = _newSectionDefault;
 
-    public DateOnly Month => _transactionsModel.Month;
+    public DateOnly? Month => _transactionsModel.Month;
     public DateOnly? EarliestTransaction => _transactionsModel.EarliestTransaction;
     public DateOnly? LatestTransaction => _transactionsModel.LatestTransaction;
     public ImmutableArray<CategoryHeader>? Categories => _transactionsModel.Categories;
@@ -160,8 +160,11 @@ public class HomeViewModel
                 ? WrappedResult.Create(parsed)
                 : WrappedResult.Fail<DateOnly>($"Invalid date format: {yearAndMonth}"));
 
-    public void SkipMonth(int months) =>
-        _transactionsModel.UpdateMonth(WrappedResult.Create(_transactionsModel.Month.AddMonths(months)));
+    public void SkipMonth(int months)
+    {
+        var update = _transactionsModel.Month!.Value.AddMonths(months); //UI only shows "skip" if Month already loaded!
+        _transactionsModel.UpdateMonth(WrappedResult.Create(update));
+    }
 
     public void SetNewSectionCategory(string? category) =>
         NewSection = NewSection with { CategoryName = category };
@@ -225,12 +228,9 @@ public class HomeViewModel
             _categoriser = categoriser;
             _onActionHandleResult = onActionHandleResult;
             _onStateChanged = onStateChanged;
-
-            var now = DateTime.Now;
-            Month = new DateOnly(now.Year, now.Month, 1).AddMonths(-1); //Initialise to last complete month (i.e. month before the current one)
         }
 
-        public DateOnly Month { get; private set; }
+        public DateOnly? Month { get; private set; }
 
         public ImmutableArray<CategoryHeader>? Categories { get; private set; }
         public ImmutableArray<SectionSelectorRow>? AllSections { get; private set; }
@@ -260,6 +260,7 @@ public class HomeViewModel
                 fnGetResult: () => result,
                 onSuccess: r =>
                 {
+                    Month = _InitialiseOrUpdateMonthFromTransactions(Month, r);
                     LoadedTransactions = r;
                     EarliestTransaction = r.Any() ? r.Select(x => x.Date).Min() : null;
                     LatestTransaction = r.Any() ? r.Select(x => x.Date).Max() : null;
@@ -287,10 +288,17 @@ public class HomeViewModel
                 return;
             }
             onSuccess?.Invoke(result.Result!);
-            
+
+            //Month will be initialised once transactions loaded. Nothing else meaningful until transactions selected.
+            //Note: Could revisit if ever want to add categories before transactions loaded!
+            if (Month.HasValue == false)
+            {
+                return;
+            }
+
             if (refreshCategories)
             {
-                var allData = _GetCategoriser().GetSelectorData(Month);
+                var allData = _GetCategoriser().GetSelectorData(Month!.Value);
                 Categories = allData.Categories;
                 AllSections = allData.Sections?.ToImmutableArray(secHead =>
                     new SectionSelectorRow(secHead, Display: $"{secHead.Parent.Name}: {secHead.Name}", Id: Guid.NewGuid().ToString())); //Arbitrary Id
@@ -303,7 +311,7 @@ public class HomeViewModel
             {
                 return;
             }
-            var categorisationResult = _GetCategoriser().Categorise(loadedTransactions!.Value, Month);
+            var categorisationResult = _GetCategoriser().Categorise(loadedTransactions!.Value, Month!.Value);
             LatestCategorisationResult = categorisationResult;
             var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
             TransactionResultViewModel = trViewModel;
@@ -312,6 +320,39 @@ public class HomeViewModel
             MatchedModel = trViewModel.MatchedRows.Any() ? new(trViewModel.MatchedRows) : null;
 
             _onStateChanged();
+        }
+
+        /// <summary>
+        /// Attempts to be "smart£ in initialising/updating Month based on transactions.
+        /// [1] If no transactions, keep current, or initialise to month before "now"
+        /// [2] If some transactions...
+        /// - If month set AND exists in transactions, keep
+        /// ELSE
+        /// - If 1/2 months in transactions, take latest as likely bridging into current month
+        /// - If 3 or more, take previous month if fully there, else take "penultimate" month as likely the complete one to analyse
+        /// </summary>
+        private static DateOnly _InitialiseOrUpdateMonthFromTransactions(DateOnly? currentMonth, ImmutableArray<Transaction> transactions)
+        {
+            var previousMonth = ToYearAndMonth(DateOnly.FromDateTime(DateTime.Now));
+            if (transactions.IsEmpty)
+            {
+                return currentMonth ?? previousMonth; //Likely previous month in absence of all other info
+            }
+            var months = transactions
+                .Select(x => ToYearAndMonth(x.Date))
+                .Distinct().OrderBy(x => x)
+                .ToImmutableArray();
+            if (currentMonth != null && months.Contains(currentMonth.Value))
+            {
+                return currentMonth.Value; //Keep current month if contained in transactions
+            }
+            return months.Length < 3
+                ? months.Last() //If 1 or 2 - take latest (as if 2, likely bridging over into current month)
+                : months.Contains(previousMonth)
+                    ? previousMonth //If last month fully contained, probably doing whole month
+                    : months[months.Length - 2]; //Else take penultimate "full" month (assuming latest is partial)
+
+            static DateOnly ToYearAndMonth(DateOnly dt) => new DateOnly(dt.Year, dt.Month, 1);
         }
 
         private ITransactionCategoriser _GetCategoriser() => _categoriser.GetScope();

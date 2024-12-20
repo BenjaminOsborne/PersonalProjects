@@ -102,7 +102,7 @@
     <hr />
 
     <label>Month:</label>
-    <input type="month" value="@Model.Month.ToString("yyyy-MM")" @onchange="e => Model.SetMonth((string?)e.Value)">
+    <input type="month" value="@Model.Month!.Value.ToString("yyyy-MM")" @onchange="e => Model.SetMonth((string?)e.Value)">
     <button @onclick="() => Model.SkipMonth(-1)"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
     <button @onclick="() => Model.SkipMonth(+1)"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
     <button @onclick="() => Model.RefreshTransactions()"><i class="fa fa-refresh" aria-hidden="true"></i></button>
