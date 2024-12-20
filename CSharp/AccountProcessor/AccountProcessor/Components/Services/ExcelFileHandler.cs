@@ -263,12 +263,24 @@ namespace AccountProcessor.Components.Services
                     {
                         SetValue(row++, col, sec.Section.Name, isBold: true);
 
-                        foreach (var ts in sec.Groups.SelectMany(x => x.Transactions))
+                        foreach (var grp in sec.Groups)
                         {
-                            var trans = ts.Transaction;
-                            var description = ts.OverrideDescription ?? trans.Description;
-                            SetValue(row, col, $"{trans.Date:dd}/{trans.Date:MM} - {description}");
-                            SetValue(row++, col + 1, trans.Amount, numberFormat: _excelCurrencyNumberFormat);
+                            if (grp.Transactions.Length == 1 || !cat.AllowTransactionGrouping)
+                            {
+                                foreach (var ts in grp.Transactions)
+                                {
+                                    SetValue(row, col, ts.GetDescription());
+                                    SetValue(row++, col + 1, ts.Transaction.Amount, numberFormat: _excelCurrencyNumberFormat);
+                                }
+                            }
+                            else
+                            {
+                                var amount = grp.Transactions.Sum(x => x.Transaction.Amount);
+                                var strDates = grp.DescribeDates();
+                                var comment = grp.GetComment();
+                                SetValue(row, col, $"{strDates} - [{grp.Transactions.Length}] {grp.Description}", comment: comment);
+                                SetValue(row++, col + 1, amount, numberFormat: _excelCurrencyNumberFormat);
+                            }
                         }
 
                         row++; //Create space between sections
@@ -299,7 +311,7 @@ namespace AccountProcessor.Components.Services
                 rowBorder.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                 rowBorder.Bottom.Color.SetColor(Color.Black);
 
-                void SetValue<T>(int rowNum, int colNum, T val, bool isBold = false, string? numberFormat = null)
+                void SetValue<T>(int rowNum, int colNum, T val, bool isBold = false, string? numberFormat = null, string? comment = null)
                 {
                     var cell = worksheet.Cells[rowNum, colNum];
                     cell.Value = val;
@@ -310,6 +322,11 @@ namespace AccountProcessor.Components.Services
                     if (numberFormat != null)
                     {
                         cell.Style.Numberformat.Format = numberFormat;
+                    }
+
+                    if (comment != null)
+                    {
+                        cell.AddComment(comment);
                     }
                 }
 
@@ -363,7 +380,7 @@ namespace AccountProcessor.Components.Services
                         })
                         ?? ImmutableArray<SectionSummary>.Empty;
 
-                    return new CategorySummary(category, sections);
+                    return new CategorySummary(category, sections, AllowTransactionGrouping: cat.Cat != manualHeader); //Don't group for manual - always see expanded
                 });
         }
 
@@ -371,10 +388,46 @@ namespace AccountProcessor.Components.Services
             "£"#,##0.00;[Red]\-"£"#,##0.00
             """;
 
-        private record CategorySummary(CategoryHeader Category, ImmutableArray<SectionSummary> Sections);
+        private record CategorySummary(CategoryHeader Category, ImmutableArray<SectionSummary> Sections, bool AllowTransactionGrouping);
+
         private record SectionSummary(SectionHeader Section, ImmutableArray<TransactionGroup> Groups, decimal Total);
-        private record TransactionGroup(ImmutableArray<TransactionSummary> Transactions, string Description);
-        private record TransactionSummary(Transaction Transaction, string? OverrideDescription);
+
+        private record TransactionGroup(ImmutableArray<TransactionSummary> Transactions, string Description)
+        {
+            public string DescribeDates()
+            {
+                var dates = Transactions
+                    .Select(x => x.Transaction.Date)
+                    .Distinct().OrderBy(x => x)
+                    .ToImmutableArray();
+                var first = dates[0];
+                return dates.Length == 1
+                    ? _DescribeDate(first)
+                    : $"{first:dd}-{dates.Last():dd}/{first:MM}";
+            }
+
+            public string GetComment() =>
+                Transactions
+                    .Select(x =>
+                    {
+                        var amount = x.Transaction.Amount;
+                        var signSymbol = amount >= 0 ? "£" : "-£";
+                        return $"{x.GetDescription()} : {signSymbol}{Math.Abs(amount):0.00}";
+                    })
+                    .ToJoinedString("\n");
+        }
+
+        private record TransactionSummary(Transaction Transaction, string? OverrideDescription)
+        {
+            public string GetDescription()
+            {
+                var trans = Transaction;
+                var description = OverrideDescription ?? trans.Description;
+                return $"{_DescribeDate(trans.Date)} - {description}";
+            }
+        }
+
+        private static string _DescribeDate(DateOnly dt) => $"{dt:dd}/{dt:MM}";
 
         #endregion
 
