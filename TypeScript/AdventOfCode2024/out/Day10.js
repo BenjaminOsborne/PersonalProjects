@@ -13,10 +13,10 @@ var result = cells
     .filter(function (x) { return x.Value == 0; })
     .map(findDistinctPeaks)
     .sum();
-console.log("Result: " + result); //Part1: 535
+console.log("Result: " + result); //Part1: 535. Part2: 1186
 function findDistinctPeaks(start) {
     return walkToEnd(start)
-        .distinct()
+        //.distinct() <-- single line change to go from part1 to part2
         .length;
     function walkToEnd(current) {
         return current.Value < 9
