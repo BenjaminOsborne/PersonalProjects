@@ -1,6 +1,8 @@
 import './Globals'
 import FileHelper from './FileHelper';
 
+console.time('Run');
+
 type NumScale = { num: number, multiplier: number };
 
 var loaded = FileHelper.LoadFile('Inputs\\Day11.txt')
@@ -8,19 +10,23 @@ var loaded = FileHelper.LoadFile('Inputs\\Day11.txt')
     .map(sNum => ({ num: Number(sNum), multiplier: 1 } as NumScale));
 
 var input = loaded;
+var blinkMap = new Map<number, number[]>();
+
 for(var n = 0; n < 75; n++)
 {
     input = blink(input);
-    console.info("Loop: " + (n+1) + ". UniqueNumbers: " + input.length + ". Total: " + input.sumFrom(x => x.multiplier));
+    //console.info("Loop: " + (n+1) + ". UniqueNumbers: " + input.length + ". Total: " + input.sumFrom(x => x.multiplier));
 }
 
 console.info("Result: " + input.sumFrom(x => x.multiplier)) //Part2: 219838428124832
+
+console.timeEnd('Run');
 
 function blink(current: NumScale[]) : NumScale[]
 {
     return current
         .flatMap(x =>
-            processNumberRules(x.num)
+            blinkMap.getOrAdd(x.num, k => processNumberRules(k))
             .map(n =>
                 ({ num: n, multiplier: x.multiplier } as NumScale)))
         .groupBy(x => x.num)

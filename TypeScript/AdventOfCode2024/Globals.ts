@@ -13,8 +13,13 @@ declare global
        popOffFirst(): { first: T, rest: T[]};
        distinct(): T[];
     }
+
+    interface Map<K, V>
+    {
+        getOrAdd(key: K, getVal: (key: K) => V): V;
+    }
 }
- 
+
 Array.prototype.sum = function(): number {
    return this.reduce((acc, x) => acc + x, 0);
 }
@@ -96,4 +101,16 @@ Array.prototype.distinct = function()
       }
    });
    return results;
+}
+
+Map.prototype.getOrAdd = function<K, V>(key: K, getVal: (key: K) => V): V
+{
+   var found = this.get(key);
+   if(found !== undefined)
+   {
+      return found;
+   }
+   var created = getVal(key);
+   this[key] = created;
+   return created;
 }

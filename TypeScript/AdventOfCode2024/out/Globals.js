@@ -58,4 +58,13 @@ Array.prototype.distinct = function () {
     });
     return results;
 };
+Map.prototype.getOrAdd = function (key, getVal) {
+    var found = this.get(key);
+    if (found !== undefined) {
+        return found;
+    }
+    var created = getVal(key);
+    this[key] = created;
+    return created;
+};
 //# sourceMappingURL=Globals.js.map

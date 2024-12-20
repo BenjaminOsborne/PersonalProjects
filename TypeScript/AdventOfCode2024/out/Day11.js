@@ -2,19 +2,24 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./Globals");
 var FileHelper_1 = require("./FileHelper");
+console.time('Run');
 var loaded = FileHelper_1.default.LoadFile('Inputs\\Day11.txt')
     .split(' ')
     .map(function (sNum) { return ({ num: Number(sNum), multiplier: 1 }); });
 var input = loaded;
+var blinkMap = new Map();
 for (var n = 0; n < 75; n++) {
     input = blink(input);
-    console.info("Loop: " + (n + 1) + ". UniqueNumbers: " + input.length + ". Total: " + input.sumFrom(function (x) { return x.multiplier; }));
+    console.info("Loop: " + (n+1) + ". UniqueNumbers: " + input.length + ". Total: " + input.sumFrom(x => x.multiplier));
 }
 console.info("Result: " + input.sumFrom(function (x) { return x.multiplier; })); //Part2: 219838428124832
-function blink(current) {
+console.timeEnd('Run');
+
+function blink(current)
+{
     return current
         .flatMap(function (x) {
-        return processNumberRules(x.num)
+        return blinkMap.getOrAdd(x.num, function (k) { return processNumberRules(k); })
             .map(function (n) {
             return ({ num: n, multiplier: x.multiplier });
         });
@@ -27,6 +32,7 @@ function blink(current) {
             : ({ num: first.num, multiplier: x.Items.sumFrom(function (i) { return i.multiplier; }) });
     });
 }
+
 function processNumberRules(num) {
     if (num == 0) {
         return [1];
