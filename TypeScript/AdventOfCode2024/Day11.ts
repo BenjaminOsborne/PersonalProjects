@@ -1,12 +1,11 @@
 import './Globals'
 import FileHelper from './FileHelper';
 
-type Num = { val: number, asString: string };
-type NumScale = { num: Num, multiplier: number };
+type NumScale = { num: number, multiplier: number };
 
 var loaded = FileHelper.LoadFile('Inputs\\Day11.txt')
     .split(' ')
-    .map(x => ({ num: toNum(Number(x)), multiplier: 1 } as NumScale));
+    .map(sNum => ({ num: Number(sNum), multiplier: 1 } as NumScale));
 
 var input = loaded;
 for(var n = 0; n < 75; n++)
@@ -24,7 +23,7 @@ function blink(current: NumScale[]) : NumScale[]
             processNumberRules(x.num)
             .map(n =>
                 ({ num: n, multiplier: x.multiplier } as NumScale)))
-        .groupBy(x => x.num.val)
+        .groupBy(x => x.num)
         .map(x =>
         {
             var first = x.Items[0];
@@ -34,21 +33,21 @@ function blink(current: NumScale[]) : NumScale[]
         });
 }
 
-function processNumberRules(num : Num) : Num[]
+function processNumberRules(num : number) : number[]
 {
-    if(num.val == 0)
+    if(num == 0)
     {
-        return [ toNum(1) ]
+        return [ 1 ]
     }
-    const numLen = num.asString.length;
+    const strNum = num.toString();
+    const numLen = strNum.length;
     if(numLen %2 == 0)
     {
+        var splitAt = numLen / 2;
         return [
-            toNum(Number(num.asString.slice(0, numLen / 2))),
-            toNum(Number(num.asString.slice(numLen / 2)))
+            new Number(strNum.slice(0, splitAt)) as number,
+            new Number(strNum.slice(splitAt)) as number
         ];
     }
-    return [ toNum(num.val * 2024)]
+    return [ num * 2024 ]
 }
-
-function toNum(num: number) : Num { return { val: num, asString: num.toString() } }

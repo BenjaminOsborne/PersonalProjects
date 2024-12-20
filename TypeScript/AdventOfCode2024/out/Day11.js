@@ -4,7 +4,7 @@ require("./Globals");
 var FileHelper_1 = require("./FileHelper");
 var loaded = FileHelper_1.default.LoadFile('Inputs\\Day11.txt')
     .split(' ')
-    .map(function (x) { return ({ num: toNum(Number(x)), multiplier: 1 }); });
+    .map(function (sNum) { return ({ num: Number(sNum), multiplier: 1 }); });
 var input = loaded;
 for (var n = 0; n < 75; n++) {
     input = blink(input);
@@ -19,7 +19,7 @@ function blink(current) {
             return ({ num: n, multiplier: x.multiplier });
         });
     })
-        .groupBy(function (x) { return x.num.val; })
+        .groupBy(function (x) { return x.num; })
         .map(function (x) {
         var first = x.Items[0];
         return x.Items.length == 1
@@ -28,17 +28,18 @@ function blink(current) {
     });
 }
 function processNumberRules(num) {
-    if (num.val == 0) {
-        return [toNum(1)];
+    if (num == 0) {
+        return [1];
     }
-    var numLen = num.asString.length;
+    var strNum = num.toString();
+    var numLen = strNum.length;
     if (numLen % 2 == 0) {
+        var splitAt = numLen / 2;
         return [
-            toNum(Number(num.asString.slice(0, numLen / 2))),
-            toNum(Number(num.asString.slice(numLen / 2)))
+            new Number(strNum.slice(0, splitAt)),
+            new Number(strNum.slice(splitAt))
         ];
     }
-    return [toNum(num.val * 2024)];
+    return [num * 2024];
 }
-function toNum(num) { return { val: num, asString: num.toString() }; }
 //# sourceMappingURL=Day11.js.map
