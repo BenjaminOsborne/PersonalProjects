@@ -151,6 +151,9 @@ public class HomeViewModel
     public void OnFileExtractResult(Result result) =>
         _UpdateLastActionResult(result);
 
+    public void RefreshTransactions() =>
+        _transactionsModel.RefreshTransactions();
+
     public void SetMonth(string? yearAndMonth) =>
         _transactionsModel.UpdateMonth(
             DateOnly.TryParseExact(yearAndMonth, "yyyy-MM", out var parsed)
@@ -241,6 +244,9 @@ public class HomeViewModel
 
         public UnMatchedRowsTable.ViewModel? UnMatchedModel { get; private set; }
         public MatchedRowsTable.ViewModel? MatchedModel { get; private set; }
+
+        public void RefreshTransactions() =>
+            _OnStateChange(() => WrappedResult.Create(Unit.Instance), refreshCategories: true);
 
         public void UpdateMonth(WrappedResult<DateOnly> result) =>
             _OnStateChange(
