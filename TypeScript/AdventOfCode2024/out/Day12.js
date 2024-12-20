@@ -10,43 +10,74 @@ cells.forEach(function (row, vLoc) {
     return row.forEach(function (val, hLoc) {
         var loc = { VLoc: vLoc, HLoc: hLoc };
         var above = tryGetRegion(vLoc - 1, hLoc);
+        var aboveRight = tryGetRegion(vLoc - 1, hLoc + 1);
+        var aboveLeft = tryGetRegion(vLoc - 1, hLoc - 1);
         var left = tryGetRegion(vLoc, hLoc - 1);
         var aboveMatches = above !== undefined && above.Id == val;
         var leftMatches = left !== undefined && left.Id == val;
-        if (aboveMatches && leftMatches && above != left) {
-            mergeRegionIn(loc, above, left);
+        if (aboveMatches && leftMatches) {
+            var addSides = aboveRight === above ? 0 : -2;
+            if (above != left) {
+                mergeRegionIn(loc, above, left, addSides);
+            }
+            else {
+                joinRegion(above, loc, 0, addSides);
+            }
         }
         else if (aboveMatches) {
-            joinRegion(above, loc, leftMatches ? 0 : 2);
+            var addSides = aboveLeft === above && aboveRight === above
+                ? 4
+                : (aboveRight === above || aboveLeft == above)
+                    ? 2
+                    : 0;
+            joinRegion(above, loc, leftMatches ? 0 : 2, addSides);
         }
         else if (leftMatches) {
-            joinRegion(left, loc, aboveMatches ? 0 : 2);
+            var addSides = aboveLeft === left ? 2 : 0;
+            joinRegion(left, loc, aboveMatches ? 0 : 2, addSides);
         }
         else //create new region
          {
-            setRegion(loc, { Id: val, Locations: [loc], Perimiter: 4 });
+            var reg = { Id: val, Locations: [loc], Perimiter: 4, Sides: 4 };
+            setRegion(loc, reg);
+            printRegion(reg);
         }
     });
 });
+console.info("----");
+regionMap
+    .flatMap(function (x) { return x; })
+    .distinct()
+    .forEach(function (x) { return console.info("Region: " + x.Id + " Area: " + x.Locations.length + " Sides: " + x.Sides); });
+console.info("----");
 var result = regionMap
     .flatMap(function (x) { return x; })
     .distinct()
-    .map(function (x) { return x.Locations.length * x.Perimiter; })
+    .map(function (x) { return x.Locations.length * x.Sides; })
     .sum();
 console.info("Result: " + result);
-function mergeRegionIn(loc, main, mergeIn) {
+function printRegion(reg) {
+    if (reg.Id != "C") {
+        return;
+    }
+    console.info("Region: " + reg.Id + " sides: " + reg.Sides);
+}
+function mergeRegionIn(loc, main, mergeIn, addSides) {
     //Add locations
     mergeIn.Locations.forEach(function (l) {
         main.Locations.push(l);
         setRegion(l, main); //update map reference
     });
     main.Perimiter += mergeIn.Perimiter; //take permiter
-    joinRegion(main, loc, 0); //0 as 2 extra already from joining in other block
+    main.Sides += mergeIn.Sides; //same number of sides
+    joinRegion(main, loc, 0, addSides); //0 as 2 extra already from joining in other block
 }
-function joinRegion(region, loc, extendPerim) {
+function joinRegion(region, loc, extendPerim, addSides) {
     region.Locations.push(loc);
     region.Perimiter += extendPerim;
+    region.Sides += addSides;
     setRegion(loc, region);
+    printRegion(region);
 }
 function tryGetRegion(vLoc, hLoc) {
     if (vLoc < 0 || hLoc < 0 || vLoc >= vLocMax || hLoc >= hLocMax) {
