@@ -122,6 +122,27 @@ namespace AccountProcessor.Components.Services
             items.Select((x, nx) => (x, nx));
 
         public static IEnumerable<T> ConcatItem<T>(this IEnumerable<T> items, T item) => items.Concat([item]);
+
+        public static IEnumerable<ImmutableArray<T>> GroupIntoBlocks<T>(this IEnumerable<T> items, int groupSize)
+        {
+            ImmutableArray<T>.Builder? builder = null;
+            foreach(var item in items)
+            {
+                builder ??= ImmutableArray.CreateBuilder<T>();
+                builder.Add(item);
+
+                if(builder.Count == groupSize)
+                {
+                    yield return builder.ToImmutable();
+                    builder = null;
+                }
+            }
+
+            if (builder != null && builder.Count > 0)
+            {
+                yield return builder.ToImmutable();
+            }
+        }
     }
 
     public static class ImmutableExtensions
