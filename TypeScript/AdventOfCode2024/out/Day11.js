@@ -10,13 +10,11 @@ var input = loaded;
 var blinkMap = new Map();
 for (var n = 0; n < 75; n++) {
     input = blink(input);
-    console.info("Loop: " + (n+1) + ". UniqueNumbers: " + input.length + ". Total: " + input.sumFrom(x => x.multiplier));
+    //console.info("Loop: " + (n+1) + ". UniqueNumbers: " + input.length + ". Total: " + input.sumFrom(x => x.multiplier));
 }
 console.info("Result: " + input.sumFrom(function (x) { return x.multiplier; })); //Part2: 219838428124832
 console.timeEnd('Run');
-
-function blink(current)
-{
+function blink(current) {
     return current
         .flatMap(function (x) {
         return blinkMap.getOrAdd(x.num, function (k) { return processNumberRules(k); })
@@ -32,7 +30,6 @@ function blink(current)
             : ({ num: first.num, multiplier: x.Items.sumFrom(function (i) { return i.multiplier; }) });
     });
 }
-
 function processNumberRules(num) {
     if (num == 0) {
         return [1];
