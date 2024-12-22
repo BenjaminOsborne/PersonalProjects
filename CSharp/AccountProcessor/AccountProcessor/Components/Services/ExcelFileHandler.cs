@@ -326,7 +326,8 @@ namespace AccountProcessor.Components.Services
 
                     if (comment != null)
                     {
-                        cell.AddComment(comment);
+                        var added = cell.AddComment(comment);
+                        added.AutoFit = true;
                     }
                 }
 
