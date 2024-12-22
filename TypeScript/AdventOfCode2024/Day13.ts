@@ -1,10 +1,10 @@
 import './Globals'
 import FileHelper from './FileHelper';
 
-var lines = FileHelper.LoadFileLines('Inputs\\Day13_Test.txt');
+var lines = FileHelper.LoadFileLines('Inputs\\Day13.txt');
 
-type Button = { MoveX: bigint, MoveY: bigint };
-type Setup = { PrizeX: bigint, PrizeY: bigint, ButA: Button, ButB : Button };
+type Button = { MoveX: number, MoveY: number };
+type Setup = { PrizeX: number, PrizeY: number, ButA: Button, ButB : Button };
 
 var tokens = lines
     .map((x,nx) => ({ Line: x, Block: Math.floor(nx / 3) }))
@@ -14,60 +14,63 @@ var tokens = lines
         const bA = loadButton(x.Items[0].Line);
         const bB = loadButton(x.Items[1].Line);
         const split = x.Items[2].Line.replace(", Y", "").split('=');
-        var offset: bigint = BigInt(10000000000000);
-        offset = BigInt(0);
-        return { PrizeX: BigInt(split[1]) + offset, PrizeY: BigInt(split[2]) + offset, ButA: bA, ButB: bB } as Setup
+        var offset = 10000000000000;
+        return { PrizeX: Number(split[1]) + offset, PrizeY: Number(split[2]) + offset, ButA: bA, ButB: bB } as Setup
     })
     .map(getMinTokens)
-    .reduce((agg,x) => agg + x, BigInt(0));
+    .reduce((agg,x) => agg + x, Number(0));
 console.log("Result: " + tokens)
 
-function getMinTokens(s: Setup) : bigint
+function getMinTokens(s: Setup) : number
 {
-    var unit: bigint = BigInt(1);
-    var numAPress = ((s.PrizeX / s.ButA.MoveX) -
-        (s.PrizeY * (s.ButB.MoveX / (s.ButA.MoveY * s.ButA.MoveX))))
-        /
-        (unit - (s.ButA.MoveY * s.ButB.MoveX) / (s.ButB.MoveY * s.ButA.MoveX));
-    var numBPress = ((s.PrizeY / s.ButB.MoveY) - 
-        (s.PrizeX * (s.ButA.MoveY / (s.ButB.MoveX * s.ButB.MoveY))))
-        /
-        (unit - (s.ButB.MoveX * s.ButA.MoveY) / (s.ButA.MoveX * s.ButB.MoveY));
-
+    var numAPress = (s.PrizeY * s.ButB.MoveX - s.PrizeX * s.ButB.MoveY) / (s.ButA.MoveY * s.ButB.MoveX - s.ButA.MoveX * s.ButB.MoveY)
+    var numBPress = (s.PrizeY * s.ButA.MoveX - s.PrizeX * s.ButA.MoveY) / (s.ButB.MoveY * s.ButA.MoveX - s.ButB.MoveX * s.ButA.MoveY);
+    
     console.info("A Press: " + numAPress);
     console.info("B Press: " + numBPress);
 
-    if(numAPress < 0 || numBPress < 0)
+    if(numAPress < 0 || numBPress < 0) //negative solutions not valid
     {
-        return BigInt(0);
+        return 0;
     }
-    var three: bigint = BigInt(3);
-    return numAPress * three + numBPress;
+    if(numAPress != Math.floor(numAPress) || numBPress != Math.floor(numBPress)) //must be discrete number of moves
+    {
+        return 0;
+    }
+    return numAPress * 3 + numBPress; //tokens cost "3" for an A press, just "1" for a B press.
 }
 
 function loadButton(line: string) : Button
 {
     const split = line.replace(", Y", "").split('+');
-    return { MoveX: BigInt(split[1]), MoveY: BigInt(split[2]) }
+    return { MoveX: Number(split[1]), MoveY: Number(split[2]) }
 }
 
 /*
-Button A: X+94, Y+34
-Button B: X+22, Y+67
-Prize: X=10000000008400, Y=10000000005400
+2 initial equations:
+numAPress * s.ButA.MoveX + numBPress * s.ButB.MoveX = s.PrizeX
+numAPress * s.ButA.MoveY + numBPress * s.ButB.MoveY = s.PrizeY
 
-A * 94 + B * 22 = PX
-A * 34 + B * 67 = PY
+**Calculate A by substituting for B**
 
-A = PX / 94 - B * 22 / 94
-B = PY / 67 - A * 34 / 67
+numBPress = (s.PrizeX - numAPress * s.ButA.MoveX) / s.ButB.MoveX
+numBPress =(s.PrizeY - numAPress * s.ButA.MoveY) / s.ButB.MoveY
 
-B = PY / 67 - (PX / 94 - B * 22 / 94) * 34 / 67
-B = PY / 67 - (PX / 94) * (34 / 67) + B * (22 / 94) * (34 / 67)
-B = (PY / 67 - (PX * 34) / (94 * 67)) / (1 - (22 * 34) / (94 * 67)
+(s.PrizeX - numAPress * s.ButA.MoveX) / s.ButB.MoveX = (s.PrizeY - numAPress * s.ButA.MoveY) / s.ButB.MoveY
+(s.PrizeX - numAPress * s.ButA.MoveX) * s.ButB.MoveY = (s.PrizeY - numAPress * s.ButA.MoveY) * s.ButB.MoveX
+s.PrizeX * s.ButB.MoveY - numAPress * s.ButA.MoveX * s.ButB.MoveY = s.PrizeY * s.ButB.MoveX - numAPress * s.ButA.MoveY * s.ButB.MoveX
 
-A = PX / 94 - ((PY / 67) - A * (34 / 67)) * 22 / 94
-A = PX / 94 - (PY / 67) * (22 / 94) + A * (34 / 67) * (22 / 94)
-A = (PX / 94 - (PY * 22) / (67 * 94)) / (1 - (34 * 22) / (67 * 94))
+numAPress * s.ButA.MoveY * s.ButB.MoveX - numAPress * s.ButA.MoveX * s.ButB.MoveY = s.PrizeY * s.ButB.MoveX - s.PrizeX * s.ButB.MoveY
+numAPress = (s.PrizeY * s.ButB.MoveX - s.PrizeX * s.ButB.MoveY) / (s.ButA.MoveY * s.ButB.MoveX - s.ButA.MoveX * s.ButB.MoveY)
 
+**Calculate B by substituting for A**
+
+numAPress = (s.PrizeX - numBPress * s.ButB.MoveX) / s.ButA.MoveX
+numAPress = (s.PrizeY - numBPress * s.ButB.MoveY) / s.ButA.MoveY
+
+(s.PrizeX - numBPress * s.ButB.MoveX) / s.ButA.MoveX = (s.PrizeY - numBPress * s.ButB.MoveY) / s.ButA.MoveY
+(s.PrizeX - numBPress * s.ButB.MoveX) * s.ButA.MoveY = (s.PrizeY - numBPress * s.ButB.MoveY) * s.ButA.MoveX
+s.PrizeX * s.ButA.MoveY - numBPress * s.ButB.MoveX * s.ButA.MoveY = s.PrizeY * s.ButA.MoveX - numBPress * s.ButB.MoveY * s.ButA.MoveX
+numBPress * s.ButB.MoveY * s.ButA.MoveX - numBPress * s.ButB.MoveX * s.ButA.MoveY = s.PrizeY * s.ButA.MoveX - s.PrizeX * s.ButA.MoveY
+numBPress = (s.PrizeY * s.ButA.MoveX - s.PrizeX * s.ButA.MoveY) / (s.ButB.MoveY * s.ButA.MoveX - s.ButB.MoveX * s.ButA.MoveY)
 */
