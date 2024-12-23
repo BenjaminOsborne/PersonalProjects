@@ -18,6 +18,12 @@ var FileHelper = /** @class */ (function () {
     FileHelper.LoadFileLinesWithMap = function (location, fnMap) {
         return FileHelper.LoadFileLines(location).map(fnMap);
     };
+    FileHelper.writeFile = function (location, data) {
+        fs.writeFile(location, data, function (_) { });
+    };
+    FileHelper.appendFile = function (location, data) {
+        fs.appendFile(location, data, function (_) { });
+    };
     return FileHelper;
 }());
 exports.default = FileHelper;

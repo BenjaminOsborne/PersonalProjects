@@ -25,5 +25,14 @@ export default class FileHelper
     {
         return FileHelper.LoadFileLines(location).map(fnMap);
     }
-    
+
+    static writeFile(location: string, data: string)
+    {
+        fs.writeFile(location, data, _ => { });
+    }
+
+    static appendFile(location: string, data: string)
+    {
+        fs.appendFile(location, data, _ => { });
+    }
 }

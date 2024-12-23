@@ -1,13 +1,8 @@
 import './Globals'
+import Utility from './Utility'
 import FileHelper from './FileHelper';
 
 type Robot = { PosX: number, PosY: number, VelocityX: number, VelocityY: number };
-
-const gridSizeX = 101;
-const gridSizeY = 103;
-const step = 100;
-const midX = Math.floor(gridSizeX / 2);
-const midY = Math.floor(gridSizeY / 2);
 
 var robotStart = FileHelper.LoadFileLines('Inputs\\Day14.txt')
     .map(l =>
@@ -19,17 +14,71 @@ var robotStart = FileHelper.LoadFileLines('Inputs\\Day14.txt')
         return { PosX: lines[0][0], PosY: lines[0][1], VelocityX: lines[1][0], VelocityY: lines[1][1] } as Robot;
     });
 
-var postStep = robotStart
-    .map(performStep);
-var score = postStep
-    .map(r => ({ Robot: r, Quadrant: getQuadrant(r) }))
-    .filter(x => x.Quadrant != undefined)
-    .groupBy(x => x.Quadrant)
-    .map(x => x.Items.length)
-    .reduce((agg, x) => agg * x, 1);
-console.info("Result: " + score);
+const gridSizeX = 101;
+const gridSizeY = 103;
 
-function performStep(r: Robot) : Robot
+const midX = Math.floor(gridSizeX / 2);
+const midY = Math.floor(gridSizeY / 2);
+
+const outputFile = 'Inputs\\Day14_Output.txt';
+FileHelper.writeFile(outputFile, "");
+
+var startStep = 9877; //gridSizeX * gridSizeY
+for(var step = 0; step < gridSizeX * gridSizeY; step++)
+{
+    var stepped = robotStart
+        .map(r => performStep(r, step));
+    var inLine = stepped
+        .groupBy(x => x.PosX)
+        .map(x => getLongestContinuous(x.Items.map(i => i.PosY)))
+        .filter(l => l > 4);
+    if(inLine.length == 0)
+    {
+        continue;
+    }
+
+    console.info("Candidate: " + step)
+
+    printContext(Utility.arrayFill(gridSizeX, () => '.').join(""))
+    printContext("STEP: " + step);
+    
+    var display = Utility.arrayFill(gridSizeY, () => Utility.arrayFill(gridSizeX, () => '.'));
+    stepped
+        .groupBy(x => x.PosX + "|" + x.PosY)
+        .forEach(x => display[x.Items[0].PosY][x.Items[0].PosX] = x.Items.length.toString());
+    display.forEach(r => printContext(r.join("")))
+}
+
+function printContext(data: string)
+{
+    console.info(data);
+    FileHelper.appendFile(outputFile, data + "\n");
+}
+
+function getLongestContinuous(pos: number[]) : number
+{
+    pos.sort();
+
+    var longest = 0;
+    var previous = -2;
+    for(var n = 0; n < pos.length; n++)
+    {
+        var val = pos[n]
+        if(val == previous + 1)
+        {
+            longest += 1;
+        }
+        else
+        {
+            longest = 1;
+        }
+        previous = val;
+    }
+
+    return longest;
+}
+
+function performStep(r: Robot, step: number) : Robot
 {
     return (
     {
