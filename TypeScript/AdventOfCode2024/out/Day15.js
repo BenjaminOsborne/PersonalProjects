@@ -7,7 +7,8 @@ var Item;
 (function (Item) {
     Item["Empty"] = ".";
     Item["Wall"] = "#";
-    Item["Box"] = "O";
+    Item["BoxLeft"] = "[";
+    Item["BoxRight"] = "]";
     Item["Robot"] = "@";
 })(Item || (Item = {}));
 var Direction;
@@ -19,7 +20,9 @@ var Direction;
 })(Direction || (Direction = {}));
 var grid = cells
     .filter(function (x) { return x.length > 0 && x[0] == '#'; })
+    .map(function (r) { return r.flatMap(function (c) { return part2ExpandCell(c); }); })
     .map(function (row, nV) { return row.map(function (c, nH) { return ({ LocV: nV, LocH: nH, Item: c }); }); });
+//grid.forEach(r => console.info(r.map(c => c.Item).join(''))); //print grid
 var locVSize = grid.length;
 var locHSize = grid[0].length;
 var directions = cells
@@ -30,50 +33,67 @@ var robot = grid.flatMap(function (x) { return x; }).single(function (x) { retur
 directions
     .forEach(function (d, nx) {
     var r = processMove(robot, d);
+    //console.info("Loop: " + nx + " D: " + d + " Move: " + r.DidMove); //print out progress
     if (r.DidMove == false) {
         return;
     }
     robot = r.Robot;
     r.Updates.forEach(function (u) { return grid[u.LocV][u.LocH] = u; });
 });
+//Print grid
+grid.forEach(function (r) { return console.info(r.map(function (a) { return a.Item; }).join("")); });
 var result = grid
     .flatMap(function (x) { return x; })
-    .filter(function (x) { return x.Item == Item.Box; })
+    .filter(function (x) { return x.Item == Item.BoxLeft; })
     .map(function (x) { return 100 * x.LocV + x.LocH; })
     .sum();
-console.info("Result: " + result);
-grid.forEach(function (r) { return console.info(r.map(function (a) { return a.Item; }).join("")); });
+console.info("Result: " + result); //Part2: 1446175
+function part2ExpandCell(c) {
+    return c.replace("#", "##")
+        .replace("O", "[]")
+        .replace(".", "..")
+        .replace("@", "@.")
+        .split('');
+}
 function processMove(robot, direction) {
-    var cells = [];
-    var current = robot;
-    var _loop_1 = function () {
-        next = getLocForStep(current, direction);
-        if (next == undefined) {
+    var boxesToMove = [];
+    var currentHead = [robot];
+    while (true) {
+        var next = currentHead.map(function (l) { return getLocForStep(l, direction); });
+        if (next.any(function (x) { return x === undefined; })) {
             throw new Error("Should not be able to go off map");
         }
-        var cell = grid[next.LocV][next.LocH];
-        if (cell.Item == Item.Wall) {
-            return { value: { DidMove: false, Updates: undefined, Robot: undefined } };
+        var nextCells = next.map(function (n) { return grid[n.LocV][n.LocH]; });
+        if (nextCells.any(function (c) { return c.Item == Item.Wall; })) {
+            return { DidMove: false, Updates: undefined, Robot: undefined };
         }
-        if (cell.Item == Item.Robot) {
+        if (nextCells.any(function (c) { return c.Item == Item.Robot; })) {
             throw new Error("Should not find robot on step!");
         }
-        if (cell.Item == Item.Empty) {
-            var updates_1 = [];
-            updates_1.push(({ LocV: robot.LocV, LocH: robot.LocH, Item: Item.Empty })); //Space where robot was must be empty
+        if (nextCells.all(function (x) { return x.Item == Item.Empty; })) {
+            var updates = [];
+            //start with empty spots where existing items are (any where boxes now go will be overwritten as updates processed in order)
+            updates.pushRange(boxesToMove.concat(robot)
+                .map(function (e) { return ({ LocV: e.LocV, LocH: e.LocH, Item: Item.Empty }); })); //Space where robot was must be empty
             var nextRobot = move(robot, direction);
-            updates_1.push(nextRobot);
-            cells.forEach(function (c) { return updates_1.push(move(c, direction)); });
-            return { value: { DidMove: true, Updates: updates_1, Robot: nextRobot } };
+            updates.push(nextRobot);
+            updates.pushRange(boxesToMove
+                .map(function (c) { return move(c, direction); }));
+            return { DidMove: true, Updates: updates, Robot: nextRobot };
         }
-        cells.push(cell);
-        current = next;
-    };
-    var next;
-    while (true) {
-        var state_1 = _loop_1();
-        if (typeof state_1 === "object")
-            return state_1.value;
+        var nextBoxes = nextCells
+            .filter(function (x) { return x.Item == Item.BoxLeft || x.Item == Item.BoxRight; })
+            //bring in other side of box
+            .flatMap(function (b) { return b.Item == Item.BoxLeft
+            ? [b, grid[b.LocV][b.LocH + 1]]
+            : [grid[b.LocV][b.LocH - 1], b]; })
+            .distinct(); //remove duplicates (as if box straight ahead, will already have in!)
+        boxesToMove.pushRange(nextBoxes);
+        currentHead = direction == Direction.Left
+            ? nextBoxes.filter(function (x) { return x.Item == Item.BoxLeft; })
+            : direction == Direction.Right
+                ? nextBoxes.filter(function (x) { return x.Item == Item.BoxRight; })
+                : nextBoxes; //up or down is both
     }
 }
 function move(cell, direction) {

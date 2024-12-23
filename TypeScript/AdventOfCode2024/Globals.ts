@@ -8,11 +8,13 @@ declare global
        sum(): number;
        sumFrom(select: (val: T) => number): number;
        any(pred: (val: T) => boolean): boolean;
+       all(pred: (val: T) => boolean): boolean;
        first(pred: (val: T) => boolean): T;
        single(pred: (val: T) => boolean): T;
        groupBy<TKey>(fnSelect: (input: T) => TKey): GroupedItem<TKey, T>[];
        popOffFirst(): { first: T, rest: T[]};
        distinct(): T[];
+       pushRange(items: T[]);
     }
 
     interface Map<K, V>
@@ -40,6 +42,18 @@ Array.prototype.any = function<T>(pred: (val: T) => boolean): boolean
       }
    }
    return false;
+}
+
+Array.prototype.all = function<T>(pred: (val: T) => boolean): boolean
+{
+   for(var nx = 0; nx < this.length; nx++)
+   {
+      if(pred(this[nx]) == false)
+      {
+         return false;
+      }
+   }
+   return true;
 }
 
 Array.prototype.first = function<T>(pred: (val: T) => boolean): T
@@ -124,6 +138,11 @@ Array.prototype.distinct = function()
       }
    });
    return results;
+}
+
+Array.prototype.pushRange = function<T>(items: T[])
+{
+   items.forEach(i => this.push(i))
 }
 
 Map.prototype.getOrAdd = function<K, V>(key: K, getVal: (key: K) => V): V

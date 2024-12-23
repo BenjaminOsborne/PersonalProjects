@@ -14,6 +14,14 @@ Array.prototype.any = function (pred) {
     }
     return false;
 };
+Array.prototype.all = function (pred) {
+    for (var nx = 0; nx < this.length; nx++) {
+        if (pred(this[nx]) == false) {
+            return false;
+        }
+    }
+    return true;
+};
 Array.prototype.first = function (pred) {
     for (var nx = 0; nx < this.length; nx++) {
         var item = this[nx];
@@ -73,6 +81,10 @@ Array.prototype.distinct = function () {
         }
     });
     return results;
+};
+Array.prototype.pushRange = function (items) {
+    var _this = this;
+    items.forEach(function (i) { return _this.push(i); });
 };
 Map.prototype.getOrAdd = function (key, getVal) {
     var found = this.get(key);
