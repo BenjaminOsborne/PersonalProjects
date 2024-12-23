@@ -23,6 +23,22 @@ Array.prototype.first = function (pred) {
     }
     return undefined;
 };
+Array.prototype.single = function (pred) {
+    var found = undefined;
+    for (var nx = 0; nx < this.length; nx++) {
+        var item = this[nx];
+        if (pred(item)) {
+            if (found != undefined) {
+                throw new Error("Single: Matched multiple items");
+            }
+            found = item;
+        }
+    }
+    if (found == undefined) {
+        throw new Error("Single did not find any items");
+    }
+    return found;
+};
 Array.prototype.groupBy = function (fnSelect) {
     //GroupItems tracked locally in map for (O(1)) lookup in loop.
     //Results in array to ensure returned stably in order of first encounter.

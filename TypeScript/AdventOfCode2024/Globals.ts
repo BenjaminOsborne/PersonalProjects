@@ -9,6 +9,7 @@ declare global
        sumFrom(select: (val: T) => number): number;
        any(pred: (val: T) => boolean): boolean;
        first(pred: (val: T) => boolean): T;
+       single(pred: (val: T) => boolean): T;
        groupBy<TKey>(fnSelect: (input: T) => TKey): GroupedItem<TKey, T>[];
        popOffFirst(): { first: T, rest: T[]};
        distinct(): T[];
@@ -52,6 +53,28 @@ Array.prototype.first = function<T>(pred: (val: T) => boolean): T
       }
    }
    return undefined;
+}
+
+Array.prototype.single = function<T>(pred: (val: T) => boolean): T
+{
+   var found: T = undefined;
+   for(var nx = 0; nx < this.length; nx++)
+   {
+      var item = this[nx];
+      if(pred(item))
+      {
+         if(found != undefined)
+         {
+            throw new Error("Single: Matched multiple items")
+         }
+         found = item;
+      }
+   }
+   if(found == undefined)
+   {
+      throw new Error("Single did not find any items")
+   }
+   return found;
 }
 
 Array.prototype.groupBy = function<TKey, T>(fnSelect: (input: T) => TKey): GroupedItem<TKey, T>[]
