@@ -17,14 +17,13 @@ var midX = Math.floor(gridSizeX / 2);
 var midY = Math.floor(gridSizeY / 2);
 var outputFile = 'Inputs\\Day14_Output.txt';
 FileHelper_1.default.writeFile(outputFile, "");
-var startStep = 9877; //gridSizeX * gridSizeY
 for (var step = 0; step < gridSizeX * gridSizeY; step++) {
     var stepped = robotStart
         .map(function (r) { return performStep(r, step); });
     var inLine = stepped
         .groupBy(function (x) { return x.PosX; })
-        .map(function (x) { return getLongestContinuous(x.Items.map(function (i) { return i.PosY; })); })
-        .filter(function (l) { return l > 4; });
+        .map(function (x) { return getLongestContinuous(x.Items.map(function (i) { return i.PosY; }).sort()); }) //Finds longest in a given X position with no gaps
+        .filter(function (l) { return l > 10; }); //Assume at least 11 in a line with no gaps
     if (inLine.length == 0) {
         continue;
     }
@@ -42,7 +41,6 @@ function printContext(data) {
     FileHelper_1.default.appendFile(outputFile, data + "\n");
 }
 function getLongestContinuous(pos) {
-    pos.sort();
     var longest = 0;
     var previous = -2;
     for (var n = 0; n < pos.length; n++) {

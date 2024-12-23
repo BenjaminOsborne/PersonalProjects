@@ -23,15 +23,14 @@ const midY = Math.floor(gridSizeY / 2);
 const outputFile = 'Inputs\\Day14_Output.txt';
 FileHelper.writeFile(outputFile, "");
 
-var startStep = 9877; //gridSizeX * gridSizeY
 for(var step = 0; step < gridSizeX * gridSizeY; step++)
 {
     var stepped = robotStart
         .map(r => performStep(r, step));
     var inLine = stepped
         .groupBy(x => x.PosX)
-        .map(x => getLongestContinuous(x.Items.map(i => i.PosY)))
-        .filter(l => l > 4);
+        .map(x => getLongestContinuous(x.Items.map(i => i.PosY).sort())) //Finds longest in a given X position with no gaps
+        .filter(l => l > 10); //Assume at least 11 in a line with no gaps
     if(inLine.length == 0)
     {
         continue;
@@ -57,8 +56,6 @@ function printContext(data: string)
 
 function getLongestContinuous(pos: number[]) : number
 {
-    pos.sort();
-
     var longest = 0;
     var previous = -2;
     for(var n = 0; n < pos.length; n++)
