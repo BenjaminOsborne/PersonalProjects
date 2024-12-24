@@ -69,6 +69,19 @@ Array.prototype.first = function<T>(pred: (val: T) => boolean): T
    return undefined;
 }
 
+Array.prototype.last = function<T>(pred: (val: T) => boolean): T
+{
+   for(var nx = this.length-1; nx >= 0; nx--)
+   {
+      var item = this[nx];
+      if(pred(item))
+      {
+         return item;
+      }
+   }
+   return undefined;
+}
+
 Array.prototype.single = function<T>(pred: (val: T) => boolean): T
 {
    var found: T = undefined;

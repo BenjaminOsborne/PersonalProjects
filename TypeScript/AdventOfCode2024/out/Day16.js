@@ -19,32 +19,36 @@ var Direction;
 var allDirs = [Direction.Up, Direction.Down, Direction.Left, Direction.Right];
 var Operation;
 (function (Operation) {
-    Operation["Rotate"] = "Rotate";
-    Operation["Step"] = "Step";
+    Operation["Rotate"] = "R";
+    Operation["Step"] = "S";
 })(Operation || (Operation = {}));
-var cells = FileHelper_1.default.LoadFileLinesAndCharacters('Inputs\\Day16_Test1.txt')
+var cells = FileHelper_1.default.LoadFileLinesAndCharacters('Inputs\\Day16_Test2.txt')
     .map(function (row, v) { return row.map(function (c, h) { return ({ LocV: v, LocH: h, Type: c }); }); });
 var start = cells.flatMap(function (x) { return x; }).single(function (x) { return x.Type == CellType.Start; });
 var end = cells.flatMap(function (x) { return x; }).single(function (x) { return x.Type == CellType.End; });
 var initialStep = { Previous: undefined, Operation: undefined, NewLoc: start, NewDir: Direction.Right };
 var nextToWalk = generateNextOptions(initialStep).Options;
 var routesToEnd = [];
+var loop = 0;
 while (nextToWalk.length > 0) {
+    console.info("Loop: " + ++loop + "\tHeads: " + nextToWalk.length);
     var next = nextToWalk.map(generateNextOptions);
     routesToEnd.pushRange(next.filter(function (a) { return a.End !== undefined; }).map(function (b) { return b.End; }));
     nextToWalk = next.flatMap(function (x) { return x.Options; });
 }
 var routes = routesToEnd
     .map(function (r) { return ({ route: r, score: scoreRoute(r) }); })
-    .sort(function (a, b) { return b.score - a.score; });
+    .sort(function (a, b) { return b.score - a.score; }); //descending
 routes.forEach(function (x) { return console.info("Score: " + x.score + ".\n" + displayRoute(x.route)); });
+//console.info("Score: " + routes[0].score)
 //console.info("Result: " + routes[0].score);
 function displayRoute(route) {
+    var _a;
     var display = "";
     var prev = route;
     var steps = 0;
     while (prev !== undefined) {
-        display = prev.NewDir + display;
+        display = ((_a = prev.Operation) !== null && _a !== void 0 ? _a : "") + display;
         prev = prev.Previous;
         steps += 1;
     }
@@ -77,7 +81,7 @@ function generateNextOptions(prev) {
     var nextSteps = nextOptions.map(function (x) { return ({
         Previous: prev,
         Operation: x.dir == prev.NewDir ? Operation.Step : Operation.Rotate,
-        NewLoc: x.cell,
+        NewLoc: x.dir == prev.NewDir ? x.cell : prev.NewLoc, //only move if not rotating
         NewDir: x.dir
     }); });
     return { End: undefined, Options: nextSteps };

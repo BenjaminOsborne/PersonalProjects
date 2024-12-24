@@ -9,13 +9,13 @@ const allDirs = [ Direction.Up, Direction.Down, Direction.Left, Direction.Right 
 type Location = { LocV: number, LocH: number };
 type Cell = Location & { Type: CellType };
 
-enum Operation { Rotate =  "Rotate", Step = "Step" }
+enum Operation { Rotate =  "R", Step = "S" }
 
 type RouteStep = { Previous: RouteStep, Operation: Operation, NewLoc: Cell, NewDir: Direction }
 
 type NextOptions = { End: RouteStep, Options: RouteStep[] }
 
-var cells = FileHelper.LoadFileLinesAndCharacters('Inputs\\Day16_Test1.txt')
+var cells = FileHelper.LoadFileLinesAndCharacters('Inputs\\Day16_Test2.txt')
     .map((row, v) => row.map((c, h) => ({ LocV: v, LocH: h, Type: c } as Cell)));
 
 const start = cells.flatMap(x => x).single(x => x.Type == CellType.Start);
@@ -25,8 +25,10 @@ const initialStep = { Previous: undefined, Operation: undefined, NewLoc: start, 
 var nextToWalk = generateNextOptions(initialStep).Options;
 
 var routesToEnd: RouteStep[] = [];
+var loop = 0;
 while(nextToWalk.length > 0)
 {
+    console.info("Loop: " + ++loop + "\tHeads: " + nextToWalk.length)
     var next = nextToWalk.map(generateNextOptions);
     routesToEnd.pushRange(next.filter(a => a.End !== undefined).map(b => b.End))
     nextToWalk = next.flatMap(x => x.Options);
@@ -34,10 +36,10 @@ while(nextToWalk.length > 0)
 
 var routes = routesToEnd
     .map(r => ({ route: r, score: scoreRoute(r)}))
-    .sort((a,b) => b.score - a.score)
+    .sort((a,b) => b.score - a.score) //descending
 
 routes.forEach(x => console.info("Score: " + x.score + ".\n" + displayRoute(x.route)))
-
+//console.info("Score: " + routes[0].score)
 //console.info("Result: " + routes[0].score);
 
 function displayRoute(route: RouteStep)
@@ -47,7 +49,7 @@ function displayRoute(route: RouteStep)
     var steps = 0;
     while(prev !== undefined)
     {
-        display = prev.NewDir + display;
+        display = (prev.Operation ?? "") + display;
         prev = prev.Previous;
         steps += 1;
     }
@@ -88,7 +90,7 @@ function generateNextOptions(prev: RouteStep) : NextOptions
         {
             Previous: prev,
             Operation: x.dir == prev.NewDir ? Operation.Step : Operation.Rotate,
-            NewLoc: x.cell,
+            NewLoc: x.dir == prev.NewDir ? x.cell : prev.NewLoc, //only move if not rotating
             NewDir: x.dir
         } as RouteStep));
     return { End: undefined, Options: nextSteps };

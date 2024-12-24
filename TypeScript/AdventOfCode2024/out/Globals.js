@@ -31,6 +31,15 @@ Array.prototype.first = function (pred) {
     }
     return undefined;
 };
+Array.prototype.last = function (pred) {
+    for (var nx = this.length - 1; nx >= 0; nx--) {
+        var item = this[nx];
+        if (pred(item)) {
+            return item;
+        }
+    }
+    return undefined;
+};
 Array.prototype.single = function (pred) {
     var found = undefined;
     for (var nx = 0; nx < this.length; nx++) {
