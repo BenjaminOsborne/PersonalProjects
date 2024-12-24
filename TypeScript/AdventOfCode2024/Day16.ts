@@ -42,7 +42,9 @@ while(nextToWalk.length > 0)
         {
             var routesAtLoc = routesToLocations[r.NewLoc.LocV][r.NewLoc.LocH];
             var existRoute = routesAtLoc.first(x => x.NewDir == r.NewDir);
-            if(existRoute !== undefined && existRoute.Score <= r.Score)
+
+            //NOTE: could use "existRoute.Score <= r.Score" if JUST cared about best score. But part2 wants all walked cells, so must also take equal on score
+            if(existRoute !== undefined && existRoute.Score < r.Score)
             {
                 return;
             }
@@ -57,8 +59,28 @@ var routes = routesToEnd
     .sort((a,b) => a.Score - b.Score) //ascending
     //.sort((a,b) => b.score - a.score) //descending
 
-console.info("Route:" + displayRoute(routes[0]))
-console.info("Score: " + routes[0].Score) //Part1: 90440
+var best = routes[0];   
+console.info("Route:" + displayRoute(best))
+console.info("Score: " + best.Score) //Part1: 90440
+
+var equalBestRouteCells = routesToEnd
+    .filter(x => x.Score == best.Score)
+    .flatMap(x => getAllCellsOnRoute(x))
+    .distinct()
+    .length;
+console.info("Cells on best routes: " + equalBestRouteCells) //Part2: 479
+
+function getAllCellsOnRoute(route: RouteStep) : Cell[]
+{
+    var cells: Cell[] = [];
+    var pre = route;
+    while(pre !== undefined)
+    {
+        cells.push(pre.NewLoc);
+        pre = pre.Previous;
+    }
+    return cells;
+}
 
 function displayRoute(route: RouteStep)
 {
