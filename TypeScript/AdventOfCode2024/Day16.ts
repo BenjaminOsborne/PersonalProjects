@@ -11,17 +11,19 @@ type Cell = Location & { Type: CellType };
 
 enum Operation { Rotate =  "R", Step = "S" }
 
-type RouteStep = { Previous: RouteStep, Operation: Operation, NewLoc: Cell, NewDir: Direction }
+type RouteStep = { Previous: RouteStep, Operation: Operation, NewLoc: Cell, NewDir: Direction, Score: number }
 
 type NextOptions = { End: RouteStep, Options: RouteStep[] }
 
-var cells = FileHelper.LoadFileLinesAndCharacters('Inputs\\Day16_Test2.txt')
+const cells = FileHelper.LoadFileLinesAndCharacters('Inputs\\Day16.txt') //Day16_Test2
     .map((row, v) => row.map((c, h) => ({ LocV: v, LocH: h, Type: c } as Cell)));
+
+const routesToLocations = cells.map(r => r.map(v => [] as RouteStep[]));
 
 const start = cells.flatMap(x => x).single(x => x.Type == CellType.Start);
 const end = cells.flatMap(x => x).single(x => x.Type == CellType.End);
 
-const initialStep = { Previous: undefined, Operation: undefined, NewLoc: start, NewDir: Direction.Right } as RouteStep
+const initialStep = { Previous: undefined, Operation: undefined, NewLoc: start, NewDir: Direction.Right, Score: 0 } as RouteStep
 var nextToWalk = generateNextOptions(initialStep).Options;
 
 var routesToEnd: RouteStep[] = [];
@@ -31,16 +33,32 @@ while(nextToWalk.length > 0)
     console.info("Loop: " + ++loop + "\tHeads: " + nextToWalk.length)
     var next = nextToWalk.map(generateNextOptions);
     routesToEnd.pushRange(next.filter(a => a.End !== undefined).map(b => b.End))
-    nextToWalk = next.flatMap(x => x.Options);
+    
+    //filter/update "routesToLocations" with best score to get to that point
+    nextToWalk = [];
+    next.flatMap(x => x.Options)
+        .sort((a,b) => a.Score - b.Score) //sort ascending on score (so if multiple routes to same point, lowest score kept!)
+        .forEach(r =>
+        {
+            var routesAtLoc = routesToLocations[r.NewLoc.LocV][r.NewLoc.LocH];
+            var existRoute = routesAtLoc.first(x => x.NewDir == r.NewDir);
+            if(existRoute !== undefined && existRoute.Score <= r.Score)
+            {
+                return;
+            }
+            var updated = routesAtLoc.filter(x => x != existRoute);
+            updated.push(r);
+            routesToLocations[r.NewLoc.LocV][r.NewLoc.LocH] = updated;
+            nextToWalk.push(r);
+        })
 }
 
 var routes = routesToEnd
-    .map(r => ({ route: r, score: scoreRoute(r)}))
-    .sort((a,b) => b.score - a.score) //descending
+    .sort((a,b) => a.Score - b.Score) //ascending
+    //.sort((a,b) => b.score - a.score) //descending
 
-routes.forEach(x => console.info("Score: " + x.score + ".\n" + displayRoute(x.route)))
-//console.info("Score: " + routes[0].score)
-//console.info("Result: " + routes[0].score);
+console.info("Route:" + displayRoute(routes[0]))
+console.info("Score: " + routes[0].Score) //Part1: 90440
 
 function displayRoute(route: RouteStep)
 {
@@ -53,23 +71,7 @@ function displayRoute(route: RouteStep)
         prev = prev.Previous;
         steps += 1;
     }
-    return "[" + steps + "]: " + display;
-}
-
-function scoreRoute(init: RouteStep)
-{
-    var loc = init;
-    var score = 0;
-    while(loc !== undefined)
-    {
-        score += loc.Operation == Operation.Step
-            ? 1
-            : loc.Operation == Operation.Rotate
-                ? 1000
-                : 0;
-        loc = loc.Previous;
-    }
-    return score;
+    return "Length: [" + steps + "]. Path: " + display;
 }
 
 function generateNextOptions(prev: RouteStep) : NextOptions
@@ -80,34 +82,29 @@ function generateNextOptions(prev: RouteStep) : NextOptions
 
     const nextOptions = nextDirs
         .map(d => ({ cell: getCellAt(prev.NewLoc, d), dir: d }))
-        .filter(x => x.cell.Type != CellType.Wall && hasNotVisited(x.cell, prev));
+        .filter(x => x.cell.Type != CellType.Wall);
     const end = nextOptions.first(x => x.cell.Type == CellType.End);
     if(end !== undefined)
     {
-        return { End: { Previous: prev, Operation: Operation.Step, NewLoc: end.cell, NewDir: prev.NewDir }, Options: [] };
+        var endRoute = { Previous: prev, Operation: Operation.Step, NewLoc: end.cell, NewDir: prev.NewDir, Score: prev.Score +1 } as RouteStep;
+        return { End: endRoute, Options: [] };
     }
-    var nextSteps = nextOptions.map(x => (
+    var nextSteps = nextOptions.map(x =>
         {
-            Previous: prev,
-            Operation: x.dir == prev.NewDir ? Operation.Step : Operation.Rotate,
-            NewLoc: x.dir == prev.NewDir ? x.cell : prev.NewLoc, //only move if not rotating
-            NewDir: x.dir
-        } as RouteStep));
-    return { End: undefined, Options: nextSteps };
-}
-
-function hasNotVisited(cell: Cell, route: RouteStep)
-{
-    var prev = route;
-    while(prev !== undefined)
+            const isStep = x.dir == prev.NewDir;
+            return ({
+                Previous: prev,
+                Operation: isStep ? Operation.Step : Operation.Rotate,
+                NewLoc: isStep ? x.cell : prev.NewLoc, //only move if not rotating
+                NewDir: x.dir,
+                Score: prev.Score + (isStep ? 1 : 1000) 
+            }) as RouteStep;
+        });
+    if(nextSteps.length == 1)
     {
-        if(cell === prev.NewLoc)
-        {
-            return false;
-        }
-        prev = prev.Previous;
+        return generateNextOptions(nextSteps[0]); //if only 1 option - just walk immediately and short-cut "best route" analysis in caller
     }
-    return true;
+    return { End: undefined, Options: nextSteps };
 }
 
 function oppositeDir(dir: Direction)

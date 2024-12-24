@@ -22,11 +22,12 @@ var Operation;
     Operation["Rotate"] = "R";
     Operation["Step"] = "S";
 })(Operation || (Operation = {}));
-var cells = FileHelper_1.default.LoadFileLinesAndCharacters('Inputs\\Day16_Test2.txt')
+var cells = FileHelper_1.default.LoadFileLinesAndCharacters('Inputs\\Day16.txt') //Day16_Test2
     .map(function (row, v) { return row.map(function (c, h) { return ({ LocV: v, LocH: h, Type: c }); }); });
+var routesToLocations = cells.map(function (r) { return r.map(function (v) { return []; }); });
 var start = cells.flatMap(function (x) { return x; }).single(function (x) { return x.Type == CellType.Start; });
 var end = cells.flatMap(function (x) { return x; }).single(function (x) { return x.Type == CellType.End; });
-var initialStep = { Previous: undefined, Operation: undefined, NewLoc: start, NewDir: Direction.Right };
+var initialStep = { Previous: undefined, Operation: undefined, NewLoc: start, NewDir: Direction.Right, Score: 0 };
 var nextToWalk = generateNextOptions(initialStep).Options;
 var routesToEnd = [];
 var loop = 0;
@@ -34,14 +35,27 @@ while (nextToWalk.length > 0) {
     console.info("Loop: " + ++loop + "\tHeads: " + nextToWalk.length);
     var next = nextToWalk.map(generateNextOptions);
     routesToEnd.pushRange(next.filter(function (a) { return a.End !== undefined; }).map(function (b) { return b.End; }));
-    nextToWalk = next.flatMap(function (x) { return x.Options; });
+    //filter/update "routesToLocations" with best score to get to that point
+    nextToWalk = [];
+    next.flatMap(function (x) { return x.Options; })
+        .sort(function (a, b) { return a.Score - b.Score; }) //sort ascending on score (so if multiple routes to same point, lowest score kept!)
+        .forEach(function (r) {
+        var routesAtLoc = routesToLocations[r.NewLoc.LocV][r.NewLoc.LocH];
+        var existRoute = routesAtLoc.first(function (x) { return x.NewDir == r.NewDir; });
+        if (existRoute !== undefined && existRoute.Score <= r.Score) {
+            return;
+        }
+        var updated = routesAtLoc.filter(function (x) { return x != existRoute; });
+        updated.push(r);
+        routesToLocations[r.NewLoc.LocV][r.NewLoc.LocH] = updated;
+        nextToWalk.push(r);
+    });
 }
 var routes = routesToEnd
-    .map(function (r) { return ({ route: r, score: scoreRoute(r) }); })
-    .sort(function (a, b) { return b.score - a.score; }); //descending
-routes.forEach(function (x) { return console.info("Score: " + x.score + ".\n" + displayRoute(x.route)); });
-//console.info("Score: " + routes[0].score)
-//console.info("Result: " + routes[0].score);
+    .sort(function (a, b) { return a.Score - b.Score; }); //ascending
+//.sort((a,b) => b.score - a.score) //descending
+console.info("Route:" + displayRoute(routes[0]));
+console.info("Score: " + routes[0].Score); //Part1: 90440
 function displayRoute(route) {
     var _a;
     var display = "";
@@ -52,20 +66,7 @@ function displayRoute(route) {
         prev = prev.Previous;
         steps += 1;
     }
-    return "[" + steps + "]: " + display;
-}
-function scoreRoute(init) {
-    var loc = init;
-    var score = 0;
-    while (loc !== undefined) {
-        score += loc.Operation == Operation.Step
-            ? 1
-            : loc.Operation == Operation.Rotate
-                ? 1000
-                : 0;
-        loc = loc.Previous;
-    }
-    return score;
+    return "Length: [" + steps + "]. Path: " + display;
 }
 function generateNextOptions(prev) {
     var nextDirs = prev.Operation == Operation.Rotate
@@ -73,28 +74,26 @@ function generateNextOptions(prev) {
         : allDirs.filter(function (x) { return x != oppositeDir(prev.NewDir); });
     var nextOptions = nextDirs
         .map(function (d) { return ({ cell: getCellAt(prev.NewLoc, d), dir: d }); })
-        .filter(function (x) { return x.cell.Type != CellType.Wall && hasNotVisited(x.cell, prev); });
+        .filter(function (x) { return x.cell.Type != CellType.Wall; });
     var end = nextOptions.first(function (x) { return x.cell.Type == CellType.End; });
     if (end !== undefined) {
-        return { End: { Previous: prev, Operation: Operation.Step, NewLoc: end.cell, NewDir: prev.NewDir }, Options: [] };
+        var endRoute = { Previous: prev, Operation: Operation.Step, NewLoc: end.cell, NewDir: prev.NewDir, Score: prev.Score + 1 };
+        return { End: endRoute, Options: [] };
     }
-    var nextSteps = nextOptions.map(function (x) { return ({
-        Previous: prev,
-        Operation: x.dir == prev.NewDir ? Operation.Step : Operation.Rotate,
-        NewLoc: x.dir == prev.NewDir ? x.cell : prev.NewLoc, //only move if not rotating
-        NewDir: x.dir
-    }); });
+    var nextSteps = nextOptions.map(function (x) {
+        var isStep = x.dir == prev.NewDir;
+        return ({
+            Previous: prev,
+            Operation: isStep ? Operation.Step : Operation.Rotate,
+            NewLoc: isStep ? x.cell : prev.NewLoc, //only move if not rotating
+            NewDir: x.dir,
+            Score: prev.Score + (isStep ? 1 : 1000)
+        });
+    });
+    if (nextSteps.length == 1) {
+        return generateNextOptions(nextSteps[0]); //if only 1 option - just walk immediately and short-cut "best route" analysis in caller
+    }
     return { End: undefined, Options: nextSteps };
-}
-function hasNotVisited(cell, route) {
-    var prev = route;
-    while (prev !== undefined) {
-        if (cell === prev.NewLoc) {
-            return false;
-        }
-        prev = prev.Previous;
-    }
-    return true;
 }
 function oppositeDir(dir) {
     switch (dir) {
