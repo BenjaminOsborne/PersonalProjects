@@ -1,12 +1,15 @@
 import './Globals'
 import FileHelper from './FileHelper';
 
+var a = Array(4).fill(8);
+console.info(a);
+
 const lines = FileHelper.LoadFileLines('Inputs\\Day17.txt')
 
 type Register = { A: number, B: number, C: number };
 type Result = { Output: number, JumpTo: number }
 
-const register =
+const regInit =
 {
     A: loadRegister("A", lines[0]),
     B: loadRegister("B", lines[1]),
@@ -20,19 +23,71 @@ const instructions = lines[3]
 
 console.info("Inputs: " + instructions)
 
-var pointer = 0;
-const output: number[] = [];
-while(pointer < (instructions.length-1))
+run().then(d => console.info("RegA: " + d))
+
+async function run() : Promise<number>
 {
-    var result = process(instructions[pointer], instructions[pointer+1], register);
-    var out = result?.Output;
-    if(out !== undefined)
+    const perLoop = 10*1000*1000;
+    var start = 7074000000;
+
+    while(true)
     {
-        output.push(out);
+        console.info("Running from: " + start);
+
+        var tasks = [0,1,2,3,4,5,6,7]
+            .map(x => start + (x * perLoop))
+            .map(s => runForRange(s, s + perLoop))
+        var waited = await Promise.all(tasks);
+        var found = waited.first(x => x !== undefined);
+        if(found > 0)
+        {
+            return found;
+        }
+        start += tasks.length * perLoop;
     }
-    pointer = result?.JumpTo ?? (pointer + 2);
 }
-console.info("Output: " + output.join(",")) //Wrong: 6,5,6,0,2,3,0,3,3
+
+async function runForRange(startVal: number, endValExc: number) : Promise<number>
+{
+    var regA = startVal;
+    while(regA < endValExc)
+    {
+        var output = outputMatchesInput(cloneWithA(regInit, regA));
+        if(output)
+        {
+            return regA;
+        }
+        regA += 1;
+    }
+    return undefined;
+}
+
+function cloneWithA(reg: Register, valA: number) : Register
+{
+    return ({ A: valA, B: reg.B, C: reg.C }) as Register;
+}
+
+function outputMatchesInput(reg: Register) : boolean
+{
+    var pointer = 0;
+    const output: number[] = [];
+    while(pointer < (instructions.length-1))
+    {
+        var result = process(instructions[pointer], instructions[pointer+1], reg);
+        var out = result?.Output;
+        if(out !== undefined)
+        {
+            output.push(out);
+            if(output.length > instructions.length ||
+                instructions[output.length-1] != out)
+            {
+                return false;
+            }
+        }
+        pointer = result?.JumpTo ?? (pointer + 2);
+    }
+    return (output.length == instructions.length);
+}
 
 function process(opCode: number, opLiteral: number, reg: Register) : Result
 {

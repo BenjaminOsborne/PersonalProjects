@@ -11,6 +11,7 @@ declare global
        all(pred: (val: T) => boolean): boolean;
        first(pred: (val: T) => boolean): T;
        last(pred: (val: T) => boolean): T;
+       lastItem(): T;
        single(pred: (val: T) => boolean): T;
        groupBy<TKey>(fnSelect: (input: T) => TKey): GroupedItem<TKey, T>[];
        popOffFirst(): { first: T, rest: T[]};
@@ -81,6 +82,11 @@ Array.prototype.last = function<T>(pred: (val: T) => boolean): T
       }
    }
    return undefined;
+}
+
+Array.prototype.lastItem = function()
+{
+   return this[this.length-1];
 }
 
 Array.prototype.single = function<T>(pred: (val: T) => boolean): T

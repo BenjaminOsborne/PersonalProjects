@@ -40,6 +40,9 @@ Array.prototype.last = function (pred) {
     }
     return undefined;
 };
+Array.prototype.lastItem = function () {
+    return this[this.length - 1];
+};
 Array.prototype.single = function (pred) {
     var found = undefined;
     for (var nx = 0; nx < this.length; nx++) {
