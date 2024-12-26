@@ -10,6 +10,7 @@ declare global
        any(pred: (val: T) => boolean): boolean;
        all(pred: (val: T) => boolean): boolean;
        first(pred: (val: T) => boolean): T;
+       last(pred: (val: T) => boolean): T;
        single(pred: (val: T) => boolean): T;
        groupBy<TKey>(fnSelect: (input: T) => TKey): GroupedItem<TKey, T>[];
        popOffFirst(): { first: T, rest: T[]};
