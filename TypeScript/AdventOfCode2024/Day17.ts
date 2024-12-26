@@ -1,7 +1,7 @@
 import './Globals'
 import FileHelper from './FileHelper';
 
-const lines = FileHelper.LoadFileLines('Inputs\\Day17_Test.txt')
+const lines = FileHelper.LoadFileLines('Inputs\\Day17.txt')
 
 type Register = { A: number, B: number, C: number };
 type Result = { Output: number, JumpTo: number }
@@ -32,38 +32,38 @@ while(pointer < (instructions.length-1))
     }
     pointer = result?.JumpTo ?? (pointer + 2);
 }
-console.info("Output: " + output.join(","))
+console.info("Output: " + output.join(",")) //Wrong: 6,5,6,0,2,3,0,3,3
 
-function process(opCode: number, operand: number, reg: Register) : Result
+function process(opCode: number, opLiteral: number, reg: Register) : Result
 {
-    var fromCombOp = fromComboOperand(operand, reg);
+    var comboOp = fromComboOperand(opLiteral, reg);
     switch(opCode)
     {
         case 0: //adv
-            reg.A = Math.floor(reg.A / (Math.pow(2, fromCombOp)));
+            reg.A = Math.floor(reg.A / (Math.pow(2, comboOp)));
             return undefined;
         case 1: //bxl
-            reg.B = reg.B ^ operand;
+            reg.B = reg.B ^ opLiteral;
             return undefined;
         case 2: //bst
-            reg.B = operand % 8;
+            reg.B = comboOp % 8;
             return undefined;
         case 3: //jnz
             if(reg.A == 0)
             {
                 return undefined;
             }
-            return { JumpTo: operand, Output: undefined };
+            return { JumpTo: opLiteral, Output: undefined };
         case 4: //bxc
             reg.B = reg.B ^ reg.C;
             return undefined;
         case 5: //out
-            return { Output: fromCombOp % 8, JumpTo: undefined };
+            return { Output: comboOp % 8, JumpTo: undefined };
         case 6: //bdv
-            reg.B = Math.floor(reg.A / (Math.pow(2, fromCombOp)));
+            reg.B = Math.floor(reg.A / (Math.pow(2, comboOp)));
             return undefined;
         case 7:
-            reg.C = Math.floor(reg.A / (Math.pow(2, fromCombOp)));
+            reg.C = Math.floor(reg.A / (Math.pow(2, comboOp)));
             return undefined;
     }
 }
