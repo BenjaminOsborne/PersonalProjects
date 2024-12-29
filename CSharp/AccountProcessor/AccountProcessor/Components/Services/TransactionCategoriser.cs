@@ -142,7 +142,13 @@ namespace AccountProcessor.Components.Services
             {
                 return sectionMatches;
             }
-            var result = sectionMatches.Result!.DeleteMatch(match);
+            var foundMatch = sectionMatches.Result!.Matches
+                .SingleOrDefault(m => m.IsSameMatch(match));
+            if (foundMatch == null)
+            {
+                return Result.Fail("Could not find model match to delete");
+            }
+            var result = sectionMatches.Result!.DeleteMatch(foundMatch);
             _WriteModel();
             return result;
         }
@@ -425,6 +431,11 @@ namespace AccountProcessor.Components.Services
             }
             return Result.Success;
         }
+
+        public bool IsSameMatch(Match other) =>
+            Pattern == other.Pattern &&
+            OverrideDescription == other.OverrideDescription &&
+            ExactDate == other.ExactDate;
 
         /// <summary> Null for older entries. Used to suggest preferences for picking categories </summary>
         public DateTime? CreatedAt { get; }

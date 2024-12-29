@@ -26,12 +26,12 @@
 
                 <td>
                     <select value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
-                        <option value="@SelectorConstants.ChooseSectionDefaultId" selected>Choose Section</option>
+                        <option value="@SelectorConstants.ChooseSectionDefaultId" disabled selected>Choose Section</option>
                         @foreach (var cat in Model.TopSuggestions)
                         {
                             <option value="@cat.Id">@cat.Display</option>
                         }
-                        <option value="@SelectorConstants.ChooseSectionDefaultId" selected>-------</option>
+                        <option value="@SelectorConstants.ChooseSectionDefaultId" disabled>------------</option>
                         @foreach (var cat in Model.AllSections)
                         {
                             <option value="@cat.Id">@cat.Display</option>
