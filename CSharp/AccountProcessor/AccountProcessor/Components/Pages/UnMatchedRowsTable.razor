@@ -27,6 +27,7 @@
                 <td>
                     <select value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
                         <option value="@SelectorConstants.ChooseSectionDefaultId" selected>Choose Section</option>
+                        /* TODO: Multi-level select? Or suggestions at top? (Divider readonly?) */
                         @foreach (var cat in Model.AllSections)
                         {
                             <option value="@cat.Id">@cat.Display</option>

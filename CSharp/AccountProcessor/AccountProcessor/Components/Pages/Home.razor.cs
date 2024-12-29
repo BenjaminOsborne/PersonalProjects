@@ -300,8 +300,8 @@ public class HomeViewModel
             {
                 var allData = _GetCategoriser().GetSelectorData(Month!.Value);
                 Categories = allData.Categories;
-                AllSections = allData.Sections?.ToImmutableArray(secHead =>
-                    new SectionSelectorRow(secHead, Display: $"{secHead.Parent.Name}: {secHead.Name}", Id: Guid.NewGuid().ToString())); //Arbitrary Id
+                AllSections = allData.Sections?.ToImmutableArray(s =>
+                    new SectionSelectorRow(s.Header, Display: $"{s.Header.Parent.Name}: {s.Header.Name}", Id: Guid.NewGuid().ToString())); //Arbitrary Id
             }
 
             //Always try refresh (if Transactions and Sections loaded)
