@@ -307,7 +307,7 @@ public class HomeViewModel
                             Display: $"{s.Header.Parent.Name}: {s.Header.Name}",
                             Id: Guid.NewGuid().ToString(), //Arbitrary Id
                             LastUsed: s.LastUsed,
-                            BackgroundColor: nx % 2 == 0 ? "silver" : "seashell")))
+                            BackgroundColor: nx % 2 == 0 ? "#FFFDF6" : "#F7F6FF")))
                     .SelectMany(x => x)
                     .ToImmutableArray();
             }
