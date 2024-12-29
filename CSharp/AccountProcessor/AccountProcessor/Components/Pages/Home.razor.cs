@@ -301,7 +301,7 @@ public class HomeViewModel
                 var allData = _GetCategoriser().GetSelectorData(Month!.Value);
                 Categories = allData.Categories;
                 AllSections = allData.Sections?.ToImmutableArray(s =>
-                    new SectionSelectorRow(s.Header, Display: $"{s.Header.Parent.Name}: {s.Header.Name}", Id: Guid.NewGuid().ToString())); //Arbitrary Id
+                    new SectionSelectorRow(s.Header, Display: $"{s.Header.Parent.Name}: {s.Header.Name}", Id: Guid.NewGuid().ToString(), LastUsed: s.LastUsed)); //Arbitrary Id
             }
 
             //Always try refresh (if Transactions and Sections loaded)
@@ -311,15 +311,27 @@ public class HomeViewModel
             {
                 return;
             }
+
             var categorisationResult = _GetCategoriser().Categorise(loadedTransactions!.Value, Month!.Value);
             LatestCategorisationResult = categorisationResult;
             var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
             TransactionResultViewModel = trViewModel;
 
-            UnMatchedModel = trViewModel.UnMatchedRows.Any() ? new(allSections!.Value, trViewModel.UnMatchedRows) : null;
-            MatchedModel = trViewModel.MatchedRows.Any() ? new(trViewModel.MatchedRows) : null;
+            UnMatchedModel = trViewModel.UnMatchedRows.Any()
+                ? new(GetTopSuggestions(allSections!.Value, limit: 4), allSections!.Value, trViewModel.UnMatchedRows)
+                : null;
+            MatchedModel = trViewModel.MatchedRows.Any()
+                ? new(trViewModel.MatchedRows)
+                : null;
 
             _onStateChanged();
+
+            static ImmutableArray<SectionSelectorRow> GetTopSuggestions(ImmutableArray<SectionSelectorRow> allRows, int limit) =>
+                allRows
+                    .Where(x => x.LastUsed.HasValue)
+                    .OrderByDescending(x => x.LastUsed!.Value)
+                    .Take(limit)
+                    .ToImmutableArray();
         }
 
         /// <summary>
