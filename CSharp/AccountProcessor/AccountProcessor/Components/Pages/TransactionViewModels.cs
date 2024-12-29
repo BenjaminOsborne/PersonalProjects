@@ -3,7 +3,7 @@ using AccountProcessor.Components.Services;
 
 namespace AccountProcessor.Components.Pages
 {
-    public record SectionSelectorRow(SectionHeader Header, string Display, string Id, DateTime? LastUsed);
+    public record SectionSelectorRow(SectionHeader Header, string Display, string Id, DateTime? LastUsed, string? BackgroundColor);
 
     public record TransactionResultViewModel(
         ImmutableArray<TransactionRowUnMatched> UnMatchedRows,

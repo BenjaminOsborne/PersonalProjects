@@ -34,7 +34,7 @@
                         <option value="@SelectorConstants.ChooseSectionDefaultId" disabled>───────────────────</option>
                         @foreach (var cat in Model.AllSections)
                         {
-                            <option value="@cat.Id">@cat.Display</option>
+                            <option value="@cat.Id" style="background-color:@cat.BackgroundColor">@cat.Display</option>
                         }
                     </select>
                 </td>

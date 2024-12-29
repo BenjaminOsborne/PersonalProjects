@@ -300,8 +300,16 @@ public class HomeViewModel
             {
                 var allData = _GetCategoriser().GetSelectorData(Month!.Value);
                 Categories = allData.Categories;
-                AllSections = allData.Sections?.ToImmutableArray(s =>
-                    new SectionSelectorRow(s.Header, Display: $"{s.Header.Parent.Name}: {s.Header.Name}", Id: Guid.NewGuid().ToString(), LastUsed: s.LastUsed)); //Arbitrary Id
+                AllSections = allData.Sections?
+                    .GroupBy(x => x.Header.Parent.GetKey())
+                    .Select((g, nx) => g.Select(s =>
+                        new SectionSelectorRow(s.Header,
+                            Display: $"{s.Header.Parent.Name}: {s.Header.Name}",
+                            Id: Guid.NewGuid().ToString(), //Arbitrary Id
+                            LastUsed: s.LastUsed,
+                            BackgroundColor: nx % 2 == 0 ? "silver" : "seashell")))
+                    .SelectMany(x => x)
+                    .ToImmutableArray();
             }
 
             //Always try refresh (if Transactions and Sections loaded)
