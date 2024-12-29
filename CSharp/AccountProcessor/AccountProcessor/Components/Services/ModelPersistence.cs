@@ -39,7 +39,7 @@ namespace AccountProcessor.Components.Services
                         .Select((s, nx) => new SectionMatches(
                             new SectionHeader(nx, s.SectionName, category, s.Month),
                             s.Matches.ToImmutableArray(m =>
-                                new Match(m.Pattern, m.OverrideDescription, m.ExactDate)
+                                new Match(m.CreatedAt, m.Pattern, m.OverrideDescription, m.ExactDate)
                                 )))
                         .ToImmutableArray();
                     return new Category(category, sections);
@@ -61,6 +61,7 @@ namespace AccountProcessor.Components.Services
                                 s.Matches
                                     .OrderBy(m => m.GetOrderKey())
                                     .ToImmutableArray(m => new MatchData(
+                                        m.CreatedAt,
                                         m.Pattern,
                                         m.OverrideDescription,
                                         m.ExactDate))
@@ -71,7 +72,7 @@ namespace AccountProcessor.Components.Services
         /// <summary> Relates to the fixed set of <see cref="CategoryHeader"/>s </summary>
         private record CategoryData(string CategoryName, ImmutableArray<SectionMatchData> Sections);
         private record SectionMatchData(string SectionName, DateOnly? Month, ImmutableArray<MatchData> Matches);
-        private record MatchData(string Pattern, string? OverrideDescription, DateOnly? ExactDate);
+        private record MatchData(DateTime? CreatedAt, string Pattern, string? OverrideDescription, DateOnly? ExactDate);
     }
 
     public static class DirectoryHelper

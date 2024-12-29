@@ -13,7 +13,7 @@ namespace AccountProcessor.Tests
             var model = _CreateInitialModel();
 
             //Add example for Income<>Salary
-            model.Categories[0].Sections[0].AddMatch(new Match("Accurx Limited Pay", "Accurx Salary", null));
+            model.Categories[0].Sections[0].AddMatch(new Match(null, "Accurx Limited Pay", "Accurx Salary", null));
 
             var content = _WriteModel(outputPath, model);
 

@@ -47,12 +47,19 @@ namespace AccountProcessor.Components.Services
                 .ToImmutableArray();
             var sections = model.Categories
                 .SelectMany(x => x.Sections)
-                .Select(x => x.Section)
-                .Where(x => x.CanUseInMonth(month))
-                .OrderBy(x => x.Parent.Order)
-                .ThenBy(x => x.Order)
+                .Where(x => x.Section.CanUseInMonth(month))
+                .Select(x => (Header: x.Section, LastUsed: GetSectionLastUsedAt(x.Matches)))
+                .OrderBy(x => x.Header.Parent.Order)
+                .ThenBy(x => x.Header.Order)
                 .ToImmutableArray();
             return new SelectorData(true, categories, sections);
+
+            static DateTime? GetSectionLastUsedAt(IEnumerable<Match> matches) =>
+                matches
+                    .Select(x => x.CreatedAt)
+                    .Where(x => x.HasValue)
+                    .OrderByDescending(x => x!.Value)
+                    .FirstOrDefault();
         }
 
         public CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month)
@@ -117,14 +124,14 @@ namespace AccountProcessor.Components.Services
 
         public Result ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription)
         {
-            var match = new Match(matchOn, overrideDescription, null);
+            var match = new Match(DateTime.UtcNow, matchOn, overrideDescription, null);
             return _AddNewMatch(transaction, section, match);
         }
 
         /// <remarks> Note: It is valid to specify <see cref="matchOn"/> (which may have a wild-card) as this can mean future transactions get a "suggestion", even if need to be confirmed. </remarks>
         public Result MatchOnce(Transaction transaction, SectionHeader section, string? matchOn, string? overrideDescription)
         {
-            var match = new Match(matchOn ?? transaction.Description, overrideDescription, transaction.Date);
+            var match = new Match(DateTime.UtcNow, matchOn ?? transaction.Description, overrideDescription, transaction.Date);
             return _AddNewMatch(transaction, section, match);
         }
 
@@ -207,7 +214,7 @@ namespace AccountProcessor.Components.Services
             Date.Year == month.Year && Date.Month == month.Month;
     }
 
-    public record SelectorData(bool IsModelLoaded, ImmutableArray<CategoryHeader>? Categories, ImmutableArray<SectionHeader>? Sections);
+    public record SelectorData(bool IsModelLoaded, ImmutableArray<CategoryHeader>? Categories, ImmutableArray<(SectionHeader Header, DateTime? LastUsed)>? Sections);
 
     public class UnMatchedTransaction
     {
@@ -388,8 +395,9 @@ namespace AccountProcessor.Components.Services
         private readonly Lazy<System.Text.RegularExpressions.Regex> _regex;
         private readonly int _wildCardCount;
 
-        public Match(string pattern, string? overrideDescription, DateOnly? exactDate)
+        public Match(DateTime? createdAt, string pattern, string? overrideDescription, DateOnly? exactDate)
         {
+            CreatedAt = createdAt;
             Pattern = pattern;
             OverrideDescription = overrideDescription;
             ExactDate = exactDate;
@@ -417,6 +425,9 @@ namespace AccountProcessor.Components.Services
             }
             return Result.Success;
         }
+
+        /// <summary> Null for older entries. Used to suggest preferences for picking categories </summary>
+        public DateTime? CreatedAt { get; }
 
         public string Pattern { get; }
 

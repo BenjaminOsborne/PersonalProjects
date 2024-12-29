@@ -80,7 +80,7 @@ namespace AccountProcessor.Tests
             Assert.That(match.Matches(trans), Is.EqualTo(type));
 
         private static Match _CreateMatch(string pattern, string? overrideDescription = null, DateOnly? exactDate = null) =>
-            new Match(pattern, overrideDescription, exactDate);
+            new Match(null, pattern, overrideDescription, exactDate);
 
         private static Transaction _CreateTransaction(string pattern, DateOnly? overrideDate = null) =>
             new Transaction(overrideDate ?? _Now(), pattern, 0);
