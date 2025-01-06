@@ -301,14 +301,15 @@ public class HomeViewModel
                 var allData = _GetCategoriser().GetSelectorData(Month!.Value);
                 Categories = allData.Categories;
                 AllSections = allData.Sections?
-                    .GroupBy(x => x.Header.Parent.GetKey())
-                    .Select((g, nx) => g.Select(s =>
-                        new SectionSelectorRow(s.Header,
+                    .GroupBy(s => s.Header.Parent.GetKey())
+                    .SelectMany((grp, nx) => grp
+                        .Select(s => new SectionSelectorRow(
+                            s.Header,
                             Display: $"{s.Header.Parent.Name}: {s.Header.Name}",
                             Id: Guid.NewGuid().ToString(), //Arbitrary Id
                             LastUsed: s.LastUsed,
-                            BackgroundColor: nx % 2 == 0 ? "#FFFDF6" : "#F7F6FF")))
-                    .SelectMany(x => x)
+                            BackgroundColor: nx % 2 == 0 ? "#FFFDF6" : "#F7F6FF" //alternate colours by section
+                            )))
                     .ToImmutableArray();
             }
 
@@ -343,7 +344,7 @@ public class HomeViewModel
         }
 
         /// <summary>
-        /// Attempts to be "smart£ in initialising/updating Month based on transactions.
+        /// Attempts to be "smart" in initialising/updating Month based on transactions.
         /// [1] If no transactions, keep current, or initialise to month before "now"
         /// [2] If some transactions...
         /// - If month set AND exists in transactions, keep
