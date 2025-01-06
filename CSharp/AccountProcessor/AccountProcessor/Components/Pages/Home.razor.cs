@@ -197,9 +197,9 @@ public class HomeViewModel
                     ?.Header;
                 return header != null
                     ? row.AddOnlyForTransaction
-                        ? cat.MatchOnce(row.Transaction, header!, row.MatchOn, row.OverrideDescription)
+                        ? cat.MatchOnce(row.Transaction, header, row.MatchOn, row.OverrideDescription)
                         : !row.MatchOn.IsNullOrEmpty()
-                            ? cat.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription)
+                            ? cat.ApplyMatch(row.Transaction, header, row.MatchOn!, row.OverrideDescription)
                             : Result.Fail("'Match On' pattern empty")
                     : Result.Fail("Could not find Section");
             },
@@ -207,7 +207,8 @@ public class HomeViewModel
 
     public void ClearMatch(TransactionRowMatched row) =>
         _transactionsModel.ChangeMatchModel(
-            fnPerform: c => c.DeleteMatch(row.Section, row.LatestMatch));
+            fnPerform: c => c.DeleteMatch(row.Section, row.LatestMatch),
+            refreshCategories: false); //Clearing a match does not change categories (or "suggestions" in the picker)
 
     public async Task LoadTransactionsAndCategorise(Func<Task<WrappedResult<ImmutableArray<Transaction>>>> fnLoad) =>
         _transactionsModel.UpdateLoadedTransactions(await fnLoad());
@@ -247,40 +248,40 @@ public class HomeViewModel
         public MatchedRowsTable.ViewModel? MatchedModel { get; private set; }
 
         public void RefreshTransactions() =>
-            _OnStateChange(() => WrappedResult.Create(Unit.Instance), refreshCategories: true);
+            _OnStateChange(
+                fnGetResult: () => WrappedResult.Create(Unit.Instance),
+                refreshCategories: true);
 
         public void UpdateMonth(WrappedResult<DateOnly> result) =>
             _OnStateChange(
                 fnGetResult: () => result,
-                onSuccess: r => Month = r,
-                refreshCategories: true //categories can be month-specific so must refresh
-                );
+                refreshCategories: true, //categories can be month-specific so must refresh
+                onSuccess: r => Month = r);
 
         public void UpdateLoadedTransactions(WrappedResult<ImmutableArray<Transaction>> result) =>
             _OnStateChange(
                 fnGetResult: () => result,
+                refreshCategories: true, //Categories loaded
                 onSuccess: r =>
                 {
                     Month = _InitialiseOrUpdateMonthFromTransactions(Month, r);
                     LoadedTransactions = r;
                     EarliestTransaction = r.Any() ? r.Select(x => x.Date).Min() : null;
                     LatestTransaction = r.Any() ? r.Select(x => x.Date).Max() : null;
-                },
-                refreshCategories: true //Categories loaded
-                );
+                });
 
         public void ChangeMatchModel(Func<ITransactionCategoriser, Result> fnPerform,
-            Action? onSuccess = null,
-            bool refreshCategories = false) =>
+            bool refreshCategories,
+            Action? onSuccess = null) =>
                 _OnStateChange(
                     fnGetResult: () => fnPerform(_GetCategoriser()).ToWrappedUnit(),
-                    onSuccess: _ => onSuccess?.Invoke(),
-                    refreshCategories: refreshCategories);
+                    refreshCategories: refreshCategories,
+                    onSuccess: _ => onSuccess?.Invoke());
 
         private void _OnStateChange<T>(
             Func<WrappedResult<T>> fnGetResult,
-            Action<T>? onSuccess = null,
-            bool refreshCategories = false)
+            bool refreshCategories,
+            Action<T>? onSuccess = null)
         {
             var result = fnGetResult();
             _onActionHandleResult(result);
