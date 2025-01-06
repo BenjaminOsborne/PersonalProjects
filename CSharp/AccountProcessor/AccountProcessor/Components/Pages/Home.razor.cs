@@ -202,7 +202,8 @@ public class HomeViewModel
                             ? cat.ApplyMatch(row.Transaction, header!, row.MatchOn!, row.OverrideDescription)
                             : Result.Fail("'Match On' pattern empty")
                     : Result.Fail("Could not find Section");
-            });
+            },
+            refreshCategories: true); //Should refresh categories as will update the order in the "suggestions" in the picker
 
     public void ClearMatch(TransactionRowMatched row) =>
         _transactionsModel.ChangeMatchModel(
