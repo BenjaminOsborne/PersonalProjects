@@ -269,16 +269,14 @@ namespace AccountProcessor.Components.Services
                             {
                                 foreach (var ts in grp.Transactions)
                                 {
-                                    SetValue(row, col, ts.GetDescription());
+                                    SetValue(row, col, ts.GetSummaryDescription(), comment: cat.ForceAddDetailsToComment ? ts.GetDetailedCommentContext() : null);
                                     SetValue(row++, col + 1, ts.Transaction.Amount, numberFormat: _excelCurrencyNumberFormat);
                                 }
                             }
                             else
                             {
-                                SetValue(row, col, grp.GetGroupDescription(), comment: grp.GetGroupComment());
-                                
-                                var amount = grp.Transactions.Sum(x => x.Transaction.Amount);
-                                SetValue(row++, col + 1, amount, numberFormat: _excelCurrencyNumberFormat);
+                                SetValue(row, col, grp.GetGroupSummaryDescription(), comment: grp.GetGroupDetailedCommentContext());
+                                SetValue(row++, col + 1, grp.TotalAmount, numberFormat: _excelCurrencyNumberFormat);
                             }
                         }
 
@@ -368,19 +366,30 @@ namespace AccountProcessor.Components.Services
                     var sections = cat.Vals?
                         .GroupBy(x => x.section.GetKey())
                         .OrderBy(grp => grp.Key.order)
-                        .ToImmutableArray(grp =>
+                        .ToImmutableArray(outerGrp =>
                         {
-                            var transactions = grp
+                            var transactions = outerGrp
                                 .Select(x => x.summary)
                                 .GroupBy(x => x.OverrideDescription ?? x.Transaction.Description)
-                                .OrderBy(x => x.First().Transaction.Date) //Order by earliest in group
-                                .ToImmutableArray(grp => new TransactionGroup(grp.ToImmutableArray(), grp.Key));
-                            var total = grp.Sum(x => x.summary.Transaction.Amount);
-                            return new SectionSummary(grp.First().section, transactions, total);
+                                .Select(innerGrp =>
+                                {
+                                    var allTrans = innerGrp.ToImmutableArray();
+                                    return new TransactionGroup(allTrans, innerGrp.Key, allTrans.Sum(x => x.Transaction.Amount));
+                                })
+                                .OrderByDescending(x => Math.Sign(x.TotalAmount)) //Take income before costs
+                                .ThenByDescending(x => Math.Abs(x.TotalAmount)) //Order by highest to lowest absolute amount
+                                .ThenBy(x => x.Transactions[0].Transaction.Date) //Tie-break earliest if same absolute amount
+                                .ToImmutableArray();
+                            var total = outerGrp.Sum(x => x.summary.Transaction.Amount);
+                            return new SectionSummary(outerGrp.First().section, transactions, total);
                         })
                         ?? ImmutableArray<SectionSummary>.Empty;
 
-                    return new CategorySummary(category, sections, AllowTransactionGrouping: cat.Cat != manualHeader); //Don't group for manual - always see expanded
+                    return new CategorySummary(category,
+                        sections,
+                        AllowTransactionGrouping: cat.Cat != manualHeader, //Don't group for manual - always see expanded
+                        ForceAddDetailsToComment: cat.Cat == CategoryHeader.Giving //Always add comment for giving so has date details to pick items in exact financial year for tax return
+                        );
                 });
         }
 
@@ -388,52 +397,33 @@ namespace AccountProcessor.Components.Services
             "£"#,##0.00;[Red]\-"£"#,##0.00
             """;
 
-        private record CategorySummary(CategoryHeader Category, ImmutableArray<SectionSummary> Sections, bool AllowTransactionGrouping);
+        private record CategorySummary(CategoryHeader Category, ImmutableArray<SectionSummary> Sections, bool AllowTransactionGrouping, bool ForceAddDetailsToComment);
 
         private record SectionSummary(SectionHeader Section, ImmutableArray<TransactionGroup> Groups, decimal Total);
 
-        private record TransactionGroup(ImmutableArray<TransactionSummary> Transactions, string Description)
+        private record TransactionGroup(ImmutableArray<TransactionSummary> Transactions, string GroupDescription, decimal TotalAmount)
         {
-            public string GetGroupDescription()
-            {
-                var strDates = DescribeDates();
-                return $"{strDates} - [{Transactions.Length}] {Description}";
-                
-                string DescribeDates()
-                {
-                    var dates = Transactions
-                        .Select(x => x.Transaction.Date)
-                        .Distinct().OrderBy(x => x)
-                        .ToImmutableArray();
-                    var first = dates[0];
-                    return dates.Length == 1
-                        ? _DescribeDate(first)
-                        : $"{first:dd}-{dates.Last():dd}/{first:MM}";
-                }
-            }
+            public string GetGroupSummaryDescription() =>
+                $"{GroupDescription} [{Transactions.Length}]";
 
-            public string GetGroupComment() =>
+            public string GetGroupDetailedCommentContext() =>
                 Transactions
-                    .Select(x =>
-                    {
-                        var amount = x.Transaction.Amount;
-                        var signSymbol = amount >= 0 ? "£" : "-£";
-                        return $"{x.GetDescription()} : {signSymbol}{Math.Abs(amount):0.00}";
-                    })
+                    .Select(x => x.GetDetailedCommentContext())
                     .ToJoinedString("\n");
         }
 
         private record TransactionSummary(Transaction Transaction, string? OverrideDescription)
         {
-            public string GetDescription()
+            public string GetSummaryDescription() =>
+                OverrideDescription ?? Transaction.Description;
+
+            public string GetDetailedCommentContext()
             {
-                var trans = Transaction;
-                var description = OverrideDescription ?? trans.Description;
-                return $"{_DescribeDate(trans.Date)} - {description}";
+                var amount = Transaction.Amount;
+                var signSymbol = amount >= 0 ? "£" : "-£";
+                return $"[{Transaction.Date:yy-MM-dd}] {GetSummaryDescription()} : {signSymbol}{Math.Abs(amount):0.00}";
             }
         }
-
-        private static string _DescribeDate(DateOnly dt) => $"{dt:dd}/{dt:MM}";
 
         #endregion
 
