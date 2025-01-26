@@ -275,10 +275,9 @@ namespace AccountProcessor.Components.Services
                             }
                             else
                             {
+                                SetValue(row, col, grp.GetGroupDescription(), comment: grp.GetGroupComment());
+                                
                                 var amount = grp.Transactions.Sum(x => x.Transaction.Amount);
-                                var strDates = grp.DescribeDates();
-                                var comment = grp.GetComment();
-                                SetValue(row, col, $"{strDates} - [{grp.Transactions.Length}] {grp.Description}", comment: comment);
                                 SetValue(row++, col + 1, amount, numberFormat: _excelCurrencyNumberFormat);
                             }
                         }
@@ -395,19 +394,25 @@ namespace AccountProcessor.Components.Services
 
         private record TransactionGroup(ImmutableArray<TransactionSummary> Transactions, string Description)
         {
-            public string DescribeDates()
+            public string GetGroupDescription()
             {
-                var dates = Transactions
-                    .Select(x => x.Transaction.Date)
-                    .Distinct().OrderBy(x => x)
-                    .ToImmutableArray();
-                var first = dates[0];
-                return dates.Length == 1
-                    ? _DescribeDate(first)
-                    : $"{first:dd}-{dates.Last():dd}/{first:MM}";
+                var strDates = DescribeDates();
+                return $"{strDates} - [{Transactions.Length}] {Description}";
+                
+                string DescribeDates()
+                {
+                    var dates = Transactions
+                        .Select(x => x.Transaction.Date)
+                        .Distinct().OrderBy(x => x)
+                        .ToImmutableArray();
+                    var first = dates[0];
+                    return dates.Length == 1
+                        ? _DescribeDate(first)
+                        : $"{first:dd}-{dates.Last():dd}/{first:MM}";
+                }
             }
 
-            public string GetComment() =>
+            public string GetGroupComment() =>
                 Transactions
                     .Select(x =>
                     {
