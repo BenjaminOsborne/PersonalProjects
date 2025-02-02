@@ -28,10 +28,10 @@ public partial class JsonEditor
 
     protected override Task OnInitializedAsync()
     {
-        LoadedJson = _modelService.LoadRawModelJson();
+        _OnSearchChange(); //will load for initial empty search
         return Task.CompletedTask;
     }
 
     private void _OnSearchChange() =>
-        LoadedJson = _modelService.DisplaySearchResult(_search ?? string.Empty);
+        LoadedJson = _modelService.DisplayRawModelJsonSearchResult(_search ?? string.Empty);
 }

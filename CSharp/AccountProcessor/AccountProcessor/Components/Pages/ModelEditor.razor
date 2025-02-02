@@ -1,0 +1,42 @@
+﻿@page "/modelEditor"
+@rendermode InteractiveServer
+
+<PageTitle>Model Editor</PageTitle>
+
+<h1>Model Editor</h1>
+
+<p />
+<hr />
+
+@if (Items.HasValue)
+{
+    <table style="width:auto" cellpadding="5">
+        <thead>
+        <tr class="border-bottom-thick">
+            <th>Header</th>
+            <th>Section</th>
+            <th>Month Specific</th>
+            <th>Pattern</th>
+            <th>Description</th>
+            <th>Exact Date Match</th>
+            <th>Clear</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var row in Items.Value)
+        {
+            <tr>
+                <td class="fitwidth">@row.HeaderName</td>
+                <td class="fitwidth">@row.SectionName</td>
+                <td class="fitwidth">@row.SectionMonth?.ToString("yyyy/MM")</td>
+                <td class="fitwidth">@row.Pattern</td>
+                <td class="fitwidth">@row.OverrideDescription</td>
+                <td class="fitwidth">@row.ExactDate?.ToString("yyyy/MM/dd")</td>
+                <td>
+                    <button class="btn" @onclick="() => ClearMatch(row)"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
