@@ -364,8 +364,8 @@ public class ExcelFileHandler : IExcelFileHandler
                 var category = cat.Cat;
 
                 var sections = cat.Vals?
-                                   .GroupBy(x => x.section.GetKey())
-                                   .OrderBy(grp => grp.Key.order)
+                                   .GroupBy(x => (x.section.GetKey(), x.section.Order))
+                                   .OrderBy(grp => grp.Key.Order)
                                    .ToImmutableArray(outerGrp =>
                                    {
                                        var transactions = outerGrp

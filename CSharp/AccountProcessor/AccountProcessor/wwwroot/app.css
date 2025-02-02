@@ -60,6 +60,10 @@ td.fitwidth {
     border-right: 1px solid LightGray;
 }
 
+.border-left {
+    border-left: 1px solid LightGray;
+}
+
 .border-bottom-thick {
     border-bottom: 1px solid Black;
 }

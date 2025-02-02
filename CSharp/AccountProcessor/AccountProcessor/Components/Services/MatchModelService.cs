@@ -6,15 +6,22 @@ public interface IMatchModelService
 {
     string DisplayRawModelJsonSearchResult(string? search);
     ImmutableArray<ModelMatchItem> GetAllModelMatches();
+
+    bool DeleteMatchItem(ModelMatchItem row);
 }
 
 public record ModelMatchItem(
-    string HeaderName,
-    string SectionName,
-    DateOnly? SectionMonth,
-    string Pattern,
-    string? OverrideDescription,
-    DateOnly? ExactDate);
+    CategoryHeader Header,
+    SectionHeader Section,
+    Match Match)
+{
+    public string HeaderName => Header.Name;
+    public string SectionName => Section.Name;
+    public DateOnly? SectionMonth => Section.Month;
+    public string Pattern => Match.Pattern;
+    public string? OverrideDescription => Match.OverrideDescription;
+    public bool MatchOnce => Match.ExactDate.HasValue;
+}
 
 public class MatchModelService : IMatchModelService
 {
@@ -29,8 +36,31 @@ public class MatchModelService : IMatchModelService
         return model.Categories
             .SelectMany(cat => cat.Sections
                 .SelectMany(sec => sec.Matches
-                    .Select(mat => new ModelMatchItem(cat.Header.Name, sec.Section.Name, sec.Section.Month, mat.Pattern, mat.OverrideDescription, mat.ExactDate))))
+                    .Select(mat => new ModelMatchItem(cat.Header, sec.Section, mat))))
             .ToImmutableArray();
+    }
 
+    public bool DeleteMatchItem(ModelMatchItem row) =>
+        _Perform(row, (sm, match) => sm.DeleteMatch(match));
+
+    private static bool _Perform(ModelMatchItem row, Func<SectionMatches, Match, Result> fnPerform)
+    {
+        var model = ModelPersistence.LoadModel();
+        var sm = model.Categories
+            .Where(c => c.Header.AreSame(row.Header))
+            .SelectMany(x => x.Sections)
+            .SingleOrDefault(s => s.Section.AreSame(row.Section));
+        var match = sm?.Matches.SingleOrDefault(m => m.IsSameMatch(row.Match));
+        if (match == null)
+        {
+            return false;
+        }
+        var result = fnPerform(sm!, match);
+        if (result.IsSuccess == false)
+        {
+            return false;
+        }
+        ModelPersistence.WriteModel(model);
+        return true;
     }
 }

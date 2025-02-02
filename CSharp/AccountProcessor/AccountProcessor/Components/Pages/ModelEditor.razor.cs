@@ -13,12 +13,22 @@ public partial class ModelEditor
 
     protected override Task OnInitializedAsync()
     {
-        Items = _modelService.GetAllModelMatches();
+        _RebuildModel();
         return Task.CompletedTask;
     }
 
-    private void ClearMatch(ModelMatchItem row)
+    private void ClearMatch(ModelMatchItem row) =>
+        _PerformActionWithRebuildModel(() => _modelService.DeleteMatchItem(row));
+
+    private void _PerformActionWithRebuildModel(Func<bool> fnPerform)
     {
-        //TODO
+        var didChange = fnPerform();
+        if (didChange)
+        {
+            _RebuildModel();
+        }
     }
+
+    private void _RebuildModel() =>
+        Items = _modelService.GetAllModelMatches();
 }

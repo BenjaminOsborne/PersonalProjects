@@ -269,12 +269,15 @@ public abstract class Block
     public int Order { get; }
     public string Name { get; }
 
-    public (int order, string name) GetKey() => (Order, Name);
+    public virtual IComparable GetKey() => (Order, Name);
+
+    public bool AreSame(Block other) =>
+        GetType() == other.GetType() && GetKey().Equals(other.GetKey());
 }
 
 public class CategoryHeader : Block
 {
-    private CategoryHeader(int Order, string Name) : base(Order, Name)
+    private CategoryHeader(int order, string name) : base(order, name)
     {
     }
 
@@ -297,7 +300,7 @@ public class CategoryHeader : Block
     #endregion
 
     private static CategoryHeader _Create(int order, string name) =>
-        new CategoryHeader(order, name);
+        new (order, name);
 }
 
 public class Category
@@ -342,7 +345,8 @@ public class SectionHeader : Block
     /// <remarks> Day component should always be "1". Only Month/Year relevant. </remarks>
     public DateOnly? Month { get; }
 
-    public bool AreSame(SectionHeader other) => other != null && _GetKey().Equals(other._GetKey());
+    public override IComparable GetKey() =>
+        (Order, Name, Month, ParentKey: Parent.GetKey());
 
     /// <summary>
     /// Clashing if Name matches and EITHER
@@ -357,8 +361,6 @@ public class SectionHeader : Block
 
     public bool CanUseInMonth(DateOnly month) =>
         Month == null || Month == month;
-
-    private IComparable _GetKey() => (Order, Name, Month, Parent.Order, Parent.Name);
 }
 
 public class SectionMatches
@@ -385,7 +387,7 @@ public class SectionMatches
         Matches = snap.Remove(match);
         return snap != Matches
             ? Result.Success
-            : Result.Fail("Could not find Match");
+            : Result.Fail("Could not find Match to delete");
     }
 }
 
