@@ -8,7 +8,7 @@
 <p />
 <hr />
 
-<input style="margin-right: 5px" placeholder="Search..." value="@Search" @onchange="e => PerformSearch((string?)e.Value)" />
-@* @bind="@Search" @bind:event="onchange" *@
+<input style="margin-right: 5px" placeholder="Search..." @bind-value="@BindSearch" @bind-value:event="oninput" />
 
+<p />
 <pre style="font-family:'Cascadia Code'">@LoadedJson</pre>

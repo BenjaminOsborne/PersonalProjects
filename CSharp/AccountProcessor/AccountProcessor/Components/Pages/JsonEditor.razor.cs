@@ -10,7 +10,21 @@ public partial class JsonEditor
 
     private string? LoadedJson;
     
-    private string? Search;
+    private string? _search;
+
+    public string? BindSearch
+    {
+        get => _search;
+        set
+        {
+            if (value == _search)
+            {
+                return;
+            }
+            _search = value;
+            _OnSearchChange();
+        }
+    }
 
     protected override Task OnInitializedAsync()
     {
@@ -18,9 +32,6 @@ public partial class JsonEditor
         return Task.CompletedTask;
     }
 
-    private void PerformSearch(string? search)
-    {
-        Search = search;
-        LoadedJson = _modelService.DisplaySearchResult(Search ?? string.Empty);
-    }
+    private void _OnSearchChange() =>
+        LoadedJson = _modelService.DisplaySearchResult(_search ?? string.Empty);
 }
