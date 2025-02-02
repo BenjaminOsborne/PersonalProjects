@@ -6,6 +6,9 @@
 <h1>Json Editor</h1>
 
 <p />
-<hr />  
+<hr />
 
-<pre style="font-family:'Cascadia Code'">@_loadedJson</pre>
+<input style="margin-right: 5px" placeholder="Search..." value="@Search" @onchange="e => PerformSearch((string?)e.Value)" />
+@* @bind="@Search" @bind:event="onchange" *@
+
+<pre style="font-family:'Cascadia Code'">@LoadedJson</pre>

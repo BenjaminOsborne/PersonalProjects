@@ -11,8 +11,23 @@ public static class ModelPersistence
     public static MatchModel LoadModel() =>
         _MapToDomainModel(_LoadModel());
 
-    public static string GetRawJsonForDisplay() => 
-        JsonHelper.Serialise(_LoadModel(), writeIndented: true);
+    public static string GetRawJson() =>
+        _GetJsonForDisplay(_LoadModel());
+
+    public static string GetRawJsonWithSearchFilter(string search)
+    {
+        var model = _LoadModel();
+        var lowerSearch = search.ToLower();
+        return _GetJsonForDisplay(new(
+        [..
+            model.Categories
+                .Select(c => c.WithFilter(lowerSearch))
+                .Where(x => x.Sections.Any())
+        ]));
+    }
+
+    private static string _GetJsonForDisplay(ModelData model) =>
+        JsonHelper.Serialise(model, writeIndented: true);
 
     private static ModelData _LoadModel()
     {
@@ -75,9 +90,37 @@ public static class ModelPersistence
     private record ModelData(ImmutableArray<CategoryData> Categories);
 
     /// <summary> Relates to the fixed set of <see cref="CategoryHeader"/>s </summary>
-    private record CategoryData(string CategoryName, ImmutableArray<SectionMatchData> Sections);
-    private record SectionMatchData(string SectionName, DateOnly? Month, ImmutableArray<MatchData> Matches);
-    private record MatchData(DateTime? CreatedAt, string Pattern, string? OverrideDescription, DateOnly? ExactDate);
+    private record CategoryData(string CategoryName, ImmutableArray<SectionMatchData> Sections)
+    {
+        public CategoryData WithFilter(string search) =>
+            _DoesMatch(CategoryName, search)
+                ? this
+                : this with
+                {
+                    Sections = [..Sections
+                        .Select(x => x.WithFilter(search))
+                        .Where(x => x.Matches.Any())
+                    ]
+                };
+    }
+
+    private record SectionMatchData(string SectionName, DateOnly? Month, ImmutableArray<MatchData> Matches)
+    {
+        public SectionMatchData WithFilter(string search) =>
+            _DoesMatch(SectionName, search)
+                ? this
+                : this with { Matches = [.. Matches.Where(x => x.DoesMatch(search))] };
+    }
+
+    private record MatchData(DateTime? CreatedAt, string Pattern, string? OverrideDescription, DateOnly? ExactDate)
+    {
+        public bool DoesMatch(string search) =>
+            _DoesMatch(Pattern, search) ||
+            _DoesMatch(OverrideDescription, search);
+    }
+
+    private static bool _DoesMatch(string? data, string search) =>
+        data != null && data.ToLower().Contains(search);
 }
 
 public static class DirectoryHelper

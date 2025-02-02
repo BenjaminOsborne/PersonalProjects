@@ -8,11 +8,19 @@ public partial class JsonEditor
     [Inject]
     private IMatchModelService _modelService { get; init; }
 
-    private string? _loadedJson;
+    private string? LoadedJson;
+    
+    private string? Search;
 
     protected override Task OnInitializedAsync()
     {
-        _loadedJson = _modelService.LoadRawModelJson();
+        LoadedJson = _modelService.LoadRawModelJson();
         return Task.CompletedTask;
+    }
+
+    private void PerformSearch(string? search)
+    {
+        Search = search;
+        LoadedJson = _modelService.DisplaySearchResult(Search ?? string.Empty);
     }
 }
