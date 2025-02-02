@@ -8,14 +8,19 @@ public static class ModelPersistence
     public static bool CanLoadModel() =>
         _GetModelJsonFilePath() != null;
 
-    public static MatchModel LoadModel()
+    public static MatchModel LoadModel() =>
+        _MapToDomainModel(_LoadModel());
+
+    public static string GetRawJsonForDisplay() => 
+        JsonHelper.Serialise(_LoadModel(), writeIndented: true);
+
+    private static ModelData _LoadModel()
     {
         var jsonPath = _GetModelJsonFilePath() ?? throw new ApplicationException("Could not find MathModel.json");
-        var loaded = JsonHelper.Deserialise<ModelData>(File.ReadAllText(jsonPath))
-                     ?? throw new ApplicationException("Could not initialise model from json file");
-        return _MapToDomainModel(loaded);
+        return JsonHelper.Deserialise<ModelData>(File.ReadAllText(jsonPath))
+               ?? throw new ApplicationException("Could not initialise model from json file");
     }
-
+    
     public static void WriteModel(MatchModel model)
     {
         var jsonPath = _GetModelJsonFilePath() ?? throw new ApplicationException("Could not find MathModel.json");
