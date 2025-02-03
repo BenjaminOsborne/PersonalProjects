@@ -1,0 +1,18 @@
+﻿@page "/chartExample"
+@rendermode InteractiveServer
+
+<PageTitle>Chart Example</PageTitle>
+
+<h1>Chart Example</h1>
+
+<p />
+<hr />
+
+<Chart Config="_barConfig" @ref="_barChart"></Chart>
+
+<p />
+<hr />
+
+<Chart Config="_lineConfig" @ref="_lineChart"></Chart>
+
+<button class="btn btn-primary" @onclick="_AddLineChartValue">Add Value</button>
