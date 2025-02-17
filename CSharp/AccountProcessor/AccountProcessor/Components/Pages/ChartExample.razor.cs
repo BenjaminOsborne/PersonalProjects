@@ -19,7 +19,6 @@ public partial class ChartExample
         _barConfig = _InitialiseBarChart();
 
         _lineConfig = _CreateLineChartConfig();
-
         return Task.CompletedTask;
     }
 
@@ -77,28 +76,56 @@ public partial class ChartExample
         };
 
     /// <summary> https://github.com/erossini/BlazorChartjs/blob/main/ChartjsDemo/Pages/LineSimple.razor </summary>
-    private static LineChartConfig _CreateLineChartConfig() =>
-        new()
+    private static LineChartConfig _CreateLineChartConfig()
+    {
+        var config = new LineChartConfig();
+        config.Options = new Options
         {
-            Data =
+            Responsive = true,
+            MaintainAspectRatio = false,
+            //Interaction = new Interaction { Mode = InteractionMode.Dataset },
+            //Animation = true,
+            Plugins = new Plugins
             {
-                Labels = LineDataExamples.SimpleLineText,
-                Datasets =
-                [
-                    new LineDataset
+                Zoom = new Zoom
+                {
+                    Enabled = true,
+                    Mode = "x",
+                    ZoomOptions = new ZoomOptions
                     {
-                        Label = "My First Dataset",
-                        Data = LineDataExamples.SimpleLine.ToList(),
-                        BorderColor = SampleColors.PaletteBorder1.FirstOrDefault(),
-                        Tension = 0.1M,
-                        Fill = false,
-                        PointRadius = 15,
-                        PointStyle = PointStyle.Cross
+                        Wheel = new Wheel {Enabled = true}, //ModifierKey = "shift"
+                        Pinch = new Pinch {Enabled = true},
+                        //Drag = new Drag { Enabled = true, ModifierKey = "alt" }
                     }
-
-                ]
+                }
             }
         };
+
+        config.Data.Labels = LineDataExamples.SimpleLineText;
+
+        config.Data.Datasets = [
+            new LineDataset
+            {
+                Label = "My First Dataset",
+                Data = LineDataExamples.SimpleLine.ToList(),
+                BorderColor = SampleColors.PaletteBorder1.FirstOrDefault(),
+                Tension = 0.1M,
+                Fill = true,
+                PointRadius = 15,
+                PointStyle = PointStyle.Cross
+            }
+        ];
+        config.Data.Datasets.Add(new LineDataset()
+        {
+            Label = "My Second Dataset",
+            Data = LineDataExamples.SimpleLine2.ToList(),
+            BackgroundColor = "rgba(75,192,192,0.2)",
+            BorderColor = "rgba(75,192,192,1)",
+            Fill = true
+        });
+
+        return config;
+    }
 
     private void _AddLineChartValue() =>
         _lineChart?.AddData(["August"], 0, [new Random().Next(0, 200)]);
