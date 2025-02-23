@@ -15,11 +15,15 @@ public partial class ChartExample
     private Chart? _lineChart;
 
     protected override Task OnInitializedAsync()
-    {   
-        _barConfig = _InitialiseBarChart();
-
-        _lineConfig = _CreateLineChartConfig();
+    {
+        _Initialise();
         return Task.CompletedTask;
+    }
+
+    private void _Initialise()
+    {
+        _barConfig = _InitialiseBarChart();
+        _lineConfig = _CreateLineChartConfig();
     }
 
     /// <summary> https://github.com/erossini/BlazorChartjs/blob/main/ChartjsDemo/Pages/BarSimple.razor </summary>
@@ -94,15 +98,35 @@ public partial class ChartExample
                     ZoomOptions = new ZoomOptions
                     {
                         Wheel = new Wheel { Enabled = true }, //ModifierKey = "shift"
-                        Pinch = new Pinch { Enabled = true },
-                        //Drag = new Drag { Enabled = true, ModifierKey = "alt" }
+                        Drag = new Drag { Enabled = true, ModifierKey = "alt" },
+                    },
+                    Pan = new Pan{}
+                },
+                DataLabels = new DataLabels
+                {
+                    Clamp = true
+                }
+            },
+            Scales = new Dictionary<string, Axis>()
+            {
+                {
+                    Scales.XAxisId, new Axis()
+                    {
+                    }
+                },
+                {
+                    Scales.YAxisId, new Axis()
+                    {
+                        Min = 0,
+                        SuggestedMin = 0,
+                        Max = 200,
+                        SuggestedMax = 200
                     }
                 }
             }
         };
 
         config.Data.Labels = LineDataExamples.SimpleLineText;
-
         config.Data.Datasets = [
             new LineDataset
             {
@@ -112,7 +136,8 @@ public partial class ChartExample
                 Tension = 0.1M,
                 Fill = true,
                 PointRadius = 15,
-                PointStyle = PointStyle.Cross
+                PointStyle = PointStyle.Cross,
+                
             }
         ];
         config.Data.Datasets.Add(new LineDataset()
@@ -129,6 +154,12 @@ public partial class ChartExample
 
     private void _AddLineChartValue() =>
         _lineChart?.AddData(["August"], 0, [new Random().Next(0, 200)]);
+
+    private void _Reset()
+    {
+        _Initialise();
+        StateHasChanged();
+    }
 }
 
 public static class BarDataExamples

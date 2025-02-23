@@ -1,3 +1,4 @@
+using ApexCharts;
 using BlazorAppTemplate.Client.Pages;
 using BlazorAppTemplate.Components;
 
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddApexCharts();
 
 var app = builder.Build();
 
@@ -30,6 +33,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
+    .AddInteractiveServerRenderMode()
     .AddAdditionalAssemblies(typeof(BlazorAppTemplate.Client._Imports).Assembly);
 
 app.Run();
