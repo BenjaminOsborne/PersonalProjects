@@ -9,7 +9,6 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.0.1" />
     <PackageReference Include="EPPlus" Version="7.4.2" />
-    <PackageReference Include="PSC.Blazor.Components.Chartjs" Version="8.0.8" />
   </ItemGroup>
 
 </Project>
