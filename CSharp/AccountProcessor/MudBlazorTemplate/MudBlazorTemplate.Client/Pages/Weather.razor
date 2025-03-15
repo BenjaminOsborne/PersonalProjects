@@ -1,8 +1,8 @@
 ﻿@using MudBlazorTemplate.Client.DTOs
+@inject IConfiguration Config
+@inject HttpClient Http
 
 @page "/weather"
-
-
 
 <PageTitle>Weather</PageTitle>
 
@@ -15,7 +15,7 @@
 }
 else
 {
-  <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+    <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WeatherForecast, object>(x=>x.Date)">Date</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.TemperatureC)">Temp. (C)</MudTableSortLabel></MudTh>
@@ -35,11 +35,17 @@ else
 }
 
 @code {
+
     private WeatherForecast[]? forecasts;
 
     protected override async Task OnInitializedAsync()
     {
         // Simulate asynchronous loading to demonstrate a loading indicator
         await Task.Delay(500);
+
+        var serviceEndpoint = $"{Config.GetValue<string>("BackendUrl")}/weather/getall";
+        var found = await Http.GetFromJsonAsync<WeatherForecast[]>(serviceEndpoint);
+
+        forecasts = found;
     }
 }

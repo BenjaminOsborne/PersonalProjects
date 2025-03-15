@@ -4,10 +4,12 @@ using MudBlazorTemplate.Client.DTOs;
 
 namespace MudBlazorTemplate.Controllers;
 
+[ApiController]
+[Route("[controller]")]
 public class WeatherController : ControllerBase
 {
-    [HttpGet]
-    public IReadOnlyList<WeatherForecast> Get()
+    [HttpGet("getall")]
+    public IReadOnlyList<WeatherForecast> GetAll()
     {
         var startDate = DateOnly.FromDateTime(DateTime.Now);
         var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };

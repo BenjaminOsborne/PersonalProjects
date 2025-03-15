@@ -10,7 +10,17 @@ builder.Services.AddMudServices();
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddHttpClient();
+builder.Services.AddControllers();
+
+// Add a CORS policy for the client
+// Add .AllowCredentials() for apps that use an Identity Provider for authn/z
+builder.Services.AddCors(
+    options => options.AddPolicy(
+        "wasm",
+        policy => policy.WithOrigins([builder.Configuration["BackendUrl"] ?? "https://localhost:5001",
+                builder.Configuration["FrontendUrl"] ?? "https://localhost:5002"])
+            .AllowAnyMethod()
+            .AllowAnyHeader()));
 
 var app = builder.Build();
 
@@ -26,8 +36,12 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+app.MapControllers();
 
+// Activate the CORS policy
+app.UseCors("wasm");
+
+app.UseHttpsRedirection();
 
 app.UseAntiforgery();
 
