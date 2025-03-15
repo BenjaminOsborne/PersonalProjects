@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
+using MudBlazorTemplate.Client.Services;
 using MudBlazorTemplate.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,8 @@ builder.Services.AddSingleton(_ =>
     var uri = builder.Configuration["BackendUrl"];
     return new HttpClient { BaseAddress = new Uri(uri!) };
 });
+
+builder.Services.AddSingleton<IClientWeatherService>(sp => new ClientWeatherService(sp.GetService<HttpClient>()!, "SERVER"));
 
 // Add a CORS policy for the client
 // Add .AllowCredentials() for apps that use an Identity Provider for authn/z

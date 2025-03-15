@@ -1,5 +1,6 @@
 ﻿@using MudBlazorTemplate.Client.DTOs
-@rendermode InteractiveWebAssembly
+@using MudBlazorTemplate.Client.Services
+@rendermode renderMode
 
 @page "/weather"
 
@@ -8,13 +9,21 @@
 <MudText Typo="Typo.h3" GutterBottom="true">Weather forecast</MudText>
 <MudText Typo="Typo.body1" Class="mb-8">This component demonstrates fetching data from the server.</MudText>
 
-@if (forecasts == null)
+<MudDivider/>
+
+<MudButton OnClick=@OnClick>Force Refresh</MudButton>
+
+<MudDivider/>
+
+<MudTextField T="string" Text=@_handlerHistory/>
+
+@if (_forecasts == null)
 {
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
 }
 else
 {
-    <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+    <MudTable Items="_forecasts" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WeatherForecast, object>(x=>x.Date)">Date</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.TemperatureC)">Temp. (C)</MudTableSortLabel></MudTh>
@@ -34,16 +43,50 @@ else
 }
 
 @code {
-    
-    [Inject]
-    public required HttpClient Client { get; init; }
 
-    private WeatherForecast[]? forecasts;
+
+    private static IComponentRenderMode renderMode = 
+        new InteractiveWebAssemblyRenderMode(prerender: false);
+
+    [Inject]
+    public required IClientWeatherService WeatherService { get; init; }
+
+    private IReadOnlyList<WeatherForecast>? _forecasts;
+
+    private static string? _handlerHistory;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        forecasts = await Client.GetFromJsonAsync<WeatherForecast[]>("/weather/getall");
+        await _Refresh();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            await _Refresh();
+        }
+    }
+
+    private Task OnClick() => _Refresh();
+
+    private async Task _Refresh()
+    {
+        var hander = _GetHandler();
+        _handlerHistory = _handlerHistory != null ? $"{hander} | {_handlerHistory}" : hander;
+
+        await Task.Delay(500);
+
+        _forecasts = await WeatherService.GetAll();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private static string _GetHandler() =>
+        OperatingSystem.IsBrowser() ? "WASM" : "Server";
+
 }
