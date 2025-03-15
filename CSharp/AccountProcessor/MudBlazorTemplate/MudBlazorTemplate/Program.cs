@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using MudBlazorTemplate.Components;
 
@@ -11,6 +12,12 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddControllers();
+
+builder.Services.AddSingleton(_ =>
+{
+    var uri = builder.Configuration["BackendUrl"];
+    return new HttpClient { BaseAddress = new Uri(uri!) };
+});
 
 // Add a CORS policy for the client
 // Add .AllowCredentials() for apps that use an Identity Provider for authn/z
@@ -46,6 +53,7 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(MudBlazorTemplate.Client._Imports).Assembly);

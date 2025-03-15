@@ -1,6 +1,5 @@
 ﻿@using MudBlazorTemplate.Client.DTOs
-@inject IConfiguration Config
-@inject HttpClient Http
+@rendermode InteractiveWebAssembly
 
 @page "/weather"
 
@@ -35,17 +34,16 @@ else
 }
 
 @code {
+    
+    [Inject]
+    public required HttpClient Client { get; init; }
 
     private WeatherForecast[]? forecasts;
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate a loading indicator
-        await Task.Delay(500);
+        await base.OnInitializedAsync();
 
-        var serviceEndpoint = $"{Config.GetValue<string>("BackendUrl")}/weather/getall";
-        var found = await Http.GetFromJsonAsync<WeatherForecast[]>(serviceEndpoint);
-
-        forecasts = found;
+        forecasts = await Client.GetFromJsonAsync<WeatherForecast[]>("/weather/getall");
     }
 }
