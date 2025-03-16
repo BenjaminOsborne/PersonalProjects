@@ -7,9 +7,6 @@ namespace AccountProcessor.Components.Pages;
 
 public static class SelectorConstants
 {
-    /// <summary> Stable Id for the "Choose Category" default option when creating a new Section </summary>
-    public static readonly string ChooseCategoryDefaultId = Guid.NewGuid().ToString();
-
     /// <summary> Stable Id for the "Choose Section" default option when matching a row </summary>
     public static readonly string ChooseSectionDefaultId = Guid.NewGuid().ToString();
 }
@@ -127,7 +124,7 @@ public partial class Home
 /// <summary> Separate class from <see cref="Home"/> so that state transitions & data access can be controlled explicitly </summary>
 public class HomeViewModel
 {
-    private static readonly (string? CategoryName, string? Name, bool IsMonthSpecific) _newSectionDefault = (SelectorConstants.ChooseCategoryDefaultId, null, true);
+    private static readonly (string? CategoryName, string? Name, bool IsMonthSpecific) _newSectionDefault = (null, null, true);
 
     private readonly TransactionsModel _transactionsModel;
 
@@ -141,8 +138,27 @@ public class HomeViewModel
     public Result? LastActionResult { get; private set; }
 
     /// <remarks> Initial Id should be the "Choose Category" option </remarks>
-    public (string? CategoryName, string? Name, bool IsMonthSpecific) NewSection { get; private set; } = _newSectionDefault;
-    
+    private (string? CategoryName, string? Name, bool IsMonthSpecific) _newSection = _newSectionDefault;
+
+    public string? NewSectionName
+    {
+        get => _newSection.Name;
+        set => _newSection = _newSection with { Name = value };
+    }
+
+    public string? NewSectionCategory
+    {
+        get => _newSection.CategoryName;
+        set => _newSection = _newSection with { CategoryName = value };
+    }
+
+    public bool NewSectionIsMonthSpecific
+    {
+        get => _newSection.IsMonthSpecific;
+        set => _newSection = _newSection with { IsMonthSpecific = value };
+    }
+
+
     public DateOnly? Month => _transactionsModel.Month;
     public DateOnly? EarliestTransaction => _transactionsModel.EarliestTransaction;
     public DateOnly? LatestTransaction => _transactionsModel.LatestTransaction;
@@ -152,7 +168,7 @@ public class HomeViewModel
     
     public UnMatchedRowsTable.ViewModel? UnMatchedModel => _transactionsModel.UnMatchedModel;
     public MatchedRowsTable.ViewModel? MatchedModel => _transactionsModel.MatchedModel;
-
+    
     public CategorisationResult? GetLatestCategorisationResultForExport() => _transactionsModel.LatestCategorisationResult;
 
     /// <summary> Only actions not managed by this model are the Excel file extracts - this method enables result to display </summary>
@@ -173,27 +189,18 @@ public class HomeViewModel
         _transactionsModel.UpdateMonth(WrappedResult.Create(update));
     }
 
-    public void SetNewSectionCategory(string? category) =>
-        NewSection = NewSection with { CategoryName = category };
-
-    public void SetNewSectionName(string? name) =>
-        NewSection = NewSection with { Name = name };
-
-    public void SetNewSectionIsMonthSpecific(bool isMonthSpecific) =>
-        NewSection = NewSection with { IsMonthSpecific = isMonthSpecific };
-
     public void CreateNewSection() =>
         _transactionsModel.ChangeMatchModel(
             fnPerform: cat =>
             {
-                var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == NewSection.CategoryName);
-                return category != null && !NewSection.Name.IsNullOrWhiteSpace()
-                    ? cat.AddSection(category, NewSection.Name!,
-                        matchMonthOnly: NewSection.IsMonthSpecific ? _transactionsModel.Month : null)
+                var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == _newSection.CategoryName);
+                return category != null && !_newSection.Name.IsNullOrWhiteSpace()
+                    ? cat.AddSection(category, _newSection.Name!,
+                        matchMonthOnly: _newSection.IsMonthSpecific ? _transactionsModel.Month : null)
                     : Result.Fail("Invalid Category or empty Section Name");
             },
             refreshCategories: true,
-            onSuccess: () => NewSection = _newSectionDefault);
+            onSuccess: () => _newSection = _newSectionDefault);
 
     public void AddNewMatchForRow(TransactionRowUnMatched row) =>
         _transactionsModel.ChangeMatchModel(

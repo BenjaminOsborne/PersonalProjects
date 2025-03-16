@@ -1,40 +1,16 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 
-<!-- Add icon library: https://fontawesome.com/v4/icons/ -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<PageTitle>Account Processor</PageTitle>
 
-<!-- Button Style -->
-<style>
-    .btn {
-        background-color: DodgerBlue;
-        border: none;
-        color: white;
-        padding: 2px;
-        font-size: 14px;
-        cursor: pointer;
-    }
-
-    /* Darker background on mouse-over */
-    .btn:hover {
-        background-color: RoyalBlue;
-    }
-</style>
-
-<PageTitle>Home</PageTitle>
-
-<h1>Account Processor</h1>
-
-<p />
-<hr />
-
-<p role="status"><strong>Last Action Result: </strong>
-    <label style=@(Model.LastActionResult?.IsSuccess == true ? "color:green" : "color:red")>
+<MudStack Row=true>
+    <MudText Color=Color.Primary><strong>Last Action Result: </strong></MudText>
+    <MudText Color=@(Model.LastActionResult?.IsSuccess == true ? Color.Success : Color.Error)>
         @(Model.LastActionResult?.IsSuccess == true ? "Success!" : Model.LastActionResult?.Error)
-    </label>
-</p>
+    </MudText>
+</MudStack>
 
-<hr />
+<MudDivider Class="ma-1" DividerType="DividerType.FullWidth" />
 
 <MudStack>
     <MudPaper Class="border-solid border-1 mud-border-primary pa-4">
@@ -43,7 +19,7 @@
                 <MudText><strong>[1] Create Transactions File</strong></MudText>
             </MudItem>
             <MudItem>
-                <AccountConverter OnAccountFileConverted=@OnAccountFileConverted/>
+                <AccountConverter OnAccountFileConverted=@OnAccountFileConverted />
             </MudItem>
         </MudGrid>
     </MudPaper>
@@ -64,7 +40,7 @@
     else
     {
         @* Load & Categorise transaction files *@
-        
+
         <MudPaper Class="border-solid border-2 mud-border-primary pa-4">
             <MudGrid Class="align-center">
                 <MudItem xs="2">
@@ -94,7 +70,7 @@
         @if (TransactionsAreFullyLoaded()) //Only display export button if transactions have been loaded
         {
             @* Export categorised *@
-            
+
             <MudPaper Class="border-solid border-2 mud-border-primary pa-4">
                 <MudGrid Class="align-center">
                     <MudItem xs="2">
@@ -107,7 +83,7 @@
                                        Color=Color.Primary>
                                 Export
                             </MudButton>
-                            <MudFlexBreak/>
+                            <MudFlexBreak />
                             <i>Finally, exports the categorised transactions by category, for storage in LifeOrganisation file.</i>
                         </MudContainer>
                     </MudItem>
@@ -123,7 +99,7 @@
 
     <MudStack Row=true Class="align-end">
         <MudPaper Elevation="0" Class="mb-3 d-flex justify-start flex-shrink-1">
-            <MudDatePicker @bind-Date=@YearMonthBind FixDay=1 DateFormat="MMM yyyy"/>
+            <MudDatePicker @bind-Date=@YearMonthBind FixDay=1 DateFormat="MMM yyyy" />
         </MudPaper>
         <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Size="Size.Medium" OnClick="() => Model.SkipMonth(-1)" />
         <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Medium" OnClick="() => Model.SkipMonth(+1)" />
@@ -138,44 +114,43 @@
 
     <hr />
 
-    <!-- Add new section -->
-    <table style="width:auto" cellpadding="5">
-        <thead>
-            <tr style="text-align:center">
-                <th/>
-                <th>Category</th>
-                <th>Section Name</th>
-                <th>Month Specific</th>
-                <th>Create</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr style="text-align:center">
-                <td><strong>Add New Section</strong></td>
-                <td>
-                    <select style="margin-right: 5px" value="@Model.NewSection.CategoryName" @onchange="e => Model.SetNewSectionCategory((string?)e.Value)">
-                        <option value="@SelectorConstants.ChooseCategoryDefaultId" selected>Choose Category</option>
-                        @foreach (var cat in Model.Categories!.Value)
-                        {
-                            <option value="@cat.Name">@cat.Name</option>
-                        }
-                    </select>
-                </td>
-                <td><input style="margin-right: 5px" placeholder="Section Name..." value="@Model.NewSection.Name" @onchange="e => Model.SetNewSectionName((string?)e.Value)" /></td>
-                <td><input type="checkbox" checked="@Model.NewSection.IsMonthSpecific" @onchange="e => Model.SetNewSectionIsMonthSpecific((bool)e.Value!)"></td>
-                <td><button class="btn" @onclick="Model.CreateNewSection"><i class="fa fa-plus"></i></button></td>
-            </tr>
-        </tbody>
-    </table>
+    @* Add new section *@
+    <MudExpansionPanels>
+        <MudExpansionPanel Text="Add new Sction...">
+            <ChildContent>
+                <MudSelect T=string
+                           @bind-Value=@Model.NewSectionCategory
+                           Placeholder="Choose category"
+                           Variant=Variant.Outlined
+                           Margin=Margin.Normal
+                           Dense=true
+                           Typo=Typo.body2
+                           Clearable=true
+                           Validation=@((string? s) => s == null ? "Select category" : null)>
+                    @foreach (var cat in Model.Categories!.Value)
+                    {
+                        <MudSelectItem Value=@cat.Name />
+                    }
+                </MudSelect>
+                <MudTextField T=string
+                              @bind-Value=@Model.NewSectionName
+                              Label="New Category Name"
+                              Validation=@((string? n) => n == null ? "Enter name" : null)
+                              Typo=Typo.subtitle1 />
+                <MudCheckBox @bind-Value=@Model.NewSectionIsMonthSpecific>Is Month Specific</MudCheckBox>
+                <MudButton Icon="@Icons.Material.Filled.Add" Size="Size.Medium" OnClick="() => Model.CreateNewSection()">Create</MudButton>
+            </ChildContent>
+        </MudExpansionPanel>
+    </MudExpansionPanels>
 
-    /* UnMatched Rows */
+    @* UnMatched Rows *@
     @if (Model.UnMatchedModel != null)
     {
         <hr />
         <UnMatchedRowsTable @ref="UnMatchedRowsTable" Model=@Model.UnMatchedModel AddNewMatchForRow=@AddNewMatchForRow />
     }
 
-    /* Matched Rows */
+    @* Matched Rows *@
     @if (Model.MatchedModel != null)
     {
         <hr />
