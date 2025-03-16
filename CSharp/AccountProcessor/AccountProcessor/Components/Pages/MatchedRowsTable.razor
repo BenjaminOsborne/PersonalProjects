@@ -1,38 +1,33 @@
 ﻿@using System.Collections.Immutable;
 @rendermode InteractiveServer
 
-<label style="color:green; font-size:large"><strong>Matched</strong></label>
+<MudText Color=Color.Primary Typo=Typo.h6><strong>Matched</strong></MudText>
 
-<table style="width:auto" cellpadding="5">
-    <thead>
-        <tr class="border-bottom-thick">
-            <th class="border-right">Category: Section</th>
-            <th>Date</th>
-            <th>Transaction</th>
-            <th>Export As</th>
-            <th class="border-right">Amount (£)</th>
-            <th>Match Pattern</th>
-            <th>Clear</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var row in Model.MatchedRows)
-        {
-            var rowClassBottom = row.IsLastRowForCategory ? "border-bottom-thick" : "border-bottom";
-            <tr class=@rowClassBottom>
-                <td class="fitwidth border-right">@row.CategorySectionDisplay</td>
-                <td class="fitwidth">@row.Transaction.Date.ToString("ddd dd/MM")</td>
-                <td class="fitwidth">@row.Transaction.Description</td>
-                <td class="fitwidth">@row.MatchDescription</td>
-                <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
-                <td class="fitwidth" style="color:darkslategray">@row.MatchPattern</td>
-                <td>
-                    <button class="btn" @onclick="() => ClearMatch(row)"><i class="fa fa-trash"></i></button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<MudDataGrid Items=@Model.MatchedRows
+             ReadOnly=true
+             ColumnResizeMode=ResizeMode.Column
+             SortMode=SortMode.Multiple
+             Dense=true
+             FixedHeader=true
+             Height="80vh">
+    <Columns>
+        <PropertyColumn Property="x => x.CategorySectionDisplay" Title="Category: Section"/>
+        <PropertyColumn Property="x => x.Transaction.DateDisplay" Title="Date"/>
+        <PropertyColumn Property="x => x.Transaction.Description" Title="Transaction"/>
+        <PropertyColumn Property="x => x.MatchDescription" Title="Export As"/>
+        <TemplateColumn Title="Amount (£)">
+            <CellTemplate>
+                <MudText Typo=Typo.body2 Color=@context.Item.AmountColor>@context.Item.DisplayAmount</MudText>
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.MatchPattern" Title="Match Pattern"/>
+        <TemplateColumn Title="Clear">
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@((e) => ClearMatch(context.Item))"/>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
 
 @code {
 

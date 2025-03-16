@@ -218,6 +218,8 @@ public record Transaction(DateOnly Date, string Description, decimal Amount)
 {
     public bool IsInMonth(DateOnly month) =>
         Date.Year == month.Year && Date.Month == month.Month;
+
+    public string DateDisplay => Date.ToString("ddd dd/MM");
 }
 
 public record SelectorData(bool IsModelLoaded, ImmutableArray<CategoryHeader>? Categories, ImmutableArray<(SectionHeader Header, DateTime? LastUsed)>? Sections);

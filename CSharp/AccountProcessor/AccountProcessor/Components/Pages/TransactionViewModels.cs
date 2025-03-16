@@ -93,4 +93,5 @@ public record TransactionRowMatched(
     public string CategorySectionDisplay => $"{Category.Name}: {Section.Name}";
     public string MatchPattern => LatestMatch.Pattern;
     public string MatchDescription => LatestMatch.GetDescription();
+    public MudBlazor.Color AmountColor => Transaction.Amount < 0 ? MudBlazor.Color.Inherit : MudBlazor.Color.Success;
 }
