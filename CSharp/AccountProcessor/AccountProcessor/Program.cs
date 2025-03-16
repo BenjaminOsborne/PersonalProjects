@@ -1,7 +1,11 @@
 using AccountProcessor.Components;
 using AccountProcessor.Components.Services;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add MudBlazor services
+builder.Services.AddMudServices();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
