@@ -1,5 +1,4 @@
 ﻿@page "/modelEditor"
-@using AccountProcessor.Components.Services
 @rendermode InteractiveServer
 
 <!-- Add icon library: https://fontawesome.com/v4/icons/ -->
@@ -15,7 +14,6 @@ else
 {
     <MudDataGrid Items=@Items.Value
                  QuickFilter=@_ApplySearchFilter
-                 ReadOnly=true
                  ColumnResizeMode=ResizeMode.Column
                  SortMode=SortMode.Multiple
                  Dense=true
@@ -29,7 +27,6 @@ else
                           AdornmentIcon=@Icons.Material.Filled.Search
                           IconSize=Size.Medium
                           Class="mt-0" />
-            
         </ToolBarContent>
         <Columns>
             <PropertyColumn Property="x => x.HeaderName" Title="Header"/>

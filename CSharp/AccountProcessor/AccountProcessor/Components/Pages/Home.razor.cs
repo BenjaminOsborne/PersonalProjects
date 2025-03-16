@@ -5,12 +5,6 @@ using System.Collections.Immutable;
 
 namespace AccountProcessor.Components.Pages;
 
-public static class SelectorConstants
-{
-    /// <summary> Stable Id for the "Choose Section" default option when matching a row </summary>
-    public static readonly string ChooseSectionDefaultId = Guid.NewGuid().ToString();
-}
-
 public static class FileConstants
 {
     public const string ExtractedTransactionsFileExtension = ".extract.xlsx";

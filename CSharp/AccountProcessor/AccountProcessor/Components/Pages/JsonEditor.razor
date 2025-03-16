@@ -3,12 +3,8 @@
 
 <PageTitle>Json Editor</PageTitle>
 
-<h1>Json Editor</h1>
+<MudStack>
+    <MudTextField T=@string @bind-Value=@BindSearch Immediate=true Placeholder="Search..." />
+    <pre style="font-family:'Cascadia Code'">@LoadedJson</pre>
+</MudStack>
 
-<p />
-<hr />
-
-<MudTextField T=@string @bind-Value=@BindSearch Immediate=true Placeholder="Search..." />
-
-<p />
-<pre style="font-family:'Cascadia Code'">@LoadedJson</pre>

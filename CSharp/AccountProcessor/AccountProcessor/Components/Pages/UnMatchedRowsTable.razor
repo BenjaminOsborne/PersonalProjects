@@ -1,60 +1,71 @@
 ﻿@using System.Collections.Immutable;
 @rendermode InteractiveServer
 
-<label style="color:red; font-size:large"><strong>UnMatched</strong></label>
+<MudText Color=Color.Secondary Typo=Typo.h6><strong>Un-matched</strong></MudText>
 
-<table style="width:auto" cellpadding="5">
-    <thead>
-        <tr class="border-bottom-thick">
-            <th>Date</th>
-            <th>Transaction</th>
-            <th class="border-right">Amount (£)</th>
-            <th>Category</th>
-            <th>Match On</th>
-            <th>Description</th>
-            <th>Once</th>
-            <th>Match</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var row in Model.UnMatchedRows)
-        {
-            <tr class="border-bottom">
-                <td class="fitwidth">@row.Transaction.Date.ToString("ddd dd/MM")</td>
-                <td class="fitwidth"><a href=@row.Hyperlink target="_blank">@row.Transaction.Description</a></td>
-                <td class="border-right" style=@row.StyleColor>@row.DisplayAmount</td>
+<MudDataGrid Items=@Model.UnMatchedRows
+             ColumnResizeMode=ResizeMode.Column
+             SortMode=SortMode.Multiple
+             Dense=true
+             FixedHeader=true>
+    <Columns>
+        <PropertyColumn Property="x => x.Transaction.DateDisplay" Title="Date"/>
+        <PropertyColumn Property="x => x.Transaction.Description" Title="Transaction"/>
+        <TemplateColumn Title="Amount (£)">
+            <CellTemplate>
+                <MudText Typo=Typo.body2 Color=@context.Item.AmountColor>@context.Item.DisplayAmount</MudText>
+            </CellTemplate>
+        </TemplateColumn>
 
-                <td>
-                    <select value="@row.SelectionId" @onchange="e => row.SelectionId = (string?)e.Value">
-                        <option value="@SelectorConstants.ChooseSectionDefaultId" disabled selected>Choose Section</option>
-                        @foreach (var cat in Model.TopSuggestions)
-                        {
-                            <option value="@cat.Id">@cat.Display</option>
-                        }
-                        <option value="@SelectorConstants.ChooseSectionDefaultId" disabled>───────────────────</option>
-                        @foreach (var cat in Model.AllSections)
-                        {
-                            <option value="@cat.Id" style="background-color:@cat.BackgroundColor">@cat.Display</option>
-                        }
-                    </select>
-                </td>
-
-                <td>
-                    <input placeholder="Match on" value="@row.MatchOn" @onchange="e => row.MatchOn = (string?)e.Value" />
-                </td>
-                <td>
-                    <input placeholder="Override Description" value="@row.OverrideDescription" @onchange="e => row.OverrideDescription = (string?)e.Value" />
-                </td>
-                <td>
-                    <input type="checkbox" checked="@row.AddOnlyForTransaction" @onchange="e => row.AddOnlyForTransaction = (bool)e.Value!">
-                </td>
-                <td>
-                    <button class="btn" @onclick="() => AddNewMatchForRow(row)"><i class="fa fa-plus"></i></button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <TemplateColumn Title="Category">
+            <CellTemplate>                
+                <MudSelect T=string
+                           @bind-Value=@context.Item.SelectionId
+                           Placeholder="Choose category"
+                           Variant=Variant.Outlined
+                           Margin=Margin.Normal
+                           Dense=true
+                           Typo=Typo.body2
+                           Clearable=true
+                           Validation=@((string? s) => s == null ? "Select category" : null)>
+                    @foreach (var cat in Model.TopSuggestions)
+                    {
+                        <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
+                    }
+                    <MudSelectItem Disabled=true Value=@("")>
+                        <MudDivider Light=true/>
+                    </MudSelectItem>
+                    @foreach (var cat in Model.AllSections)
+                    {
+                        <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
+                    }
+                </MudSelect>
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Match On">
+            <CellTemplate>
+                <MudTextField T=string @bind-Value=@context.Item.MatchOn Typo=Typo.body2 />
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Description">
+            <CellTemplate>
+                <MudTextField T=string @bind-Value=@context.Item.OverrideDescription Typo=Typo.body2 />
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Once">
+            <CellTemplate>
+                <MudCheckBox @bind-Value=@context.Item.AddOnlyForTransaction />
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Match">
+            <CellTemplate>
+                <MudTooltip Text="Create">
+                    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@(() => AddNewMatchForRow(context.Item))"/>
+                </MudTooltip>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
 
 @code {
 

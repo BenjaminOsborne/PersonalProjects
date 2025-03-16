@@ -23,7 +23,7 @@ public record TransactionResultViewModel(
 
                 return new TransactionRowUnMatched(tr, hyperlink, DisplayAmount(tr), StyleColor(tr))
                 {
-                    SelectionId = found?.Id ?? SelectorConstants.ChooseSectionDefaultId, //If none suggested, use the default "Choose Selection" option
+                    SelectionId = found?.Id, //If none suggested, leave empty
                     MatchOn = description,
                     OverrideDescription = description.ToCamelCase()
                 };
@@ -79,6 +79,8 @@ public record TransactionRowUnMatched(
     public string? MatchOn { get; set; }
     public string? OverrideDescription { get; set; }
     public bool AddOnlyForTransaction { get; set; }
+
+    public MudBlazor.Color AmountColor => Transaction.AmountColor();
 }
 
 public record TransactionRowMatched(
@@ -93,5 +95,10 @@ public record TransactionRowMatched(
     public string CategorySectionDisplay => $"{Category.Name}: {Section.Name}";
     public string MatchPattern => LatestMatch.Pattern;
     public string MatchDescription => LatestMatch.GetDescription();
-    public MudBlazor.Color AmountColor => Transaction.Amount < 0 ? MudBlazor.Color.Inherit : MudBlazor.Color.Success;
+    public MudBlazor.Color AmountColor => Transaction.AmountColor();
+}
+
+public static class TransactionColorExtensions
+{
+    public static MudBlazor.Color AmountColor(this Transaction t) => t.Amount < 0 ? MudBlazor.Color.Inherit : MudBlazor.Color.Success;
 }
