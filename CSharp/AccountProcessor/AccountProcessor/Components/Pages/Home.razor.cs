@@ -53,12 +53,14 @@ public partial class Home
         StateHasChanged(); //Child view triggers change to Result label to be re-rendered
     }
 
-    private Task LoadTransactionsAndCategorise(InputFileChangeEventArgs e) =>
-        Model.LoadTransactionsAndCategorise(fnLoad: async () =>
-        {
-            using var inputStream = await e.CopyToMemoryStreamAsync();
-            return await _excelFileHandler.LoadTransactionsFromExcel(inputStream);
-        });
+    private Task LoadTransactionsAndCategorise(IBrowserFile? bf) =>
+        bf != null
+            ? Model.LoadTransactionsAndCategorise(fnLoad: async () =>
+            {
+                using var inputStream = await bf.CopyToMemoryStreamAsync();
+                return await _excelFileHandler.LoadTransactionsFromExcel(inputStream);
+            })
+            : Task.CompletedTask;
 
     private async Task ExportCategorisedTransactions()
     {
@@ -389,10 +391,12 @@ public static class HomeExstensions
     ///  "System.NotSupportedException: Synchronous reads are not supported."
     ///  when passing to service
     ///  </summary>
-    public static async Task<MemoryStream> CopyToMemoryStreamAsync(this InputFileChangeEventArgs e)
+    public static Task<MemoryStream> CopyToMemoryStreamAsync(this IBrowserFile bf) =>
+        _CopyToMemoryStreamAsync(bf.OpenReadStream());
+
+    private static async Task<MemoryStream> _CopyToMemoryStreamAsync(Stream stream)
     {
         var inputStream = new MemoryStream();
-        var stream = e.File.OpenReadStream();
         await stream.CopyToAsync(inputStream);
         inputStream.Position = 0;
         return inputStream;

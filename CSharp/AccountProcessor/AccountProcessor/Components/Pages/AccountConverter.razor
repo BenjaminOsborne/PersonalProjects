@@ -1,24 +1,37 @@
 ﻿@rendermode InteractiveServer
 
-<select style="margin-right: 5px" value=@SelectedAccountType.Id @onchange="e => SetAccountType(e.Value as string)">
-    @foreach (var at in SelectableAccountTypes)
-    {
-        <option value="@at.Id">@at.Name</option>
-    }
-</select>
+<MudContainer>
+    <MudGrid Class="align-center">
+        <MudItem>
+            <MudSelect T=AccountTypeData
+                       @bind-Value=@SelectedAccountType
+                       Variant=Variant.Outlined
+                       Margin=Margin.Normal
+                       Dense=true
+                       Typo=Typo.body2>
+                @foreach (var at in SelectableAccountTypes)
+                {
+                    <MudSelectItem Value=@at/>
+                }
+            </MudSelect>
 
-@if (SelectedAccountType.Type != AccountType.InitialSelect)
-{
-    <button class="btn btn-primary">
-        <InputFile OnChange="@ProcessAccountFile" accept=@SelectedAccountType.FileAccept />
-    </button>
-}
-else
-{
-    <button class="btn btn-primary" disabled>
-        <InputFile/>
-    </button>
-}
-
-<br />
-<i>@SelectedAccountType.Description</i>
+        </MudItem>
+        <MudItem>
+            <MudFileUpload T="IBrowserFile"
+                           FilesChanged=@ProcessAccountFile
+                           Accept=@SelectedAccountType.FileAccept
+                           MaximumFileCount="1"
+                           Disabled=@(SelectedAccountType.Type == AccountType.InitialSelect)>
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Filled"
+                               Color=Color.Primary
+                               StartIcon=@Icons.Material.Filled.FileOpen
+                               Size=@Size.Medium>
+                    </MudButton>
+                </ActivatorContent>
+            </MudFileUpload>
+        </MudItem>
+    </MudGrid>
+    <MudFlexBreak />
+    <i>@SelectedAccountType.Description</i>
+</MudContainer>

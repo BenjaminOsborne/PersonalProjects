@@ -17,6 +17,9 @@ public partial class AccountConverter
     private record AccountTypeData(AccountType Type, string Name, string FileAccept, string Description)
     {
         public string Id => Type.ToString();
+
+        /// <summary> Required for selector display </summary>
+        public override string ToString() => Name;
     }
 
     [Inject]
@@ -40,28 +43,32 @@ public partial class AccountConverter
     private void SetAccountType(string? id) =>
         SelectedAccountType = SelectableAccountTypes.Single(x => x.Id == id);
 
-    private Task ProcessAccountFile(InputFileChangeEventArgs e) =>
-        (SelectedAccountType?.Type) switch
+    private Task ProcessAccountFile(IBrowserFile? bf) =>
+        SelectedAccountType.Type switch
         {
-            AccountType.CoopBank => _ProcessBankFileExtraction(e,
+            AccountType.CoopBank => _ProcessBankFileExtraction(bf,
                 fnProcess: _excelFileHandler.CoopBank_ExtractCsvTransactionsToExcel,
                 filePrefix: "CoopBank_Extract"),
-            AccountType.SantanderCreditCard => _ProcessBankFileExtraction(e,
+            AccountType.SantanderCreditCard => _ProcessBankFileExtraction(bf,
                 fnProcess: _excelFileHandler.Santander_ExtractExcelTransactionsToExcel,
                 filePrefix: "Santander_Extract"),
             _ => Task.CompletedTask,
         };
 
     private async Task _ProcessBankFileExtraction(
-        InputFileChangeEventArgs e,
+        IBrowserFile? bf,
         Func<Stream, Task<WrappedResult<byte[]>>> fnProcess,
         string filePrefix)
     {
-        using var inputStream = await e.CopyToMemoryStreamAsync();
+        if (bf == null)
+        {
+            return;
+        }
+        using var inputStream = await bf.CopyToMemoryStreamAsync();
         var uniqueStamp = DateTime.MinValue.Add(DateTime.Now - new DateTime(2024, 11, 1)).Ticks;
         await _OnFileResultDownloadBytes(
             result: await fnProcess(inputStream),
-            fileName: $"{filePrefix}_{e.File.Name}_{uniqueStamp}{FileConstants.ExtractedTransactionsFileExtension}"); //Note: The ".extract." aspect enables further limitation just to these files on the file picker!
+            fileName: $"{filePrefix}_{bf.Name}_{uniqueStamp}{FileConstants.ExtractedTransactionsFileExtension}"); //Note: The ".extract." aspect enables further limitation just to these files on the file picker!
     }
 
     private Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
