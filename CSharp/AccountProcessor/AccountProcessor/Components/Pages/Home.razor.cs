@@ -23,13 +23,13 @@ public static class FileConstants
 public partial class Home
 {
     [Inject]
-    private IExcelFileHandler _excelFileHandler { get; init; }
+    private IExcelFileHandler _excelFileHandler { get; init; } = null!;
     [Inject]
-    private ITransactionCategoriserScoped _categoriser { get; init; }
+    private ITransactionCategoriserScoped _categoriser { get; init; } = null!;
     [Inject]
-    private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; }
+    private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; } = null!;
 
-    private HomeViewModel Model;
+    private HomeViewModel Model = null!;
 
     private UnMatchedRowsTable? UnMatchedRowsTable;
     private MatchedRowsTable? MatchedRowsTable;

@@ -10,7 +10,7 @@
         background-color: DodgerBlue;
         border: none;
         color: white;
-        padding: 2px 2x;
+        padding: 2px;
         font-size: 14px;
         cursor: pointer;
     }
@@ -138,7 +138,7 @@
                     </select>
                 </td>
                 <td><input style="margin-right: 5px" placeholder="Section Name..." value="@Model.NewSection.Name" @onchange="e => Model.SetNewSectionName((string?)e.Value)" /></td>
-                <td><input type="checkbox" checked="@Model.NewSection.IsMonthSpecific" @onchange="e => Model.SetNewSectionIsMonthSpecific((bool)e.Value)"></td>
+                <td><input type="checkbox" checked="@Model.NewSection.IsMonthSpecific" @onchange="e => Model.SetNewSectionIsMonthSpecific((bool)e.Value!)"></td>
                 <td><button class="btn" @onclick="Model.CreateNewSection"><i class="fa fa-plus"></i></button></td>
             </tr>
         </tbody>

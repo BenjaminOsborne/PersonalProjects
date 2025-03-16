@@ -43,8 +43,8 @@ public class WrappedResult<T> : Result
 
 public class Partition<T>
 {
-    public ImmutableList<T> PredicateTrue { get; init; }
-    public ImmutableList<T> PredicateFalse { get; init; }
+    public ImmutableList<T> PredicateTrue { get; init; } = null!;
+    public ImmutableList<T> PredicateFalse { get; init; } = null!;
 
     public Partition<U> Map<U>(Func<T, U> fnMap) => new Partition<U>
     {

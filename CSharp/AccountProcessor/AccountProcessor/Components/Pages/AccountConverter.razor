@@ -1,6 +1,6 @@
 ﻿@rendermode InteractiveServer
 
-<select style="margin-right: 5px" value=@SelectedAccountType.Id @onchange="e => SetAccountType((string?)e.Value)">
+<select style="margin-right: 5px" value=@SelectedAccountType.Id @onchange="e => SetAccountType(e.Value as string)">
     @foreach (var at in SelectableAccountTypes)
     {
         <option value="@at.Id">@at.Name</option>

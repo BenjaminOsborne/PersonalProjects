@@ -20,9 +20,9 @@ public partial class AccountConverter
     }
 
     [Inject]
-    private IExcelFileHandler _excelFileHandler { get; init; }
+    private IExcelFileHandler _excelFileHandler { get; init; } = null!;
     [Inject]
-    private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; }
+    private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; } = null!;
 
     private static readonly ImmutableArray<AccountTypeData> SelectableAccountTypes = ImmutableArray.Create(
         new AccountTypeData(AccountType.InitialSelect, "Choose Account Type", "", Description:
@@ -37,7 +37,7 @@ public partial class AccountConverter
     [Parameter]
     public required Action<Result> OnAccountFileConverted { get; init; }
         
-    private void SetAccountType(string id) =>
+    private void SetAccountType(string? id) =>
         SelectedAccountType = SelectableAccountTypes.Single(x => x.Id == id);
 
     private Task ProcessAccountFile(InputFileChangeEventArgs e) =>
