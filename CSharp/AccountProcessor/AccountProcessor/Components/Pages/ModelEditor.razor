@@ -7,29 +7,28 @@
 
 <PageTitle>Model Editor</PageTitle>
 
-<h1>Model Editor</h1>
-
-<p />
-<hr />
-
-@if (Items.HasValue)
+@if (Items is null)
 {
-    <MudDataGrid Items=@Items.Value ReadOnly=true ColumnResizeMode=ResizeMode.Column SortMode=SortMode.Multiple Dense=true FixedHeader=true>
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudDataGrid Items=@Items.Value ReadOnly=true ColumnResizeMode=ResizeMode.Column SortMode=SortMode.Multiple Dense=true FixedHeader=true Height="88vh">
         <Columns>
-            <HierarchyColumn T=ModelMatchItem />
-            <PropertyColumn Property="x => x.HeaderName" Title="Header" />
-            <PropertyColumn Property="x => x.SectionName" Title="Section" />
-            <PropertyColumn Property="x => x.SectionMonthDisplay" Title="Month" />
+            <HierarchyColumn T=ModelMatchItem/>
+            <PropertyColumn Property="x => x.HeaderName" Title="Header"/>
+            <PropertyColumn Property="x => x.SectionName" Title="Section"/>
+            <PropertyColumn Property="x => x.SectionMonthDisplay" Title="Month"/>
             <PropertyColumn Property="x => x.Pattern"/>
             <PropertyColumn Property="x => x.OverrideDescription" Title="Description"/>
             <TemplateColumn Title="Once">
                 <CellTemplate>
-                    <MudCheckBox T=bool Value=@context.Item.MatchOnce ReadOnly=true /> 
+                    <MudCheckBox T=bool Value=@context.Item.MatchOnce ReadOnly=true/>
                 </CellTemplate>
             </TemplateColumn>
             <TemplateColumn Title="Clear">
                 <CellTemplate>
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ClearMatch(context.Item))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ClearMatch(context.Item))"/>
                 </CellTemplate>
             </TemplateColumn>
         </Columns>
