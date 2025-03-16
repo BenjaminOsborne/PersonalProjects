@@ -23,6 +23,22 @@ public record ModelMatchItem(
     public bool MatchOnce => Match.ExactDate.HasValue;
     
     public string? SectionMonthDisplay => SectionMonth?.ToString("yyyy/MM");
+
+    public bool MatchesSearch(string searchString) =>
+        _MatchesSearch(
+            lowerSearch: searchString.ToLower(),
+            Header.Name,
+            Section.Name,
+            Pattern,
+            Match.OverrideDescription,
+            SectionMonthDisplay
+        );
+
+    static bool _MatchesSearch(string lowerSearch, params string?[] matches) =>
+        matches
+            .Where(x => !x.IsNullOrEmpty())
+            .Select(x => x!.ToLower())
+            .Any(m => m.Contains(lowerSearch));
 }
 
 public class MatchModelService : IMatchModelService

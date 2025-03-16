@@ -10,6 +10,7 @@ public partial class ModelEditor
     private IMatchModelService _modelService { get; init; } = null!;
 
     private ImmutableArray<ModelMatchItem>? Items;
+    private string? _searchString;
 
     protected override Task OnInitializedAsync()
     {
@@ -31,4 +32,8 @@ public partial class ModelEditor
 
     private void _RebuildModel() =>
         Items = _modelService.GetAllModelMatches();
+
+    private bool _ApplySearchFilter(ModelMatchItem arg) =>
+        _searchString.IsNullOrWhiteSpace() ||
+        arg.MatchesSearch(_searchString!);
 }

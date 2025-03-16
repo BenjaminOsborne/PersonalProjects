@@ -13,7 +13,24 @@
 }
 else
 {
-    <MudDataGrid Items=@Items.Value ReadOnly=true ColumnResizeMode=ResizeMode.Column SortMode=SortMode.Multiple Dense=true FixedHeader=true Height="88vh">
+    <MudDataGrid Items=@Items.Value
+                 QuickFilter=@_ApplySearchFilter
+                 ReadOnly=true
+                 ColumnResizeMode=ResizeMode.Column
+                 SortMode=SortMode.Multiple
+                 Dense=true
+                 FixedHeader=true
+                 Height="80vh">
+        <ToolBarContent>
+            <MudTextField @bind-Value=@_searchString
+                          Placeholder="Search"
+                          Adornment=Adornment.Start
+                          Immediate=true
+                          AdornmentIcon=@Icons.Material.Filled.Search
+                          IconSize=Size.Medium
+                          Class="mt-0" />
+            
+        </ToolBarContent>
         <Columns>
             <HierarchyColumn T=ModelMatchItem/>
             <PropertyColumn Property="x => x.HeaderName" Title="Header"/>
