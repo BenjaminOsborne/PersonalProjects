@@ -1,4 +1,5 @@
 ﻿@page "/modelEditor"
+@using AccountProcessor.Components.Services
 @rendermode InteractiveServer
 
 <!-- Add icon library: https://fontawesome.com/v4/icons/ -->
@@ -13,35 +14,24 @@
 
 @if (Items.HasValue)
 {
-    <table style="width:auto" cellpadding="5">
-        <thead>
-            <tr class="border-bottom-thick">
-                <th>Header</th>
-                <th>Section</th>
-                <th>Month</th>
-                <th>Pattern</th>
-                <th>Description</th>
-                <th>Once</th>
-                <th class="border-left">Clear</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var row in Items.Value)
-            {
-                <tr>
-                    <td class="fitwidth">@row.HeaderName</td>
-                    <td class="fitwidth">@row.SectionName</td>
-                    <td class="fitwidth">@row.SectionMonth?.ToString("yyyy/MM")</td>
-                    <td class="fitwidth">@row.Pattern</td>
-                    <td class="fitwidth">@row.OverrideDescription</td>
-                    <td class="fitwidth" align="center">
-                        <input type="checkbox" checked="@row.MatchOnce" disabled> @* @onchange="e => ChangeMatchOnce(row, (bool)e.Value) *@
-                    </td>
-                    <td class="border-left">
-                        <button class="btn" @onclick="() => ClearMatch(row)"><i class="fa fa-trash"></i></button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <MudDataGrid Items=@Items.Value ReadOnly=true ColumnResizeMode=ResizeMode.Column SortMode=SortMode.Multiple Dense=true FixedHeader=true>
+        <Columns>
+            <HierarchyColumn T=ModelMatchItem />
+            <PropertyColumn Property="x => x.HeaderName" Title="Header" />
+            <PropertyColumn Property="x => x.SectionName" Title="Section" />
+            <PropertyColumn Property="x => x.SectionMonthDisplay" Title="Month" />
+            <PropertyColumn Property="x => x.Pattern"/>
+            <PropertyColumn Property="x => x.OverrideDescription" Title="Description"/>
+            <TemplateColumn Title="Once">
+                <CellTemplate>
+                    <MudCheckBox T=bool Value=@context.Item.MatchOnce ReadOnly=true /> 
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Clear">
+                <CellTemplate>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ClearMatch(context.Item))" />
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
 }

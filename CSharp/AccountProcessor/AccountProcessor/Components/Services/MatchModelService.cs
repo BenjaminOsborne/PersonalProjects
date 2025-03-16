@@ -21,6 +21,8 @@ public record ModelMatchItem(
     public string Pattern => Match.Pattern;
     public string? OverrideDescription => Match.OverrideDescription;
     public bool MatchOnce => Match.ExactDate.HasValue;
+    
+    public string? SectionMonthDisplay => SectionMonth?.ToString("yyyy/MM");
 }
 
 public class MatchModelService : IMatchModelService
