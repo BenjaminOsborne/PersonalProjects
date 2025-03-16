@@ -8,7 +8,7 @@
 <p />
 <hr />
 
-<input style="margin-right: 5px" placeholder="Search..." @bind-value="@BindSearch" @bind-value:event="oninput" />
+<MudTextField T=@string @bind-Value=@BindSearch Immediate=true Placeholder="Search..." />
 
 <p />
 <pre style="font-family:'Cascadia Code'">@LoadedJson</pre>
