@@ -116,29 +116,40 @@
 
     @* Add new section *@
     <MudExpansionPanels>
-        <MudExpansionPanel Text="Add new Sction...">
+        <MudExpansionPanel>
+            <TitleContent>
+                <MudText Typo=Typo.body1>Add new Section...</MudText>
+            </TitleContent>
             <ChildContent>
-                <MudSelect T=string
-                           @bind-Value=@Model.NewSectionCategory
-                           Placeholder="Choose category"
-                           Variant=Variant.Outlined
-                           Margin=Margin.Normal
-                           Dense=true
-                           Typo=Typo.body2
-                           Clearable=true
-                           Validation=@((string? s) => s == null ? "Select category" : null)>
-                    @foreach (var cat in Model.Categories!.Value)
-                    {
-                        <MudSelectItem Value=@cat.Name />
-                    }
-                </MudSelect>
-                <MudTextField T=string
-                              @bind-Value=@Model.NewSectionName
-                              Label="New Category Name"
-                              Validation=@((string? n) => n == null ? "Enter name" : null)
-                              Typo=Typo.subtitle1 />
-                <MudCheckBox @bind-Value=@Model.NewSectionIsMonthSpecific>Is Month Specific</MudCheckBox>
-                <MudButton Icon="@Icons.Material.Filled.Add" Size="Size.Medium" OnClick="() => Model.CreateNewSection()">Create</MudButton>
+                <MudStack Row=true Class="align-center">
+                    <MudPaper Elevation="0" Class="mb-3 d-flex justify-start flex-shrink-1">
+                        <MudSelect T=string
+                                   @bind-Value=@Model.NewSectionCategory
+                                   Placeholder="Choose category"
+                                   Variant=Variant.Outlined
+                                   Margin=Margin.Normal
+                                   Dense=true
+                                   Typo=Typo.body2
+                                   Clearable=true
+                                   Validation=@((string? s) => s == null ? "Select category" : null)>
+                            @foreach (var cat in Model.Categories!.Value)
+                            {
+                                <MudSelectItem Value=@cat.Name/>
+                            }
+                        </MudSelect>
+                    </MudPaper>
+                    <MudPaper Width="300px" MaxWidth="300px">
+                        <MudTextField T=string
+                                      @bind-Value=@Model.NewSectionName
+                                      Label="New Category Name"
+                                      Validation=@((string? n) => n == null ? "Enter name" : null)
+                                      Typo=Typo.subtitle1/>
+                    </MudPaper>
+                    <MudCheckBox @bind-Value=@Model.NewSectionIsMonthSpecific>Is Month Specific</MudCheckBox>
+                    <MudTooltip Text="Create">
+                        <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Large" OnClick="() => Model.CreateNewSection()"/>
+                    </MudTooltip>
+                </MudStack>
             </ChildContent>
         </MudExpansionPanel>
     </MudExpansionPanels>
