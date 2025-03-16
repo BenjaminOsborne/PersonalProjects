@@ -34,6 +34,12 @@ public partial class Home
     private UnMatchedRowsTable? UnMatchedRowsTable;
     private MatchedRowsTable? MatchedRowsTable;
 
+    private DateTime? YearMonthBind
+    {
+        get => Model.Month?.ToDateTime(TimeOnly.MinValue);
+        set => Model.SetMonth(value);
+    }
+
     protected override Task OnInitializedAsync()
     {
         Model = new HomeViewModel(_categoriser,
@@ -136,7 +142,7 @@ public class HomeViewModel
 
     /// <remarks> Initial Id should be the "Choose Category" option </remarks>
     public (string? CategoryName, string? Name, bool IsMonthSpecific) NewSection { get; private set; } = _newSectionDefault;
-
+    
     public DateOnly? Month => _transactionsModel.Month;
     public DateOnly? EarliestTransaction => _transactionsModel.EarliestTransaction;
     public DateOnly? LatestTransaction => _transactionsModel.LatestTransaction;
@@ -156,11 +162,10 @@ public class HomeViewModel
     public void RefreshTransactions() =>
         _transactionsModel.RefreshTransactions();
 
-    public void SetMonth(string? yearAndMonth) =>
-        _transactionsModel.UpdateMonth(
-            DateOnly.TryParseExact(yearAndMonth, "yyyy-MM", out var parsed)
-                ? WrappedResult.Create(parsed)
-                : WrappedResult.Fail<DateOnly>($"Invalid date format: {yearAndMonth}"));
+    public void SetMonth(DateTime? yearAndMonth) =>
+        _transactionsModel.UpdateMonth(yearAndMonth.HasValue
+            ? WrappedResult.Create(DateOnly.FromDateTime(yearAndMonth.Value))
+            : WrappedResult.Fail<DateOnly>($"Invalid date format: {yearAndMonth}"));
 
     public void SkipMonth(int months)
     {
