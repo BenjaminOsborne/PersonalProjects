@@ -40,9 +40,6 @@ public partial class AccountConverter
     [Parameter]
     public required Action<Result> OnAccountFileConverted { get; init; }
         
-    private void SetAccountType(string? id) =>
-        SelectedAccountType = SelectableAccountTypes.Single(x => x.Id == id);
-
     private Task ProcessAccountFile(IBrowserFile? bf) =>
         SelectedAccountType.Type switch
         {
