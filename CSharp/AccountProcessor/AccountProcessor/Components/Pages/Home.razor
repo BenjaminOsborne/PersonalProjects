@@ -36,83 +36,75 @@
 
 <hr />
 
-<p style="border:thin">
-    <table style="width:auto" cellpadding="5" cellspacing="0" border="1">
-        <tbody>
-            
-            <!-- Convert & download account files -->
-            <tr>
-                <td>
-                    <label><strong>[1] Create Transactions File  </strong></label>
-                </td>
-                <td>
-                    <AccountConverter OnAccountFileConverted=@OnAccountFileConverted />
-                </td>
-            </tr>
+<MudStack>
+    <MudGrid Class="align-center">
+        <MudItem xs="2">
+            <MudText><strong>[1] Create Transactions File</strong></MudText>
+        </MudItem>
+        <MudItem>
+            <AccountConverter OnAccountFileConverted=@OnAccountFileConverted />
+        </MudItem>
+    </MudGrid>
 
-            @if (!IsModelLocationKnown())
-            {
-                <tr>
-                    <td>
-                        <label><strong>[2] Missing Model File  </strong></label>
-                    </td>
-                    <td>
-                        <i>Please configure where to load the model file (see ModelPersistence.cs)... </i>
-                    </td>
-                </tr>
-            }
-            else
-            {
-                <!-- Load & Categorise transaction files -->
-                <tr>
-                    <td>
-                        <label><strong>[2] Categorise  </strong></label>
-                    </td>
-                    <td>
-                        <MudContainer>
-                            @* ".extract.xlsx" filter works as Co-op/Santander files written as ".extract.xlsx" *@
-                            <MudFileUpload T="IBrowserFile"
-                                           FilesChanged=@LoadTransactionsAndCategorise
-                                           Accept=@FileConstants.ExtractedTransactionsFileExtension
-                                           MaximumFileCount="1">
-                                <ActivatorContent>
-                                    <MudButton Variant="Variant.Filled"
-                                               Color=Color.Primary
-                                               StartIcon=@Icons.Material.Filled.FileOpen
-                                               Size=@Size.Medium>
-                                    </MudButton>
-                                </ActivatorContent>
-                            </MudFileUpload>
-                            <MudFlexBreak />
-                            <i>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </i>
-                        </MudContainer>
-                    </td>
-                </tr>
+    @if (!IsModelLocationKnown())
+    {
+        <MudGrid Class="align-center">
+            <MudItem xs="2">
+                <MudText><strong>[2] Missing Model File</strong></MudText>
+            </MudItem>
+            <MudItem>
+                <MudText><i>Please configure where to load the model file (see ModelPersistence.cs)... </i></MudText>
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        @* Load & Categorise transaction files *@
+        <MudGrid Class="align-center">
+            <MudItem xs="2">
+                <MudText><strong>[2] Categorise</strong></MudText>
+            </MudItem>
+            <MudItem>
+                <MudContainer>
+                    @* ".extract.xlsx" filter works as Co-op/Santander files written as ".extract.xlsx" *@
+                    <MudFileUpload T="IBrowserFile"
+                                   FilesChanged=@LoadTransactionsAndCategorise
+                                   Accept=@FileConstants.ExtractedTransactionsFileExtension
+                                   MaximumFileCount="1">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Filled"
+                                       Color=Color.Primary
+                                       StartIcon=@Icons.Material.Filled.FileOpen
+                                       Size=@Size.Medium >
+                            </MudButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                    <i>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </i>
+                </MudContainer>
+            </MudItem>
+        </MudGrid>
 
-                @if (TransactionsAreFullyLoaded()) //Only display export button if transactions have been loaded
-                {
-                    <!-- Export categorised -->
-                    <tr>
-                        <td>
-                            <label><strong>[3] Export Categorised  </strong></label>
-                        </td>
-                        <td>
-                            <MudContainer>
-                                <MudButton StartIcon=@Icons.Material.Filled.Download
-                                           OnClick=@(() => ExportCategorisedTransactions())
-                                           Color=Color.Primary>
-                                    Export
-                                </MudButton>
-                                <MudFlexBreak />
-                                <i>Finally, exports the categorised transactions by category, for storage in LifeOrganisation file. </i>
-                            </MudContainer>
-                        </td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
-</p>
+        @if (TransactionsAreFullyLoaded()) //Only display export button if transactions have been loaded
+        {
+            @* Export categorised *@
+            <MudGrid Class="align-center">
+                <MudItem xs="2">
+                    <MudText><strong>[3] Export Categorised</strong></MudText>
+                </MudItem>
+                <MudItem>
+                    <MudContainer>
+                        <MudButton StartIcon=@Icons.Material.Filled.Download
+                                   OnClick=@(() => ExportCategorisedTransactions())
+                                   Color=Color.Primary>
+                            Export
+                        </MudButton>
+                        <i>Finally, exports the categorised transactions by category, for storage in LifeOrganisation file.</i>
+                    </MudContainer>
+                </MudItem>
+            </MudGrid>
+        }
+    }
+</MudStack>
 
 @if (TransactionsAreFullyLoaded())
 {
