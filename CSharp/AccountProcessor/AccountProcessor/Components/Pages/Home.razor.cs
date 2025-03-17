@@ -14,11 +14,7 @@ public static class FileConstants
 public partial class Home
 {
     [Inject]
-    private IExcelFileHandler _excelFileHandler { get; init; } = null!;
-    [Inject]
     private ITransactionCategoriserScoped _categoriser { get; init; } = null!;
-    [Inject]
-    private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; } = null!;
 
     private HomeViewModel Model = null!;
 
@@ -31,6 +27,8 @@ public partial class Home
         set => Model.SetMonth(value);
     }
 
+    public void OnFileActionFinished() => StateHasChanged();
+
     protected override Task OnInitializedAsync()
     {
         Model = new HomeViewModel(_categoriser,
@@ -38,38 +36,8 @@ public partial class Home
         return Task.CompletedTask;
     }
 
-    private bool IsModelLocationKnown() =>
-        _categoriser.GetScope().IsModelLocationKnown();
-
     private bool TransactionsAreFullyLoaded() =>
-        Model.Month.HasValue && Model.Categories.HasValue && Model.AllSections.HasValue && Model.TransactionResultViewModel != null;
-
-    public void OnAccountFileConverted(Result result)
-    {
-        Model.OnFileExtractResult(result);
-        StateHasChanged(); //Child view triggers change to Result label to be re-rendered
-    }
-
-    private Task LoadTransactionsAndCategorise(IBrowserFile? bf) =>
-        bf != null
-            ? Model.LoadTransactionsAndCategorise(fnLoad: async () =>
-            {
-                using var inputStream = await bf.CopyToMemoryStreamAsync();
-                return await _excelFileHandler.LoadTransactionsFromExcel(inputStream);
-            })
-            : Task.CompletedTask;
-
-    private async Task ExportCategorisedTransactions()
-    {
-        var categorisationResult = Model.GetLatestCategorisationResultForExport();
-        if (categorisationResult == null)
-        {
-            return;
-        }
-        await _OnFileResultDownloadBytes(
-            result: await _excelFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!),
-            fileName: $"CategorisedTransactions_{Model.Month!.Value:yyyy-MM}.xlsx");
-    }
+        Model.TransactionsAreFullyLoaded();
 
     private void AddNewMatchForRow(TransactionRowUnMatched row)
     {
@@ -81,14 +49,6 @@ public partial class Home
     {
         Model.ClearMatch(row);
         StateHasChanged(); //Must call: child component can trigger update to error state.
-    }
-
-    private Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
-    {
-        Model.OnFileExtractResult(result);
-        return result.IsSuccess
-            ? _jsInterop.SaveAsFileAsync(fileName, result.Result!)
-            : Task.CompletedTask;
     }
 
     private void _OnModelStateChangeRebuildChildren()
@@ -131,6 +91,9 @@ public class HomeViewModel
     /// <summary> Display message after any action invoked </summary>
     public Result? LastActionResult { get; private set; }
 
+    public bool CanCategoriseTransactions() =>
+        _transactionsModel.CanCategoriseTransactions();
+
     /// <remarks> Initial Id should be the "Choose Category" option </remarks>
     private (string? CategoryName, string? Name, bool IsMonthSpecific) _newSection = _newSectionDefault;
 
@@ -152,6 +115,8 @@ public class HomeViewModel
         set => _newSection = _newSection with { IsMonthSpecific = value };
     }
 
+    public bool TransactionsAreFullyLoaded() =>
+        Month.HasValue && Categories.HasValue && AllSections.HasValue && TransactionResultViewModel != null;
 
     public DateOnly? Month => _transactionsModel.Month;
     public DateOnly? EarliestTransaction => _transactionsModel.EarliestTransaction;
@@ -239,6 +204,9 @@ public class HomeViewModel
             _onActionHandleResult = onActionHandleResult;
             _onStateChanged = onStateChanged;
         }
+
+        public bool CanCategoriseTransactions() =>
+            _categoriser.GetScope().CanCategoriseTransactions();
 
         public DateOnly? Month { get; private set; }
 

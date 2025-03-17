@@ -16,7 +16,7 @@ public class TransactionCategoriserScoped : ITransactionCategoriserScoped
 
 public interface ITransactionCategoriser
 {
-    bool IsModelLocationKnown();
+    bool CanCategoriseTransactions();
 
     SelectorData GetSelectorData(DateOnly month);
     CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month);
@@ -31,7 +31,7 @@ public interface ITransactionCategoriser
 
 public class TransactionCategoriser : ITransactionCategoriser
 {
-    public bool IsModelLocationKnown() => ModelPersistence.CanLoadModel();
+    public bool CanCategoriseTransactions() => ModelPersistence.CanLoadModel();
 
     public SelectorData GetSelectorData(DateOnly month)
     {
