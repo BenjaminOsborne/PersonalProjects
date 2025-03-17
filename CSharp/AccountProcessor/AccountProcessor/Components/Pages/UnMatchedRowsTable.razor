@@ -11,12 +11,16 @@
     <Columns>
         <PropertyColumn Property="x => x.Transaction.DateDisplay" Title="Date"/>
         <PropertyColumn Property="x => x.Transaction.Description" Title="Transaction"/>
+        <TemplateColumn Title="Transaction">
+            <CellTemplate>
+                <MudLink Href=@context.Item.Hyperlink Target="_blank">@context.Item.Transaction.Description</MudLink>
+            </CellTemplate>
+        </TemplateColumn>
         <TemplateColumn Title="Amount (£)">
             <CellTemplate>
                 <MudText Typo=Typo.body2 Color=@context.Item.AmountColor>@context.Item.DisplayAmount</MudText>
             </CellTemplate>
         </TemplateColumn>
-
         <TemplateColumn Title="Category">
             <CellTemplate>                
                 <MudSelect T=string
