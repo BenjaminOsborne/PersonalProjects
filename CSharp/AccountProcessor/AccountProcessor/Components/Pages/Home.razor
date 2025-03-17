@@ -12,7 +12,17 @@
 
 <MudDivider Class="ma-1" DividerType="DividerType.FullWidth" />
 
-<FileActions Model=@Model OnFileActionFinished=@OnFileActionFinished/>
+
+<MudExpansionPanels>
+    <MudExpansionPanel @bind-Expanded=@FileActionsExpandedBind>
+        <TitleContent>
+            <MudText Typo=Typo.body1>File Actions...</MudText>
+        </TitleContent>
+        <ChildContent>
+            <FileActions Model=@Model OnFileActionFinished=@OnFileActionFinished />
+        </ChildContent>
+    </MudExpansionPanel>
+</MudExpansionPanels>
 
 @if (TransactionsAreFullyLoaded())
 {

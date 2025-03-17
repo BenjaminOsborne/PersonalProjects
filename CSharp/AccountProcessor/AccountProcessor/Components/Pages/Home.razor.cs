@@ -27,7 +27,17 @@ public partial class Home
         set => Model.SetMonth(value);
     }
 
-    public void OnFileActionFinished() => StateHasChanged();
+    public bool FileActionsExpandedBind { get; set; } = true;
+
+    public void OnFileActionFinished((FileActionType type, Result result) actionParams)
+    {
+        if (actionParams.result.IsSuccess && actionParams.type == FileActionType.LoadTransactions)
+        {
+            FileActionsExpandedBind = false; //Close to give more screen space to categorisation
+        }
+
+        StateHasChanged();
+    }
 
     protected override Task OnInitializedAsync()
     {
@@ -183,8 +193,8 @@ public class HomeViewModel
             fnPerform: c => c.DeleteMatch(row.Section, row.LatestMatch),
             refreshCategories: false); //Clearing a match does not change categories (or "suggestions" in the picker)
 
-    public async Task LoadTransactionsAndCategorise(Func<Task<WrappedResult<ImmutableArray<Transaction>>>> fnLoad) =>
-        _transactionsModel.UpdateLoadedTransactions(await fnLoad());
+    public void LoadTransactionsAndCategorise(WrappedResult<ImmutableArray<Transaction>> result) =>
+        _transactionsModel.UpdateLoadedTransactions(result);
 
     private void _UpdateLastActionResult(Result result) =>
         LastActionResult = result;

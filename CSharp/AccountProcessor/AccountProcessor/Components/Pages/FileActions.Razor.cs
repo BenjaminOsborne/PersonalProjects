@@ -4,6 +4,14 @@ using Microsoft.AspNetCore.Components.Forms;
 
 namespace AccountProcessor.Components.Pages;
 
+public enum FileActionType
+{
+    None = 0,
+    ConvertBankTransactionsFile,
+    LoadTransactions,
+    ExportTransactions
+}
+
 public partial class FileActions
 {
     [Inject]
@@ -14,7 +22,7 @@ public partial class FileActions
     [Parameter]
     public required HomeViewModel Model { get; init; }
     [Parameter]
-    public required Action OnFileActionFinished { get; init; }
+    public required Action<(FileActionType, Result)> OnFileActionFinished { get; init; }
 
     private bool CanCategoriseTransactions() =>
         Model.CanCategoriseTransactions();
@@ -25,7 +33,7 @@ public partial class FileActions
     public void OnAccountFileConverted(Result result)
     {
         Model.OnFileExtractResult(result);
-        OnFileActionFinished();
+        OnFileActionFinished((FileActionType.ConvertBankTransactionsFile, result));
     }
 
     private async Task LoadTransactionsAndCategorise(IBrowserFile? bf)
@@ -34,12 +42,10 @@ public partial class FileActions
         {
             return;
         }
-        await Model.LoadTransactionsAndCategorise(fnLoad: async () =>
-        {
-            using var inputStream = await bf.CopyToMemoryStreamAsync();
-            return await _excelFileHandler.LoadTransactionsFromExcel(inputStream);
-        });
-        OnFileActionFinished();
+        using var inputStream = await bf.CopyToMemoryStreamAsync();
+        var result = await _excelFileHandler.LoadTransactionsFromExcel(inputStream);
+        Model.LoadTransactionsAndCategorise(result);
+        OnFileActionFinished((FileActionType.LoadTransactions, result));
     }
 
     private async Task ExportCategorisedTransactions()
@@ -49,17 +55,20 @@ public partial class FileActions
         {
             return;
         }
-        await _OnFileResultDownloadBytes(
+
+        var result = await _OnFileResultDownloadBytes(
             result: await _excelFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!),
             fileName: $"CategorisedTransactions_{Model.Month!.Value:yyyy-MM}.xlsx");
-        OnFileActionFinished();
+        
+        OnFileActionFinished((FileActionType.ExportTransactions, result));
     }
 
-    private Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
+    private async Task<Result> _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
     {
         Model.OnFileExtractResult(result);
-        return result.IsSuccess
+        await (result.IsSuccess
             ? _jsInterop.SaveAsFileAsync(fileName, result.Result!)
-            : Task.CompletedTask;
+            : Task.CompletedTask);
+        return result;
     }
 }
