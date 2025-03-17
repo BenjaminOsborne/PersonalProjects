@@ -30,10 +30,17 @@ public partial class FileActions
     private bool TransactionsAreFullyLoaded() =>
         Model.TransactionsAreFullyLoaded();
 
-    public void OnAccountFileConverted(Result result)
+    public async Task OnAccountFileConverted(WrappedResult<byte[]> result)
     {
         Model.OnFileExtractResult(result);
         OnFileActionFinished((FileActionType.ConvertBankTransactionsFile, result));
+
+        //If converted successfully - immediately load transactions for categorisation
+        if (result.IsSuccess)
+        {
+            using var stream = new MemoryStream(result.Result!);
+            await _LoadTransactionsAndCategorise(stream);
+        }
     }
 
     private async Task LoadTransactionsAndCategorise(IBrowserFile? bf)
@@ -43,6 +50,11 @@ public partial class FileActions
             return;
         }
         using var inputStream = await bf.CopyToMemoryStreamAsync();
+        await _LoadTransactionsAndCategorise(inputStream);
+    }
+
+    private async Task _LoadTransactionsAndCategorise(Stream inputStream)
+    {
         var result = await _excelFileHandler.LoadTransactionsFromExcel(inputStream);
         Model.LoadTransactionsAndCategorise(result);
         OnFileActionFinished((FileActionType.LoadTransactions, result));

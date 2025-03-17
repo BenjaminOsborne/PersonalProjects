@@ -38,7 +38,7 @@ public partial class AccountConverter
     private AccountTypeData SelectedAccountType = SelectableAccountTypes[0];
 
     [Parameter]
-    public required Action<Result> OnAccountFileConverted { get; init; }
+    public required Func<WrappedResult<byte[]>, Task> OnAccountFileConverted { get; init; }
         
     private Task ProcessAccountFile(IBrowserFile? bf) =>
         SelectedAccountType.Type switch
@@ -68,11 +68,13 @@ public partial class AccountConverter
             fileName: $"{filePrefix}_{bf.Name}_{uniqueStamp}{FileConstants.ExtractedTransactionsFileExtension}"); //Note: The ".extract." aspect enables further limitation just to these files on the file picker!
     }
 
-    private Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
+    private async Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)
     {
-        OnAccountFileConverted.Invoke(result);
-        return result.IsSuccess
-            ? _jsInterop.SaveAsFileAsync(fileName, result.Result!)
-            : Task.CompletedTask;
+        if (result.IsSuccess)
+        {
+            await _jsInterop.SaveAsFileAsync(fileName, result.Result!);
+        }
+
+        await OnAccountFileConverted.Invoke(result);
     }
 }
