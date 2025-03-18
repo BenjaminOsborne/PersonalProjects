@@ -12,7 +12,6 @@
 
 <MudDivider Class="ma-1" DividerType="DividerType.FullWidth" />
 
-
 <MudExpansionPanels>
     <MudExpansionPanel @bind-Expanded=@FileActionsExpandedBind>
         <TitleContent>
@@ -35,17 +34,18 @@
         <MudIconButton Icon="@Icons.Material.Filled.Refresh" Size="Size.Medium" OnClick="() => Model.RefreshTransactions()" />
     </MudStack>
 
-    <label>
-        <strong>Transactions Period:</strong> @Model.EarliestTransaction?.ToString("dd MMM") to @Model.LatestTransaction?.ToString("dd MMM")
-    </label>
+    <MudText Typo="Typo.caption"><strong>Transactions Period:</strong> @Model.EarliestTransaction?.ToString("dd MMM") to @Model.LatestTransaction?.ToString("dd MMM")</MudText>
 
-    <MudDivider Light=true/>
+    <MudDivider Class="mt-1" Light=true/>
     
     @* Add new section *@
     <MudExpansionPanels>
         <MudExpansionPanel>
             <TitleContent>
-                <MudText Typo=Typo.body1>Add new Section...</MudText>
+                <MudStack Row=true>
+                    <MudIcon Icon="@Icons.Material.Filled.Add" />
+                    <MudText Typo=Typo.body1>Add new Section...</MudText>
+                </MudStack>
             </TitleContent>
             <ChildContent>
                 <MudStack Row=true Class="align-center">
@@ -85,13 +85,13 @@
 @* UnMatched Rows *@
 @if (Model.UnMatchedModel != null)
 {
-    <hr />
+    <MudDivider Class="mt-2"/>
     <UnMatchedRowsTable @ref="UnMatchedRowsTable" Model=@Model.UnMatchedModel AddNewMatchForRow=@AddNewMatchForRow />
 }
 
 @* Matched Rows *@
 @if (Model.MatchedModel != null)
 {
-    <hr />
+    <MudDivider Class="mt-2" />
     <MatchedRowsTable @ref="MatchedRowsTable" Model=@Model.MatchedModel ClearMatch=@ClearMatch />
 }

@@ -18,7 +18,9 @@
                     <MudText><strong>[2] Missing Model File</strong></MudText>
                 </MudItem>
                 <MudItem>
-                    <MudText><i>Please configure where to load the model file (see ModelPersistence.cs)... </i></MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Error">
+                        <i>Please configure where to load the model file (see ModelPersistence.cs)... </i>
+                    </MudText>
                 </MudItem>
             </MudGrid>
         </MudPaper>
@@ -47,7 +49,9 @@
                                 </MudButton>
                             </ActivatorContent>
                         </MudFileUpload>
-                        <i>Loads an xlsx with Date, Description & Amount columns and runs categorisation. </i>
+                        <MudText Typo="Typo.body2" Class="mt-1">
+                            <i>Loads an xlsx with Date, Description & Amount columns and runs categorisation.</i>
+                        </MudText>
                     </MudContainer>
                 </MudItem>
             </MudGrid>
@@ -69,7 +73,9 @@
                                 Export
                             </MudButton>
                             <MudFlexBreak />
-                            <i>Finally, exports the categorised transactions by category, for storage in LifeOrganisation file.</i>
+                            <MudText Typo="Typo.body2">
+                                <i>Finally, exports the categorised transactions by category, for storage in LifeOrganisation file.</i>
+                            </MudText>
                         </MudContainer>
                     </MudItem>
                 </MudGrid>
