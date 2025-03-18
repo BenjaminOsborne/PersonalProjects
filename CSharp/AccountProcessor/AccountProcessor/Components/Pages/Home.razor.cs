@@ -190,7 +190,7 @@ public class HomeViewModel
 
     public void ClearMatch(TransactionRowMatched row) =>
         _transactionsModel.ChangeMatchModel(
-            fnPerform: c => c.DeleteMatch(row.Section, row.LatestMatch),
+            fnPerform: cat => cat.DeleteMatch(row.Section, row.LatestMatch),
             refreshCategories: false); //Clearing a match does not change categories (or "suggestions" in the picker)
 
     public void LoadTransactionsAndCategorise(WrappedResult<ImmutableArray<Transaction>> result) =>

@@ -29,6 +29,12 @@ public interface ITransactionCategoriser
     Result DeleteMatch(SectionHeader section, Match match);
 }
 
+/// <summary>
+/// Class is stateful (hence instance bound to an explicit "scope").
+/// <see cref="_singleModel"/> provides a cached <see cref="MatchModel"/> for the duration of the scope so that
+/// a sequence of method calls can perform mutations.
+/// Note; UI layer gets a fresh scope for each operation... so behaves like the "scope" of a controller operation.
+/// </summary>
 public class TransactionCategoriser : ITransactionCategoriser
 {
     public bool CanCategoriseTransactions() => ModelPersistence.CanLoadModel();
