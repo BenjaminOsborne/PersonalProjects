@@ -134,12 +134,13 @@ public class HomeViewModel
     public ImmutableArray<CategoryHeader>? Categories => _transactionsModel.Categories;
     public ImmutableArray<SectionSelectorRow>? AllSections => _transactionsModel.AllSections;
     public TransactionResultViewModel? TransactionResultViewModel => _transactionsModel.TransactionResultViewModel;
-    
+
+    /// <summary> Required to pass back to excel-service at end to generate final report. </summary>
+    public ImmutableArray<Transaction>? GetLoadedTransactions() => _transactionsModel.LoadedTransactions;
+
     public UnMatchedRowsTable.ViewModel? UnMatchedModel => _transactionsModel.UnMatchedModel;
     public MatchedRowsTable.ViewModel? MatchedModel => _transactionsModel.MatchedModel;
     
-    public CategorisationResult? GetLatestCategorisationResultForExport() => _transactionsModel.LatestCategorisationResult;
-
     /// <summary> Only actions not managed by this model are the Excel file extracts - this method enables result to display </summary>
     public void OnFileExtractResult(Result result) =>
         _UpdateLastActionResult(result);
@@ -227,7 +228,6 @@ public class HomeViewModel
         public DateOnly? EarliestTransaction { get; private set; }
         public DateOnly? LatestTransaction { get; private set; }
 
-        public CategorisationResult? LatestCategorisationResult { get; private set; }
         public TransactionResultViewModel? TransactionResultViewModel { get; private set; }
 
         public UnMatchedRowsTable.ViewModel? UnMatchedModel { get; private set; }
@@ -309,8 +309,7 @@ public class HomeViewModel
                 return;
             }
 
-            var categorisationResult = _PerformOnCategoriser(x => x.Categorise(loadedTransactions!.Value, Month!.Value));
-            LatestCategorisationResult = categorisationResult;
+            var categorisationResult = _PerformOnCategoriser(x => x.Categorise(new (loadedTransactions!.Value, Month!.Value)));
             var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
             TransactionResultViewModel = trViewModel;
 

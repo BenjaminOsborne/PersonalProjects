@@ -20,10 +20,10 @@ public interface IExcelFileHandler
 
     /// <summary> Exports categorised transactions to excel with 2 columns ("Date - Description", "Amount") for each category (ordered section within)</summary>
     /// <remarks> Output is then ready to be pasted into LifeOrganisation summary sheet </remarks>
-    Task<WrappedResult<byte[]>> ExportCategorisedTransactionsToExcel(CategorisationResult result);
+    Task<WrappedResult<byte[]>> ExportCategorisedTransactionsToExcel(CategoriseRequest request);
 }
 
-public class ExcelFileHandler : IExcelFileHandler
+public class ExcelFileHandler(ITransactionCategoriserScoped categoriserScoped) : IExcelFileHandler
 {
     /// <summary> Note: "Balance" included in co-op report, but not required for loading transactions out to process </summary>
     private static readonly ImmutableArray<string> _transactionsRequiredColumnHeaders = ["Date", "Description", "Type", "Money In", "Money Out"];
@@ -241,10 +241,11 @@ public class ExcelFileHandler : IExcelFileHandler
 
     #region ExportCategorisedTransactionsToExcel
 
-    public async Task<WrappedResult<byte[]>> ExportCategorisedTransactionsToExcel(CategorisationResult result)
+    public async Task<WrappedResult<byte[]>> ExportCategorisedTransactionsToExcel(CategoriseRequest request)
     {
         try
         {
+            var result = categoriserScoped.PerformOnScope(x => x.Categorise(request));
             var (excel, worksheet) = _CreateNewExcel();
 
             var catSummary = _ToWriteSummary(result);

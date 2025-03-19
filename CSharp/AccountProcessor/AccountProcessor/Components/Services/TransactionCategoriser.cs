@@ -44,7 +44,7 @@ public interface ITransactionCategoriser
     bool CanCategoriseTransactions();
 
     SelectorData GetSelectorData(DateOnly month);
-    CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month);
+    CategorisationResult Categorise(CategoriseRequest request);
 
     WrappedResult<SectionHeader> AddSection(CategoryHeader categoryHeader, string sectionName, DateOnly? matchMonthOnly);
 
@@ -93,15 +93,15 @@ public class TransactionCategoriser : ITransactionCategoriser
                 .FirstOrDefault();
     }
 
-    public CategorisationResult Categorise(ImmutableArray<Transaction> transactions, DateOnly month)
+    public CategorisationResult Categorise(CategoriseRequest request)
     {
         var model = _GetModel();
         var sections = model.Categories
             .SelectMany(c => c.Sections)
             .ToImmutableArrayMany(s => s.Matches.Select(m => new { Section = s, Match = m }));
 
-        var withMatch = transactions
-            .Where(trans => trans.IsInMonth(month))
+        var withMatch = request.Transactions
+            .Where(trans => trans.IsInMonth(request.Month))
             .ToImmutableArray(trans =>
             {
                 var matches = sections
@@ -126,7 +126,7 @@ public class TransactionCategoriser : ITransactionCategoriser
             {
                 var firstSuggest = unMatched.HistoricMatches
                     .Select(x => new { x.Section.Section, x.Match.Pattern })
-                    .FirstOrDefault(x => x.Section.CanUseInMonth(month));
+                    .FirstOrDefault(x => x.Section.CanUseInMonth(request.Month));
                 var suggestedSection = firstSuggest?.Section;
                 var suggestedPattern = firstSuggest?.Pattern;
                 return new UnMatchedTransaction(unMatched.Transaction, suggestedSection, suggestedPattern);
@@ -244,6 +244,8 @@ public class TransactionCategoriser : ITransactionCategoriser
     /// </summary>
     private readonly Lazy<MatchModel> _singleModel = LazyHelper.Create(ModelPersistence.LoadModel);
 }
+
+public record CategoriseRequest(ImmutableArray<Transaction> Transactions, DateOnly Month);
 
 public record Transaction(DateOnly Date, string Description, decimal Amount)
 {

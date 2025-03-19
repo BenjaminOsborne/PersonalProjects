@@ -62,14 +62,15 @@ public partial class FileActions
 
     private async Task ExportCategorisedTransactions()
     {
-        var categorisationResult = Model.GetLatestCategorisationResultForExport();
-        if (categorisationResult == null)
+        var transactions = Model.GetLoadedTransactions();
+        var month = Model.Month;
+        if (transactions == null || month == null)
         {
             return;
         }
 
         var result = await _OnFileResultDownloadBytes(
-            result: await _excelFileHandler.ExportCategorisedTransactionsToExcel(categorisationResult!),
+            result: await _excelFileHandler.ExportCategorisedTransactionsToExcel(new (transactions.Value, month.Value)),
             fileName: $"CategorisedTransactions_{Model.Month!.Value:yyyy-MM}.xlsx");
         
         OnFileActionFinished((FileActionType.ExportTransactions, result));
