@@ -216,7 +216,7 @@ public class HomeViewModel
         }
 
         public bool CanCategoriseTransactions() =>
-            _categoriser.GetScope().CanCategoriseTransactions();
+            _categoriser.PerformOnScope(x => x.CanCategoriseTransactions());
 
         public DateOnly? Month { get; private set; }
 
@@ -260,7 +260,7 @@ public class HomeViewModel
             bool refreshCategories,
             Action? onSuccess = null) =>
                 _OnStateChange(
-                    fnGetResult: () => fnPerform(_GetCategoriser()).ToWrappedUnit(),
+                    fnGetResult: () => _PerformOnCategoriser(fnPerform).ToWrappedUnit(),
                     refreshCategories: refreshCategories,
                     onSuccess: _ => onSuccess?.Invoke());
 
@@ -286,7 +286,7 @@ public class HomeViewModel
 
             if (refreshCategories)
             {
-                var allData = _GetCategoriser().GetSelectorData(Month!.Value);
+                var allData = _PerformOnCategoriser(x => x.GetSelectorData(Month!.Value));
                 Categories = allData.Categories;
                 AllSections = allData.Sections?
                     .GroupBy(s => s.Header.Parent.GetKey())
@@ -309,7 +309,7 @@ public class HomeViewModel
                 return;
             }
 
-            var categorisationResult = _GetCategoriser().Categorise(loadedTransactions!.Value, Month!.Value);
+            var categorisationResult = _PerformOnCategoriser(x => x.Categorise(loadedTransactions!.Value, Month!.Value));
             LatestCategorisationResult = categorisationResult;
             var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
             TransactionResultViewModel = trViewModel;
@@ -364,7 +364,8 @@ public class HomeViewModel
             static DateOnly ToYearAndMonth(DateOnly dt) => new DateOnly(dt.Year, dt.Month, 1);
         }
 
-        private ITransactionCategoriser _GetCategoriser() => _categoriser.GetScope();
+        private T _PerformOnCategoriser<T>(Func<ITransactionCategoriser, T> fnPerform) =>
+            _categoriser.PerformOnScope(fnPerform);
     }
 }
 

@@ -1,17 +1,42 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace AccountProcessor.Components.Services;
 
 public interface ITransactionCategoriserScoped
 {
-    ITransactionCategoriser GetScope();
+    T PerformOnScope<T>(Func<ITransactionCategoriser, T> fnPerform);
 }
 
 public class TransactionCategoriserScoped : ITransactionCategoriserScoped
 {
-    public ITransactionCategoriser GetScope() =>
-        new TransactionCategoriser();
+    public T PerformOnScope<T>(Func<ITransactionCategoriser, T> fnPerform)
+    {
+        var result = fnPerform(new TransactionCategoriser());
+        return _RoundTripReadyForControllerSerialisation(result);
+    }
+
+    /// <summary> Temporary: Confirms all types being used are ready to be JSON serialised over the wire (when experiment with Client Blazor) </summary>
+    private static T _RoundTripReadyForControllerSerialisation<T>(T result)
+    {
+        try
+        {
+            var json1 = JsonHelper.Serialise(result);
+            var roundTrip = JsonHelper.Deserialise<T>(json1);
+            var json2 = JsonHelper.Serialise(roundTrip);
+            if (json1 != json2)
+            {
+                throw new Exception("JSON Round trip failed: Type not ready for controller serialisation");
+            }
+            return roundTrip!;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"JSON Serialisation roundtrip error. Type: {typeof(T).FullName}\n{ex}");
+            throw;
+        }
+    }
 }
 
 public interface ITransactionCategoriser
@@ -54,7 +79,7 @@ public class TransactionCategoriser : ITransactionCategoriser
         var sections = model.Categories
             .SelectMany(x => x.Sections)
             .Where(x => x.Section.CanUseInMonth(month))
-            .Select(x => (Header: x.Section, LastUsed: GetSectionLastUsedAt(x.Matches)))
+            .Select(x => new SectionUsage(Header: x.Section, LastUsed: GetSectionLastUsedAt(x.Matches)))
             .OrderBy(x => x.Header.Parent.Order)
             .ThenBy(x => x.Header.Order)
             .ToImmutableArray();
@@ -228,7 +253,9 @@ public record Transaction(DateOnly Date, string Description, decimal Amount)
     public string DateDisplay => Date.ToString("ddd dd/MM");
 }
 
-public record SelectorData(bool IsModelLoaded, ImmutableArray<CategoryHeader>? Categories, ImmutableArray<(SectionHeader Header, DateTime? LastUsed)>? Sections);
+public record SectionUsage(SectionHeader Header, DateTime? LastUsed);
+
+public record SelectorData(bool IsModelLoaded, ImmutableArray<CategoryHeader>? Categories, ImmutableArray<SectionUsage>? Sections);
 
 public class UnMatchedTransaction
 {
@@ -285,6 +312,7 @@ public abstract class Block
 
 public class CategoryHeader : Block
 {
+    [JsonConstructor]
     private CategoryHeader(int order, string name) : base(order, name)
     {
     }
