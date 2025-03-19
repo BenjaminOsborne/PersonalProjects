@@ -376,9 +376,9 @@ public static class HomeExstensions
     ///  when passing to service
     ///  </summary>
     public static Task<MemoryStream> CopyToMemoryStreamAsync(this IBrowserFile bf) =>
-        _CopyToMemoryStreamAsync(bf.OpenReadStream());
+        bf.OpenReadStream().CopyToMemoryStreamAsync();
 
-    private static async Task<MemoryStream> _CopyToMemoryStreamAsync(Stream stream)
+    public static async Task<MemoryStream> CopyToMemoryStreamAsync(this Stream stream)
     {
         var inputStream = new MemoryStream();
         await stream.CopyToAsync(inputStream);

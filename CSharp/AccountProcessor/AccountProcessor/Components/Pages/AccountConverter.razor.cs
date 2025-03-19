@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Collections.Immutable;
+using AccountProcessor.Components.Controllers;
 
 namespace AccountProcessor.Components.Pages;
 
@@ -23,9 +24,9 @@ public partial class AccountConverter
     }
 
     [Inject]
-    private IExcelFileHandler _excelFileHandler { get; init; } = null!;
-    [Inject]
     private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; } = null!;
+    [Inject]
+    private HttpClient _httpClient { get; init; } = null!;
 
     private static readonly ImmutableArray<AccountTypeData> SelectableAccountTypes = ImmutableArray.Create(
         new AccountTypeData(AccountType.InitialSelect, "Choose Account Type", "", Description:
@@ -43,29 +44,25 @@ public partial class AccountConverter
     private Task ProcessAccountFile(IBrowserFile? bf) =>
         SelectedAccountType.Type switch
         {
-            AccountType.CoopBank => _ProcessBankFileExtraction(bf,
-                fnProcess: _excelFileHandler.CoopBank_ExtractCsvTransactionsToExcel,
-                filePrefix: "CoopBank_Extract"),
-            AccountType.SantanderCreditCard => _ProcessBankFileExtraction(bf,
-                fnProcess: _excelFileHandler.Santander_ExtractExcelTransactionsToExcel,
-                filePrefix: "Santander_Extract"),
+            AccountType.CoopBank => _ProcessBankFileExtraction(bf, ExcelFileController.Banks.CoopBank),
+            AccountType.SantanderCreditCard => _ProcessBankFileExtraction(bf, ExcelFileController.Banks.Santander),
             _ => Task.CompletedTask,
         };
 
     private async Task _ProcessBankFileExtraction(
         IBrowserFile? bf,
-        Func<Stream, Task<WrappedResult<byte[]>>> fnProcess,
-        string filePrefix)
+        string bank)
     {
         if (bf == null)
         {
             return;
         }
-        using var inputStream = await bf.CopyToMemoryStreamAsync();
         var uniqueStamp = DateTime.MinValue.Add(DateTime.Now - new DateTime(2024, 11, 1)).Ticks;
+        var message = await _httpClient.PostFileToUrlAsync(bf, relativeUrl: $"excelfile/extracttransactions/{bank}");
+        var result = await message.MapFileByesAsync();
         await _OnFileResultDownloadBytes(
-            result: await fnProcess(inputStream),
-            fileName: $"{filePrefix}_{bf.Name}_{uniqueStamp}{FileConstants.ExtractedTransactionsFileExtension}"); //Note: The ".extract." aspect enables further limitation just to these files on the file picker!
+            result: result,
+            fileName: $"{bank}_Extract_{bf.Name}_{uniqueStamp}{FileConstants.ExtractedTransactionsFileExtension}"); //Note: The ".extract." aspect enables further limitation just to these files on the file picker!
     }
 
     private async Task _OnFileResultDownloadBytes(WrappedResult<byte[]> result, string fileName)

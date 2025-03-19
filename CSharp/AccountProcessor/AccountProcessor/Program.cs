@@ -15,6 +15,14 @@ builder.Services.AddScoped<IMatchModelService, MatchModelService>();
 builder.Services.AddScoped<IExcelFileHandler, ExcelFileHandler>();
 builder.Services.AddScoped<ITransactionCategoriserScoped, TransactionCategoriserScoped>();
 
+builder.Services.AddControllers();
+
+builder.Services.AddSingleton(_ =>
+{
+    var uri = builder.Configuration["BackendUrl"];
+    return new HttpClient { BaseAddress = new Uri(uri!) };
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,5 +40,7 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapControllers();
 
 app.Run();
