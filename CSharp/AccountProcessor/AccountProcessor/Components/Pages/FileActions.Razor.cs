@@ -1,4 +1,6 @@
-﻿using AccountProcessor.Components.Services;
+﻿using System.Collections.Immutable;
+using AccountProcessor.Components.Controllers;
+using AccountProcessor.Components.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
@@ -16,6 +18,8 @@ public partial class FileActions
 {
     [Inject]
     private IExcelFileHandler _excelFileHandler { get; init; } = null!;
+    [Inject]
+    private HttpClient _httpClient { get; init; } = null!;
     [Inject]
     private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; } = null!;
 
@@ -55,7 +59,13 @@ public partial class FileActions
 
     private async Task _LoadTransactionsAndCategorise(Stream inputStream)
     {
-        var result = await _excelFileHandler.LoadTransactionsFromExcel(inputStream);
+        var message = await _httpClient.PostToUrlWithStreamContentAsync(
+            relativeUrl: "excelfile/loadtransactions",
+            apiParameter: "file",
+            inputStream,
+            "arbitraryFileName",
+            ExcelFileController.ExcelContentType);
+        var result = await message.MapJsonAsync<ImmutableArray<Transaction>>();
         Model.LoadTransactionsAndCategorise(result);
         OnFileActionFinished((FileActionType.LoadTransactions, result));
     }

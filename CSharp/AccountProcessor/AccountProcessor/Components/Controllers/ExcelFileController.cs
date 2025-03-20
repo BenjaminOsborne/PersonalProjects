@@ -1,5 +1,6 @@
 ﻿using AccountProcessor.Components.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Immutable;
 
 namespace AccountProcessor.Components.Controllers;
 
@@ -13,24 +14,36 @@ public class ExcelFileController(IExcelFileHandler excelFileHandler) : Controlle
         public const string Santander = nameof(Santander);
     }
 
-    private const string _excelContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    public const string ExcelContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     [HttpPost("extracttransactions/{bankType}")]
     public async Task<ActionResult> ExtractTransactions([FromForm] IFormFile file, [FromRoute] string bankType) =>
         bankType switch
         {
-            Banks.CoopBank => await _MapResult(file, excelFileHandler.CoopBank_ExtractCsvTransactionsToExcel,
+            Banks.CoopBank => await _MapFileResult(file, excelFileHandler.CoopBank_ExtractCsvTransactionsToExcel,
                 error: "Could not extract Coop transactions"),
-            Banks.Santander => await _MapResult(file, excelFileHandler.Santander_ExtractExcelTransactionsToExcel,
+            Banks.Santander => await _MapFileResult(file, excelFileHandler.Santander_ExtractExcelTransactionsToExcel,
                 error: "Could not extract Santander transactions"),
             _ => BadRequest($"Unknown bank: {bankType}")
         };
 
-    private async Task<ActionResult> _MapResult(IFormFile file, Func<Stream, Task<WrappedResult<byte[]>>> fnGetTask, string error)
+    [HttpPost("loadtransactions")]
+    public Task<ActionResult<ImmutableArray<Transaction>>> LoadTransactions([FromForm] IFormFile file) => 
+        _MapResult(excelFileHandler.LoadTransactionsFromExcel(file.OpenReadStream()));
+
+    private async Task<ActionResult<T>> _MapResult<T>(Task<WrappedResult<T>> task)
+    {
+        var result = await task;
+        return result.IsSuccess
+            ? Ok(result.Result)
+            : BadRequest(result.Error);
+    }
+
+    private async Task<ActionResult> _MapFileResult(IFormFile file, Func<Stream, Task<WrappedResult<byte[]>>> fnGetTask, string error)
     {
         var result = await fnGetTask(file.OpenReadStream());
         return result.IsSuccess
-            ? File(new MemoryStream(result.Result!), _excelContentType)
+            ? File(new MemoryStream(result.Result!), ExcelContentType)
             : BadRequest($"{error}: {result.Error}");
     }
 }

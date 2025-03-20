@@ -39,6 +39,17 @@ public static class HttpClientExtensions
         return await httpClient.SendAsync(message);
     }
 
+    public static async Task<WrappedResult<T>> MapJsonAsync<T>(this HttpResponseMessage message)
+    {
+        if (!message.IsSuccessStatusCode)
+        {
+            var error = await message.Content.ReadAsStringAsync();
+            return WrappedResult.Fail<T>($"{message.StatusCode}: {error}");
+        }
+        var json = await message.Content.ReadAsStringAsync();
+        return WrappedResult.Create(JsonHelper.Deserialise<T>(json, ignoreCase: true)!);
+    }
+
     public static async Task<WrappedResult<byte[]>> MapFileByesAsync(this HttpResponseMessage message)
     {
         if (!message.IsSuccessStatusCode)
