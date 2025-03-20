@@ -31,6 +31,12 @@ public class ExcelFileController(IExcelFileHandler excelFileHandler) : Controlle
     public Task<ActionResult<ImmutableArray<Transaction>>> LoadTransactions([FromForm] IFormFile file) => 
         _MapResult(excelFileHandler.LoadTransactionsFromExcel(file.OpenReadStream()));
 
+    [HttpPost("exporttransactions")]
+    public async Task<ActionResult> ExportTransactions(CategoriseRequest request) =>
+        _MapFileResult(
+            result: await excelFileHandler.ExportCategorisedTransactionsToExcel(request),
+            error: "Could not export transactions");
+
     private async Task<ActionResult<T>> _MapResult<T>(Task<WrappedResult<T>> task)
     {
         var result = await task;
@@ -39,11 +45,11 @@ public class ExcelFileController(IExcelFileHandler excelFileHandler) : Controlle
             : BadRequest(result.Error);
     }
 
-    private async Task<ActionResult> _MapFileResult(IFormFile file, Func<Stream, Task<WrappedResult<byte[]>>> fnGetTask, string error)
-    {
-        var result = await fnGetTask(file.OpenReadStream());
-        return result.IsSuccess
+    private async Task<ActionResult> _MapFileResult(IFormFile file, Func<Stream, Task<WrappedResult<byte[]>>> fnGetTask, string error) =>
+        _MapFileResult(result: await fnGetTask(file.OpenReadStream()), error);
+
+    private ActionResult _MapFileResult(WrappedResult<byte[]> result, string error) =>
+        result.IsSuccess
             ? File(new MemoryStream(result.Result!), ExcelContentType)
             : BadRequest($"{error}: {result.Error}");
-    }
 }

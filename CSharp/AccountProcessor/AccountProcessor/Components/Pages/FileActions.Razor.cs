@@ -17,8 +17,6 @@ public enum FileActionType
 public partial class FileActions
 {
     [Inject]
-    private IExcelFileHandler _excelFileHandler { get; init; } = null!;
-    [Inject]
     private HttpClient _httpClient { get; init; } = null!;
     [Inject]
     private Microsoft.JSInterop.IJSRuntime _jsInterop { get; init; } = null!;
@@ -79,8 +77,9 @@ public partial class FileActions
             return;
         }
 
-        var result = await _OnFileResultDownloadBytes(
-            result: await _excelFileHandler.ExportCategorisedTransactionsToExcel(new (transactions.Value, month.Value)),
+        var response = await _httpClient.PostAsJsonAsync("excelfile/exporttransactions", new CategoriseRequest(transactions.Value, month.Value));
+        var fileBytes = await response.MapFileByesAsync();
+        var result = await _OnFileResultDownloadBytes(result: fileBytes,
             fileName: $"CategorisedTransactions_{Model.Month!.Value:yyyy-MM}.xlsx");
         
         OnFileActionFinished((FileActionType.ExportTransactions, result));
