@@ -1,22 +1,33 @@
 ﻿using AccountProcessor.Components.Controllers;
 using System.Collections.Immutable;
 using AccountProcessor.Components.Services;
-using Microsoft.AspNetCore.Components.Forms;
 
 namespace AccountProcessor.Components.ClientServices;
 
+public enum AccountType
+{
+    Empty = 0,
+    CoopBank,
+    SantanderCreditCard
+}
+
 public interface IClientExcelFileService
 {
-    Task<WrappedResult<byte[]>> ExtractTransactionsAsync(IBrowserFile bf, string bank);
+    Task<WrappedResult<byte[]>> ExtractTransactionsAsync(Stream inputStream, string contentType, AccountType accountType);
     Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsAsync(Stream inputStream);
     Task<WrappedResult<byte[]>> CategoriseTransactionsAsync(CategoriseRequest request);
 }
 
 public class ClientExcelFileService(HttpClient httpClient) : IClientExcelFileService
 {
-    public async Task<WrappedResult<byte[]>> ExtractTransactionsAsync(IBrowserFile bf, string bank)
+    public async Task<WrappedResult<byte[]>> ExtractTransactionsAsync(Stream inputStream, string contentType, AccountType accountType)
     {
-        var message = await httpClient.PostFileToUrlAsync(bf, relativeUrl: $"excelfile/extracttransactions/{bank}");
+        var message = await httpClient.PostToUrlWithStreamContentAsync(
+            relativeUrl: $"excelfile/extracttransactions/{accountType}",
+            apiParameter: "file",
+            inputStream,
+            "arbitraryFileName",
+            contentType);
         return await message.MapFileByesAsync();
     }
 

@@ -21,7 +21,7 @@
                            FilesChanged=@ProcessAccountFile
                            Accept=@SelectedAccountType.FileAccept
                            MaximumFileCount="1"
-                           Disabled=@(SelectedAccountType.Type == AccountType.InitialSelect)>
+                           Disabled=@(!IsAccountTypeSelected)>
                 <ActivatorContent>
                     <MudButton Variant="Variant.Filled"
                                Color=Color.Primary

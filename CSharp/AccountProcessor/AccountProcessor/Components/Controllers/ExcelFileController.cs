@@ -8,10 +8,11 @@ namespace AccountProcessor.Components.Controllers;
 [Route("[controller]")]
 public class ExcelFileController(IExcelFileHandler excelFileHandler) : ControllerBase
 {
+    /// <summary> Lines up with definition: <see cref="ClientServices.AccountType"/> </summary>
     public static class Banks
     {
-        public const string CoopBank = nameof(CoopBank);
-        public const string Santander = nameof(Santander);
+        public const string CoopBank = nameof(ClientServices.AccountType.CoopBank);
+        public const string SantanderCreditCard = nameof(ClientServices.AccountType.SantanderCreditCard);
     }
 
     public const string ExcelContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -22,7 +23,7 @@ public class ExcelFileController(IExcelFileHandler excelFileHandler) : Controlle
         {
             Banks.CoopBank => await _MapFileResult(file, excelFileHandler.CoopBank_ExtractCsvTransactionsToExcel,
                 error: "Could not extract Coop transactions"),
-            Banks.Santander => await _MapFileResult(file, excelFileHandler.Santander_ExtractExcelTransactionsToExcel,
+            Banks.SantanderCreditCard => await _MapFileResult(file, excelFileHandler.Santander_ExtractExcelTransactionsToExcel,
                 error: "Could not extract Santander transactions"),
             _ => BadRequest($"Unknown bank: {bankType}")
         };
