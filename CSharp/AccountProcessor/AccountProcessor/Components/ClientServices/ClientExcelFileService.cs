@@ -20,31 +20,25 @@ public interface IClientExcelFileService
 
 public class ClientExcelFileService(HttpClient httpClient) : IClientExcelFileService
 {
-    public async Task<WrappedResult<byte[]>> ExtractTransactionsAsync(Stream inputStream, string contentType, AccountType accountType)
-    {
-        var message = await httpClient.PostToUrlWithStreamContentAsync(
+    public Task<WrappedResult<byte[]>> ExtractTransactionsAsync(Stream inputStream, string contentType, AccountType accountType) =>
+        httpClient.PostToUrlWithStreamContentAsync(
             relativeUrl: $"excelfile/extracttransactions/{accountType}",
             apiParameter: "file",
             inputStream,
             "arbitraryFileName",
-            contentType);
-        return await message.MapFileByesAsync();
-    }
+            contentType)
+            .MapFileByesAsync();
 
-    public async Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsAsync(Stream inputStream)
-    {
-        var message = await httpClient.PostToUrlWithStreamContentAsync(
-            relativeUrl: "excelfile/loadtransactions",
-            apiParameter: "file",
-            inputStream,
-            "arbitraryFileName",
-            ExcelFileController.ExcelContentType);
-        return await message.MapJsonStructAsync<ImmutableArray<Transaction>>(fnIsValid: arr => !arr.IsDefault);
-    }
+    public Task<WrappedResult<ImmutableArray<Transaction>>> LoadTransactionsAsync(Stream inputStream) =>
+        httpClient.PostToUrlWithStreamContentAsync(
+                relativeUrl: "excelfile/loadtransactions",
+                apiParameter: "file",
+                inputStream,
+                "arbitraryFileName",
+                ExcelFileController.ExcelContentType)
+            .MapJsonStructAsync<ImmutableArray<Transaction>>(fnIsValid: arr => !arr.IsDefault);
 
-    public async Task<WrappedResult<byte[]>> CategoriseTransactionsAsync(CategoriseRequest request)
-    {
-        var response = await httpClient.PostAsJsonAsync("excelfile/exporttransactions", request);
-        return await response.MapFileByesAsync();
-    }
+    public Task<WrappedResult<byte[]>> CategoriseTransactionsAsync(CategoriseRequest request) =>
+        httpClient.PostAsJsonAsync("excelfile/exporttransactions", request)
+            .MapFileByesAsync();
 }

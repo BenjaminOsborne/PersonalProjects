@@ -39,8 +39,9 @@ public static class HttpClientExtensions
         return await httpClient.SendAsync(message);
     }
 
-    public static async Task<WrappedResult<byte[]>> MapFileByesAsync(this HttpResponseMessage message)
+    public static async Task<WrappedResult<byte[]>> MapFileByesAsync(this Task<HttpResponseMessage> taskMessage)
     {
+        var message = await taskMessage;
         if (!message.IsSuccessStatusCode)
         {
             var error = await message.Content.ReadAsStringAsync();
@@ -51,8 +52,8 @@ public static class HttpClientExtensions
     }
 
     /// <summary> If controller returns <see cref="T"/>, must handle as <see cref="WrappedResult{T}"/> as transport layer could fail </summary>
-    public static Task<WrappedResult<T>> MapJsonAsync<T>(this HttpResponseMessage message) where T : class =>
-        _MapResultAsync<T, WrappedResult<T>>(message,
+    public static Task<WrappedResult<T>> MapJsonAsync<T>(this Task<HttpResponseMessage> taskMessage) where T : class =>
+        _MapResultAsync<T, WrappedResult<T>>(taskMessage,
             fnMapResult: WrappedResult.Create,
             fnCreateFailure: WrappedResult.Fail<T>);
 
@@ -60,27 +61,28 @@ public static class HttpClientExtensions
     /// If controller returns <see cref="T"/>, must handle as <see cref="WrappedResult{T}"/> as transport layer could fail.
     /// Also defines <see cref="fnIsValid"/> as structs initialise empty so further checking may be required to determine if object valid.
     /// </summary>
-    public static Task<WrappedResult<T>> MapJsonStructAsync<T>(this HttpResponseMessage message, Func<T, bool> fnIsValid) where T : struct =>
-        _MapResultAsync<T, WrappedResult<T>>(message,
+    public static Task<WrappedResult<T>> MapJsonStructAsync<T>(this Task<HttpResponseMessage> taskMessage, Func<T, bool> fnIsValid) where T : struct =>
+        _MapResultAsync<T, WrappedResult<T>>(taskMessage,
             fnMapResult: x => fnIsValid(x) ? WrappedResult.Create(x) : WrappedResult.Fail<T>("Could not map type"),
             fnCreateFailure: WrappedResult.Fail<T>);
 
     /// <summary> If controller returns <see cref="Result"/> </summary>
-    public static Task<Result> MapBasicResultAsync(this HttpResponseMessage message) =>
-        _MapResultAsync<Result, Result>(message,
+    public static Task<Result> MapBasicResultAsync(this Task<HttpResponseMessage> taskMessage) =>
+        _MapResultAsync<Result, Result>(taskMessage,
             fnMapResult: x => x,
             fnCreateFailure: Result.Fail);
 
     /// <summary> If controller returns <see cref="WrappedResult{T}"/> </summary>
-    public static Task<WrappedResult<T>> MapWrappedResultAsync<T>(this HttpResponseMessage message) =>
-        _MapResultAsync<WrappedResult<T>, WrappedResult<T>>(message,
+    public static Task<WrappedResult<T>> MapWrappedResultAsync<T>(this Task<HttpResponseMessage> taskMessage) =>
+        _MapResultAsync<WrappedResult<T>, WrappedResult<T>>(taskMessage,
             fnMapResult: x => x,
             fnCreateFailure: WrappedResult.Fail<T>);
 
-    private static async Task<TResult> _MapResultAsync<T, TResult>(HttpResponseMessage message,
+    private static async Task<TResult> _MapResultAsync<T, TResult>(Task<HttpResponseMessage> taskMessage,
         Func<T, TResult> fnMapResult,
         Func<string, TResult> fnCreateFailure)
     {
+        var message = await taskMessage;
         if (!message.IsSuccessStatusCode)
         {
             var error = await message.Content.ReadAsStringAsync();

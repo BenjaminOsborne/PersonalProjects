@@ -11,21 +11,15 @@ public interface IClientMatchModelService
 
 public class ClientMatchModelService(HttpClient httpClient) : IClientMatchModelService
 {
-    public async Task<WrappedResult<IReadOnlyList<ModelMatchItem>>> GetAllModelMatchesAsync()
-    {
-        var response = await httpClient.GetAsync("matchmodel/all");
-        return await response.MapJsonAsync<IReadOnlyList<ModelMatchItem>>();
-    }
+    public Task<WrappedResult<IReadOnlyList<ModelMatchItem>>> GetAllModelMatchesAsync() =>
+        httpClient.GetAsync("matchmodel/all")
+            .MapJsonAsync<IReadOnlyList<ModelMatchItem>>();
 
-    public async Task<WrappedResult<string>> DisplayRawModelJsonSearchResultAsync(string? search)
-    {
-        var response = await httpClient.GetAsync($"matchmodel/search/{search}");
-        return await response.MapJsonAsync<string>();
-    }
+    public Task<WrappedResult<string>> DisplayRawModelJsonSearchResultAsync(string? search) =>
+        httpClient.GetAsync($"matchmodel/search/{search}")
+            .MapJsonAsync<string>();
 
-    public async Task<Result> DeleteMatchItemAsync(ModelMatchItem row)
-    {
-        var response = await httpClient.PostAsJsonAsync("matchmodel/deletematchitem", row);
-        return await response.MapBasicResultAsync();
-    }
+    public Task<Result> DeleteMatchItemAsync(ModelMatchItem row) =>
+        httpClient.PostAsJsonAsync("matchmodel/deletematchitem", row)
+            .MapBasicResultAsync();
 }
