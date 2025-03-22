@@ -40,6 +40,10 @@ public class TransactionCategoriserScoped : ITransactionCategoriserScoped
     }
 }
 
+public record AddSectionRequest(CategoryHeader CategoryHeader, string SectionName, DateOnly? MatchMonthOnly);
+
+public record MatchRequest(Transaction Transaction, SectionHeader Section, string? MatchOn, string? OverrideDescription);
+
 public interface ITransactionCategoriser
 {
     bool CanCategoriseTransactions();
@@ -47,10 +51,10 @@ public interface ITransactionCategoriser
     SelectorData GetSelectorData(DateOnly month);
     CategorisationResult Categorise(CategoriseRequest request);
 
-    WrappedResult<SectionHeader> AddSection(CategoryHeader categoryHeader, string sectionName, DateOnly? matchMonthOnly);
+    WrappedResult<SectionHeader> AddSection(AddSectionRequest request);
 
-    Result ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription);
-    Result MatchOnce(Transaction transaction, SectionHeader header, string? matchOn, string? overrideDescription);
+    Result ApplyMatch(MatchRequest request);
+    Result MatchOnce(MatchRequest request);
 
     Result DeleteMatch(SectionHeader section, Match match);
 }
@@ -135,18 +139,18 @@ public class TransactionCategoriser : ITransactionCategoriser
         return new CategorisationResult(matched, unmatched);
     }
 
-    public WrappedResult<SectionHeader> AddSection(CategoryHeader categoryHeader, string sectionName, DateOnly? matchMonthOnly)
+    public WrappedResult<SectionHeader> AddSection(AddSectionRequest request)
     {
-        var category = _FindModelHeaderFor(categoryHeader);
+        var category = _FindModelHeaderFor(request.CategoryHeader);
         if (category == null)
         {
-            return WrappedResult.Fail<SectionHeader>($"Could not find matching Category for: {categoryHeader.Name}");
+            return WrappedResult.Fail<SectionHeader>($"Could not find matching Category for: {request.CategoryHeader.Name}");
         }
 
-        var created = category.AddSection(sectionName, matchMonthOnly);
+        var created = category.AddSection(request.SectionName, request.MatchMonthOnly);
         if (created == null)
         {
-            return WrappedResult.Fail<SectionHeader>($"Already have section for: {sectionName}");
+            return WrappedResult.Fail<SectionHeader>($"Already have section for: {request.SectionName}");
         }
             
         _WriteModel();
@@ -154,17 +158,17 @@ public class TransactionCategoriser : ITransactionCategoriser
         return WrappedResult.Create(created);
     }
 
-    public Result ApplyMatch(Transaction transaction, SectionHeader section, string matchOn, string? overrideDescription)
+    public Result ApplyMatch(MatchRequest request)
     {
-        var match = new Match(DateTime.UtcNow, matchOn, overrideDescription, null);
-        return _AddNewMatch(transaction, section, match);
+        var match = new Match(DateTime.UtcNow, pattern: request.MatchOn ?? "", overrideDescription: request.OverrideDescription, exactDate: null);
+        return _AddNewMatch(request.Transaction, request.Section, match);
     }
 
-    /// <remarks> Note: It is valid to specify <see cref="matchOn"/> (which may have a wild-card) as this can mean future transactions get a "suggestion", even if need to be confirmed. </remarks>
-    public Result MatchOnce(Transaction transaction, SectionHeader section, string? matchOn, string? overrideDescription)
+    /// <remarks> Note: It is valid to specify <see cref="MatchRequest.MatchOn"/> (which may have a wild-card) as this can mean future transactions get a "suggestion", even if need to be confirmed. </remarks>
+    public Result MatchOnce(MatchRequest request)
     {
-        var match = new Match(DateTime.UtcNow, matchOn ?? transaction.Description, overrideDescription, transaction.Date);
-        return _AddNewMatch(transaction, section, match);
+        var match = new Match(DateTime.UtcNow, request.MatchOn ?? request.Transaction.Description, request.OverrideDescription, request.Transaction.Date);
+        return _AddNewMatch(request.Transaction, request.Section, match);
     }
 
     public Result DeleteMatch(SectionHeader section, Match match)

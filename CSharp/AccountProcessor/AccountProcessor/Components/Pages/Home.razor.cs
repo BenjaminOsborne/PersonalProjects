@@ -163,10 +163,14 @@ public class HomeViewModel
             fnPerform: cat =>
             {
                 var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == _newSection.CategoryName);
-                return category != null && !_newSection.Name.IsNullOrWhiteSpace()
-                    ? cat.AddSection(category, _newSection.Name!,
-                        matchMonthOnly: _newSection.IsMonthSpecific ? _transactionsModel.Month : null)
-                    : Result.Fail("Invalid Category or empty Section Name");
+                if (category == null || _newSection.Name.IsNullOrWhiteSpace())
+                {
+                    return Result.Fail("Invalid Category or empty Section Name");
+                }
+
+                var request = new AddSectionRequest(category, _newSection.Name!,
+                    MatchMonthOnly: _newSection.IsMonthSpecific ? _transactionsModel.Month : null);
+                return cat.AddSection(request);
             },
             refreshCategories: true,
             onSuccess: () => _newSection = _newSectionDefault);
@@ -178,13 +182,16 @@ public class HomeViewModel
                 var header = _transactionsModel.AllSections
                     ?.SingleOrDefault(x => x.Id == row.SelectionId)
                     ?.Header;
-                return header != null
-                    ? row.AddOnlyForTransaction
-                        ? cat.MatchOnce(row.Transaction, header, row.MatchOn, row.OverrideDescription)
-                        : !row.MatchOn.IsNullOrEmpty()
-                            ? cat.ApplyMatch(row.Transaction, header, row.MatchOn!, row.OverrideDescription)
-                            : Result.Fail("'Match On' pattern empty")
-                    : Result.Fail("Could not find Section");
+                if (header == null)
+                {
+                    return Result.Fail("Could not find Section");
+                }
+                var request = new MatchRequest(row.Transaction, header, row.MatchOn, row.OverrideDescription);
+                return row.AddOnlyForTransaction
+                    ? cat.MatchOnce(request)
+                    : !row.MatchOn.IsNullOrEmpty()
+                        ? cat.ApplyMatch(request)
+                        : Result.Fail("'Match On' pattern empty");
             },
             refreshCategories: true); //Should refresh categories as will update the order in the "suggestions" in the picker
 
