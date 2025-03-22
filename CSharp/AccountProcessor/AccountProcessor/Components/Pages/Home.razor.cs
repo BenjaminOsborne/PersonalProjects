@@ -13,8 +13,7 @@ public static class FileConstants
 /// <summary> Code-behind for Home.razor - gives logical split between html-render code and c# data processing </summary>
 public partial class Home
 {
-    [Inject]
-    private ITransactionCategoriserScoped _categoriser { get; init; } = null!;
+    [Inject] private ITransactionCategoriserScoped _categoriser { get; init; } = null!;
 
     private HomeViewModel Model = null!;
 

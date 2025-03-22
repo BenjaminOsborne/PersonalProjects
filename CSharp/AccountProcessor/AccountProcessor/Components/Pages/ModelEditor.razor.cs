@@ -6,8 +6,7 @@ namespace AccountProcessor.Components.Pages;
 
 public partial class ModelEditor
 {
-    [Inject]
-    private IMatchModelService _modelService { get; init; } = null!;
+    [Inject] private IMatchModelService _modelService { get; init; } = null!;
 
     private ImmutableArray<ModelMatchItem>? Items;
     private string? _searchString;

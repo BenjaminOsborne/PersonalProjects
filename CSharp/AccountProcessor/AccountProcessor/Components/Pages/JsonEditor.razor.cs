@@ -5,8 +5,7 @@ namespace AccountProcessor.Components.Pages;
 
 public partial class JsonEditor
 {
-    [Inject]
-    private IMatchModelService _modelService { get; init; } = null!;
+    [Inject] private IMatchModelService _modelService { get; init; } = null!;
 
     private string? LoadedJson;
     

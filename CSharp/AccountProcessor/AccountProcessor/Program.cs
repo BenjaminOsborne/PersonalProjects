@@ -1,4 +1,5 @@
 using AccountProcessor.Components;
+using AccountProcessor.Components.ClientServices;
 using AccountProcessor.Components.Services;
 using MudBlazor.Services;
 
@@ -14,6 +15,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IMatchModelService, MatchModelService>();
 builder.Services.AddScoped<IExcelFileHandler, ExcelFileHandler>();
 builder.Services.AddScoped<ITransactionCategoriserScoped, TransactionCategoriserScoped>();
+
+builder.Services.AddScoped<IClientExcelFileService, ClientExcelFileService>();
 
 builder.Services.AddControllers();
 
