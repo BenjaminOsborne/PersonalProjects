@@ -100,8 +100,8 @@ public class HomeViewModel
     /// <summary> Display message after any action invoked </summary>
     public Result? LastActionResult { get; private set; }
 
-    public bool CanCategoriseTransactions() =>
-        _transactionsModel.CanCategoriseTransactions();
+    public Task<bool> CanCategoriseTransactionsAsync() =>
+        _transactionsModel.CanCategoriseTransactionsAsync();
 
     /// <remarks> Initial Id should be the "Choose Category" option </remarks>
     private (string? CategoryName, string? Name, bool IsMonthSpecific) _newSection = _newSectionDefault;
@@ -215,8 +215,8 @@ public class HomeViewModel
             _onStateChanged = onStateChanged;
         }
 
-        public bool CanCategoriseTransactions() =>
-            _categoriser.PerformOnScope(x => x.CanCategoriseTransactions());
+        public Task<bool> CanCategoriseTransactionsAsync() =>
+            _categoriser.PerformOnScopeAsync(x => x.CanCategoriseTransactions());
 
         public DateOnly? Month { get; private set; }
 
@@ -232,20 +232,20 @@ public class HomeViewModel
         public UnMatchedRowsTable.ViewModel? UnMatchedModel { get; private set; }
         public MatchedRowsTable.ViewModel? MatchedModel { get; private set; }
 
-        public void RefreshTransactions() =>
-            _OnStateChange(
-                fnGetResult: () => WrappedResult.Create(Unit.Instance),
+        public Task RefreshTransactions() =>
+            _OnStateChangeAsync(
+                result: WrappedResult.Create(Unit.Instance),
                 refreshCategories: true);
 
-        public void UpdateMonth(WrappedResult<DateOnly> result) =>
-            _OnStateChange(
-                fnGetResult: () => result,
+        public Task UpdateMonth(WrappedResult<DateOnly> result) =>
+            _OnStateChangeAsync(
+                result: result,
                 refreshCategories: true, //categories can be month-specific so must refresh
                 onSuccess: r => Month = r);
 
-        public void UpdateLoadedTransactions(WrappedResult<ImmutableArray<Transaction>> result) =>
-            _OnStateChange(
-                fnGetResult: () => result,
+        public Task UpdateLoadedTransactions(WrappedResult<ImmutableArray<Transaction>> result) =>
+            _OnStateChangeAsync(
+                result: result,
                 refreshCategories: true, //Categories loaded
                 onSuccess: r =>
                 {
@@ -255,20 +255,26 @@ public class HomeViewModel
                     LatestTransaction = r.Any() ? r.Select(x => x.Date).Max() : null;
                 });
 
-        public void ChangeMatchModel(Func<ITransactionCategoriser, Result> fnPerform,
+        public Task ChangeMatchModel(Func<ITransactionCategoriser, Result> fnPerform,
             bool refreshCategories,
             Action? onSuccess = null) =>
-                _OnStateChange(
-                    fnGetResult: () => _PerformOnCategoriser(fnPerform).ToWrappedUnit(),
+                _OnStateChangeAsync(
+                    fnGetResultAsync: async () => (await _PerformOnCategoriserAsync(fnPerform)).ToWrappedUnit(),
                     refreshCategories: refreshCategories,
                     onSuccess: _ => onSuccess?.Invoke());
 
-        private void _OnStateChange<T>(
-            Func<WrappedResult<T>> fnGetResult,
+        private Task _OnStateChangeAsync<T>(
+            WrappedResult<T> result,
+            bool refreshCategories,
+            Action<T>? onSuccess = null) =>
+            _OnStateChangeAsync(fnGetResultAsync: () => Task.FromResult(result), refreshCategories, onSuccess);
+
+        private async Task _OnStateChangeAsync<T>(
+            Func<Task<WrappedResult<T>>> fnGetResultAsync,
             bool refreshCategories,
             Action<T>? onSuccess = null)
         {
-            var result = fnGetResult();
+            var result = await fnGetResultAsync();
             _onActionHandleResult(result);
             if (!result.IsSuccess)
             {
@@ -285,7 +291,7 @@ public class HomeViewModel
 
             if (refreshCategories)
             {
-                var allData = _PerformOnCategoriser(x => x.GetSelectorData(Month!.Value));
+                var allData = await _PerformOnCategoriserAsync(x => x.GetSelectorData(Month!.Value));
                 Categories = allData.Categories;
                 AllSections = allData.Sections?
                     .GroupBy(s => s.Header.Parent.GetKey())
@@ -308,7 +314,7 @@ public class HomeViewModel
                 return;
             }
 
-            var categorisationResult = _PerformOnCategoriser(x => x.Categorise(new (loadedTransactions!.Value, Month!.Value)));
+            var categorisationResult = await _PerformOnCategoriserAsync(x => x.Categorise(new (loadedTransactions!.Value, Month!.Value)));
             var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
             TransactionResultViewModel = trViewModel;
 
@@ -362,8 +368,8 @@ public class HomeViewModel
             static DateOnly ToYearAndMonth(DateOnly dt) => new DateOnly(dt.Year, dt.Month, 1);
         }
 
-        private T _PerformOnCategoriser<T>(Func<ITransactionCategoriser, T> fnPerform) =>
-            _categoriser.PerformOnScope(fnPerform);
+        private Task<T> _PerformOnCategoriserAsync<T>(Func<ITransactionCategoriser, T> fnPerform) =>
+            _categoriser.PerformOnScopeAsync(fnPerform);
     }
 }
 

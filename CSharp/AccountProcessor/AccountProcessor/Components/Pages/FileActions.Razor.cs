@@ -23,9 +23,14 @@ public partial class FileActions
     [Parameter]
     public required Action<(FileActionType, Result)> OnFileActionFinished { get; init; }
 
-    private bool CanCategoriseTransactions() =>
-        Model.CanCategoriseTransactions();
+    private bool _canCategoriseTransactions;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _canCategoriseTransactions = await Model.CanCategoriseTransactionsAsync();
+    }
+    
     private bool TransactionsAreFullyLoaded() =>
         Model.TransactionsAreFullyLoaded();
 

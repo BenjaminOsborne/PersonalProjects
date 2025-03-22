@@ -6,15 +6,16 @@ namespace AccountProcessor.Components.Services;
 
 public interface ITransactionCategoriserScoped
 {
-    T PerformOnScope<T>(Func<ITransactionCategoriser, T> fnPerform);
+    Task<T> PerformOnScopeAsync<T>(Func<ITransactionCategoriser, T> fnPerform);
 }
 
 public class TransactionCategoriserScoped : ITransactionCategoriserScoped
 {
-    public T PerformOnScope<T>(Func<ITransactionCategoriser, T> fnPerform)
+    public Task<T> PerformOnScopeAsync<T>(Func<ITransactionCategoriser, T> fnPerform)
     {
         var result = fnPerform(new TransactionCategoriser());
-        return _RoundTripReadyForControllerSerialisation(result);
+        var roundTrip = _RoundTripReadyForControllerSerialisation(result);
+        return Task.FromResult(roundTrip);
     }
 
     /// <summary> Temporary: Confirms all types being used are ready to be JSON serialised over the wire (when experiment with Client Blazor) </summary>

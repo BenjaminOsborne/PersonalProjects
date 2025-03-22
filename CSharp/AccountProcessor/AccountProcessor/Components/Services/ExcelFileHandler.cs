@@ -245,7 +245,7 @@ public class ExcelFileHandler(ITransactionCategoriserScoped categoriserScoped) :
     {
         try
         {
-            var result = categoriserScoped.PerformOnScope(x => x.Categorise(request));
+            var result = await categoriserScoped.PerformOnScopeAsync(x => x.Categorise(request));
             var (excel, worksheet) = _CreateNewExcel();
 
             var catSummary = _ToWriteSummary(result);
