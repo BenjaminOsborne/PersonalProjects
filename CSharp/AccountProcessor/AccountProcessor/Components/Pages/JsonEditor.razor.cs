@@ -1,11 +1,11 @@
-﻿using AccountProcessor.Components.Services;
+﻿using AccountProcessor.Components.ClientServices;
 using Microsoft.AspNetCore.Components;
 
 namespace AccountProcessor.Components.Pages;
 
 public partial class JsonEditor
 {
-    [Inject] private IMatchModelService _modelService { get; init; } = null!;
+    [Inject] private IClientMatchModelService _modelService { get; init; } = null!;
 
     private string? LoadedJson;
     
@@ -21,16 +21,22 @@ public partial class JsonEditor
                 return;
             }
             _search = value;
-            _OnSearchChange();
+            var task = _OnSearchChangeAsync(); //TODO: Task tracker with dispose
         }
     }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        _OnSearchChange(); //will load for initial empty search
-        return Task.CompletedTask;
+        await base.OnInitializedAsync();
+        await _OnSearchChangeAsync(); //will load for initial empty search
     }
 
-    private void _OnSearchChange() =>
-        LoadedJson = _modelService.DisplayRawModelJsonSearchResult(_search ?? string.Empty);
+    private async Task _OnSearchChangeAsync()
+    {
+        var result = await _modelService.DisplayRawModelJsonSearchResultAsync(_search ?? string.Empty);
+        if (result.IsSuccess)
+        {
+            LoadedJson = result.Result;
+        }
+    }
 }

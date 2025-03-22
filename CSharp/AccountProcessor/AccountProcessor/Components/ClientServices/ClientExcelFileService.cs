@@ -39,7 +39,7 @@ public class ClientExcelFileService(HttpClient httpClient) : IClientExcelFileSer
             inputStream,
             "arbitraryFileName",
             ExcelFileController.ExcelContentType);
-        return await message.MapJsonAsync<ImmutableArray<Transaction>>();
+        return await message.MapJsonStructAsync<ImmutableArray<Transaction>>(fnIsValid: arr => !arr.IsDefault);
     }
 
     public async Task<WrappedResult<byte[]>> CategoriseTransactionsAsync(CategoriseRequest request)

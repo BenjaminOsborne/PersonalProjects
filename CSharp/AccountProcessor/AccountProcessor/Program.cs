@@ -17,6 +17,7 @@ builder.Services.AddScoped<IExcelFileHandler, ExcelFileHandler>();
 builder.Services.AddScoped<ITransactionCategoriserScoped, TransactionCategoriserScoped>();
 
 builder.Services.AddScoped<IClientExcelFileService, ClientExcelFileService>();
+builder.Services.AddScoped<IClientMatchModelService, ClientMatchModelService>();
 
 builder.Services.AddControllers();
 

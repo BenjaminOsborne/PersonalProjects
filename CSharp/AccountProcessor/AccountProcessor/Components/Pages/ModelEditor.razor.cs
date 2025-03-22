@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using AccountProcessor.Components.ClientServices;
 using AccountProcessor.Components.Services;
 using Microsoft.AspNetCore.Components;
 
@@ -6,31 +6,37 @@ namespace AccountProcessor.Components.Pages;
 
 public partial class ModelEditor
 {
-    [Inject] private IMatchModelService _modelService { get; init; } = null!;
+    [Inject] private IClientMatchModelService _modelService { get; init; } = null!;
 
-    private ImmutableArray<ModelMatchItem>? Items;
+    private IReadOnlyList<ModelMatchItem>? Items;
     private string? _searchString;
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        _RebuildModel();
-        return Task.CompletedTask;
+        await base.OnInitializedAsync();
+        await _RebuildModelAsync();
     }
 
-    private void ClearMatch(ModelMatchItem row) =>
-        _PerformActionWithRebuildModel(() => _modelService.DeleteMatchItem(row));
+    private Task ClearMatchAsync(ModelMatchItem row) =>
+        _PerformActionWithRebuildModel(() => _modelService.DeleteMatchItemAsync(row));
 
-    private void _PerformActionWithRebuildModel(Func<bool> fnPerform)
+    private async Task _PerformActionWithRebuildModel(Func<Task<Result>> fnPerform)
     {
-        var didChange = fnPerform();
-        if (didChange)
+        var didChange = await fnPerform();
+        if (didChange.IsSuccess)
         {
-            _RebuildModel();
+            await _RebuildModelAsync();
         }
     }
 
-    private void _RebuildModel() =>
-        Items = _modelService.GetAllModelMatches();
+    private async Task _RebuildModelAsync()
+    {
+        var result = await _modelService.GetAllModelMatchesAsync();
+        if (result.IsSuccess)
+        {
+            Items = result.Result;
+        }
+    }
 
     private bool _ApplySearchFilter(ModelMatchItem arg) =>
         _searchString.IsNullOrWhiteSpace() ||
