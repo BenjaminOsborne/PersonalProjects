@@ -14,10 +14,11 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<IMatchModelService, MatchModelService>();
 builder.Services.AddScoped<IExcelFileHandler, ExcelFileHandler>();
-builder.Services.AddScoped<ITransactionCategoriserScoped, TransactionCategoriserScoped>();
+builder.Services.AddScoped<ITransactionCategoriser, TransactionCategoriser>();
 
 builder.Services.AddScoped<IClientExcelFileService, ClientExcelFileService>();
 builder.Services.AddScoped<IClientMatchModelService, ClientMatchModelService>();
+builder.Services.AddScoped<IClientTransactionCategoriser, ClientTransactionCategoriser>();
 
 builder.Services.AddControllers();
 

@@ -29,9 +29,9 @@
         <MudPaper Elevation="0" Class="mb-3 d-flex justify-start flex-shrink-1">
             <MudDatePicker @bind-Date=@YearMonthBind FixDay=1 DateFormat="MMM yyyy" />
         </MudPaper>
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Size="Size.Medium" OnClick="() => Model.SkipMonth(-1)" />
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Medium" OnClick="() => Model.SkipMonth(+1)" />
-        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Size="Size.Medium" OnClick="() => Model.RefreshTransactions()" />
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Size="Size.Medium" OnClick="() => Model.SkipMonthAsync(-1)" />
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Medium" OnClick="() => Model.SkipMonthAsync(+1)" />
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Size="Size.Medium" OnClick="() => Model.RefreshTransactionsAsync()" />
     </MudStack>
 
     <MudText Typo="Typo.caption"><strong>Transactions Period:</strong> @Model.EarliestTransaction?.ToString("dd MMM") to @Model.LatestTransaction?.ToString("dd MMM")</MudText>
@@ -74,7 +74,7 @@
                     </MudPaper>
                     <MudCheckBox @bind-Value=@Model.NewSectionIsMonthSpecific>Is Month Specific</MudCheckBox>
                     <MudTooltip Text="Create">
-                        <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Large" OnClick="() => Model.CreateNewSection()"/>
+                        <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Large" OnClick="() => Model.CreateNewSectionAsync()" />
                     </MudTooltip>
                 </MudStack>
             </ChildContent>
@@ -86,12 +86,12 @@
 @if (Model.UnMatchedModel != null)
 {
     <MudDivider Class="mt-2"/>
-    <UnMatchedRowsTable @ref="UnMatchedRowsTable" Model=@Model.UnMatchedModel AddNewMatchForRow=@AddNewMatchForRow />
+    <UnMatchedRowsTable @ref="UnMatchedRowsTable" Model=@Model.UnMatchedModel AddNewMatchForRowAsync=@AddNewMatchForRowAsync />
 }
 
 @* Matched Rows *@
 @if (Model.MatchedModel != null)
 {
     <MudDivider Class="mt-2" />
-    <MatchedRowsTable @ref="MatchedRowsTable" Model=@Model.MatchedModel ClearMatch=@ClearMatch />
+    <MatchedRowsTable @ref="MatchedRowsTable" Model=@Model.MatchedModel ClearMatchAsync=@ClearMatchAsync />
 }

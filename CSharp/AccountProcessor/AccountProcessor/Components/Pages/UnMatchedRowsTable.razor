@@ -64,7 +64,7 @@
         <TemplateColumn Title="Match">
             <CellTemplate>
                 <MudTooltip Text="Create">
-                    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@(() => AddNewMatchForRow(context.Item))"/>
+                    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@(() => AddNewMatchForRowAsync(context.Item))" />
                 </MudTooltip>
             </CellTemplate>
         </TemplateColumn>
@@ -82,12 +82,11 @@
     public required ViewModel Model { get; set; }
 
     [Parameter]
-    public required Action<TransactionRowUnMatched> AddNewMatchForRow { get; init; }
+    public required Func<TransactionRowUnMatched, Task> AddNewMatchForRowAsync { get; init; }
 
     public void UpdateModel(ViewModel model)
     {
         Model = model;
         StateHasChanged(); //Must trigger state change, as Blazor requires triggering if an interaction in the other table child view initiated the change
     }
-
 }

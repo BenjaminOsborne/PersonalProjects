@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Collections.Immutable;
+using AccountProcessor.Components.ClientServices;
 
 namespace AccountProcessor.Components.Pages;
 
@@ -13,7 +14,7 @@ public static class FileConstants
 /// <summary> Code-behind for Home.razor - gives logical split between html-render code and c# data processing </summary>
 public partial class Home
 {
-    [Inject] private ITransactionCategoriserScoped _categoriser { get; init; } = null!;
+    [Inject] private IClientTransactionCategoriser _categoriser { get; init; } = null!;
 
     private HomeViewModel Model = null!;
 
@@ -23,7 +24,10 @@ public partial class Home
     private DateTime? YearMonthBind
     {
         get => Model.Month?.ToDateTime(TimeOnly.MinValue);
-        set => Model.SetMonth(value);
+        set
+        {
+            var task = Model.SetMonthAsync(value); //TODO: Track running task
+        }
     }
 
     public bool FileActionsExpandedBind { get; set; } = true;
@@ -48,15 +52,15 @@ public partial class Home
     private bool TransactionsAreFullyLoaded() =>
         Model.TransactionsAreFullyLoaded();
 
-    private void AddNewMatchForRow(TransactionRowUnMatched row)
+    private async Task AddNewMatchForRowAsync(TransactionRowUnMatched row)
     {
-        Model.AddNewMatchForRow(row);
+        await Model.AddNewMatchForRowAsync(row);
         StateHasChanged(); //Must call: child component can trigger update to error state.
     }
 
-    private void ClearMatch(TransactionRowMatched row)
+    private async Task ClearMatchAsync(TransactionRowMatched row)
     {
-        Model.ClearMatch(row);
+        await Model.ClearMatchAsync(row);
         StateHasChanged(); //Must call: child component can trigger update to error state.
     }
 
@@ -91,7 +95,7 @@ public class HomeViewModel
 
     private readonly TransactionsModel _transactionsModel;
 
-    public HomeViewModel(ITransactionCategoriserScoped categoriser, Action onStateChanged) =>
+    public HomeViewModel(IClientTransactionCategoriser categoriser, Action onStateChanged) =>
         _transactionsModel = new(
             categoriser,
             onActionHandleResult: _UpdateLastActionResult,
@@ -144,23 +148,23 @@ public class HomeViewModel
     public void OnFileExtractResult(Result result) =>
         _UpdateLastActionResult(result);
 
-    public void RefreshTransactions() =>
-        _transactionsModel.RefreshTransactions();
+    public Task RefreshTransactionsAsync() =>
+        _transactionsModel.RefreshTransactionsAsync();
 
-    public void SetMonth(DateTime? yearAndMonth) =>
-        _transactionsModel.UpdateMonth(yearAndMonth.HasValue
+    public Task SetMonthAsync(DateTime? yearAndMonth) =>
+        _transactionsModel.UpdateMonthAsync(yearAndMonth.HasValue
             ? WrappedResult.Create(DateOnly.FromDateTime(yearAndMonth.Value))
             : WrappedResult.Fail<DateOnly>($"Invalid date format: {yearAndMonth}"));
 
-    public void SkipMonth(int months)
+    public Task SkipMonthAsync(int months)
     {
         var update = _transactionsModel.Month!.Value.AddMonths(months); //UI only shows "skip" if Month already loaded!
-        _transactionsModel.UpdateMonth(WrappedResult.Create(update));
+        return _transactionsModel.UpdateMonthAsync(WrappedResult.Create(update));
     }
 
-    public void CreateNewSection() =>
-        _transactionsModel.ChangeMatchModel(
-            fnPerform: cat =>
+    public Task CreateNewSectionAsync() =>
+        _transactionsModel.ChangeMatchModelAsync(
+            fnPerform: async cat =>
             {
                 var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == _newSection.CategoryName);
                 if (category == null || _newSection.Name.IsNullOrWhiteSpace())
@@ -170,14 +174,14 @@ public class HomeViewModel
 
                 var request = new AddSectionRequest(category, _newSection.Name!,
                     MatchMonthOnly: _newSection.IsMonthSpecific ? _transactionsModel.Month : null);
-                return cat.AddSection(request);
+                return await cat.AddSectionAsync(request);
             },
             refreshCategories: true,
             onSuccess: () => _newSection = _newSectionDefault);
 
-    public void AddNewMatchForRow(TransactionRowUnMatched row) =>
-        _transactionsModel.ChangeMatchModel(
-            fnPerform: cat =>
+    public Task AddNewMatchForRowAsync(TransactionRowUnMatched row) =>
+        _transactionsModel.ChangeMatchModelAsync(
+            fnPerform: async cat =>
             {
                 var header = _transactionsModel.AllSections
                     ?.SingleOrDefault(x => x.Id == row.SelectionId)
@@ -188,20 +192,20 @@ public class HomeViewModel
                 }
                 var request = new MatchRequest(row.Transaction, header, row.MatchOn, row.OverrideDescription);
                 return row.AddOnlyForTransaction
-                    ? cat.MatchOnce(request)
+                    ? await cat.MatchOnceAsync(request)
                     : !row.MatchOn.IsNullOrEmpty()
-                        ? cat.ApplyMatch(request)
+                        ? await cat.ApplyMatchAsync(request)
                         : Result.Fail("'Match On' pattern empty");
             },
             refreshCategories: true); //Should refresh categories as will update the order in the "suggestions" in the picker
 
-    public void ClearMatch(TransactionRowMatched row) =>
-        _transactionsModel.ChangeMatchModel(
-            fnPerform: cat => cat.DeleteMatch(row.Section, row.LatestMatch),
+    public Task ClearMatchAsync(TransactionRowMatched row) =>
+        _transactionsModel.ChangeMatchModelAsync(
+            fnPerform: cat => cat.DeleteMatchAsync(new(row.Section, row.LatestMatch)),
             refreshCategories: false); //Clearing a match does not change categories (or "suggestions" in the picker)
 
-    public void LoadTransactionsAndCategorise(WrappedResult<ImmutableArray<Transaction>> result) =>
-        _transactionsModel.UpdateLoadedTransactions(result);
+    public Task LoadTransactionsAndCategoriseAsync(WrappedResult<ImmutableArray<Transaction>> result) =>
+        _transactionsModel.UpdateLoadedTransactionsAsync(result);
 
     private void _UpdateLastActionResult(Result result) =>
         LastActionResult = result;
@@ -209,11 +213,11 @@ public class HomeViewModel
     /// <summary> Class manages storage-of & changes-of state. Ensures transactions re-categorised when match-model changes etc. </summary>
     private class TransactionsModel
     {
-        private readonly ITransactionCategoriserScoped _categoriser;
+        private readonly IClientTransactionCategoriser _categoriser;
         private readonly Action<Result> _onActionHandleResult;
         private readonly Action _onStateChanged;
 
-        public TransactionsModel(ITransactionCategoriserScoped categoriser,
+        public TransactionsModel(IClientTransactionCategoriser categoriser,
             Action<Result> onActionHandleResult,
             Action onStateChanged)
         {
@@ -222,8 +226,8 @@ public class HomeViewModel
             _onStateChanged = onStateChanged;
         }
 
-        public Task<bool> CanCategoriseTransactionsAsync() =>
-            _categoriser.PerformOnScopeAsync(x => x.CanCategoriseTransactions());
+        public async Task<bool> CanCategoriseTransactionsAsync() =>
+            (await _categoriser.CanCategoriseTransactionsAsync()).IsSuccess;
 
         public DateOnly? Month { get; private set; }
 
@@ -239,18 +243,18 @@ public class HomeViewModel
         public UnMatchedRowsTable.ViewModel? UnMatchedModel { get; private set; }
         public MatchedRowsTable.ViewModel? MatchedModel { get; private set; }
 
-        public Task RefreshTransactions() =>
+        public Task RefreshTransactionsAsync() =>
             _OnStateChangeAsync(
                 result: WrappedResult.Create(Unit.Instance),
                 refreshCategories: true);
 
-        public Task UpdateMonth(WrappedResult<DateOnly> result) =>
+        public Task UpdateMonthAsync(WrappedResult<DateOnly> result) =>
             _OnStateChangeAsync(
                 result: result,
                 refreshCategories: true, //categories can be month-specific so must refresh
                 onSuccess: r => Month = r);
 
-        public Task UpdateLoadedTransactions(WrappedResult<ImmutableArray<Transaction>> result) =>
+        public Task UpdateLoadedTransactionsAsync(WrappedResult<ImmutableArray<Transaction>> result) =>
             _OnStateChangeAsync(
                 result: result,
                 refreshCategories: true, //Categories loaded
@@ -262,11 +266,11 @@ public class HomeViewModel
                     LatestTransaction = r.Any() ? r.Select(x => x.Date).Max() : null;
                 });
 
-        public Task ChangeMatchModel(Func<ITransactionCategoriser, Result> fnPerform,
+        public Task ChangeMatchModelAsync(Func<IClientTransactionCategoriser, Task<Result>> fnPerform,
             bool refreshCategories,
             Action? onSuccess = null) =>
                 _OnStateChangeAsync(
-                    fnGetResultAsync: async () => (await _PerformOnCategoriserAsync(fnPerform)).ToWrappedUnit(),
+                    fnGetResultAsync: async () => (await fnPerform(_categoriser)).ToWrappedUnit(),
                     refreshCategories: refreshCategories,
                     onSuccess: _ => onSuccess?.Invoke());
 
@@ -298,7 +302,13 @@ public class HomeViewModel
 
             if (refreshCategories)
             {
-                var allData = await _PerformOnCategoriserAsync(x => x.GetSelectorData(Month!.Value));
+                var allDataResult = await _categoriser.GetSelectorDataAsync(Month!.Value);
+                if (!allDataResult.IsSuccess)
+                {
+                    _onActionHandleResult(allDataResult);
+                    return;
+                }
+                var allData = allDataResult.Result!;
                 Categories = allData.Categories;
                 AllSections = allData.Sections?
                     .GroupBy(s => s.Header.Parent.GetKey())
@@ -321,8 +331,13 @@ public class HomeViewModel
                 return;
             }
 
-            var categorisationResult = await _PerformOnCategoriserAsync(x => x.Categorise(new (loadedTransactions!.Value, Month!.Value)));
-            var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult, allSections!.Value);
+            var categorisationResult = await _categoriser.CategoriseAsync(new (loadedTransactions.Value, Month!.Value));
+            if (!categorisationResult.IsSuccess)
+            {
+                _onActionHandleResult(categorisationResult);
+                return;
+            }
+            var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult.Result!, allSections!.Value);
             TransactionResultViewModel = trViewModel;
 
             UnMatchedModel = trViewModel.UnMatchedRows.Any()
@@ -374,9 +389,6 @@ public class HomeViewModel
 
             static DateOnly ToYearAndMonth(DateOnly dt) => new DateOnly(dt.Year, dt.Month, 1);
         }
-
-        private Task<T> _PerformOnCategoriserAsync<T>(Func<ITransactionCategoriser, T> fnPerform) =>
-            _categoriser.PerformOnScopeAsync(fnPerform);
     }
 }
 

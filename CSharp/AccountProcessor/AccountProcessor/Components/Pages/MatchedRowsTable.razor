@@ -22,7 +22,7 @@
         <PropertyColumn Property="x => x.MatchPattern" Title="Match Pattern"/>
         <TemplateColumn Title="Clear">
             <CellTemplate>
-                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@((e) => ClearMatch(context.Item))"/>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(e => ClearMatchAsync(context.Item))"/>
             </CellTemplate>
         </TemplateColumn>
     </Columns>
@@ -33,7 +33,7 @@
     public record ViewModel(ImmutableArray<TransactionRowMatched> MatchedRows);
 
     [Parameter]
-    public required Action<TransactionRowMatched> ClearMatch { get; init; }
+    public required Func<TransactionRowMatched, Task> ClearMatchAsync { get; init; }
     [Parameter]
     public required ViewModel Model { get; set; }
 

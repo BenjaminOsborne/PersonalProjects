@@ -4,45 +4,11 @@ using System.Text.Json.Serialization;
 
 namespace AccountProcessor.Components.Services;
 
-public interface ITransactionCategoriserScoped
-{
-    Task<T> PerformOnScopeAsync<T>(Func<ITransactionCategoriser, T> fnPerform);
-}
-
-public class TransactionCategoriserScoped : ITransactionCategoriserScoped
-{
-    public Task<T> PerformOnScopeAsync<T>(Func<ITransactionCategoriser, T> fnPerform)
-    {
-        var result = fnPerform(new TransactionCategoriser());
-        var roundTrip = _RoundTripReadyForControllerSerialisation(result);
-        return Task.FromResult(roundTrip);
-    }
-
-    /// <summary> Temporary: Confirms all types being used are ready to be JSON serialised over the wire (when experiment with Client Blazor) </summary>
-    private static T _RoundTripReadyForControllerSerialisation<T>(T result)
-    {
-        try
-        {
-            var json1 = JsonHelper.Serialise(result);
-            var roundTrip = JsonHelper.Deserialise<T>(json1);
-            var json2 = JsonHelper.Serialise(roundTrip);
-            if (json1 != json2)
-            {
-                throw new Exception("JSON Round trip failed: Type not ready for controller serialisation");
-            }
-            return roundTrip!;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"JSON Serialisation roundtrip error. Type: {typeof(T).FullName}\n{ex}");
-            throw;
-        }
-    }
-}
-
 public record AddSectionRequest(CategoryHeader CategoryHeader, string SectionName, DateOnly? MatchMonthOnly);
 
 public record MatchRequest(Transaction Transaction, SectionHeader Section, string? MatchOn, string? OverrideDescription);
+
+public record DeleteMatchRequest(SectionHeader Section, Match Match);
 
 public interface ITransactionCategoriser
 {
@@ -56,14 +22,14 @@ public interface ITransactionCategoriser
     Result ApplyMatch(MatchRequest request);
     Result MatchOnce(MatchRequest request);
 
-    Result DeleteMatch(SectionHeader section, Match match);
+    Result DeleteMatch(DeleteMatchRequest request);
 }
 
 /// <summary>
 /// Class is stateful (hence instance bound to an explicit "scope").
 /// <see cref="_singleModel"/> provides a cached <see cref="MatchModel"/> for the duration of the scope so that
 /// a sequence of method calls can perform mutations.
-/// Note; UI layer gets a fresh scope for each operation... so behaves like the "scope" of a controller operation.
+/// Note; service is Scoped so fresh instance for each request
 /// </summary>
 public class TransactionCategoriser : ITransactionCategoriser
 {
@@ -171,15 +137,15 @@ public class TransactionCategoriser : ITransactionCategoriser
         return _AddNewMatch(request.Transaction, request.Section, match);
     }
 
-    public Result DeleteMatch(SectionHeader section, Match match)
+    public Result DeleteMatch(DeleteMatchRequest request)
     {
-        var sectionMatches = _FindSection(section);
+        var sectionMatches = _FindSection(request.Section);
         if (!sectionMatches.IsSuccess)
         {
             return sectionMatches;
         }
         var foundMatch = sectionMatches.Result!.Matches
-            .SingleOrDefault(m => m.IsSameMatch(match));
+            .SingleOrDefault(m => m.IsSameMatch(request.Match));
         if (foundMatch == null)
         {
             return Result.Fail("Could not find model match to delete");

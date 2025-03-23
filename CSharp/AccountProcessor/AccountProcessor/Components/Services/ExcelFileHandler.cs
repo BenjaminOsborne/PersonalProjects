@@ -23,7 +23,7 @@ public interface IExcelFileHandler
     Task<WrappedResult<byte[]>> ExportCategorisedTransactionsToExcel(CategoriseRequest request);
 }
 
-public class ExcelFileHandler(ITransactionCategoriserScoped categoriserScoped) : IExcelFileHandler
+public class ExcelFileHandler(ITransactionCategoriser transactionCategoriser) : IExcelFileHandler
 {
     /// <summary> Note: "Balance" included in co-op report, but not required for loading transactions out to process </summary>
     private static readonly ImmutableArray<string> _transactionsRequiredColumnHeaders = ["Date", "Description", "Type", "Money In", "Money Out"];
@@ -245,7 +245,7 @@ public class ExcelFileHandler(ITransactionCategoriserScoped categoriserScoped) :
     {
         try
         {
-            var result = await categoriserScoped.PerformOnScopeAsync(x => x.Categorise(request));
+            var result = transactionCategoriser.Categorise(request);
             var (excel, worksheet) = _CreateNewExcel();
 
             var catSummary = _ToWriteSummary(result);

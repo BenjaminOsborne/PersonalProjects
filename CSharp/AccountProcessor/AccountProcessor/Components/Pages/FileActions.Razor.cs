@@ -60,7 +60,7 @@ public partial class FileActions
     private async Task _LoadTransactionsAndCategorise(Stream inputStream)
     {
         var result = await _excelFileService.LoadTransactionsAsync(inputStream);
-        Model.LoadTransactionsAndCategorise(result);
+        await Model.LoadTransactionsAndCategoriseAsync(result);
         OnFileActionFinished((FileActionType.LoadTransactions, result));
     }
 
