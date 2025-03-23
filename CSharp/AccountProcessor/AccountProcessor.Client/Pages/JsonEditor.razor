@@ -2,6 +2,8 @@
 
 <PageTitle>Json Editor</PageTitle>
 
+<RenderModeHeader />
+
 <MudStack>
     <MudTextField T=@string @bind-Value=@BindSearch Immediate=true Placeholder="Search..." />
     <pre style="font-family:'Cascadia Code'">@LoadedJson</pre>

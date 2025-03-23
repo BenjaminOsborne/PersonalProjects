@@ -7,7 +7,11 @@
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Account Processor <i>[@(_GetRenderModeType())]</i></MudText>
+        <MudText Typo="Typo.h5" Class="ml-3">Account Processor <i>[@(RenderModeUtility.GetRenderModeType())]</i></MudText>
+        <MudTooltip Text="Flip Render Mode">
+            <MudIconButton Icon="@Icons.Material.Filled.Flip" Size="Size.Medium" OnClick="() => _ClickFlipMode()" />
+        </MudTooltip>
+        <MudText Typo="Typo.body2" Class="ml-1">Force Server Mode: @(RenderModeUtility.UseServerMode)</MudText>
         <MudSpacer />
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
@@ -28,9 +32,18 @@
 </div>
 
 @code {
+
+    [Inject] private NavigationManager? _navigationManager { get; set; }
+
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
+
+    private void _ClickFlipMode()
+    {
+        RenderModeUtility.FlickMode();
+        _navigationManager!.NavigateTo(_navigationManager!.Uri, true);
+    }
 
     protected override void OnInitialized()
     {
@@ -98,7 +111,4 @@
         true => Icons.Material.Rounded.AutoMode,
         false => Icons.Material.Outlined.DarkMode,
     };
-
-    private static string _GetRenderModeType() =>
-        OperatingSystem.IsBrowser() ? "WASM" : "Server";
 }
