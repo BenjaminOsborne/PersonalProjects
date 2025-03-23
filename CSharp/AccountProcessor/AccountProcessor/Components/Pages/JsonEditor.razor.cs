@@ -36,7 +36,8 @@ public partial class JsonEditor
         var result = await _modelService.DisplayRawModelJsonSearchResultAsync(_search ?? string.Empty);
         if (result.IsSuccess)
         {
-            LoadedJson = result.Result;
+            LoadedJson = result.Result!.Json;
         }
+        await InvokeAsync(StateHasChanged); //Required else refresh not triggered as property-binding is fire-and-forget
     }
 }

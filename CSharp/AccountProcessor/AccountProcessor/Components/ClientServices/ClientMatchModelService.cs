@@ -5,7 +5,7 @@ namespace AccountProcessor.Components.ClientServices;
 public interface IClientMatchModelService
 {
     Task<WrappedResult<IReadOnlyList<ModelMatchItem>>> GetAllModelMatchesAsync();
-    Task<WrappedResult<string>> DisplayRawModelJsonSearchResultAsync(string? search);
+    Task<WrappedResult<ModelJson>> DisplayRawModelJsonSearchResultAsync(string? search);
     Task<Result> DeleteMatchItemAsync(ModelMatchItem row);
 }
 
@@ -15,9 +15,9 @@ public class ClientMatchModelService(HttpClient httpClient) : IClientMatchModelS
         httpClient.GetAsync("matchmodel/all")
             .MapJsonAsync<IReadOnlyList<ModelMatchItem>>();
 
-    public Task<WrappedResult<string>> DisplayRawModelJsonSearchResultAsync(string? search) =>
-        httpClient.GetAsync($"matchmodel/search/{search}")
-            .MapJsonAsync<string>();
+    public Task<WrappedResult<ModelJson>> DisplayRawModelJsonSearchResultAsync(string? search) =>
+        httpClient.GetAsync($"matchmodel/search?term={search}")
+            .MapJsonAsync<ModelJson>();
 
     public Task<Result> DeleteMatchItemAsync(ModelMatchItem row) =>
         httpClient.PostAsJsonAsync("matchmodel/deletematchitem", row)

@@ -4,11 +4,13 @@ namespace AccountProcessor.Components.Services;
 
 public interface IMatchModelService
 {
-    string DisplayRawModelJsonSearchResult(string? search);
+    ModelJson DisplayRawModelJsonSearchResult(string? search);
     ImmutableArray<ModelMatchItem> GetAllModelMatches();
 
     bool DeleteMatchItem(ModelMatchItem row);
 }
+
+public record ModelJson(string Json);
 
 public record ModelMatchItem(
     CategoryHeader Header,
@@ -43,10 +45,10 @@ public record ModelMatchItem(
 
 public class MatchModelService : IMatchModelService
 {
-    public string DisplayRawModelJsonSearchResult(string? search) =>
-        search.IsNullOrEmpty()
+    public ModelJson DisplayRawModelJsonSearchResult(string? search) =>
+        new(search.IsNullOrEmpty()
             ? ModelPersistence.GetRawJson()
-            : ModelPersistence.GetRawJsonWithSearchFilter(search!);
+            : ModelPersistence.GetRawJsonWithSearchFilter(search!));
 
     public ImmutableArray<ModelMatchItem> GetAllModelMatches()
     {

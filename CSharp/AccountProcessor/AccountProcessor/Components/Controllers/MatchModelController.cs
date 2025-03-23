@@ -11,9 +11,9 @@ public class MatchModelController(IMatchModelService modelService) : ControllerB
     public IReadOnlyList<ModelMatchItem> GetAllModelMatches() =>
         modelService.GetAllModelMatches();
 
-    [HttpGet("search/{search}")]
-    public string DisplayRawModelJsonSearchResult([FromRoute] string? search) =>
-        modelService.DisplayRawModelJsonSearchResult(search);
+    [HttpGet("search")]
+    public ModelJson DisplayRawModelJsonSearchResult([FromQuery] string? term) =>
+        modelService.DisplayRawModelJsonSearchResult(term);
     
     [HttpPost("deletematchitem")]
     public Result DeleteMatchItem(ModelMatchItem item)
