@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace AccountProcessor.Components.Services;
+namespace AccountProcessor.Services;
 
 public interface IMatchModelService
 {

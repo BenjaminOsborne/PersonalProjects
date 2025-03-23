@@ -1,7 +1,7 @@
-﻿using AccountProcessor.Components.Services;
+﻿using AccountProcessor.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AccountProcessor.Components.Controllers;
+namespace AccountProcessor.Controllers;
 
 [ApiController]
 [Route("[controller]")]

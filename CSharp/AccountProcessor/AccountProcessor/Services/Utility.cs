@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Text.Json;
 
-namespace AccountProcessor.Components.Services;
+namespace AccountProcessor.Services;
 
 public class Unit
 {

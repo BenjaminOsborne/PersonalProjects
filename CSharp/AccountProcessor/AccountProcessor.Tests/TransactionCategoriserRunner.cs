@@ -1,6 +1,6 @@
-﻿using AccountProcessor.Components.Services;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Collections.Immutable;
+using AccountProcessor.Services;
 
 namespace AccountProcessor.Tests;
 

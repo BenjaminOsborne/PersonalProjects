@@ -1,10 +1,10 @@
-﻿using CsvHelper;
-using OfficeOpenXml;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Drawing;
 using System.Globalization;
+using CsvHelper;
+using OfficeOpenXml;
 
-namespace AccountProcessor.Components.Services;
+namespace AccountProcessor.Services;
 
 public interface IExcelFileHandler
 {

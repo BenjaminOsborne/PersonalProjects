@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics;
 
-namespace AccountProcessor.Components.Services;
+namespace AccountProcessor.Services;
 
 public static class ModelPersistence
 {

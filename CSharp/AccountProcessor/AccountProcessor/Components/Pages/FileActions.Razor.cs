@@ -1,5 +1,5 @@
-﻿using AccountProcessor.Components.ClientServices;
-using AccountProcessor.Components.Services;
+﻿using AccountProcessor.ClientServices;
+using AccountProcessor.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 

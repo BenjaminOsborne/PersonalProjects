@@ -1,8 +1,8 @@
-﻿using AccountProcessor.Components.Services;
+﻿using System.Collections.Immutable;
+using AccountProcessor.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Immutable;
 
-namespace AccountProcessor.Components.Controllers;
+namespace AccountProcessor.Controllers;
 
 [ApiController]
 [Route("[controller]")]

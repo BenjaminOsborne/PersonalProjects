@@ -1,6 +1,6 @@
+using AccountProcessor.ClientServices;
 using AccountProcessor.Components;
-using AccountProcessor.Components.ClientServices;
-using AccountProcessor.Components.Services;
+using AccountProcessor.Services;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);

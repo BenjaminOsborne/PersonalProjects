@@ -1,4 +1,4 @@
-﻿using AccountProcessor.Components.Services;
+﻿using AccountProcessor.Services;
 using NUnit.Framework;
 
 namespace AccountProcessor.Tests;

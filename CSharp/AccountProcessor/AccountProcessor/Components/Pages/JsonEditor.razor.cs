@@ -1,4 +1,4 @@
-﻿using AccountProcessor.Components.ClientServices;
+﻿using AccountProcessor.ClientServices;
 using Microsoft.AspNetCore.Components;
 
 namespace AccountProcessor.Components.Pages;

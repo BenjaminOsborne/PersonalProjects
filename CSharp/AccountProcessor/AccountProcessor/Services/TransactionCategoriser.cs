@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace AccountProcessor.Components.Services;
+namespace AccountProcessor.Services;
 
 public record AddSectionRequest(CategoryHeader CategoryHeader, string SectionName, DateOnly? MatchMonthOnly);
 

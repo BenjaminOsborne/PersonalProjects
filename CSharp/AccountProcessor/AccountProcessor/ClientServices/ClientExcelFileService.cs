@@ -1,8 +1,8 @@
-﻿using AccountProcessor.Components.Controllers;
-using System.Collections.Immutable;
-using AccountProcessor.Components.Services;
+﻿using System.Collections.Immutable;
+using AccountProcessor.Controllers;
+using AccountProcessor.Services;
 
-namespace AccountProcessor.Components.ClientServices;
+namespace AccountProcessor.ClientServices;
 
 public enum AccountType
 {
