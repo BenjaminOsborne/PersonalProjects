@@ -86,7 +86,8 @@ public static class HttpClientExtensions
         if (!message.IsSuccessStatusCode)
         {
             var error = await message.Content.ReadAsStringAsync();
-            return fnCreateFailure($"{message.StatusCode}: {error}");
+            var context = $"{error} [{message.RequestMessage?.RequestUri?.AbsolutePath ?? "<UNKNOWN_PATH>"}]";
+            return fnCreateFailure($"{message.StatusCode}: {context.Trim()}");
         }
         var json = await message.Content.ReadAsStringAsync();
         var type = JsonHelper.Deserialise<T>(json, ignoreCase: true);
