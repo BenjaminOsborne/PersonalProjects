@@ -1,6 +1,8 @@
-﻿using AccountProcessor.Services;
+﻿using System.Net.Http.Json;
+using AccountProcessor.Core;
+using AccountProcessor.Core.Services;
 
-namespace AccountProcessor.ClientServices;
+namespace AccountProcessor.Client.ClientServices;
 
 public interface IClientTransactionCategoriser
 {

@@ -1,4 +1,5 @@
-﻿using AccountProcessor.Services;
+﻿using AccountProcessor.Core;
+using AccountProcessor.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountProcessor.Controllers;

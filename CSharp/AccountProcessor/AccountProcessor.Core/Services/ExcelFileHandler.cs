@@ -4,7 +4,7 @@ using System.Globalization;
 using CsvHelper;
 using OfficeOpenXml;
 
-namespace AccountProcessor.Services;
+namespace AccountProcessor.Core.Services;
 
 public interface IExcelFileHandler
 {

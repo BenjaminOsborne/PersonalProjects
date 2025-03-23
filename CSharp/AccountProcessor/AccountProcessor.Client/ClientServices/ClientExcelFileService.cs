@@ -1,8 +1,9 @@
 ﻿using System.Collections.Immutable;
-using AccountProcessor.Controllers;
-using AccountProcessor.Services;
+using System.Net.Http.Json;
+using AccountProcessor.Core;
+using AccountProcessor.Core.Services;
 
-namespace AccountProcessor.ClientServices;
+namespace AccountProcessor.Client.ClientServices;
 
 public enum AccountType
 {
@@ -35,7 +36,7 @@ public class ClientExcelFileService(HttpClient httpClient) : IClientExcelFileSer
                 apiParameter: "file",
                 inputStream,
                 "arbitraryFileName",
-                ExcelFileController.ExcelContentType)
+                ContentConstants.ExcelContentType)
             .MapJsonStructAsync<ImmutableArray<Transaction>>(fnIsValid: arr => !arr.IsDefault);
 
     public Task<WrappedResult<byte[]>> CategoriseTransactionsAsync(CategoriseRequest request) =>

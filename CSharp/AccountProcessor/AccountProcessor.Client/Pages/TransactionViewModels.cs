@@ -1,7 +1,8 @@
 ﻿using System.Collections.Immutable;
-using AccountProcessor.Services;
+using AccountProcessor.Core;
+using AccountProcessor.Core.Services;
 
-namespace AccountProcessor.Components.Pages;
+namespace AccountProcessor.Client.Pages;
 
 public record SectionSelectorRow(SectionHeader Header, string Display, string Id, DateTime? LastUsed, string? BackgroundColor);
 

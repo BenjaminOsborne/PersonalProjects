@@ -1,8 +1,9 @@
-﻿using AccountProcessor.ClientServices;
-using AccountProcessor.Services;
+﻿using AccountProcessor.Client.ClientServices;
+using AccountProcessor.Core;
+using AccountProcessor.Core.Services;
 using Microsoft.AspNetCore.Components;
 
-namespace AccountProcessor.Components.Pages;
+namespace AccountProcessor.Client.Pages;
 
 public partial class ModelEditor
 {

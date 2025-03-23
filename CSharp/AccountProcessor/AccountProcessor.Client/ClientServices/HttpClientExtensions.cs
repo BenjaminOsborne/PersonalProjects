@@ -1,7 +1,7 @@
-﻿using AccountProcessor.Services;
+﻿using AccountProcessor.Core;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace AccountProcessor.ClientServices;
+namespace AccountProcessor.Client.ClientServices;
 
 public static class HttpClientExtensions
 {

@@ -1,7 +1,7 @@
-﻿using AccountProcessor.ClientServices;
+﻿using AccountProcessor.Client.ClientServices;
 using Microsoft.AspNetCore.Components;
 
-namespace AccountProcessor.Components.Pages;
+namespace AccountProcessor.Client.Pages;
 
 public partial class JsonEditor
 {

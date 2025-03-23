@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Collections.Immutable;
+using AccountProcessor.Client.ClientServices;
+using AccountProcessor.Core;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using System.Collections.Immutable;
-using AccountProcessor.ClientServices;
-using AccountProcessor.Services;
 
-namespace AccountProcessor.Components.Pages;
+namespace AccountProcessor.Client.Pages;
 
 public partial class AccountConverter
 {

@@ -1,6 +1,6 @@
-﻿using AccountProcessor.Services;
+﻿using AccountProcessor.Core.Services;
 using NUnit.Framework;
-using MatchType = AccountProcessor.Services.MatchType;
+using MatchType = AccountProcessor.Core.Services.MatchType;
 
 namespace AccountProcessor.Tests;
 

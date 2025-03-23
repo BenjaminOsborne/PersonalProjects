@@ -1,5 +1,7 @@
 ﻿using System.Collections.Immutable;
-using AccountProcessor.Services;
+using AccountProcessor.Client.ClientServices;
+using AccountProcessor.Core;
+using AccountProcessor.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountProcessor.Controllers;
@@ -8,14 +10,12 @@ namespace AccountProcessor.Controllers;
 [Route("[controller]")]
 public class ExcelFileController(IExcelFileHandler excelFileHandler) : ControllerBase
 {
-    /// <summary> Lines up with definition: <see cref="ClientServices.AccountType"/> </summary>
+    /// <summary> Lines up with definition: <see cref="AccountType"/> </summary>
     public static class Banks
     {
-        public const string CoopBank = nameof(ClientServices.AccountType.CoopBank);
-        public const string SantanderCreditCard = nameof(ClientServices.AccountType.SantanderCreditCard);
+        public const string CoopBank = nameof(AccountType.CoopBank);
+        public const string SantanderCreditCard = nameof(AccountType.SantanderCreditCard);
     }
-
-    public const string ExcelContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     [HttpPost("extracttransactions/{bankType}")]
     public async Task<ActionResult> ExtractTransactions([FromForm] IFormFile file, [FromRoute] string bankType) =>
@@ -51,6 +51,6 @@ public class ExcelFileController(IExcelFileHandler excelFileHandler) : Controlle
 
     private ActionResult _MapFileResult(WrappedResult<byte[]> result, string error) =>
         result.IsSuccess
-            ? File(new MemoryStream(result.Result!), ExcelContentType)
+            ? File(new MemoryStream(result.Result!), ContentConstants.ExcelContentType)
             : BadRequest($"{error}: {result.Error}");
 }
