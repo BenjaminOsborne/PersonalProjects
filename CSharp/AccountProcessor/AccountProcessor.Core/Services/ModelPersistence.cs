@@ -18,12 +18,12 @@ public static class ModelPersistence
     {
         var model = _LoadModel();
         var lowerSearch = search.ToLower();
-        return _GetJsonForDisplay(new(
-        [..
-            model.Categories
-                .Select(c => c.WithFilter(lowerSearch))
-                .Where(x => x.Sections.Any())
-        ]));
+        var catData = model.Categories
+            .Select(c => c.WithFilter(lowerSearch))
+            .Where(c => c.IsSuccess)
+            .Select(x => x.Result!)
+            .ToImmutableArray();
+        return _GetJsonForDisplay(new(catData));
     }
 
     private static string _GetJsonForDisplay(ModelData model) =>
@@ -73,7 +73,7 @@ public static class ModelPersistence
                 new CategoryData(
                     c.Header.Name,
                     c.Sections
-                        .OrderBy(s => s.Section.Month.HasValue) //Permananent sections (Month is null) first
+                        .OrderBy(s => s.Section.Month.HasValue) //Permanent sections (Month is null) first
                         .ThenBy(s => s.Section.Order) //Then keep order of creation (NOT by alphabet)
                         .ToImmutableArray(s => new SectionMatchData(
                             s.Section.Name,
@@ -92,24 +92,39 @@ public static class ModelPersistence
     /// <summary> Relates to the fixed set of <see cref="CategoryHeader"/>s </summary>
     private record CategoryData(string CategoryName, ImmutableArray<SectionMatchData> Sections)
     {
-        public CategoryData WithFilter(string search) =>
-            _DoesMatch(CategoryName, search)
-                ? this
-                : this with
-                {
-                    Sections = [..Sections
-                        .Select(x => x.WithFilter(search))
-                        .Where(x => x.Matches.Any())
-                    ]
-                };
+        public WrappedResult<CategoryData> WithFilter(string lowerSearch)
+        {
+            if (_DoesMatch(CategoryName, lowerSearch))
+            {
+                return WrappedResult.Create(this);
+            }
+            var filtered = Sections
+                    .Select(x => x.WithFilter(lowerSearch))
+                    .Where(x => x.IsSuccess)
+                    .Select(x => x.Result!)
+                    .ToImmutableArray();
+            return filtered.Any()
+                ? WrappedResult.Create(this with { Sections = filtered })
+                : WrappedResult.Fail<CategoryData>("No Matches");
+        }
     }
 
     private record SectionMatchData(string SectionName, DateOnly? Month, ImmutableArray<MatchData> Matches)
     {
-        public SectionMatchData WithFilter(string search) =>
-            _DoesMatch(SectionName, search)
-                ? this
-                : this with { Matches = [.. Matches.Where(x => x.DoesMatch(search))] };
+        public WrappedResult<SectionMatchData> WithFilter(string search)
+        {
+            if (_DoesMatch(SectionName, search))
+            {
+                return WrappedResult.Create(this);
+            }
+
+            var matches = Matches
+                .Where(x => x.DoesMatch(search))
+                .ToImmutableArray();
+            return matches.Any()
+                ? WrappedResult.Create(this with { Matches = matches })
+                : WrappedResult.Fail<SectionMatchData>("No Matches");
+        }
     }
 
     private record MatchData(DateTime? CreatedAt, string Pattern, string? OverrideDescription, DateOnly? ExactDate)
@@ -119,8 +134,8 @@ public static class ModelPersistence
             _DoesMatch(OverrideDescription, search);
     }
 
-    private static bool _DoesMatch(string? data, string search) =>
-        data != null && data.ToLower().Contains(search);
+    private static bool _DoesMatch(string? data, string lowerSearch) =>
+        data != null && data.ToLower().Contains(lowerSearch);
 }
 
 public static class DirectoryHelper
