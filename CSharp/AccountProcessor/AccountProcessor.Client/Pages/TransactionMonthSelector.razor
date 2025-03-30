@@ -4,7 +4,7 @@
     </MudPaper>
     <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Size="Size.Medium" OnClick="() => Model.SkipMonthAsync(-1)" />
     <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Medium" OnClick="() => Model.SkipMonthAsync(+1)" />
-    <MudIconButton Icon="@Icons.Material.Filled.Refresh" Size="Size.Medium" OnClick="() => Model.RefreshTransactionsAsync()" />
+    <MudIconButton Icon="@Icons.Material.Filled.Refresh" Size="Size.Medium" OnClick="() => _RefreshAsync()" />
 </MudStack>
 
 <MudText Typo="Typo.caption"><strong>Transactions Period:</strong> @Model.EarliestTransaction?.ToString("dd MMM") to @Model.LatestTransaction?.ToString("dd MMM")</MudText>
@@ -14,11 +14,24 @@
     [Parameter]
     public HomeViewModel Model { get; init; }
     [Parameter]
-    public Action<DateTime?>? SetMonth { get; init; }
+    public Action PostActionRefresh { get; init; }
 
     private DateTime? YearMonthBind
     {
         get => Model.Month?.ToDateTime(TimeOnly.MinValue);
-        set => SetMonth?.Invoke(value);
+        set => _ = Task.Run(async () => //TODO: Track running task
+        {
+            await Model.SetMonthAsync(value);
+            await _PostActionAsync();
+        });
     }
+
+    private async Task _RefreshAsync()
+    {
+        await Model.RefreshTransactionsAsync();
+        await _PostActionAsync();
+    }
+
+    private Task _PostActionAsync() =>
+        InvokeAsync(PostActionRefresh);
 }

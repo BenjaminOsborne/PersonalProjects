@@ -36,6 +36,9 @@ public partial class Home
         }
     }
 
+    public void OnMonthAction() =>
+        StateHasChanged(); //Must trigger refresh in parent from child component action
+
     protected override Task OnInitializedAsync()
     {
         Model = new HomeViewModel(_categoriser,
@@ -45,16 +48,7 @@ public partial class Home
 
     private bool TransactionsAreFullyLoaded() =>
         Model.TransactionsAreFullyLoaded();
-
-    private void SetMonth(DateTime? month)
-    {
-        _ = Task.Run(async () => //TODO: Track running task
-        {
-            await Model.SetMonthAsync(month);
-            await InvokeAsync(StateHasChanged);
-        });
-    }
-
+    
     private async Task AddNewMatchForRowAsync(TransactionRowUnMatched row)
     {
         await Model.AddNewMatchForRowAsync(row);

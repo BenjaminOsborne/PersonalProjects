@@ -21,7 +21,7 @@
     </MudTabPanel>
     
     <MudTabPanel Text="Categorise" Disabled=@(!TransactionsAreFullyLoaded()) @ref=@CategoriseTab>
-        <TransactionMonthSelector Model=@Model SetMonth=@SetMonth/>
+        <TransactionMonthSelector Model=@Model PostActionRefresh=@OnMonthAction />
 
         @* UnMatched Rows *@
         @if (Model.UnMatchedModel != null)
