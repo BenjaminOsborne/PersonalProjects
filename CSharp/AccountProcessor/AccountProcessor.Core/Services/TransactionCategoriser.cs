@@ -338,6 +338,13 @@ public class Category
         Sections = Sections.Add(sectionMatches);
         return section;            
     }
+
+    public bool DeleteSection(SectionMatches sm)
+    {
+        var snap = Sections;
+        Sections = snap.Remove(sm);
+        return snap != Sections; //true if new array has changed
+    }
 }
 
 public class SectionHeader : Block

@@ -4,50 +4,101 @@
 
 <RenderModeHeader />
 
-@if (Items is null)
-{
-    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-}
-else
-{
-    <MudDataGrid Items=@Items
-                 QuickFilter=@_ApplySearchFilter
-                 ColumnResizeMode=ResizeMode.Column
-                 SortMode=SortMode.Multiple
-                 Dense=true
-                 FixedHeader=true
-                 Height="80vh">
-        <ToolBarContent>
-            <MudTextField @bind-Value=@_searchString
-                          Placeholder="Search"
-                          Adornment=Adornment.Start
-                          Immediate=true
-                          AdornmentIcon=@Icons.Material.Filled.Search
-                          IconSize=Size.Medium
-                          Class="mt-0" />
-        </ToolBarContent>
-        <Columns>
-            <PropertyColumn Property="x => x.HeaderName" Title="Header"/>
-            <PropertyColumn Property="x => x.SectionName" Title="Section"/>
-            <PropertyColumn Property="x => x.SectionMonthDisplay" Title="Month"/>
-            <PropertyColumn Property="x => x.Pattern"/>
-            <PropertyColumn Property="x => x.OverrideDescription" Title="Description"/>
-            <TemplateColumn Title="Match Once">
-                <CellTemplate>
-                    @if (context.Item.MatchOnce)
-                    {
-                        <MudStack Row=true Class="align-center">
-                            <MudCheckBox T=bool Value=true ReadOnly=true/>
-                            <MudText Typo="Typo.caption">@context.Item.MatchOnceDate</MudText>
-                        </MudStack>
-                    }
-                </CellTemplate>
-            </TemplateColumn>
-            <TemplateColumn Title="Clear">
-                <CellTemplate>
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(e => ClearMatchAsync(context.Item))"/>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-    </MudDataGrid>
-}
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true">
+    <MudTabPanel Text="Match Items">
+        @if (MatchItems is null)
+        {
+            <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+        }
+        else
+        {
+            <MudDataGrid Items=@MatchItems
+                         QuickFilter=@_ApplyMatchSearchFilter
+                         ColumnResizeMode=ResizeMode.Column
+                         SortMode=SortMode.Multiple
+                         Dense=true
+                         FixedHeader=true
+                         Height="80vh">
+                <ToolBarContent>
+                    <MudTextField @bind-Value=@_searchMatches
+                                  Placeholder="Search"
+                                  Adornment=Adornment.Start
+                                  Immediate=true
+                                  AdornmentIcon=@Icons.Material.Filled.Search
+                                  IconSize=Size.Medium
+                                  Class="mt-0" />
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.HeaderName" Title="Header" />
+                    <PropertyColumn Property="x => x.SectionName" Title="Section" />
+                    <PropertyColumn Property="x => x.SectionMonthDisplay" Title="Month" />
+                    <PropertyColumn Property="x => x.Pattern" />
+                    <PropertyColumn Property="x => x.OverrideDescription" Title="Description" />
+                    <TemplateColumn Title="Match Once">
+                        <CellTemplate>
+                            @if (context.Item.MatchOnce)
+                            {
+                                <MudStack Row=true Class="align-center">
+                                    <MudCheckBox T=bool Value=true ReadOnly=true />
+                                    <MudText Typo="Typo.caption">@context.Item.MatchOnceDate</MudText>
+                                </MudStack>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Clear">
+                        <CellTemplate>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(e => ClearMatchAsync(context.Item))" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        }
+    </MudTabPanel>
+    <MudTabPanel Text="Sections">
+        @if (SectionItems is null)
+        {
+            <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+        }
+        else
+        {
+            <MudDataGrid Items=@SectionItems
+                         QuickFilter=@_ApplySectionSearchFilter
+                         ColumnResizeMode=ResizeMode.Column
+                         SortMode=SortMode.Multiple
+                         Dense=true
+                         FixedHeader=true
+                         Height="80vh">
+                <ToolBarContent>
+                    <MudTextField @bind-Value=@_searchSections
+                                  Placeholder="Search"
+                                  Adornment=Adornment.Start
+                                  Immediate=true
+                                  AdornmentIcon=@Icons.Material.Filled.Search
+                                  IconSize=Size.Medium
+                                  Class="mt-0" />
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.Category.Name" Title="Category" />
+                    <PropertyColumn Property="x => x.Section.Name" Title="Section" />
+                    <PropertyColumn Property="x => x.MatchItemCount" Title="Match Items" />
+                    <TemplateColumn Title="Month Specific">
+                        <CellTemplate>
+                            @if (context.Item.MonthOnlyDisplay != null)
+                            {
+                                <MudStack Row=true Class="align-center">
+                                    <MudCheckBox T=bool Value=true ReadOnly=true />
+                                    <MudText Typo="Typo.caption">@context.Item.MonthOnlyDisplay</MudText>
+                                </MudStack>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Clear">
+                        <CellTemplate>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(e => DeleteSectionAsync(context.Item))" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        }
+    </MudTabPanel>
+</MudTabs>

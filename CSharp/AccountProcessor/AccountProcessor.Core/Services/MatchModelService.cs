@@ -5,12 +5,17 @@ namespace AccountProcessor.Core.Services;
 public interface IMatchModelService
 {
     ModelJson DisplayRawModelJsonSearchResult(string? search);
-    ImmutableArray<ModelMatchItem> GetAllModelMatches();
+    MatchModelResult GetAllModelMatches();
 
     bool DeleteMatchItem(ModelMatchItem row);
+    bool DeleteSelection(SectionHeader section);
 }
 
 public record ModelJson(string Json);
+
+public record MatchModelResult(ImmutableArray<SectionAndMatches> Sections);
+
+public record SectionAndMatches(SectionHeader Section, ImmutableArray<ModelMatchItem> MatchItems);
 
 public record ModelMatchItem(
     CategoryHeader Header,
@@ -29,7 +34,7 @@ public record ModelMatchItem(
     public string? SectionMonthDisplay => SectionMonth?.ToString("yyyy/MM");
 
     public bool MatchesSearch(string searchString) =>
-        _MatchesSearch(
+        SearchHelper.MatchesSearch(
             lowerSearch: searchString.ToLower(),
             Header.Name,
             Section.Name,
@@ -37,8 +42,11 @@ public record ModelMatchItem(
             Match.OverrideDescription,
             SectionMonthDisplay
         );
+}
 
-    static bool _MatchesSearch(string lowerSearch, params string?[] matches) =>
+public static class SearchHelper
+{
+    public static bool MatchesSearch(string lowerSearch, params string?[] matches) =>
         matches
             .Where(x => !x.IsNullOrEmpty())
             .Select(x => x!.ToLower())
@@ -52,18 +60,36 @@ public class MatchModelService : IMatchModelService
             ? ModelPersistence.GetRawJson()
             : ModelPersistence.GetRawJsonWithSearchFilter(search!));
 
-    public ImmutableArray<ModelMatchItem> GetAllModelMatches()
-    {
-        var model = ModelPersistence.LoadModel();
-        return model.Categories
+    public MatchModelResult GetAllModelMatches() =>
+        new(ModelPersistence.LoadModel()
+            .Categories
             .SelectMany(cat => cat.Sections
-                .SelectMany(sec => sec.Matches
-                    .Select(mat => new ModelMatchItem(cat.Header, sec.Section, mat))))
-            .ToImmutableArray();
-    }
+                .Select(sec => new SectionAndMatches(
+                    sec.Section,
+                    sec.Matches
+                        .Select(mat => new ModelMatchItem(cat.Header, sec.Section, mat))
+                        .ToImmutableArray()))
+            )
+            .ToImmutableArray());
 
     public bool DeleteMatchItem(ModelMatchItem row) =>
         _Perform(row, (sm, match) => sm.DeleteMatch(match));
+
+    public bool DeleteSelection(SectionHeader section)
+    {
+        var model = ModelPersistence.LoadModel();
+        var sec = model.Categories
+            .SelectMany(cat => cat.Sections.Select(sm => (cat, sm)))
+            .Where(s => s.sm.Section.GetKey().Equals(section.GetKey()))
+            .Select(x => x.AsNullable())
+            .SingleOrDefault();
+        var deleted = sec?.cat.DeleteSection(sec.Value.sm) ?? false;
+        if (deleted)
+        {
+            ModelPersistence.WriteModel(model);
+        }
+        return deleted;
+    }
 
     private static bool _Perform(ModelMatchItem row, Func<SectionMatches, Match, Result> fnPerform)
     {

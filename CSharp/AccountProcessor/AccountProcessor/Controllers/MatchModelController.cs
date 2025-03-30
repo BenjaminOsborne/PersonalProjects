@@ -9,7 +9,7 @@ namespace AccountProcessor.Controllers;
 public class MatchModelController(IMatchModelService modelService) : ControllerBase
 {
     [HttpGet("all")]
-    public IReadOnlyList<ModelMatchItem> GetAllModelMatches() =>
+    public MatchModelResult GetAllModelMatches() =>
         modelService.GetAllModelMatches();
 
     [HttpGet("search")]
@@ -23,5 +23,14 @@ public class MatchModelController(IMatchModelService modelService) : ControllerB
         return result
             ? Result.Success
             : Result.Fail("Could not find Match Item");
+    }
+    
+    [HttpPost("deletesection")]
+    public Result DeleteSection(SectionHeader section)
+    {
+        var result = modelService.DeleteSelection(section);
+        return result
+            ? Result.Success
+            : Result.Fail("Could not find Section");
     }
 }
