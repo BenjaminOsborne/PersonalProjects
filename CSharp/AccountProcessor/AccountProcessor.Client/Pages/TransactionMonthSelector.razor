@@ -1,0 +1,24 @@
+﻿<MudStack Row=true Class="align-end mt-2">
+    <MudPaper Elevation="0" Class="mb-3 d-flex justify-start flex-shrink-1">
+        <MudDatePicker @bind-Date=@YearMonthBind FixDay=1 DateFormat="MMM yyyy" />
+    </MudPaper>
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Size="Size.Medium" OnClick="() => Model.SkipMonthAsync(-1)" />
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Medium" OnClick="() => Model.SkipMonthAsync(+1)" />
+    <MudIconButton Icon="@Icons.Material.Filled.Refresh" Size="Size.Medium" OnClick="() => Model.RefreshTransactionsAsync()" />
+</MudStack>
+
+<MudText Typo="Typo.caption"><strong>Transactions Period:</strong> @Model.EarliestTransaction?.ToString("dd MMM") to @Model.LatestTransaction?.ToString("dd MMM")</MudText>
+
+@code
+{
+    [Parameter]
+    public HomeViewModel Model { get; init; }
+    [Parameter]
+    public Action<DateTime?>? SetMonth { get; init; }
+
+    private DateTime? YearMonthBind
+    {
+        get => Model.Month?.ToDateTime(TimeOnly.MinValue);
+        set => SetMonth?.Invoke(value);
+    }
+}

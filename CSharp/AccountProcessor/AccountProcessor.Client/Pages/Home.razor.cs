@@ -26,15 +26,6 @@ public partial class Home
     private UnMatchedRowsTable? UnMatchedRowsTable;
     private MatchedRowsTable? MatchedRowsTable;
 
-    private DateTime? YearMonthBind
-    {
-        get => Model.Month?.ToDateTime(TimeOnly.MinValue);
-        set
-        {
-            var task = Model.SetMonthAsync(value); //TODO: Track running task
-        }
-    }
-
     public void OnFileActionFinished((FileActionType type, Result result) actionParams)
     {
         StateHasChanged(); //MUST refresh first otherwise cannot select disabled tab
@@ -43,8 +34,6 @@ public partial class Home
         {
             TabsRef?.ActivatePanel(CategoriseTab);
         }
-
-        
     }
 
     protected override Task OnInitializedAsync()
@@ -56,6 +45,15 @@ public partial class Home
 
     private bool TransactionsAreFullyLoaded() =>
         Model.TransactionsAreFullyLoaded();
+
+    private void SetMonth(DateTime? month)
+    {
+        _ = Task.Run(async () => //TODO: Track running task
+        {
+            await Model.SetMonthAsync(month);
+            await InvokeAsync(StateHasChanged);
+        });
+    }
 
     private async Task AddNewMatchForRowAsync(TransactionRowUnMatched row)
     {
