@@ -22,8 +22,10 @@ public record ModelMatchItem(
     public DateOnly? SectionMonth => Section.Month;
     public string Pattern => Match.Pattern;
     public string? OverrideDescription => Match.OverrideDescription;
-    public bool MatchOnce => Match.ExactDate.HasValue;
     
+    public bool MatchOnce => Match.ExactDate.HasValue;
+    public string? MatchOnceDate => Match.ExactDate?.ToString("yyyy/MM/dd");
+
     public string? SectionMonthDisplay => SectionMonth?.ToString("yyyy/MM");
 
     public bool MatchesSearch(string searchString) =>

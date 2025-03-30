@@ -32,9 +32,15 @@ else
             <PropertyColumn Property="x => x.SectionMonthDisplay" Title="Month"/>
             <PropertyColumn Property="x => x.Pattern"/>
             <PropertyColumn Property="x => x.OverrideDescription" Title="Description"/>
-            <TemplateColumn Title="Once">
+            <TemplateColumn Title="Match Once">
                 <CellTemplate>
-                    <MudCheckBox T=bool Value=@context.Item.MatchOnce ReadOnly=true/>
+                    @if (context.Item.MatchOnce)
+                    {
+                        <MudStack Row=true Class="align-center">
+                            <MudCheckBox T=bool Value=true ReadOnly=true/>
+                            <MudText Typo="Typo.caption">@context.Item.MatchOnceDate</MudText>
+                        </MudStack>
+                    }
                 </CellTemplate>
             </TemplateColumn>
             <TemplateColumn Title="Clear">
