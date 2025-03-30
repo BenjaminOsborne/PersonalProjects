@@ -2,9 +2,11 @@
 
 <PageTitle>Account Processor</PageTitle>
 
-<RenderModeHeader/>
-
 <MudStack Row=true>
+    <RenderModeHeader />
+
+    <MudPaper Width="50px" Elevation="0" />
+    
     <MudText Color=Color.Primary><strong>Last Action Result: </strong></MudText>
     <MudText Color=@(Model.LastActionResult?.IsSuccess == true ? Color.Success : Color.Error)>
         @(Model.LastActionResult?.IsSuccess == true ? "Success!" : Model.LastActionResult?.Error)
