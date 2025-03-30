@@ -26,8 +26,13 @@ public class CategoriserController(ITransactionCategoriser categoriser) : Contro
         categoriser.Categorise(request);
 
     [HttpPost("addsection")]
-    public Result AddSection([FromBody] AddSectionRequest request) =>
-        categoriser.AddSection(request);
+    public ActionResult<SectionHeader> AddSection([FromBody] AddSectionRequest request)
+    {
+        var result = categoriser.AddSection(request);
+        return result.IsSuccess
+            ? Ok(result.Result)
+            : BadRequest(result.Error);
+    }
 
     [HttpPost("applymatch")]
     public Result ApplyMatch([FromBody] MatchRequest request) =>

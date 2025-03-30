@@ -10,7 +10,7 @@ public interface IClientTransactionCategoriser
     Task<WrappedResult<SelectorData>> GetSelectorDataAsync(DateOnly month);
     Task<WrappedResult<CategorisationResult>> CategoriseAsync(CategoriseRequest request);
 
-    Task<Result> AddSectionAsync(AddSectionRequest request);
+    Task<WrappedResult<SectionHeader>> AddSectionAsync(AddSectionRequest request);
     
     Task<Result> ApplyMatchAsync(MatchRequest request);
     Task<Result> MatchOnceAsync(MatchRequest request);
@@ -32,9 +32,9 @@ public class ClientTransactionCategoriser(HttpClient httpClient) : IClientTransa
         httpClient.PostAsJsonAsync("categoriser/categorise", request)
             .MapJsonAsync<CategorisationResult>();
 
-    public Task<Result> AddSectionAsync(AddSectionRequest request) =>
+    public Task<WrappedResult<SectionHeader>> AddSectionAsync(AddSectionRequest request) =>
         httpClient.PostAsJsonAsync("categoriser/addsection", request)
-            .MapBasicResultAsync();
+            .MapJsonAsync<SectionHeader>();
 
     public Task<Result> ApplyMatchAsync(MatchRequest request) =>
         httpClient.PostAsJsonAsync("categoriser/applymatch", request)
