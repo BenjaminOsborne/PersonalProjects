@@ -3,15 +3,14 @@
 <PageTitle>Model Editor</PageTitle>
 
 <RenderModeHeader />
-
-<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true">
-    <MudTabPanel Text="Match Items">
-        @if (MatchItems is null)
-        {
-            <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-        }
-        else
-        {
+@if (MatchItems is null || SectionItems is null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true">
+        <MudTabPanel Text="Match Items">
             <MudDataGrid Items=@MatchItems
                          QuickFilter=@_ApplyMatchSearchFilter
                          ColumnResizeMode=ResizeMode.Column
@@ -45,22 +44,15 @@
                             }
                         </CellTemplate>
                     </TemplateColumn>
-                    <TemplateColumn Title="Clear">
+                    <TemplateColumn Title="Delete">
                         <CellTemplate>
                             <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(e => ClearMatchAsync(context.Item))" />
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
             </MudDataGrid>
-        }
-    </MudTabPanel>
-    <MudTabPanel Text="Sections">
-        @if (SectionItems is null)
-        {
-            <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-        }
-        else
-        {
+        </MudTabPanel>
+        <MudTabPanel Text="Sections">
             <MudDataGrid Items=@SectionItems
                          QuickFilter=@_ApplySectionSearchFilter
                          ColumnResizeMode=ResizeMode.Column
@@ -92,13 +84,13 @@
                             }
                         </CellTemplate>
                     </TemplateColumn>
-                    <TemplateColumn Title="Clear">
+                    <TemplateColumn Title="Delete">
                         <CellTemplate>
                             <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(e => DeleteSectionAsync(context.Item))" />
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
             </MudDataGrid>
-        }
-    </MudTabPanel>
-</MudTabs>
+        </MudTabPanel>
+    </MudTabs>
+}
