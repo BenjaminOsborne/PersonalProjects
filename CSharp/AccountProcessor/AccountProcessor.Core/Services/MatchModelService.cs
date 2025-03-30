@@ -7,7 +7,7 @@ public interface IMatchModelService
     ModelJson DisplayRawModelJsonSearchResult(string? search);
     MatchModelResult GetAllModelMatches();
 
-    bool DeleteMatchItem(ModelMatchItem row);
+    bool DeleteMatchItem(ModelMatchItem matchItem);
     bool DeleteSelection(SectionHeader section);
 }
 
@@ -72,43 +72,38 @@ public class MatchModelService : IMatchModelService
             )
             .ToImmutableArray());
 
-    public bool DeleteMatchItem(ModelMatchItem row) =>
-        _Perform(row, (sm, match) => sm.DeleteMatch(match));
+    public bool DeleteMatchItem(ModelMatchItem matchItem) =>
+        _Perform(matchItem, (model, mi) =>
+        {
+            var sm = model.Categories
+                .Where(c => c.Header.AreSame(mi.Header))
+                .SelectMany(x => x.Sections)
+                .SingleOrDefault(s => s.Section.AreSame(mi.Section));
+            var match = sm?.Matches.SingleOrDefault(m => m.IsSameMatch(mi.Match));
+            return match != null &&
+                   sm!.DeleteMatch(match).IsSuccess;
+        });
 
-    public bool DeleteSelection(SectionHeader section)
+    public bool DeleteSelection(SectionHeader section) =>
+        _Perform(section, (model, match) =>
+        {
+            var catSec = model.Categories
+                .SelectMany(cat => cat.Sections.Select(sm => (cat, sm)))
+                .Where(s => s.sm.Section.GetKey().Equals(match.GetKey()))
+                .Select(x => x.AsNullable())
+                .SingleOrDefault();
+            return catSec != null &&
+                   catSec.Value.cat.DeleteSection(catSec.Value.sm).IsSuccess;
+        });
+
+    private static bool _Perform<T>(T item, Func<MatchModel, T, bool> fnPerform)
     {
         var model = ModelPersistence.LoadModel();
-        var sec = model.Categories
-            .SelectMany(cat => cat.Sections.Select(sm => (cat, sm)))
-            .Where(s => s.sm.Section.GetKey().Equals(section.GetKey()))
-            .Select(x => x.AsNullable())
-            .SingleOrDefault();
-        var deleted = sec?.cat.DeleteSection(sec.Value.sm) ?? false;
-        if (deleted)
+        var success = fnPerform(model, item);
+        if (success)
         {
             ModelPersistence.WriteModel(model);
         }
-        return deleted;
-    }
-
-    private static bool _Perform(ModelMatchItem row, Func<SectionMatches, Match, Result> fnPerform)
-    {
-        var model = ModelPersistence.LoadModel();
-        var sm = model.Categories
-            .Where(c => c.Header.AreSame(row.Header))
-            .SelectMany(x => x.Sections)
-            .SingleOrDefault(s => s.Section.AreSame(row.Section));
-        var match = sm?.Matches.SingleOrDefault(m => m.IsSameMatch(row.Match));
-        if (match == null)
-        {
-            return false;
-        }
-        var result = fnPerform(sm!, match);
-        if (result.IsSuccess == false)
-        {
-            return false;
-        }
-        ModelPersistence.WriteModel(model);
-        return true;
+        return success;
     }
 }

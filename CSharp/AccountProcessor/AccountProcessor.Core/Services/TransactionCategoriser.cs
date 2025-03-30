@@ -339,11 +339,13 @@ public class Category
         return section;            
     }
 
-    public bool DeleteSection(SectionMatches sm)
+    public Result DeleteSection(SectionMatches sm)
     {
         var snap = Sections;
         Sections = snap.Remove(sm);
-        return snap != Sections; //true if new array has changed
+        return snap != Sections //true if new array has changed, i.e. item removed.
+            ? Result.Success
+            : Result.Fail("Could not find Section to delete");
     }
 }
 
@@ -401,7 +403,7 @@ public class SectionMatches
     {
         var snap = Matches;
         Matches = snap.Remove(match);
-        return snap != Matches
+        return snap != Matches //true if new array has changed, i.e. item removed.
             ? Result.Success
             : Result.Fail("Could not find Match to delete");
     }
