@@ -1,3 +1,3 @@
 start cmd.exe /c "dotnet run"
 timeout 2
-start chrome http://localhost:5276
+start chrome https://localhost:7297
