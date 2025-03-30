@@ -184,19 +184,56 @@ public class HomeViewModel
         _transactionsModel.ChangeMatchModelAsync(
             fnPerform: async cat =>
             {
-                var header = _transactionsModel.AllSections
-                    ?.SingleOrDefault(x => x.Id == row.SelectionId)
-                    ?.Header;
-                if (header == null)
+                if (!row.AddOnlyForTransaction && row.MatchOn.IsNullOrEmpty())
                 {
-                    return Result.Fail("Could not find Section");
+                    return Result.Fail("'Match On' pattern empty");
                 }
-                var request = new MatchRequest(row.Transaction, header, row.MatchOn, row.OverrideDescription);
+
+                if (row.SelectionId != null &&
+                    (row.NewSectionCategory != null || row.NewSectionName != null))
+                {
+                    return Result.Fail("Ambiguous; Selected both existing Section and header/name for new?");
+                }
+
+                SectionHeader useHeader;
+                if (row.NewSectionCategory != null)
+                {
+                    var category = _transactionsModel.Categories?
+                        .SingleOrDefault(c => c.Name == row.NewSectionCategory);
+                    if (category == null)
+                    {
+                        return Result.Fail("Could not find category to create new section");
+                    }
+                    if (row.NewSectionName.IsNullOrWhiteSpace())
+                    {
+                        return Result.Fail("Could not add new section name: empty");
+                    }
+
+                    var req = new AddSectionRequest(category, row.NewSectionName!,
+                        MatchMonthOnly: row.NewSectionIsMonthSpecific ? row.Transaction.Date.TrimToMonth() : null);
+                    var addedResult = await cat.AddSectionAsync(req);
+                    if (!addedResult.IsSuccess)
+                    {
+                        return addedResult;
+                    }
+                    useHeader = addedResult.Result!;
+                }
+                else
+                {
+                    var header = _transactionsModel.AllSections
+                        ?.SingleOrDefault(x => x.Id == row.SelectionId)
+                        ?.Header;
+                    if (header == null)
+                    {
+                        return Result.Fail("Could not find Section");
+                    }
+                    useHeader = header;
+                }
+                
+                var request = new MatchRequest(row.Transaction, useHeader, row.MatchOn, row.OverrideDescription);
                 return row.AddOnlyForTransaction
                     ? await cat.MatchOnceAsync(request)
-                    : !row.MatchOn.IsNullOrEmpty()
-                        ? await cat.ApplyMatchAsync(request)
-                        : Result.Fail("'Match On' pattern empty");
+                    : await cat.ApplyMatchAsync(request);
             },
             refreshCategories: true); //Should refresh categories as will update the order in the "suggestions" in the picker
 
@@ -341,8 +378,9 @@ public class HomeViewModel
             var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult.Result!, allSections!.Value);
             TransactionResultViewModel = trViewModel;
 
+            var categories = Categories?.Select(x => x.Name).ToImmutableArray() ?? [];
             UnMatchedModel = trViewModel.UnMatchedRows.Any()
-                ? new(GetTopSuggestions(allSections!.Value, limit: 4), allSections!.Value, trViewModel.UnMatchedRows)
+                ? new(GetTopSuggestions(allSections!.Value, limit: 4), allSections!.Value, trViewModel.UnMatchedRows, categories)
                 : null;
             MatchedModel = trViewModel.MatchedRows.Any()
                 ? new(trViewModel.MatchedRows)

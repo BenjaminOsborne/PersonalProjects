@@ -1,0 +1,43 @@
+﻿<MudPaper Elevation="0" Class="mb-3 d-flex justify-start flex-shrink-1">
+    <MudSelect T=string
+               @bind-Value=@CategoryValue
+               Placeholder="Choose category"
+               Variant=Variant.Outlined
+               Margin=Margin.Normal
+               Dense=true
+               Typo=Typo.body2
+               Clearable=true
+               Validation=@((string? s) => s == null ? "Select category" : null)>
+        @foreach (var cat in Categories)
+        {
+            <MudSelectItem Value=@cat/>
+        }
+    </MudSelect>
+</MudPaper>
+
+@code
+{
+    [Parameter]
+    public required IReadOnlyList<string> Categories { get; init; }
+
+    [Parameter]
+    public required string? InitialCategoryValue
+    {
+        init => _categoryValue = value;
+    }
+
+    [Parameter]
+    public required Action<string?> OnSetCategory { get; init; }
+
+    private string? _categoryValue;
+
+    private string? CategoryValue
+    {
+        get => _categoryValue;
+        set
+        {
+            _categoryValue = value;
+            OnSetCategory(_categoryValue);
+        }
+    }
+}

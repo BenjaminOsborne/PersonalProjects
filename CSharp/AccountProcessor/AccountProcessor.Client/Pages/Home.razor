@@ -50,22 +50,9 @@
             </TitleContent>
             <ChildContent>
                 <MudStack Row=true Class="align-center">
-                    <MudPaper Elevation="0" Class="mb-3 d-flex justify-start flex-shrink-1">
-                        <MudSelect T=string
-                                   @bind-Value=@Model.NewSectionCategory
-                                   Placeholder="Choose category"
-                                   Variant=Variant.Outlined
-                                   Margin=Margin.Normal
-                                   Dense=true
-                                   Typo=Typo.body2
-                                   Clearable=true
-                                   Validation=@((string? s) => s == null ? "Select category" : null)>
-                            @foreach (var cat in Model.Categories!.Value)
-                            {
-                                <MudSelectItem Value=@cat.Name/>
-                            }
-                        </MudSelect>
-                    </MudPaper>
+                    <CategorySelector InitialCategoryValue=@Model.NewSectionCategory
+                                      Categories=@(Model.Categories!.Value.Select(x => x.Name).ToArray())
+                                      OnSetCategory=@(v => Model.NewSectionCategory = v) />
                     <MudPaper Width="300px" MaxWidth="300px">
                         <MudTextField T=string
                                       @bind-Value=@Model.NewSectionName
@@ -75,7 +62,7 @@
                     </MudPaper>
                     <MudCheckBox @bind-Value=@Model.NewSectionIsMonthSpecific>Is Month Specific</MudCheckBox>
                     <MudTooltip Text="Create">
-                        <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Large" OnClick="() => Model.CreateNewSectionAsync()" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Large" Color="Color.Primary" OnClick="() => Model.CreateNewSectionAsync()" />
                     </MudTooltip>
                 </MudStack>
             </ChildContent>

@@ -82,6 +82,10 @@ public record TransactionRowUnMatched(
     public bool AddOnlyForTransaction { get; set; }
 
     public MudBlazor.Color AmountColor => Transaction.AmountColor();
+
+    public string? NewSectionCategory { get; set; }
+    public string? NewSectionName { get; set; }
+    public bool NewSectionIsMonthSpecific { get; set; } = true;
 }
 
 public record TransactionRowMatched(

@@ -8,6 +8,7 @@
              Dense=true
              FixedHeader=true>
     <Columns>
+        <HierarchyColumn T="TransactionRowUnMatched" />
         <PropertyColumn Property="x => x.Transaction.DateDisplay" Title="Date"/>
         <PropertyColumn Property="x => x.Transaction.Description" Title="Transaction"/>
         <TemplateColumn Title="Transaction">
@@ -21,7 +22,7 @@
             </CellTemplate>
         </TemplateColumn>
         <TemplateColumn Title="Category">
-            <CellTemplate>                
+            <CellTemplate>
                 <MudSelect T=string
                            @bind-Value=@context.Item.SelectionId
                            Placeholder="Choose category"
@@ -30,7 +31,7 @@
                            Dense=true
                            Typo=Typo.body2
                            Clearable=true
-                           Validation=@((string? s) => s == null ? "Select category" : null)>
+                           Validation=@((string? s) => s == null && context.Item.NewSectionCategory == null ? "Select category" : null)>
                     @foreach (var cat in Model.TopSuggestions)
                     {
                         <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
@@ -47,27 +48,46 @@
         </TemplateColumn>
         <TemplateColumn Title="Match On">
             <CellTemplate>
-                <MudTextField T=string @bind-Value=@context.Item.MatchOn Typo=Typo.body2 />
+                <MudTextField T=string @bind-Value=@context.Item.MatchOn Typo=Typo.body2/>
             </CellTemplate>
         </TemplateColumn>
         <TemplateColumn Title="Description">
             <CellTemplate>
-                <MudTextField T=string @bind-Value=@context.Item.OverrideDescription Typo=Typo.body2 />
+                <MudTextField T=string @bind-Value=@context.Item.OverrideDescription Typo=Typo.body2/>
             </CellTemplate>
         </TemplateColumn>
         <TemplateColumn Title="Once">
             <CellTemplate>
-                <MudCheckBox @bind-Value=@context.Item.AddOnlyForTransaction />
+                <MudCheckBox @bind-Value=@context.Item.AddOnlyForTransaction/>
             </CellTemplate>
         </TemplateColumn>
-        <TemplateColumn Title="Match">
+        <TemplateColumn Title="Create">
             <CellTemplate>
                 <MudTooltip Text="Create">
-                    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@(() => AddNewMatchForRowAsync(context.Item))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="@(() => AddNewMatchForRowAsync(context.Item))" Color="Color.Primary"/>
                 </MudTooltip>
             </CellTemplate>
         </TemplateColumn>
     </Columns>
+    
+    <ChildRowContent>
+        @if (context.Open)
+        {
+            <MudStack Row=true Class="align-center">
+                <MudText Typo=Typo.body1>Add in new Section: </MudText>
+                <CategorySelector InitialCategoryValue=@context.Item.NewSectionCategory
+                                  Categories=@(Model.Categories)
+                                  OnSetCategory=@(v => context.Item.NewSectionCategory = v) />
+                <MudPaper Width="300px" MaxWidth="300px">
+                    <MudTextField T=string
+                                  @bind-Value=@context.Item.NewSectionName
+                                  Label="New Category Name"
+                                  Typo=Typo.subtitle1/>
+                </MudPaper>
+                <MudCheckBox @bind-Value=@context.Item.NewSectionIsMonthSpecific>Is Month Specific</MudCheckBox>
+            </MudStack>
+        }
+    </ChildRowContent>
 </MudDataGrid>
 
 @code {
@@ -75,7 +95,8 @@
     public record ViewModel(
         ImmutableArray<SectionSelectorRow> TopSuggestions,
         ImmutableArray<SectionSelectorRow> AllSections,
-        ImmutableArray<TransactionRowUnMatched> UnMatchedRows);
+        ImmutableArray<TransactionRowUnMatched> UnMatchedRows,
+        ImmutableArray<string> Categories);
 
     [Parameter]
     public required ViewModel Model { get; set; }

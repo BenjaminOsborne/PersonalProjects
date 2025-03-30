@@ -90,6 +90,12 @@ public static class StringExtensions
         string.Join(separator, items.Select(fnToString));
 }
 
+public static class DateExtensions
+{
+    public static DateOnly TrimToMonth(this DateOnly date) =>
+        new(date.Year, date.Month, 1);
+}
+
 public static class EnumerableExtensions
 {
     public static void ForEach<T>(this IEnumerable<T> items, Action<T> fnPerform)
