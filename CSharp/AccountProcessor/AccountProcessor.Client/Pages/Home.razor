@@ -26,13 +26,13 @@
         @* UnMatched Rows *@
         @if (Model.UnMatchedModel != null)
         {
-            <UnMatchedRowsTable @ref="UnMatchedRowsTable" Model=@Model.UnMatchedModel AddNewMatchForRowAsync=@AddNewMatchForRowAsync />
+            <UnMatchedRowsTable Model=@Model.UnMatchedModel AddNewMatchForRowAsync=@AddNewMatchForRowAsync />
         }
 
         @* Matched Rows *@
         @if (Model.MatchedModel != null)
         {
-            <MatchedRowsTable @ref="MatchedRowsTable" Model=@Model.MatchedModel ClearMatchAsync=@ClearMatchAsync />
+            <MatchedRowsTable Model=@Model.MatchedModel ClearMatchAsync=@ClearMatchAsync />
         }
     </MudTabPanel>
 

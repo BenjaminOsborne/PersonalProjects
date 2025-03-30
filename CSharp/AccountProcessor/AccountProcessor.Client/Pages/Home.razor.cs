@@ -23,9 +23,6 @@ public partial class Home
 
     private HomeViewModel Model = null!;
 
-    private UnMatchedRowsTable? UnMatchedRowsTable;
-    private MatchedRowsTable? MatchedRowsTable;
-
     public void OnFileActionFinished((FileActionType type, Result result) actionParams)
     {
         StateHasChanged(); //MUST refresh first otherwise cannot select disabled tab
@@ -42,7 +39,7 @@ public partial class Home
     protected override Task OnInitializedAsync()
     {
         Model = new HomeViewModel(_categoriser,
-            onStateChanged: _OnModelStateChangeRebuildChildren);
+            onStateChanged: () => { }); //Currently no action needed. Hook kept as may be useful...
         return Task.CompletedTask;
     }
 
@@ -59,29 +56,6 @@ public partial class Home
     {
         await Model.ClearMatchAsync(row);
         StateHasChanged(); //Must call: child component can trigger update to error state.
-    }
-
-    private void _OnModelStateChangeRebuildChildren()
-    {
-        var unMatched = Model.UnMatchedModel;
-        if (unMatched != null)
-        {
-            UnMatchedRowsTable?.UpdateModel(unMatched); //If class null, will be initialised correctly when view first renders
-        }
-        else
-        {
-            UnMatchedRowsTable = null;
-        }
-
-        var matched = Model.MatchedModel;
-        if (matched != null)
-        {
-            MatchedRowsTable?.UpdateModel(matched); //If class null, will be initialised correctly when view first renders
-        }
-        else
-        {
-            MatchedRowsTable = null;
-        }
     }
 }
 
