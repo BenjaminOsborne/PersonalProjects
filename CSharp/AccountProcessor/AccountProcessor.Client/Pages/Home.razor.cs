@@ -4,6 +4,7 @@ using AccountProcessor.Core;
 using AccountProcessor.Core.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
 
 namespace AccountProcessor.Client.Pages;
 
@@ -16,6 +17,9 @@ public static class FileConstants
 public partial class Home
 {
     [Inject] private IClientTransactionCategoriser _categoriser { get; init; } = null!;
+
+    private MudTabs? TabsRef { get; set; }
+    private MudTabPanel? CategoriseTab { get; set; }
 
     private HomeViewModel Model = null!;
 
@@ -31,16 +35,16 @@ public partial class Home
         }
     }
 
-    public bool FileActionsExpandedBind { get; set; } = true;
-
     public void OnFileActionFinished((FileActionType type, Result result) actionParams)
     {
+        StateHasChanged(); //MUST refresh first otherwise cannot select disabled tab
+
         if (actionParams.result.IsSuccess && actionParams.type == FileActionType.LoadTransactions)
         {
-            FileActionsExpandedBind = false; //Close to give more screen space to categorisation
+            TabsRef?.ActivatePanel(CategoriseTab);
         }
 
-        StateHasChanged();
+        
     }
 
     protected override Task OnInitializedAsync()
