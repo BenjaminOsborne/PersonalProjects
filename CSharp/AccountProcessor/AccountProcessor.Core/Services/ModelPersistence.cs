@@ -140,15 +140,19 @@ public static class ModelPersistence
 
 public static class DirectoryHelper
 {
-    /// <summary> Picks from: G:\My Drive\Finances\Accounting\AccountProcessor </summary>
-    public static string? LoadModelFromGoogleDrive()
-    {
-        var dir = new DirectoryInfo("G:");
-        var jsonPath = Path.Combine(dir.FullName, "My Drive", "Finances", "Accounting", "AccountProcessor", "MatchModel.json");
-        return File.Exists(jsonPath)
-            ? jsonPath
-            : null;
-    }
+    /// <summary> Picks from: [drive]\My Drive\Finances\Accounting\AccountProcessor. Tries multiple locations. </summary>
+    public static string? LoadModelFromGoogleDrive() =>
+        new[] { "G:", "D:" }
+        .Select(d => new DirectoryInfo(d))
+        .Select(dir =>
+        {
+            var jsonPath = Path.Combine(dir.FullName, "My Drive", "Finances", "Accounting", "AccountProcessor", "MatchModel.json");
+            return File.Exists(jsonPath)
+                ? jsonPath
+                : null;
+        })
+        .Where(x => x != null)
+        .FirstOrDefault();
 
     /// <summary> Legacy: When MatchModel.json used to be stored in source repo </summary>
     /// <remarks> Searches from current process path (running in "bin") up to the source directory, then down to a known path in source control. </remarks>
