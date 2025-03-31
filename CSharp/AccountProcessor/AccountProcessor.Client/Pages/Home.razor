@@ -35,6 +35,15 @@
             <MatchedRowsTable Model=@Model.MatchedModel ClearMatchAsync=@ClearMatchAsync />
         }
     </MudTabPanel>
+    
+    <MudTabPanel Text="Drag & Drop" Disabled=@(!TransactionsAreFullyLoaded())>
+        <TransactionMonthSelector Model=@Model PostActionRefresh=@OnMonthAction />
+
+        @if (Model.DragAndDropModel != null)
+        {
+            <DragAndDropTransactions Model=@Model.DragAndDropModel />
+        }
+    </MudTabPanel>
 
     @* Add new section *@
     <MudTabPanel Text="Add New Section" Disabled=@(!Model.Categories.HasValue)>

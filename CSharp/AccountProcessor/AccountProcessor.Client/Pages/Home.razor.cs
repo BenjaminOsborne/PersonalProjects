@@ -114,7 +114,9 @@ public class HomeViewModel
 
     public UnMatchedRowsTable.ViewModel? UnMatchedModel => _transactionsModel.UnMatchedModel;
     public MatchedRowsTable.ViewModel? MatchedModel => _transactionsModel.MatchedModel;
-    
+
+    public DragAndDropTransactions.ViewModel? DragAndDropModel => _transactionsModel.DragAndDropModel;
+
     /// <summary> Only actions not managed by this model are the Excel file extracts - this method enables result to display </summary>
     public void OnFileExtractResult(Result result) =>
         _UpdateLastActionResult(result);
@@ -250,6 +252,7 @@ public class HomeViewModel
 
         public UnMatchedRowsTable.ViewModel? UnMatchedModel { get; private set; }
         public MatchedRowsTable.ViewModel? MatchedModel { get; private set; }
+        public DragAndDropTransactions.ViewModel? DragAndDropModel { get; private set; }
 
         public Task RefreshTransactionsAsync() =>
             _OnStateChangeAsync(
@@ -345,16 +348,18 @@ public class HomeViewModel
                 _onActionHandleResult(categorisationResult);
                 return;
             }
-            var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult.Result!, allSections!.Value);
+            var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult.Result!, allSections.Value);
             TransactionResultViewModel = trViewModel;
 
             var categories = Categories?.Select(x => x.Name).ToImmutableArray() ?? [];
             UnMatchedModel = trViewModel.UnMatchedRows.Any()
-                ? new(GetTopSuggestions(allSections!.Value, limit: 4), allSections!.Value, trViewModel.UnMatchedRows, categories)
+                ? new(GetTopSuggestions(allSections.Value, limit: 4), allSections.Value, trViewModel.UnMatchedRows, categories)
                 : null;
             MatchedModel = trViewModel.MatchedRows.Any()
                 ? new(trViewModel.MatchedRows)
                 : null;
+
+            DragAndDropModel = DragAndDropTransactions.CreateViewModel(allSections.Value, trViewModel);
 
             _onStateChanged();
 
