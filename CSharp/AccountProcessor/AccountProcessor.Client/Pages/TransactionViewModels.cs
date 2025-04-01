@@ -22,7 +22,7 @@ public record TransactionResultViewModel(
                 var description = tr.Description;
                 var hyperlink = _GenerateGoogleSearchForPhrase(description);
 
-                return new TransactionRowUnMatched(tr, hyperlink, DisplayAmount(tr), StyleColor(tr))
+                return new TransactionRowUnMatched(tr, hyperlink, tr.AmountDisplay)
                 {
                     SelectionId = found?.Id, //If none suggested, leave empty
                     MatchOn = description,
@@ -52,18 +52,11 @@ public record TransactionResultViewModel(
                         IsLastRowForCategory: nx == grpArr.Length - 1,
                         t.Section,
                         t.Tr,
-                        DisplayAmount(t.Tr),
-                        StyleColor(t.Tr),
+                        t.Tr.AmountDisplay,
                         t.Match));
             });
 
         return new TransactionResultViewModel(unmatched, matched);
-
-        static string DisplayAmount(Transaction tr) =>
-            tr.Amount < 0 ? $"-£{-tr.Amount:F2}" : $"£{tr.Amount:F2}";
-            
-        static string StyleColor(Transaction tr) =>
-            tr.Amount < 0 ? "color:red" : "color:black";
     }
 
     private static string _GenerateGoogleSearchForPhrase(string phrase) =>
@@ -73,8 +66,7 @@ public record TransactionResultViewModel(
 public record TransactionRowUnMatched(
     Transaction Transaction,
     string Hyperlink,
-    string DisplayAmount,
-    string StyleColor)
+    string DisplayAmount)
 {
     public string? SelectionId { get; set; }
     public string? MatchOn { get; set; }
@@ -94,7 +86,6 @@ public record TransactionRowMatched(
     SectionHeader Section,
     Transaction Transaction,
     string DisplayAmount,
-    string StyleColor,
     Match LatestMatch)
 {
     public string CategorySectionDisplay => $"{Category.Name}: {Section.Name}";

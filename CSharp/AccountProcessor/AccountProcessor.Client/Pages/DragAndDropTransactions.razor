@@ -1,46 +1,87 @@
-﻿<MudDropContainer T="TransactionDropItem"
-                  Items=@Model.Transactions
-                  ItemsSelector="@((item,dropzoneId) => item.SectionDropZoneId == dropzoneId)"
-                  ItemDropped="ItemUpdated"
-                  Class="d-flex flex-wrap flex-grow-1">
-    <ChildContent>
-        <MudStack>
-            @* UnMatched at top *@
-            <MudList T="string" Class="d-flex flex-column mud-height-full" SelectedValueChanged=@(x => UnMatchedItemSelected(x))>
-                <MudListSubheader>Unmatched</MudListSubheader>
-                <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1" Elevation="0">
-                    <MudDropZone T="TransactionDropItem" Identifier="@_unMatchedDropZoneId" Class="flex-grow-1 border-dotted" Style="@("min-height:50px")" />
-                </MudPaper>
-            </MudList>
-            
-            @* Matched *@
-            <MudGrid>
-                @foreach (var summary in Model.Categories)
-                {
-                    <MudItem>
-                        <MudStack>
-                            <MudText><strong>@summary.Category.Name</strong></MudText>
+﻿<MudStack>
+    
+    <MudDivider Class="mt-2 mb-1" />
+    <MudStack Row="true" Class="align-center">
+        <MudCheckBox @bind-Value=@_hideDropItems>Collapse Drop Zone</MudCheckBox>
+        
+        @if (_selectedItem != null)
+        {
+            <MudDivider Vertical="true" Class="ml-1 mr-1" Light=true/>
 
-                            @foreach (var sec in summary.Sections)
-                            {
-                                <MudPaper Class="border-solid border-2 mud-border-primary pa-1" Elevation="0">
-                                    <MudList T="string" Class="d-flex flex-column mud-height-full" Dense=true Gutters=false SelectedValueChanged=@(x => MatchedItemSelected(x))>
-                                        <MudListSubheader>@sec.Section.Name</MudListSubheader>
-                                        <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1">
-                                            <MudDropZone T="TransactionDropItem" Identifier="@sec.DropZoneId" Class="flex-grow-1" Style="@("min-height:50px")" />
-                                        </MudPaper>
-                                    </MudList>
-                                </MudPaper>
-                            }
-                        </MudStack>
-                    </MudItem>
-                }
-            </MudGrid>
-        </MudStack>
-    </ChildContent>
-    <ItemRenderer>
-        <MudListItem T=string Value=@context.UniqueItemId>
-            <MudText Typo=Typo.caption>@context.Description</MudText>
-        </MudListItem>
-    </ItemRenderer>
-</MudDropContainer>
+            <MudText>@_selectedItem.AmountDisplay</MudText>
+            <MudText>@_selectedItem.DateDisplay</MudText>
+            <MudText>@_selectedItem.Description</MudText>
+        }
+    </MudStack>
+    <MudDivider Class="mt-1 mb-2" />
+
+    <MudDropContainer T="TransactionDropItem"
+                      Items=@Model.Transactions
+                      ItemsSelector="@((item, dropzoneId) => item.SectionDropZoneId == dropzoneId)"
+                      ItemDropped="ItemUpdated"
+                      Class="d-flex flex-wrap flex-grow-1">
+        <ChildContent>
+            <MudStack>
+                @* UnMatched at top *@
+                <MudList T="string" Class="d-flex flex-column mud-height-full" SelectedValueChanged=@(x => UnMatchedItemSelected(x))>
+                    <MudListSubheader>Unmatched</MudListSubheader>
+                    <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1" Elevation="0">
+                        <MudDropZone T="TransactionDropItem" Identifier="@_unMatchedDropZoneId" Class="flex-grow-1 border-dotted" Style="@("min-height:45px")"/>
+                    </MudPaper>
+                </MudList>
+
+                @* Matched *@
+                <MudGrid Spacing="0">
+                    @foreach (var summary in Model.Categories)
+                    {
+                        <MudItem Class="ma-1">
+                            <MudStack>
+                                <MudText><strong>@summary.Category.Name</strong></MudText>
+
+                                @foreach (var sec in summary.Sections)
+                                {
+                                    <MudPaper Class="border-solid border-2 mud-border-primary pa-1" Elevation="0">
+                                        <MudStack>
+                                            <MudList T="string" Class="d-flex flex-column mud-height-full" Dense=true Gutters=false SelectedValueChanged=@(x => MatchedItemSelected(x))>
+                                                <MudListSubheader>@sec.Section.Name</MudListSubheader>
+                                                <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1">
+                                                    <MudDropZone T="TransactionDropItem" OnlyZone=@_hideDropItems Identifier="@sec.DropZoneId" Class="flex-grow-1" Style="@("min-height:45px")"/>
+                                                </MudPaper>
+                                            </MudList>
+                                            @if (_hideDropItems)
+                                            {
+                                                var sectionItems = Model.GetTransactionsForSection(sec);
+                                                if (sectionItems.Any())
+                                                {
+                                                    <MudExpansionPanels Dense=true Gutters=false Elevation=0 Class="ma-0">
+                                                        <MudExpansionPanel Text=@($"See Items [{sectionItems.Count}]") Expanded="false" Dense=true Gutters=false>
+                                                            <MudStack>
+                                                                @foreach (var item in sectionItems)
+                                                                {
+                                                                    <MudText Typo=Typo.caption Color=@(item.IsCredit ? Color.Success : Color.Inherit)>
+                                                                        @item.AmountAndDescription
+                                                                    </MudText>
+                                                                }
+                                                            </MudStack>
+                                                        </MudExpansionPanel>
+                                                    </MudExpansionPanels>
+                                                }
+                                            }
+                                        </MudStack>
+                                    </MudPaper>
+                                }
+                            </MudStack>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudStack>
+        </ChildContent>
+        <ItemRenderer>
+            <MudListItem T=string Value=@context.UniqueItemId>
+                <MudText Typo=Typo.caption Color=@(context.IsCredit ? Color.Success : Color.Inherit)>
+                    @context.AmountAndDescription
+                </MudText>
+            </MudListItem>
+        </ItemRenderer>
+    </MudDropContainer>
+</MudStack>

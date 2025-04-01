@@ -8,6 +8,8 @@ namespace AccountProcessor.Client.Pages;
 public partial class DragAndDropTransactions
 {
     private TransactionDropItem? _selectedItem;
+    /// <summary> If true - only renders drop-zone, no items </summary>
+    private bool _hideDropItems = true;
 
     public static ViewModel CreateViewModel(ImmutableArray<SectionSelectorRow> sections, TransactionResultViewModel result)
     {
@@ -40,7 +42,11 @@ public partial class DragAndDropTransactions
 
     public record ViewModel(
         IReadOnlyList<CategorySummary> Categories,
-        IReadOnlyList<TransactionDropItem> Transactions);
+        IReadOnlyList<TransactionDropItem> Transactions)
+    {
+        public IReadOnlyList<TransactionDropItem> GetTransactionsForSection(SectionDropZone sec) =>
+            Transactions.Where(x => x.SectionDropZoneId == sec.DropZoneId).ToImmutableList();
+    }
 
     public record CategorySummary(CategoryHeader Category, ImmutableArray<SectionDropZone> Sections);
 
@@ -70,6 +76,13 @@ public partial class DragAndDropTransactions
                 Match: null);
 
         public string SectionDropZoneId { get; set; } = DropZoneId;
+        
+        public string AmountDisplay => Transaction.AmountDisplay;
+        public string DateDisplay => Transaction.DateDisplay;
+
+        public string AmountAndDescription => $"£{Transaction.AmountDisplayAbsolute} {Description}";
+
+        public bool IsCredit => Transaction.Amount >= 0;
     }
 
     private static readonly string _unMatchedDropZoneId = _CreateUniqueId();

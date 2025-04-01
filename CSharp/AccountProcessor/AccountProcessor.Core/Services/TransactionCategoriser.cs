@@ -224,6 +224,13 @@ public record Transaction(DateOnly Date, string Description, decimal Amount)
         Date.Year == month.Year && Date.Month == month.Month;
 
     public string DateDisplay => Date.ToString("ddd dd/MM");
+
+    /// <remarks> Replace after F2 achieves: "£3.00" is "£3" but "£3.50" stays "£3.50" </remarks>
+    public string AmountDisplay =>
+        (Amount < 0 ? $"-£{-Amount:F2}" : $"£{Amount:F2}").Replace(".00", "");
+
+    public string AmountDisplayAbsolute =>
+        $"£{(Amount < 0 ? -Amount : Amount):F2}".Replace(".00", "");
 }
 
 public record SectionUsage(SectionHeader Header, DateTime? LastUsed);
