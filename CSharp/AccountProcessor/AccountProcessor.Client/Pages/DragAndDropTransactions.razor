@@ -1,4 +1,15 @@
-﻿<MudStack>
+﻿<style>
+    .hz-container {
+        display: flex;
+        overflow-x: auto;
+    }
+
+    .hz-container::-webkit-scrollbar {
+            display: none;
+    }
+</style>
+
+<MudStack>
     
     <MudDivider Class="mt-2 mb-1" />
     <MudStack Row="true" Class="align-center">
@@ -32,47 +43,49 @@
 
                 @* Matched *@
                 <MudGrid Spacing="0">
-                    @foreach (var summary in Model.Categories)
-                    {
-                        <MudItem Class="ma-1">
-                            <MudStack>
-                                <MudText><strong>@summary.Category.Name</strong></MudText>
+                    <MudItem xs=12>
+                        <div class="hz-container">
+                            @foreach (var summary in Model.Categories)
+                            {
+                                <MudStack Class="ma-1">
+                                    <MudText><strong>@summary.Category.Name</strong></MudText>
 
-                                @foreach (var sec in summary.Sections)
-                                {
-                                    <MudPaper Class="border-solid border-2 mud-border-primary pa-1" Elevation="0">
-                                        <MudStack>
-                                            <MudList T="string" Class="d-flex flex-column mud-height-full" Dense=true Gutters=false SelectedValueChanged=@(x => MatchedItemSelected(x))>
-                                                <MudListSubheader>@sec.Section.Name</MudListSubheader>
-                                                <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1">
-                                                    <MudDropZone T="TransactionDropItem" OnlyZone=@_hideDropItems Identifier="@sec.DropZoneId" Class="flex-grow-1" Style="@("min-height:45px")"/>
-                                                </MudPaper>
-                                            </MudList>
-                                            @if (_hideDropItems)
-                                            {
-                                                var sectionItems = Model.GetTransactionsForSection(sec);
-                                                if (sectionItems.Any())
+                                    @foreach (var sec in summary.Sections)
+                                    {
+                                        <MudPaper Class="border-solid border-2 mud-border-primary pa-1" Elevation="0">
+                                            <MudStack>
+                                                <MudList T="string" Class="d-flex flex-column mud-height-full" Dense=true Gutters=false SelectedValueChanged=@(x => MatchedItemSelected(x))>
+                                                    <MudListSubheader>@sec.Section.Name</MudListSubheader>
+                                                    <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1">
+                                                        <MudDropZone T="TransactionDropItem" OnlyZone=@_hideDropItems Identifier="@sec.DropZoneId" Class="flex-grow-1" Style="@("min-height:45px")"/>
+                                                    </MudPaper>
+                                                </MudList>
+                                                @if (_hideDropItems)
                                                 {
-                                                    <MudExpansionPanels Dense=true Gutters=false Elevation=0 Class="ma-0">
-                                                        <MudExpansionPanel Text=@($"See Items [{sectionItems.Count}]") Expanded="false" Dense=true Gutters=false>
-                                                            <MudStack>
-                                                                @foreach (var item in sectionItems)
-                                                                {
-                                                                    <MudText Typo=Typo.caption Color=@(item.IsCredit ? Color.Success : Color.Inherit)>
-                                                                        @item.AmountAndDescription
-                                                                    </MudText>
-                                                                }
-                                                            </MudStack>
-                                                        </MudExpansionPanel>
-                                                    </MudExpansionPanels>
+                                                    var sectionItems = Model.GetTransactionsForSection(sec);
+                                                    if (sectionItems.Any())
+                                                    {
+                                                        <MudExpansionPanels Dense=true Gutters=false Elevation=0 Class="ma-0">
+                                                            <MudExpansionPanel Text=@($"[{sectionItems.Count}] Items") Expanded="false" Dense=true Gutters=false>
+                                                                <MudStack>
+                                                                    @foreach (var item in sectionItems)
+                                                                    {
+                                                                        <MudText Typo=Typo.caption Color=@(item.IsCredit ? Color.Success : Color.Inherit)>
+                                                                            @item.AmountAndDescription
+                                                                        </MudText>
+                                                                    }
+                                                                </MudStack>
+                                                            </MudExpansionPanel>
+                                                        </MudExpansionPanels>
+                                                    }
                                                 }
-                                            }
-                                        </MudStack>
-                                    </MudPaper>
-                                }
-                            </MudStack>
-                        </MudItem>
-                    }
+                                            </MudStack>
+                                        </MudPaper>
+                                    }
+                                </MudStack>
+                            }
+                        </div>
+                    </MudItem>
                 </MudGrid>
             </MudStack>
         </ChildContent>
