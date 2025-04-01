@@ -7,9 +7,7 @@ namespace AccountProcessor.Client.Pages;
 
 public partial class DragAndDropTransactions
 {
-    public static readonly string UnMatchedDropZoneId = _GetUniqueId();
-
-    private static string _GetUniqueId() => Guid.NewGuid().ToString();
+    private TransactionDropItem? _selectedItem;
 
     public static ViewModel CreateViewModel(ImmutableArray<SectionSelectorRow> sections, TransactionResultViewModel result)
     {
@@ -22,23 +20,27 @@ public partial class DragAndDropTransactions
                 return new CategorySummary(
                     Category: cat,
                     Sections: grp
-                        .Select(s => new SectionDropZone(s, ToDropZoneId(cat, s)))
+                        .Select(s => new SectionDropZone(s, _ToDropZoneId(cat, s)))
                         .ToImmutableArray());
             })
             .OrderBy(x => x.Category.Order)
             .ToImmutableArray();
 
         var matched = result.MatchedRows
-            .Select(mr => new TransactionDropItem(_GetUniqueId(), mr.MatchDescription, mr.Transaction, ToDropZoneId(mr.Category, mr.Section)))
+            .Select(TransactionDropItem.FromMatchedRow)
             .ToImmutableList();
         var unmatched = result.UnMatchedRows
-            .Select(r => new TransactionDropItem(_GetUniqueId(), r.Transaction.Description, r.Transaction, UnMatchedDropZoneId))
+            .Select(TransactionDropItem.FromUnmatchedRow)
             .ToImmutableList();
         return new(categories, [.. matched.AddRange(unmatched)]);
+    }
 
-        static string ToDropZoneId(CategoryHeader category, SectionHeader section) =>
-            $"{category.Name}|{category.Order}:{section.Name}|{section.Order}|{section.Month}";
-}
+    [Parameter]
+    public required ViewModel Model { get; init; }
+
+    public record ViewModel(
+        IReadOnlyList<CategorySummary> Categories,
+        IReadOnlyList<TransactionDropItem> Transactions);
 
     public record CategorySummary(CategoryHeader Category, ImmutableArray<SectionDropZone> Sections);
 
@@ -47,18 +49,48 @@ public partial class DragAndDropTransactions
     public record TransactionDropItem(string UniqueItemId,
         string Description,
         Transaction Transaction,
-        string DropZoneId)
+        string DropZoneId,
+        SectionHeader? Section,
+        Match? Match)
     {
+        public static TransactionDropItem FromMatchedRow(TransactionRowMatched mr) =>
+            new(_CreateUniqueId(),
+                mr.MatchDescription,
+                mr.Transaction,
+                _ToDropZoneId(mr.Category, mr.Section),
+                mr.Section,
+                mr.LatestMatch);
+
+        public static TransactionDropItem FromUnmatchedRow(TransactionRowUnMatched r) =>
+            new(_CreateUniqueId(),
+                r.Transaction.Description,
+                r.Transaction,
+                _unMatchedDropZoneId,
+                Section: null,
+                Match: null);
+
         public string SectionDropZoneId { get; set; } = DropZoneId;
     }
 
-    public record ViewModel(
-        IReadOnlyList<CategorySummary> Categories,
-        IReadOnlyList<TransactionDropItem> Transactions);
+    private static readonly string _unMatchedDropZoneId = _CreateUniqueId();
 
-    [Parameter]
-    public required ViewModel Model { get; init; }
-    
+    private static string _CreateUniqueId() => Guid.NewGuid().ToString();
+
+    private static string _ToDropZoneId(CategoryHeader category, SectionHeader section) =>
+        $"{category.Name}|{category.Order}:{section.Name}|{section.Order}|{section.Month}";
+
+    private void UnMatchedItemSelected(string? itemId) =>
+        _OnItemSelected(itemId);
+
+    private void MatchedItemSelected(string? itemId) =>
+        _OnItemSelected(itemId);
+
+    private void _OnItemSelected(string? itemId)
+    {
+        var found = Model.Transactions.FirstOrDefault(x => x.UniqueItemId == itemId);
+        _selectedItem = found;
+    }
+
     private void ItemUpdated(MudItemDropInfo<TransactionDropItem> dropItem)
     {
         var di = dropItem.Item;
