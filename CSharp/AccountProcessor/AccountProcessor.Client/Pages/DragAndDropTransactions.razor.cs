@@ -80,7 +80,7 @@ public partial class DragAndDropTransactions
         public string AmountDisplay => Transaction.AmountDisplay;
         public string DateDisplay => Transaction.DateDisplay;
 
-        public string AmountAndDescription => $"£{Transaction.AmountDisplayAbsolute} {Description}";
+        public string AmountAndDescription => $"{Transaction.AmountDisplayAbsolute} {Description}";
 
         public bool IsCredit => Transaction.Amount >= 0;
     }
