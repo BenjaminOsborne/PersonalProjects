@@ -53,8 +53,8 @@ public partial class DragAndDropTransactions
     }
 
     public record ViewModel(
-        ImmutableArray<CategorySummary> Categories,
-        ImmutableArray<TransactionDropItem> Transactions);
+        IReadOnlyList<CategorySummary> Categories,
+        IReadOnlyList<TransactionDropItem> Transactions);
 
     [Parameter]
     public required ViewModel Model { get; init; }

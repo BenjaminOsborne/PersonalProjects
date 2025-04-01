@@ -12,9 +12,9 @@
 @code
 {
     [Parameter]
-    public HomeViewModel Model { get; init; }
+    public required HomeViewModel Model { get; init; }
     [Parameter]
-    public Action PostActionRefresh { get; init; }
+    public required Func<Task> PostActionRefresh { get; init; }
 
     private DateTime? YearMonthBind
     {

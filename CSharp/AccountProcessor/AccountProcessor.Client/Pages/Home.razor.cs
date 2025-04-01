@@ -33,14 +33,13 @@ public partial class Home
         }
     }
 
-    public void OnMonthAction() =>
-        StateHasChanged(); //Must trigger refresh in parent from child component action
+    public Task OnMonthAction() =>
+         InvokeAsync(StateHasChanged); //Must trigger refresh in parent from child component action
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        Model = new HomeViewModel(_categoriser,
-            onStateChanged: () => { }); //Currently no action needed. Hook kept as may be useful...
-        return Task.CompletedTask;
+        await base.OnInitializedAsync();
+        Model = new HomeViewModel(_categoriser, onStateChanged: StateHasChanged);
     }
 
     private bool TransactionsAreFullyLoaded() =>
@@ -348,20 +347,23 @@ public class HomeViewModel
                 _onActionHandleResult(categorisationResult);
                 return;
             }
+
+
+            //Clear models initially; ensures refresh is properly triggered
+            _OnCategorisedSetModels(null, null, null, null);
+
+            //Update models
             var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult.Result!, allSections.Value);
-            TransactionResultViewModel = trViewModel;
-
             var categories = Categories?.Select(x => x.Name).ToImmutableArray() ?? [];
-            UnMatchedModel = trViewModel.UnMatchedRows.Any()
-                ? new(GetTopSuggestions(allSections.Value, limit: 4), allSections.Value, trViewModel.UnMatchedRows, categories)
-                : null;
-            MatchedModel = trViewModel.MatchedRows.Any()
-                ? new(trViewModel.MatchedRows)
-                : null;
-
-            DragAndDropModel = DragAndDropTransactions.CreateViewModel(allSections.Value, trViewModel);
-
-            _onStateChanged();
+            _OnCategorisedSetModels(
+                transactionModel: trViewModel,
+                unmatchedModel: trViewModel.UnMatchedRows.Any()
+                    ? new UnMatchedRowsTable.ViewModel(GetTopSuggestions(allSections.Value, limit: 4), allSections.Value, trViewModel.UnMatchedRows, categories)
+                    : null,
+                matchedModel: trViewModel.MatchedRows.Any()
+                    ? new MatchedRowsTable.ViewModel(trViewModel.MatchedRows)
+                    : null,
+                dragAndDropModel: DragAndDropTransactions.CreateViewModel(allSections.Value, trViewModel));
 
             static ImmutableArray<SectionSelectorRow> GetTopSuggestions(ImmutableArray<SectionSelectorRow> allRows, int limit) =>
                 allRows
@@ -369,6 +371,19 @@ public class HomeViewModel
                     .OrderByDescending(x => x.LastUsed!.Value)
                     .Take(limit)
                     .ToImmutableArray();
+        }
+
+        private void _OnCategorisedSetModels(
+            TransactionResultViewModel? transactionModel,
+            UnMatchedRowsTable.ViewModel? unmatchedModel,
+            MatchedRowsTable.ViewModel? matchedModel,
+            DragAndDropTransactions.ViewModel? dragAndDropModel)
+        {
+            TransactionResultViewModel = transactionModel;
+            UnMatchedModel = unmatchedModel;
+            MatchedModel = matchedModel;
+            DragAndDropModel = dragAndDropModel;
+            _onStateChanged();
         }
 
         /// <summary>
