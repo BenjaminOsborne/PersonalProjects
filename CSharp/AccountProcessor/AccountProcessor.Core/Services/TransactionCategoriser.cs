@@ -76,9 +76,11 @@ public class TransactionCategoriser : ITransactionCategoriser
             .ToImmutableArray(trans =>
             {
                 var matches = sections
-                    .Select(s => (Section: s, Match: s.Match.Matches(trans)))
-                    .Where(s => s.Match != MatchType.NoMatch)
-                    .Partition(x => x.Match == MatchType.MatchExact)
+                    .Select(s => (Section: s, s.Match, TypeMatch: s.Match.Matches(trans)))
+                    .Where(s => s.TypeMatch != MatchType.NoMatch)
+                    .OrderBy(s => s.Section.Section.Section.Month == null) //Prefer month-specific (ensures specific-match on section takes transactions first)
+                    .ThenBy(x => x.Match.GetOrderKey()) //Then order by Match OrderKey
+                    .Partition(x => x.TypeMatch == MatchType.MatchExact)
                     .Map(x => x.Section);
                 return new { Transaction = trans, ExactMatches = matches.PredicateTrue, HistoricMatches = matches.PredicateFalse };
             });

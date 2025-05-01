@@ -355,7 +355,7 @@ public class ExcelFileHandler(ITransactionCategoriser transactionCategoriser) : 
             .Concat(unmatched)
             .GroupBy(x => x.section.Parent.Name)
             .ToImmutableDictionary(x => x.Key, x => x.ToImmutableArray());
-            
+
         //Ensures every category present, even if no transactions
         return CategoryHeader.AllValues
             .OrderBy(x => x.Order)

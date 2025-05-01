@@ -43,7 +43,6 @@ public record TransactionResultViewModel(
             .ToImmutableArrayMany(grp =>
             {
                 var grpArr = grp.ToImmutableArray();
-                var category = grpArr[0].Category;
                 return grp
                     .OrderBy(x => x.Section.Order)
                     .ThenBy(x => x.Tr.Date)
