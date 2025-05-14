@@ -250,12 +250,20 @@ public class ExcelFileHandler(ITransactionCategoriser transactionCategoriser) : 
 
             var catSummary = _ToWriteSummary(result);
 
-            for (int catNx = 0; catNx < catSummary.Length; catNx++)
+            var col = 1;
+            for (var catNx = 0; catNx < catSummary.Length; catNx++)
             {
                 var cat = catSummary[catNx];
-                var row = 1;
-                var col = catNx * 2 + 1;
 
+                //From Manual onwards: Insert 1 blank column (with fill color) - as needs to be sorted before copying to main sheet
+                if (cat.Category == CategoryHeader.Manual)
+                {
+                    worksheet.Columns[col].Style.Fill.SetBackground(Color.LightYellow); //Fill column gap as pale yellow
+                    col += 1; //Shift 1 column over
+                }
+                
+                var row = 1; //starts back at 1 for each loop
+                
                 var categoryTotal = cat.Sections.Sum(x => x.Total);
                 SetValue(row, col, cat.Category.Name, isBold: true);
                 SetValue(row++, col+1, categoryTotal, isBold: true, numberFormat: _excelCurrencyNumberFormat); //net amount
@@ -289,25 +297,23 @@ public class ExcelFileHandler(ITransactionCategoriser transactionCategoriser) : 
                 worksheet.Columns[col + 1].AutoFit();
 
                 //Set column borders
-                var border = worksheet.Columns[col + 1].Style.Border;
-                border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-                border.Right.Color.SetColor(Color.Black);
+                SetBorder(worksheet.Columns[col].Style.Border.Left);
+                SetBorder(worksheet.Columns[col + 1].Style.Border.Right);
+
+                col += 2; //Shift over for next
             }
 
             //Net Total column (at end)
-            var summaryCol = catSummary.Length * 2 + 1;
             var netOverall = catSummary
                 .SelectMany(x => x.Sections)
                 .Sum(x => x.Total);
-            SetValue(1, summaryCol, "Net Amount", isBold: true);
-            SetValue(1, summaryCol+1, netOverall, isBold: true, numberFormat: _excelCurrencyNumberFormat);
-            worksheet.Columns[summaryCol].AutoFit();
-            worksheet.Columns[summaryCol + 1].AutoFit();
+            SetValue(1, col, "Net Amount", isBold: true);
+            SetValue(1, col+1, netOverall, isBold: true, numberFormat: _excelCurrencyNumberFormat);
+            worksheet.Columns[col].AutoFit();
+            worksheet.Columns[col + 1].AutoFit();
 
             //Set first row border
-            var rowBorder = worksheet.Rows[1].Style.Border;
-            rowBorder.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-            rowBorder.Bottom.Color.SetColor(Color.Black);
+            SetBorder(worksheet.Rows[1].Style.Border.Bottom);
 
             void SetValue<T>(int rowNum, int colNum, T val, bool isBold = false, string? numberFormat = null, string? comment = null)
             {
@@ -327,6 +333,12 @@ public class ExcelFileHandler(ITransactionCategoriser transactionCategoriser) : 
                     var added = cell.AddComment(comment);
                     added.AutoFit = true;
                 }
+            }
+
+            static void SetBorder(OfficeOpenXml.Style.ExcelBorderItem borderItem)
+            {
+                borderItem.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                borderItem.Color.SetColor(Color.Black);
             }
 
             return WrappedResult.Create(await excel.GetAsByteArrayAsync());
