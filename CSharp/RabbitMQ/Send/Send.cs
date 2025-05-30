@@ -1,17 +1,16 @@
-﻿using RabbitMQ.Client;
-using System.Text;
-using Shared;
+﻿using Shared;
 
 Console.WriteLine("Starting Send...\n\n");
 
-const string message = "Hello World!";
-var body = Encoding.UTF8.GetBytes(message);
+await Task.Delay(1000); //Time for Receive to fire up too...
 
 await using var pair = await ChannelHelper.CreateAsync();
-var channel = pair.Channel;
 
-await channel.BasicPublishAsync(exchange: string.Empty, routingKey: "hello", body: body);
-Console.WriteLine($" [x] Sent {message}");
+await pair.SendMessageAsync("Hello World 1");
+
+await Task.Delay(1000);
+
+await pair.SendMessageAsync("Hello World 2");
 
 Console.WriteLine(" Press [enter] to exit.");
 Console.ReadLine();

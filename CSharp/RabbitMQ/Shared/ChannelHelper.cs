@@ -1,4 +1,6 @@
 ﻿using RabbitMQ.Client;
+using System.Text;
+using System.Threading.Channels;
 
 namespace Shared;
 
@@ -12,6 +14,13 @@ public static class ChannelHelper
             {
                 await ad.DisposeAsync();
             }
+        }
+
+        public async Task SendMessageAsync(string message)
+        {
+            var body = Encoding.UTF8.GetBytes(message);
+            await Channel.BasicPublishAsync(exchange: string.Empty, routingKey: "hello", body: body);
+            Console.WriteLine($" [x] Sent {message}");
         }
     }
 
