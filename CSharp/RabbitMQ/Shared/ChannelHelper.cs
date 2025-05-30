@@ -1,12 +1,11 @@
 ﻿using RabbitMQ.Client;
 using System.Text;
-using System.Threading.Channels;
 
 namespace Shared;
 
 public static class ChannelHelper
 {
-    public record ChannelPair(IChannel Channel, IReadOnlyList<IAsyncDisposable> Disposables) : IAsyncDisposable
+    public record ChannelWrapper(IChannel Channel, IReadOnlyList<IAsyncDisposable> Disposables) : IAsyncDisposable
     {
         public async ValueTask DisposeAsync()
         {
@@ -24,7 +23,7 @@ public static class ChannelHelper
         }
     }
 
-    public static async Task<ChannelPair> CreateAsync()
+    public static async Task<ChannelWrapper> CreateAsync()
     {
         var factory = new ConnectionFactory { HostName = "localhost", UserName = "rabbitmq_admin_user", Password = "bg0mXyNAOD1vay8VP" };
         var connection = await factory.CreateConnectionAsync();

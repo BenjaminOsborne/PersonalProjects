@@ -15,7 +15,7 @@ consumer.ReceivedAsync += (model, ea) =>
 {
     var body = ea.Body.ToArray();
     var message = Encoding.UTF8.GetString(body);
-    Console.WriteLine($" [x] Received {message}");
+    Console.WriteLine($" [x] Received {message}. Model is consumer: {model == consumer}");
     return Task.CompletedTask;
 };
 
