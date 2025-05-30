@@ -1,14 +1,12 @@
 ﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using Shared;
 
 Console.WriteLine("Starting Receive...\n\n");
 
-var factory = new ConnectionFactory { HostName = "localhost", UserName = "rabbitmq_admin_user", Password = "bg0mXyNAOD1vay8VP" };
-using var connection = await factory.CreateConnectionAsync();
-using var channel = await connection.CreateChannelAsync();
-
-await channel.QueueDeclareAsync(queue: "hello", durable: false, exclusive: false, autoDelete: false, arguments: null);
+await using var pair = await ChannelHelper.CreateAsync();
+var channel = pair.Channel;
 
 Console.WriteLine(" [*] Waiting for messages.");
 
