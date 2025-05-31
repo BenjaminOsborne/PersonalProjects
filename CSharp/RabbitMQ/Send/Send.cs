@@ -2,15 +2,14 @@
 
 Console.WriteLine("Starting Send...\n\n");
 
-await Task.Delay(1000); //Time for Receive to fire up too...
-
 await using var pair = await ChannelHelper.CreateAsync();
 
-await pair.SendMessageAsync("Hello World 1");
+foreach (var n in Enumerable.Range(0, 10))
+{
+    await Task.Delay(1000); //Still wait on first loop, gives time for Receive to fire up too...
 
-await Task.Delay(1000);
-
-await pair.SendMessageAsync("Hello World 2");
+    await pair.SendMessageAsync(DateTimeOffset.UtcNow.ToString("O"));
+}
 
 Console.WriteLine(" Press [enter] to exit.");
 Console.ReadLine();
