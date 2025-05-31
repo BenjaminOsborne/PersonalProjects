@@ -1,6 +1,4 @@
-﻿using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System.Text;
+﻿using System.Text;
 using Shared;
 
 Console.WriteLine("Starting Receive...\n\n");
