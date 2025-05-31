@@ -1,15 +1,16 @@
 ﻿using RabbitMQ.Client;
 using System.Text;
+using RabbitMQ.Client.Events;
 
 namespace Shared;
 
 public static class ChannelHelper
 {
-    public record ChannelWrapper(IChannel Channel, IReadOnlyList<IAsyncDisposable> Disposables) : IAsyncDisposable
+    public class ChannelWrapper(IChannel channel, QueueDeclareOk queue, IReadOnlyList<IAsyncDisposable> disposables) : IAsyncDisposable
     {
         public async ValueTask DisposeAsync()
         {
-            foreach (var ad in Disposables)
+            foreach (var ad in disposables)
             {
                 await ad.DisposeAsync();
             }
@@ -18,8 +19,15 @@ public static class ChannelHelper
         public async Task SendMessageAsync(string message)
         {
             var body = Encoding.UTF8.GetBytes(message);
-            await Channel.BasicPublishAsync(exchange: string.Empty, routingKey: "hello", body: body);
+            await channel.BasicPublishAsync(exchange: string.Empty, routingKey: queue.QueueName, body: body);
             Console.WriteLine($" [x] Sent {message}");
+        }
+
+        public async Task BasicConsumeAsync(AsyncEventHandler<BasicDeliverEventArgs> fnOnReceivedAsync)
+        {
+            var consumer = new AsyncEventingBasicConsumer(channel);
+            consumer.ReceivedAsync += fnOnReceivedAsync;
+            await channel.BasicConsumeAsync(queue.QueueName, autoAck: true, consumer: consumer);
         }
     }
 
@@ -29,9 +37,8 @@ public static class ChannelHelper
         var connection = await factory.CreateConnectionAsync();
         var channel = await connection.CreateChannelAsync();
 
-        await channel.QueueDeclareAsync(queue: "hello", durable: false, exclusive: false, autoDelete: false, arguments: null);
-
-        return new(channel, [channel, connection]);
+        var queue = await channel.QueueDeclareAsync(queue: "hello", durable: false, exclusive: false, autoDelete: false, arguments: null);
+        return new(channel, queue, [channel, connection]);
     }
 
 }
