@@ -6,24 +6,19 @@ namespace Shared;
 
 public static class ChannelHelper
 {
-    public class ChannelWrapper(IChannel channel, QueueDeclareOk queue, bool isDurable, IReadOnlyList<IAsyncDisposable> disposables) : IAsyncDisposable
+    public class QueueWrapper(IChannel channel, QueueDeclareOk queue, bool isDurable, IReadOnlyList<IAsyncDisposable> disposables) : IAsyncDisposable
     {
-        public async ValueTask DisposeAsync()
-        {
-            foreach (var ad in disposables)
-            {
-                await ad.DisposeAsync();
-            }
-        }
+        public async ValueTask DisposeAsync() =>
+            await _DisposeAsync(disposables);
 
         public async Task SendMessageAsync(string message)
         {
-            var body = Encoding.UTF8.GetBytes(message);
-            await channel.BasicPublishAsync(exchange: string.Empty,
+            await channel.BasicPublishAsync(
+                exchange: string.Empty, //"default" exchange
                 routingKey: queue.QueueName,
                 basicProperties: new BasicProperties { Persistent = isDurable },
                 mandatory: true,
-                body: body);
+                body: Encoding.UTF8.GetBytes(message));
             Console.WriteLine($" [x] Sent {message}");
         }
 
@@ -50,14 +45,65 @@ public static class ChannelHelper
         }
     }
 
-    public static async Task<ChannelWrapper> CreateAsync(bool durable = true)
+    public class ExchangeWrapper(IChannel channel, string exchangeName, IReadOnlyList<IAsyncDisposable> disposables) : IAsyncDisposable
     {
-        var factory = new ConnectionFactory { HostName = "localhost", UserName = "rabbitmq_admin_user", Password = "bg0mXyNAOD1vay8VP" };
-        var connection = await factory.CreateConnectionAsync();
+        public async ValueTask DisposeAsync() =>
+            await _DisposeAsync(disposables);
+
+        public async Task SendMessageAsync(string message)
+        {
+            await channel.BasicPublishAsync(exchange: exchangeName,
+                routingKey: string.Empty,
+                body: Encoding.UTF8.GetBytes(message));
+            Console.WriteLine($" [x] Sent {message}");
+        }
+
+        public async Task CreateQueueAndConsumeAsync(Func<AsyncEventingBasicConsumer, BasicDeliverEventArgs, Task> fnOnReceivedAsync)
+        {
+            var queueResult = await channel.QueueDeclareAsync(); //non-durable, exclusive, autodelete, server-generated-name
+            var queueName = queueResult.QueueName;
+            await channel.QueueBindAsync(queue: queueName, exchange: exchangeName, routingKey: string.Empty); //bind new queue to exchange
+
+            Console.WriteLine($" [*] Waiting for {exchangeName}.");
+
+            var consumer = new AsyncEventingBasicConsumer(channel);
+            consumer.ReceivedAsync += (model, ea) => fnOnReceivedAsync((AsyncEventingBasicConsumer)model, ea);
+
+            await channel.BasicConsumeAsync(queueName, autoAck: true, consumer: consumer);
+        }
+    }
+
+    public static async Task<QueueWrapper> CreateQueueAsync(bool durable = true, string queueName = "Example_2")
+    {
+        var connection = await _GetFactory().CreateConnectionAsync();
         var channel = await connection.CreateChannelAsync();
 
-        var queue = await channel.QueueDeclareAsync(queue: "Example_2", durable: durable, exclusive: false, autoDelete: false, arguments: null);
+        var queue = await channel.QueueDeclareAsync(queue: queueName, durable: durable, exclusive: false, autoDelete: false, arguments: null);
         return new(channel, queue, durable, [channel, connection]);
     }
 
+    public static async Task<ExchangeWrapper> CreateExchangeAsync(string exchangeName = "logs", string exchangeType = ExchangeType.Fanout)
+    {
+        var connection = await _GetFactory().CreateConnectionAsync();
+        var channel = await connection.CreateChannelAsync();
+
+        await channel.ExchangeDeclareAsync(exchange: exchangeName, type: exchangeType);
+
+        return new(channel, exchangeName, [channel, connection]);
+    }
+
+    private static ConnectionFactory _GetFactory() => new()
+    {
+        HostName = "localhost",
+        UserName = "rabbitmq_admin_user",
+        Password = "bg0mXyNAOD1vay8VP"
+    };
+
+    private static async Task _DisposeAsync(IReadOnlyList<IAsyncDisposable> disposables)
+    {
+        foreach (var ad in disposables)
+        {
+            await ad.DisposeAsync();
+        }
+    }
 }

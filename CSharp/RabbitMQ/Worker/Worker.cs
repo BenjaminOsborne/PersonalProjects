@@ -3,11 +3,11 @@ using Shared;
 
 Console.WriteLine("Starting Receive...\n\n");
 
-await using var pair = await ChannelHelper.CreateAsync();
+await using var wrapper = await ChannelHelper.CreateQueueAsync();
 
 Console.WriteLine(" [*] Waiting for messages.");
 
-await pair.BasicConsumeAsync(async (model, ea) =>
+await wrapper.BasicConsumeAsync(async (model, ea) =>
 {
     var body = ea.Body.ToArray();
     var message = Encoding.UTF8.GetString(body);
