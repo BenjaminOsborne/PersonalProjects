@@ -50,19 +50,31 @@ public static class ChannelHelper
         public async ValueTask DisposeAsync() =>
             await _DisposeAsync(disposables);
 
-        public async Task SendMessageAsync(string message)
+        public async Task SendMessageAsync(string message, string routingKey = "")
         {
             await channel.BasicPublishAsync(exchange: exchangeName,
-                routingKey: string.Empty,
+                routingKey: routingKey,
                 body: Encoding.UTF8.GetBytes(message));
             Console.WriteLine($" [x] Sent {message}");
         }
 
-        public async Task CreateQueueAndConsumeAsync(Func<AsyncEventingBasicConsumer, BasicDeliverEventArgs, Task> fnOnReceivedAsync)
+        public async Task CreateQueueAndConsumeAsync(Func<AsyncEventingBasicConsumer, BasicDeliverEventArgs, Task> fnOnReceivedAsync,
+            IReadOnlyList<string>? routingKeys = null)
         {
             var queueResult = await channel.QueueDeclareAsync(); //non-durable, exclusive, autodelete, server-generated-name
             var queueName = queueResult.QueueName;
-            await channel.QueueBindAsync(queue: queueName, exchange: exchangeName, routingKey: string.Empty); //bind new queue to exchange
+
+            if (routingKeys == null || !routingKeys.Any())
+            {
+                await channel.QueueBindAsync(queue: queueName, exchange: exchangeName, routingKey: ""); //bind new queue to exchange
+            }
+            else
+            {
+                foreach (var routingKey in routingKeys)
+                {
+                    await channel.QueueBindAsync(queue: queueName, exchange: exchangeName, routingKey: routingKey);
+                }
+            }
 
             Console.WriteLine($" [*] Waiting for {exchangeName}.");
 
