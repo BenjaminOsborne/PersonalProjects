@@ -4,7 +4,7 @@ using RabbitMQ.Client.Events;
 
 namespace Shared;
 
-public static class ChannelHelper
+public static class RabbitHelper
 {
     public class QueueWrapper(IChannel channel, QueueDeclareOk queue, bool isDurable, IReadOnlyList<IAsyncDisposable> disposables) : IAsyncDisposable
     {

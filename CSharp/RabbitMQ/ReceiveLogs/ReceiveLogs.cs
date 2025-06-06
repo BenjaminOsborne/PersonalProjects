@@ -1,6 +1,6 @@
 ﻿using Shared;
 
-await using var wrapper = await ChannelHelper.CreateExchangeAsync();
+await using var wrapper = await RabbitHelper.CreateExchangeAsync();
 
 await wrapper.CreateQueueAndConsumeAsync((model, ea) =>
 {

@@ -11,7 +11,7 @@ if (args.Length < 1)
     return;
 }
 
-await using var wrapper = await ChannelHelper.CreateExchangeAsync(
+await using var wrapper = await RabbitHelper.CreateExchangeAsync(
     exchangeName: "direct_logs",
     exchangeType: RabbitMQ.Client.ExchangeType.Direct);
 

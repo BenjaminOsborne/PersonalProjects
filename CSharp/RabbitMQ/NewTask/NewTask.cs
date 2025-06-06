@@ -2,7 +2,7 @@
 
 Console.WriteLine("Starting Send...\n\n");
 
-await using var wrapper = await ChannelHelper.CreateQueueAsync();
+await using var wrapper = await RabbitHelper.CreateQueueAsync();
 
 await wrapper.SendMessageAsync(GetMessage(args));
 
