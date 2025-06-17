@@ -245,6 +245,8 @@ public class ExcelFileHandler(ITransactionCategoriser transactionCategoriser) : 
     {
         try
         {
+            var useRawTransactionDescription = true; //Experimenting with exporting raw transaction description in comment to every cell (so can always see what the raw source was)
+
             var result = transactionCategoriser.Categorise(request);
             var (excel, worksheet) = _CreateNewExcel();
 
@@ -278,13 +280,17 @@ public class ExcelFileHandler(ITransactionCategoriser transactionCategoriser) : 
                         {
                             foreach (var ts in grp.Transactions)
                             {
-                                SetValue(row, col, ts.GetSummaryDescription(), comment: cat.ForceAddDetailsToComment ? ts.GetDetailedCommentContext() : null);
+                                var comment = cat.ForceAddDetailsToComment || useRawTransactionDescription
+                                    ? ts.GetDetailedCommentContext(useRawTransactionDescription)
+                                    : null;
+                                SetValue(row, col, ts.GetSummaryDescription(), comment: comment);
                                 SetValue(row++, col + 1, ts.Transaction.Amount, numberFormat: _excelCurrencyNumberFormat);
                             }
                         }
                         else
                         {
-                            SetValue(row, col, grp.GetGroupSummaryDescription(), comment: grp.GetGroupDetailedCommentContext());
+                            var comment = grp.GetGroupDetailedCommentContext(useRawTransactionDescription);
+                            SetValue(row, col, grp.GetGroupSummaryDescription(), comment: comment);
                             SetValue(row++, col + 1, grp.TotalAmount, numberFormat: _excelCurrencyNumberFormat);
                         }
                     }
@@ -419,9 +425,9 @@ public class ExcelFileHandler(ITransactionCategoriser transactionCategoriser) : 
         public string GetGroupSummaryDescription() =>
             $"{GroupDescription} [{Transactions.Length}]";
 
-        public string GetGroupDetailedCommentContext() =>
+        public string GetGroupDetailedCommentContext(bool useRawTransactionDescription) =>
             Transactions
-                .Select(x => x.GetDetailedCommentContext())
+                .Select(x => x.GetDetailedCommentContext(useRawTransactionDescription))
                 .ToJoinedString("\n");
     }
 
@@ -430,11 +436,14 @@ public class ExcelFileHandler(ITransactionCategoriser transactionCategoriser) : 
         public string GetSummaryDescription() =>
             OverrideDescription ?? Transaction.Description;
 
-        public string GetDetailedCommentContext()
+        public string GetDetailedCommentContext(bool useRawTransactionDescription)
         {
             var amount = Transaction.Amount;
             var signSymbol = amount >= 0 ? "£" : "-£";
-            return $"[{Transaction.Date:yy-MM-dd}] {GetSummaryDescription()} : {signSymbol}{Math.Abs(amount):0.00}";
+            var description = useRawTransactionDescription
+                ? Transaction.Description
+                : GetSummaryDescription();
+            return $"[{Transaction.Date:yy-MM-dd}] {description} : {signSymbol}{Math.Abs(amount):0.00}";
         }
     }
 
