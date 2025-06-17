@@ -23,27 +23,30 @@
         </TemplateColumn>
         <TemplateColumn Title="Category">
             <CellTemplate>
-                <MudSelect T=string
-                           @bind-Value=@context.Item.SelectionId
-                           Placeholder="Choose category"
-                           Variant=Variant.Outlined
-                           Margin=Margin.Normal
-                           Dense=true
-                           Typo=Typo.body2
-                           Clearable=true
-                           Validation=@((string? s) => s == null && context.Item.NewSectionCategory == null ? "Select category" : null)>
-                    @foreach (var cat in Model.TopSuggestions)
-                    {
-                        <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
-                    }
-                    <MudSelectItem Disabled=true Value=@("")>
-                        <MudDivider Light=true/>
-                    </MudSelectItem>
-                    @foreach (var cat in Model.AllSections)
-                    {
-                        <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
-                    }
-                </MudSelect>
+                @* Fixed Width Selector *@
+                <MudPaper Elevation="0" Width="275px">
+                    <MudSelect T=string
+                               @bind-Value=@context.Item.SelectionId
+                               Placeholder="Choose category"
+                               Variant=Variant.Outlined
+                               Margin=Margin.Normal
+                               Dense=true
+                               Typo=Typo.body2
+                               Clearable=true
+                               Validation=@((string? s) => s == null && context.Item.NewSectionCategory == null ? "Select category" : null)>
+                        @foreach (var cat in Model.TopSuggestions)
+                        {
+                            <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
+                        }
+                        <MudSelectItem Disabled=true Value=@("")>
+                            <MudDivider Light=true/>
+                        </MudSelectItem>
+                        @foreach (var cat in Model.AllSections)
+                        {
+                            <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudPaper>
             </CellTemplate>
         </TemplateColumn>
         <TemplateColumn Title="Match On">
