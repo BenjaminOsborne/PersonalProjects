@@ -15,16 +15,19 @@ public record TransactionResultViewModel(
         var unmatched = result.UnMatched
             .ToImmutableArray(x =>
             {
-                var found = x.SuggestedSection != null
-                    ? selectorOptions.FirstOrDefault(s => s.Header.AreSame(x.SuggestedSection!))
+                var suggested = x.SuggestedMatch != null
+                    ? selectorOptions.FirstOrDefault(s => s.Header.AreSame(x.SuggestedMatch.SuggestedSection))
                     : null;
+                var suggestMatchOnce = suggested != null && x.SuggestedMatch!.SuggestedMatchOnce;
+
                 var tr = x.Transaction;
                 var description = tr.Description;
                 var hyperlink = _GenerateGoogleSearchForPhrase(description);
 
                 return new TransactionRowUnMatched(tr, hyperlink, tr.AmountDisplay)
                 {
-                    SelectionId = found?.Id, //If none suggested, leave empty
+                    SelectionId = suggested?.Id, //If none suggested, leave empty
+                    AddOnlyForTransaction = suggestMatchOnce,
                     MatchOn = description,
                     OverrideDescription = description.ToCamelCase()
                 };

@@ -90,7 +90,7 @@ public class TransactionCategoriser : ITransactionCategoriser
             .ToImmutableArray(x =>
                 new MatchedTransaction(
                     x.Transaction,
-                    sectionMatches: x.ExactMatches
+                    SectionMatches: x.ExactMatches
                         .ToImmutableArray(m => new SectionMatch(m.Section.Section, m.Match))
                 ));
 
@@ -98,11 +98,9 @@ public class TransactionCategoriser : ITransactionCategoriser
             .ToImmutableArray(unMatched =>
             {
                 var firstSuggest = unMatched.HistoricMatches
-                    .Select(x => new { x.Section.Section, x.Match.Pattern })
-                    .FirstOrDefault(x => x.Section.CanUseInMonth(request.Month));
-                var suggestedSection = firstSuggest?.Section;
-                var suggestedPattern = firstSuggest?.Pattern;
-                return new UnMatchedTransaction(unMatched.Transaction, suggestedSection, suggestedPattern);
+                    .Select(x => new SuggestedMatch(x.Section.Section, x.Match.Pattern, SuggestedMatchOnce: x.Match.ExactDate.HasValue))
+                    .FirstOrDefault(x => x.SuggestedSection.CanUseInMonth(request.Month)); //Filter to where applicable this month
+                return new UnMatchedTransaction(unMatched.Transaction, firstSuggest);
             });
         return new CategorisationResult(matched, unmatched);
     }
@@ -239,33 +237,13 @@ public record SectionUsage(SectionHeader Header, DateTime? LastUsed);
 
 public record SelectorData(bool IsModelLoaded, ImmutableArray<CategoryHeader>? Categories, ImmutableArray<SectionUsage>? Sections);
 
-public class UnMatchedTransaction
+public record SuggestedMatch(SectionHeader SuggestedSection, string SuggestedPattern, bool SuggestedMatchOnce);
+
+public record UnMatchedTransaction(Transaction Transaction, SuggestedMatch? SuggestedMatch);
+
+/// <summary> <see cref="SectionMatches"/> is in preference-order. Always at least 1 in collection. </summary>
+public record MatchedTransaction(Transaction Transaction, ImmutableArray<SectionMatch> SectionMatches)
 {
-    public UnMatchedTransaction(Transaction transaction, SectionHeader? suggestedSection, string? suggestedPattern)
-    {
-        Transaction = transaction;
-        SuggestedSection = suggestedSection;
-        SuggestedPattern = suggestedPattern;
-    }
-
-    public Transaction Transaction { get; }
-    public SectionHeader? SuggestedSection { get; }
-    public string? SuggestedPattern { get; }
-}
-
-public class MatchedTransaction
-{
-    public MatchedTransaction(Transaction transaction, ImmutableArray<SectionMatch> sectionMatches)
-    {
-        Transaction = transaction;
-        SectionMatches = sectionMatches;
-    }
-
-    public Transaction Transaction { get; }
-
-    /// <summary> Preference ordered matches. Always at least 1 in collection. </summary>
-    public ImmutableArray<SectionMatch> SectionMatches { get; }
-        
     /// <summary> As preference order, the current match is the first in the collection </summary>
     public SectionMatch SectionMatch => SectionMatches[0];
 }
