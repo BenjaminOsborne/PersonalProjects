@@ -118,4 +118,13 @@ public static class RabbitHelper
             await ad.DisposeAsync();
         }
     }
+
+    public static string MessageWithNow(string msg) =>
+        $"{msg}|{DateTimeOffset.UtcNow}";
+
+    public static (string msg, DateTimeOffset sentAt) SplitMessageWithNow(string msg)
+    {
+        var split = msg.Split('|');
+        return (split[0], DateTimeOffset.Parse(split[1]));
+    }
 }
