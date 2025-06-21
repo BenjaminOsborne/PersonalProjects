@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Components;
 
 namespace AccountProcessor.Client.Pages;
 
-public partial class JsonEditor
+public partial class JsonEditor : IAsyncDisposable
 {
+    private readonly TaskTracker _taskTracker = new ();
     [Inject] private IClientMatchModelService _modelService { get; init; } = null!;
 
     private string? LoadedJson;
@@ -21,7 +22,7 @@ public partial class JsonEditor
                 return;
             }
             _search = value;
-            var task = _OnSearchChangeAsync(); //TODO: Task tracker with dispose
+            _taskTracker.TrackTask(_OnSearchChangeAsync());
         }
     }
 
@@ -30,6 +31,9 @@ public partial class JsonEditor
         await base.OnInitializedAsync();
         await _OnSearchChangeAsync(); //will load for initial empty search
     }
+
+    public ValueTask DisposeAsync() =>
+        _taskTracker.DisposeAsync();
 
     private async Task _OnSearchChangeAsync()
     {

@@ -1,4 +1,8 @@
-﻿<MudStack Row=true Class="align-end mt-2">
+﻿@using AccountProcessor.Client.ClientServices
+
+@implements IAsyncDisposable
+
+<MudStack Row=true Class="align-end mt-2">
     <MudPaper Elevation="0" Class="mb-3 d-flex justify-start flex-shrink-1">
         <MudDatePicker @bind-Date=@YearMonthBind FixDay=1 DateFormat="MMM yyyy" />
     </MudPaper>
@@ -11,19 +15,24 @@
 
 @code
 {
+    private readonly TaskTracker _taskTracker = new();
+
     [Parameter]
     public required HomeViewModel Model { get; init; }
     [Parameter]
     public required Func<Task> PostActionRefresh { get; init; }
 
+    public ValueTask DisposeAsync() =>
+        _taskTracker.DisposeAsync();
+
     private DateTime? YearMonthBind
     {
         get => Model.Month?.ToDateTime(TimeOnly.MinValue);
-        set => _ = Task.Run(async () => //TODO: Track running task
+        set => _taskTracker.TrackTask(Task.Run(async () =>
         {
             await Model.SetMonthAsync(value);
             await _PostActionAsync();
-        });
+        }));
     }
 
     private async Task _RefreshAsync()
