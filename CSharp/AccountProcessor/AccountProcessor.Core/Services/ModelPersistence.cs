@@ -142,17 +142,21 @@ public static class DirectoryHelper
 {
     /// <summary> Picks from: [drive]\My Drive\Finances\Accounting\AccountProcessor. Tries multiple locations. </summary>
     public static string? LoadModelFromGoogleDrive() =>
-        new[] { "G:", "D:" }
-        .Select(d => new DirectoryInfo(d))
+        new[]
+            {
+                Path.Combine("D:", "My Drive"), //When streaming from virtual "D"
+                Path.Combine("G:", "My Drive"), //When streaming from virtual "G"
+                Path.Combine("C:", "Users", "Ben", "GoogleDrive") //When mirroring to specific folder
+            }
+        .Select(root => new DirectoryInfo(root))
         .Select(dir =>
         {
-            var jsonPath = Path.Combine(dir.FullName, "My Drive", "Finances", "Accounting", "AccountProcessor", "MatchModel.json");
+            var jsonPath = Path.Combine(dir.FullName, "Finances", "Accounting", "AccountProcessor", "MatchModel.json");
             return File.Exists(jsonPath)
                 ? jsonPath
                 : null;
         })
-        .Where(x => x != null)
-        .FirstOrDefault();
+        .FirstOrDefault(x => x != null);
 
     /// <summary> Legacy: When MatchModel.json used to be stored in source repo </summary>
     /// <remarks> Searches from current process path (running in "bin") up to the source directory, then down to a known path in source control. </remarks>
