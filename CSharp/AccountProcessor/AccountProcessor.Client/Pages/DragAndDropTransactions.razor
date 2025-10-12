@@ -37,7 +37,8 @@
                 <MudList T="string" Class="d-flex flex-column mud-height-full" SelectedValueChanged=@(x => UnMatchedItemSelected(x))>
                     <MudListSubheader>Unmatched</MudListSubheader>
                     <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1" Elevation="0">
-                        <MudDropZone T="TransactionDropItem" Identifier="@_unMatchedDropZoneId" Class="flex-grow-1 border-dotted" Style="@("min-height:45px")"/>
+                        <MudDropZone T="TransactionDropItem" Identifier="@_unMatchedDropZoneId" Class="flex-grow-1 border-dotted"
+                                     Style="@("min-height:45px;max-height:200px; overflow-y: scroll")" />
                     </MudPaper>
                 </MudList>
 
