@@ -13,15 +13,20 @@
     
     <MudDivider Class="mt-2 mb-1" />
     <MudStack Row="true" Class="align-center">
-        <MudCheckBox @bind-Value=@_hideDropItems>Collapse Drop Zone</MudCheckBox>
-        
+        <MudPaper Class="border-dotted border-2 mud-border-primary pa-1" Elevation="0">
+            <MudCheckBox Class="mr-4" @bind-Value=@_hideDropItems>Collapse Drop Zone</MudCheckBox>
+        </MudPaper>
+
         @if (_selectedItem != null)
         {
-            <MudDivider Vertical="true" Class="ml-1 mr-1" Light=true/>
-
-            <MudText>@_selectedItem.AmountDisplay</MudText>
-            <MudText>@_selectedItem.DateDisplay</MudText>
-            <MudText>@_selectedItem.Description</MudText>
+            <MudPaper Class="border-dotted border-2 mud-border-primary pa-1" Elevation="0">
+                <MudStack Row="true" Class="align-center mt-3 mb-3 ml-2 mr-2">
+                    <MudText>@_selectedItem.AmountDisplay</MudText>
+                    <MudText>@_selectedItem.DateDisplay</MudText>
+                    <MudText>@_selectedItem.Description</MudText>
+                    <MudText>@_selectedItem.Match?.Pattern</MudText>
+                </MudStack>
+            </MudPaper>
         }
     </MudStack>
     <MudDivider Class="mt-1 mb-2" />
@@ -58,7 +63,7 @@
                                                 <MudList T="string" Class="d-flex flex-column mud-height-full" Dense=true Gutters=false SelectedValueChanged=@(x => MatchedItemSelected(x))>
                                                     <MudListSubheader>@sec.Section.Name</MudListSubheader>
                                                     <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1">
-                                                        <MudDropZone T="TransactionDropItem" OnlyZone=@_hideDropItems Identifier="@sec.DropZoneId" Class="flex-grow-1" Style="@("min-height:45px")"/>
+                                                        <MudDropZone T="TransactionDropItem" OnlyZone=@_hideDropItems Identifier="@sec.DropZoneId" Class="flex-grow-1" Style="@("min-height:38px")"/>
                                                     </MudPaper>
                                                 </MudList>
                                                 @if (_hideDropItems)
