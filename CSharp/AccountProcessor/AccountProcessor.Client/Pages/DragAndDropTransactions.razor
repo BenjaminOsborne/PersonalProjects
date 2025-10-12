@@ -16,17 +16,34 @@
         <MudPaper Class="border-dotted border-2 mud-border-primary pa-1" Elevation="0">
             <MudCheckBox Class="mr-4" @bind-Value=@_hideDropItems>Collapse Drop Zone</MudCheckBox>
         </MudPaper>
-
+        
         @if (SelectedItem != null)
         {
+            var item = SelectedItem!;
             <MudPaper Class="border-dotted border-2 mud-border-primary pa-1" Elevation="0">
                 <MudStack Row="true" Class="align-center mt-3 mb-3 ml-2 mr-2">
-                    <MudText>@SelectedItem.AmountDisplay</MudText>
-                    <MudText>@SelectedItem.DateDisplay</MudText>
-                    <MudText>@SelectedItem.Description</MudText>
-                    <MudText>@SelectedItem.Match?.Pattern</MudText>
+                    <MudText>@item.AmountDisplay</MudText>
+                    <MudDivider Vertical="true" FlexItem=true />
+                    <MudText>@item.DateDisplay</MudText>
+                    <MudDivider Vertical="true" FlexItem=true />
+                    <MudText>@item.Description</MudText>
                 </MudStack>
             </MudPaper>
+
+            if (item is { Section: not null, Match: not null })
+            {
+                <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1" Elevation="0">
+                    <MudStack Row="true" Class="align-center mt-3 mb-3 ml-2 mr-2">
+                        <MudText>@item.Section.Parent.Name</MudText>
+                        <MudDivider Vertical="true" FlexItem=true />
+                        <MudText>@item.Section.Name</MudText>
+                        <MudDivider Vertical="true" FlexItem=true />
+                        <MudText>@item.Match.Pattern</MudText>
+                        <MudDivider Vertical="true" FlexItem=true />
+                        <MudText>@item.Match.ExactDate.HasValue</MudText>
+                    </MudStack>
+                </MudPaper>
+            }
         }
     </MudStack>
     <MudDivider Class="mt-1 mb-2" />
