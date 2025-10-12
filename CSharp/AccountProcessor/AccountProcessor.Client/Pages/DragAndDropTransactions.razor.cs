@@ -7,9 +7,11 @@ namespace AccountProcessor.Client.Pages;
 
 public partial class DragAndDropTransactions
 {
-    private TransactionDropItem? _selectedItem;
+    /// <remarks> Could be a field - but keeping as property so can intercept get/set in future if needed </remarks>
+    private TransactionDropItem? SelectedItem { get; set; }
+
     /// <summary> If true - only renders drop-zone, no items </summary>
-    private bool _hideDropItems = true;
+    private bool _hideDropItems = false;
 
     public static ViewModel CreateViewModel(ImmutableArray<SectionSelectorRow> sections, TransactionResultViewModel result)
     {
@@ -91,18 +93,6 @@ public partial class DragAndDropTransactions
 
     private static string _ToDropZoneId(CategoryHeader category, SectionHeader section) =>
         $"{category.Name}|{category.Order}:{section.Name}|{section.Order}|{section.Month}";
-
-    private void UnMatchedItemSelected(string? itemId) =>
-        _OnItemSelected(itemId);
-
-    private void MatchedItemSelected(string? itemId) =>
-        _OnItemSelected(itemId);
-
-    private void _OnItemSelected(string? itemId)
-    {
-        var found = Model.Transactions.FirstOrDefault(x => x.UniqueItemId == itemId);
-        _selectedItem = found;
-    }
 
     private void ItemUpdated(MudItemDropInfo<TransactionDropItem> dropItem)
     {

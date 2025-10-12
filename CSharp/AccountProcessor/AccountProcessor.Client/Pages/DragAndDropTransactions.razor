@@ -17,14 +17,14 @@
             <MudCheckBox Class="mr-4" @bind-Value=@_hideDropItems>Collapse Drop Zone</MudCheckBox>
         </MudPaper>
 
-        @if (_selectedItem != null)
+        @if (SelectedItem != null)
         {
             <MudPaper Class="border-dotted border-2 mud-border-primary pa-1" Elevation="0">
                 <MudStack Row="true" Class="align-center mt-3 mb-3 ml-2 mr-2">
-                    <MudText>@_selectedItem.AmountDisplay</MudText>
-                    <MudText>@_selectedItem.DateDisplay</MudText>
-                    <MudText>@_selectedItem.Description</MudText>
-                    <MudText>@_selectedItem.Match?.Pattern</MudText>
+                    <MudText>@SelectedItem.AmountDisplay</MudText>
+                    <MudText>@SelectedItem.DateDisplay</MudText>
+                    <MudText>@SelectedItem.Description</MudText>
+                    <MudText>@SelectedItem.Match?.Pattern</MudText>
                 </MudStack>
             </MudPaper>
         }
@@ -39,7 +39,9 @@
         <ChildContent>
             <MudStack>
                 @* UnMatched at top *@
-                <MudList T="string" Class="d-flex flex-column mud-height-full" SelectedValueChanged=@(x => UnMatchedItemSelected(x))>
+                <MudList T=TransactionDropItem Class ="d-flex flex-column mud-height-full"
+                         @bind-SelectedValue="@SelectedItem"
+                         >
                     <MudListSubheader>Unmatched</MudListSubheader>
                     <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1" Elevation="0">
                         <MudDropZone T="TransactionDropItem" Identifier="@_unMatchedDropZoneId" Class="flex-grow-1 border-dotted"
@@ -60,7 +62,7 @@
                                     {
                                         <MudPaper Class="border-solid border-2 mud-border-primary pa-1" Elevation="0">
                                             <MudStack>
-                                                <MudList T="string" Class="d-flex flex-column mud-height-full" Dense=true Gutters=false SelectedValueChanged=@(x => MatchedItemSelected(x))>
+                                                <MudList T=TransactionDropItem Class="d-flex flex-column mud-height-full" Dense=true Gutters=false @bind-SelectedValue="@SelectedItem">
                                                     <MudListSubheader>@sec.Section.Name</MudListSubheader>
                                                     <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1">
                                                         <MudDropZone T="TransactionDropItem" OnlyZone=@_hideDropItems Identifier="@sec.DropZoneId" Class="flex-grow-1" Style="@("min-height:38px")"/>
@@ -96,7 +98,7 @@
             </MudStack>
         </ChildContent>
         <ItemRenderer>
-            <MudListItem T=string Value=@context.UniqueItemId>
+            <MudListItem T=TransactionDropItem Value=@context>
                 <MudText Typo=Typo.caption Color=@(context.IsCredit ? Color.Success : Color.Inherit)>
                     @context.AmountAndDescription
                 </MudText>
