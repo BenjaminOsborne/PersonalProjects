@@ -155,8 +155,11 @@ public partial class DragAndDropTransactions
         var di = dropItem.Item;
         if (di != null)
         {
-            //TODO: Should execute move and rebuild
             di.SectionDropZoneId = dropItem.DropzoneIdentifier;
+
+            //TODO: Execute move and rebuild
+            // - Assume it updates/creates the whole Match (so could move/update many items)
+            // - Need workflow to "split" match when selected to break a single transaction off (create a specific match for it)
         }
     }
 }
