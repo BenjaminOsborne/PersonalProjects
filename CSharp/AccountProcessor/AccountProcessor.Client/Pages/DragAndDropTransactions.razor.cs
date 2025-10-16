@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using AccountProcessor.Core;
 using AccountProcessor.Core.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -75,22 +76,30 @@ public partial class DragAndDropTransactions
             {
                 SelectionId = selection?.Id,
                 MatchPattern = mr.LatestMatch.Pattern,
-                MatchDescription = mr.LatestMatch.OverrideDescription,
+                MatchOverrideDescription = mr.LatestMatch.OverrideDescription,
                 AddOnlyForTransaction = mr.LatestMatch.ExactDate.HasValue
             };
 
-        public static TransactionDropItem FromUnmatchedRow(TransactionRowUnMatched r) =>
-            new(_CreateUniqueId(),
-                r.Transaction.Description,
-                r.Transaction,
+        public static TransactionDropItem FromUnmatchedRow(TransactionRowUnMatched r)
+        {
+            var transaction = r.Transaction;
+            var description = transaction.Description;
+            return new(_CreateUniqueId(),
+                description,
+                transaction,
                 _unMatchedDropZoneId,
                 Section: null,
-                Match: null);
+                Match: null)
+            {
+                MatchPattern = description, //Initialise to match on Description
+                MatchOverrideDescription = description.ToCamelCase()
+            };
+        }
 
         /// <summary> SelectionId refers to Ids for items in <see cref="ViewModel.AllSections"/> from selector set </summary>
         public string? SelectionId { get; set; }
         public string? MatchPattern { get; set; }
-        public string? MatchDescription { get; set; }
+        public string? MatchOverrideDescription { get; set; }
         public bool AddOnlyForTransaction { get; set; }
 
         public string SectionDropZoneId { get; set; } = DropZoneId;
