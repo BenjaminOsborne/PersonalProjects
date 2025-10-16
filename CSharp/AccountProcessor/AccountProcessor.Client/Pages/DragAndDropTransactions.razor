@@ -34,12 +34,35 @@
             {
                 <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1" Elevation="0">
                     <MudStack Row="true" Class="align-center mt-3 mb-3 ml-2 mr-2">
+                        
+                        <MudSelect T=string
+                                   @bind-Value=@item.SelectionId
+                                   Placeholder="Choose category"
+                                   Variant=Variant.Outlined
+                                   Margin=Margin.Normal
+                                   Dense=true
+                                   Typo=Typo.body2
+                                   Clearable=true
+                                   Validation=@((string? s) => s == null ? "Select category" : null)>
+                            @foreach (var cat in Model.TopSuggestions)
+                            {
+                                <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
+                            }
+                            <MudSelectItem Disabled=true Value=@("")>
+                                <MudDivider Light=true/>
+                            </MudSelectItem>
+                            @foreach (var cat in Model.AllSections)
+                            {
+                                <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
+                            }
+                        </MudSelect>
+
                         <MudText>@item.Section.Parent.Name</MudText>
-                        <MudDivider Vertical="true" FlexItem=true />
+                        <MudDivider Vertical="true" FlexItem=true/>
                         <MudText>@item.Section.Name</MudText>
-                        <MudDivider Vertical="true" FlexItem=true />
+                        <MudDivider Vertical="true" FlexItem=true/>
                         <MudText>@item.Match.Pattern</MudText>
-                        <MudDivider Vertical="true" FlexItem=true />
+                        <MudDivider Vertical="true" FlexItem=true/>
                         <MudText>@item.Match.ExactDate.HasValue</MudText>
                     </MudStack>
                 </MudPaper>

@@ -96,10 +96,12 @@
 @code {
 
     public record ViewModel(
-        ImmutableArray<SectionSelectorRow> TopSuggestions,
         ImmutableArray<SectionSelectorRow> AllSections,
         ImmutableArray<TransactionRowUnMatched> UnMatchedRows,
-        ImmutableArray<string> Categories);
+        ImmutableArray<string> Categories)
+    {
+        public ImmutableArray<SectionSelectorRow> TopSuggestions { get; } = AllSections.GetTopSuggestions(limit: 4);
+    }
 
     [Parameter]
     public required ViewModel Model { get; init; }

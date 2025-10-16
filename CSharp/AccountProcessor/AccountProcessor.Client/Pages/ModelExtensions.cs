@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using AccountProcessor.Core.Services;
+using System.Collections.Immutable;
 
 namespace AccountProcessor.Client.Pages;
 
@@ -10,4 +11,7 @@ public static class ModelExtensions
             .OrderByDescending(x => x.LastUsed!.Value)
             .Take(limit)
             .ToImmutableArray();
+
+    public static SectionSelectorRow? TryFindMatch(this IEnumerable<SectionSelectorRow> selectorOptions, SectionHeader section) =>
+        selectorOptions.FirstOrDefault(s => s.Header.AreSame(section));
 }

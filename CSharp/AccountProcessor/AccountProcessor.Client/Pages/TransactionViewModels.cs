@@ -16,7 +16,7 @@ public record TransactionResultViewModel(
             .ToImmutableArray(x =>
             {
                 var suggested = x.SuggestedMatch != null
-                    ? selectorOptions.FirstOrDefault(s => s.Header.AreSame(x.SuggestedMatch.SuggestedSection))
+                    ? selectorOptions.TryFindMatch(x.SuggestedMatch.SuggestedSection)
                     : null;
                 var suggestMatchOnce = suggested != null && x.SuggestedMatch!.SuggestedMatchOnce;
 

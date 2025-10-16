@@ -13,7 +13,7 @@ public partial class DragAndDropTransactions
     /// <summary> If true - only renders drop-zone, no items </summary>
     private bool _hideDropItems = false;
 
-    public static ViewModel CreateViewModel(ImmutableArray<SectionSelectorRow> sections, TransactionResultViewModel result)
+    public static ViewModel CreateViewModel(ImmutableArray<SectionSelectorRow> sections, TransactionResultViewModel result, ImmutableArray<SectionSelectorRow> allSelections)
     {
         var categories = sections
             .Select(x => x.Header)
@@ -31,12 +31,12 @@ public partial class DragAndDropTransactions
             .ToImmutableArray();
 
         var matched = result.MatchedRows
-            .Select(TransactionDropItem.FromMatchedRow)
+            .Select(mr => TransactionDropItem.FromMatchedRow(mr, allSelections.TryFindMatch(mr.Section)))
             .ToImmutableList();
         var unmatched = result.UnMatchedRows
             .Select(TransactionDropItem.FromUnmatchedRow)
             .ToImmutableList();
-        return new(categories, [.. matched.AddRange(unmatched)]);
+        return new(categories, [.. matched.AddRange(unmatched)], allSelections);
     }
 
     [Parameter]
@@ -44,8 +44,12 @@ public partial class DragAndDropTransactions
 
     public record ViewModel(
         IReadOnlyList<CategorySummary> Categories,
-        IReadOnlyList<TransactionDropItem> Transactions)
+        IReadOnlyList<TransactionDropItem> Transactions,
+        ImmutableArray<SectionSelectorRow> AllSections
+        )
     {
+        public ImmutableArray<SectionSelectorRow> TopSuggestions { get; } = AllSections.GetTopSuggestions(limit: 4);
+
         public IReadOnlyList<TransactionDropItem> GetTransactionsForSection(SectionDropZone sec) =>
             Transactions.Where(x => x.SectionDropZoneId == sec.DropZoneId).ToImmutableList();
     }
@@ -61,13 +65,16 @@ public partial class DragAndDropTransactions
         SectionHeader? Section,
         Match? Match)
     {
-        public static TransactionDropItem FromMatchedRow(TransactionRowMatched mr) =>
+        public static TransactionDropItem FromMatchedRow(TransactionRowMatched mr, SectionSelectorRow? selection) =>
             new(_CreateUniqueId(),
                 mr.MatchDescription,
                 mr.Transaction,
                 _ToDropZoneId(mr.Category, mr.Section),
                 mr.Section,
-                mr.LatestMatch);
+                mr.LatestMatch)
+            {
+                SelectionId = selection?.Id
+            };
 
         public static TransactionDropItem FromUnmatchedRow(TransactionRowUnMatched r) =>
             new(_CreateUniqueId(),
@@ -76,6 +83,9 @@ public partial class DragAndDropTransactions
                 _unMatchedDropZoneId,
                 Section: null,
                 Match: null);
+
+        /// <summary> SelectionId refers to Ids for items in <see cref="ViewModel.AllSections"/> from selector set </summary>
+        public string? SelectionId { get; set; }
 
         public string SectionDropZoneId { get; set; } = DropZoneId;
         

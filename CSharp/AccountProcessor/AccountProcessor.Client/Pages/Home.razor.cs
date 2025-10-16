@@ -353,17 +353,19 @@ public class HomeViewModel
             _OnCategorisedSetModels(null, null, null, null);
 
             //Update models
-            var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult.Result!, allSections.Value);
+            var selectorRows = allSections.Value;
+            
+            var trViewModel = TransactionResultViewModel.CreateFromResult(categorisationResult.Result!, selectorRows);
             var categories = Categories?.Select(x => x.Name).ToImmutableArray() ?? [];
             _OnCategorisedSetModels(
                 transactionModel: trViewModel,
                 unmatchedModel: trViewModel.UnMatchedRows.Any()
-                    ? new UnMatchedRowsTable.ViewModel(allSections.Value.GetTopSuggestions(limit: 4), allSections.Value, trViewModel.UnMatchedRows, categories)
+                    ? new UnMatchedRowsTable.ViewModel(selectorRows, trViewModel.UnMatchedRows, categories)
                     : null,
                 matchedModel: trViewModel.MatchedRows.Any()
                     ? new MatchedRowsTable.ViewModel(trViewModel.MatchedRows)
                     : null,
-                dragAndDropModel: DragAndDropTransactions.CreateViewModel(allSections.Value, trViewModel));
+                dragAndDropModel: DragAndDropTransactions.CreateViewModel(selectorRows, trViewModel, selectorRows));
         }
 
         private void _OnCategorisedSetModels(
