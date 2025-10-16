@@ -358,19 +358,12 @@ public class HomeViewModel
             _OnCategorisedSetModels(
                 transactionModel: trViewModel,
                 unmatchedModel: trViewModel.UnMatchedRows.Any()
-                    ? new UnMatchedRowsTable.ViewModel(GetTopSuggestions(allSections.Value, limit: 4), allSections.Value, trViewModel.UnMatchedRows, categories)
+                    ? new UnMatchedRowsTable.ViewModel(allSections.Value.GetTopSuggestions(limit: 4), allSections.Value, trViewModel.UnMatchedRows, categories)
                     : null,
                 matchedModel: trViewModel.MatchedRows.Any()
                     ? new MatchedRowsTable.ViewModel(trViewModel.MatchedRows)
                     : null,
                 dragAndDropModel: DragAndDropTransactions.CreateViewModel(allSections.Value, trViewModel));
-
-            static ImmutableArray<SectionSelectorRow> GetTopSuggestions(ImmutableArray<SectionSelectorRow> allRows, int limit) =>
-                allRows
-                    .Where(x => x.LastUsed.HasValue)
-                    .OrderByDescending(x => x.LastUsed!.Value)
-                    .Take(limit)
-                    .ToImmutableArray();
         }
 
         private void _OnCategorisedSetModels(
