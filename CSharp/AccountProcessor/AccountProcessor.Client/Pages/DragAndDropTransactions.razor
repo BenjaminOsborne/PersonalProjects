@@ -16,57 +16,59 @@
         <MudPaper Class="border-dotted border-2 mud-border-primary pa-3" Elevation="0">
             <MudCheckBox Class="mr-4" @bind-Value=@_hideDropItems>Collapse Drop Zone</MudCheckBox>
         </MudPaper>
-        
-        @if (SelectedItem != null)
-        {
-            var item = SelectedItem!;
-            <MudPaper Class="border-dotted border-2 mud-border-primary pa-3" Elevation="0">
-                <MudStack Row="true" Class="align-center mt-3 mb-3 ml-2 mr-2">
-                    <MudText>@item.AmountDisplay</MudText>
-                    <MudDivider Vertical="true" FlexItem=true />
-                    <MudText>@item.DateDisplay</MudText>
-                    <MudDivider Vertical="true" FlexItem=true />
-                    <MudText>@item.Description</MudText>
-                </MudStack>
-            </MudPaper>
+        @{
+            var selectedItem = _selectedItem;
+            if (selectedItem != null)
+            {
+                var dropItem = selectedItem.DropItem;
+                <MudPaper Class="border-dotted border-2 mud-border-primary pa-3" Elevation="0">
+                    <MudStack Row="true" Class="align-center mt-3 mb-3 ml-2 mr-2">
+                        <MudText>@dropItem.AmountDisplay</MudText>
+                        <MudDivider Vertical="true" FlexItem=true />
+                        <MudText>@dropItem.DateDisplay</MudText>
+                        <MudDivider Vertical="true" FlexItem=true />
+                        <MudText>@dropItem.Description</MudText>
+                    </MudStack>
+                </MudPaper>
 
-            <MudPaper Class="border-dotted border-2 mud-border-secondary" Elevation="0">
-                <MudStack Row="true" Class="align-center ml-1 mr-1">
-                    @* Fixed Width Selector *@
-                    <MudPaper Elevation="0" Width="275px">
-                        <MudSelect T=string
-                                   @bind-Value=@item.SelectionId
-                                   Placeholder="Choose category"
-                                   Variant=Variant.Outlined
-                                   Margin=Margin.Normal
-                                   Dense=true
-                                   Typo=Typo.body2
-                                   Clearable=true
-                                   Validation=@((string? s) => s == null ? "Select category" : null)>
-                            @foreach (var cat in Model.TopSuggestions)
-                            {
-                                <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
-                            }
-                            <MudSelectItem Disabled=true Value=@("")>
-                                <MudDivider Light=true/>
-                            </MudSelectItem>
-                            @foreach (var cat in Model.AllSections)
-                            {
-                                <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudPaper>
-                    
-                    <MudPaper Elevation="0" Width="200px">
-                        <MudTextField T=string @bind-Value=@item.MatchPattern Typo=Typo.body2 />
-                    </MudPaper>
-                    <MudPaper Elevation="0" Width="200px">
-                        <MudTextField T=string @bind-Value=@item.MatchOverrideDescription Typo=Typo.body2 />
-                    </MudPaper>
-                    <MudDivider Vertical="true" FlexItem=true/>
-                    <MudCheckBox @bind-Value=@item.AddOnlyForTransaction />
-                </MudStack>
-            </MudPaper>
+                <MudPaper Class="border-dotted border-2 mud-border-secondary" Elevation="0">
+                    <MudStack Row="true" Class="align-center ml-1 mr-1">
+                        @* Fixed Width Selector *@
+                        <MudPaper Elevation="0" Width="275px">
+                            <MudSelect T=string
+                                       @bind-Value=@selectedItem.SelectionId
+                                       Placeholder="Choose category"
+                                       Variant=Variant.Outlined
+                                       Margin=Margin.Normal
+                                       Dense=true
+                                       Typo=Typo.body2
+                                       Clearable=true
+                                       Validation=@((string? s) => s == null ? "Select category" : null)>
+                                @foreach (var cat in Model.TopSuggestions)
+                                {
+                                    <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
+                                }
+                                <MudSelectItem Disabled=true Value=@("")>
+                                    <MudDivider Light=true />
+                                </MudSelectItem>
+                                @foreach (var cat in Model.AllSections)
+                                {
+                                    <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudPaper>
+
+                        <MudPaper Elevation="0" Width="200px">
+                            <MudTextField T=string @bind-Value=@selectedItem.MatchPattern Typo=Typo.body2 />
+                        </MudPaper>
+                        <MudPaper Elevation="0" Width="200px">
+                            <MudTextField T=string @bind-Value=@selectedItem.MatchOverrideDescription Typo=Typo.body2 />
+                        </MudPaper>
+                        <MudDivider Vertical="true" FlexItem=true />
+                        <MudCheckBox @bind-Value=@selectedItem.AddOnlyForTransaction />
+                    </MudStack>
+                </MudPaper>
+            }
         }
     </MudStack>
     <MudDivider Class="mt-1 mb-2" />
@@ -80,7 +82,7 @@
             <MudStack>
                 @* UnMatched at top *@
                 <MudList T=TransactionDropItem Class ="d-flex flex-column mud-height-full"
-                         @bind-SelectedValue="@SelectedItem"
+                         @bind-SelectedValue="@SelectedDropItem"
                          >
                     <MudListSubheader>Unmatched</MudListSubheader>
                     <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1" Elevation="0">
@@ -102,7 +104,7 @@
                                     {
                                         <MudPaper Class="border-solid border-2 mud-border-primary pa-1" Elevation="0">
                                             <MudStack>
-                                                <MudList T=TransactionDropItem Class="d-flex flex-column mud-height-full" Dense=true Gutters=false @bind-SelectedValue="@SelectedItem">
+                                                <MudList T=TransactionDropItem Class="d-flex flex-column mud-height-full" Dense=true Gutters=false @bind-SelectedValue="@SelectedDropItem">
                                                     <MudListSubheader>@sec.Section.Name</MudListSubheader>
                                                     <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1">
                                                         <MudDropZone T="TransactionDropItem" OnlyZone=@_hideDropItems Identifier="@sec.DropZoneId" Class="flex-grow-1" Style="@("min-height:38px")"/>

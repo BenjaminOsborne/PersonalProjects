@@ -8,8 +8,21 @@ namespace AccountProcessor.Client.Pages;
 
 public partial class DragAndDropTransactions
 {
-    /// <remarks> Could be a field - but keeping as property so can intercept get/set in future if needed </remarks>
-    private TransactionDropItem? SelectedItem { get; set; }
+    /// <summary> Selected drop item from any of the sections (Categorised and UnCategorised) </summary>
+    private TransactionDropItem? _selectedDropItem;
+
+    /// <summary> Linked to <see cref="_selectedDropItem"/> but with more state for editing. Kept in sync by setter on property. </summary>
+    private SelectedItemViewModel? _selectedItem;
+
+    private TransactionDropItem? SelectedDropItem
+    {
+        get => _selectedDropItem;
+        set
+        {
+            _selectedDropItem = value;
+            _selectedItem = _TryCreateSelectedItem(_selectedDropItem); //Update so always in sync with drop-item
+        }
+    }
 
     /// <summary> If true - only renders drop-zone, no items </summary>
     private bool _hideDropItems = false;
@@ -32,7 +45,7 @@ public partial class DragAndDropTransactions
             .ToImmutableArray();
 
         var matched = result.MatchedRows
-            .Select(mr => TransactionDropItem.FromMatchedRow(mr, allSelections.TryFindMatch(mr.Section)))
+            .Select(TransactionDropItem.FromMatchedRow)
             .ToImmutableList();
         var unmatched = result.UnMatchedRows
             .Select(TransactionDropItem.FromUnmatchedRow)
@@ -66,19 +79,13 @@ public partial class DragAndDropTransactions
         SectionHeader? Section,
         Match? Match)
     {
-        public static TransactionDropItem FromMatchedRow(TransactionRowMatched mr, SectionSelectorRow? selection) =>
+        public static TransactionDropItem FromMatchedRow(TransactionRowMatched mr) =>
             new(_CreateUniqueId(),
                 mr.MatchDescription,
                 mr.Transaction,
                 _ToDropZoneId(mr.Category, mr.Section),
                 mr.Section,
-                mr.LatestMatch)
-            {
-                SelectionId = selection?.Id,
-                MatchPattern = mr.LatestMatch.Pattern,
-                MatchOverrideDescription = mr.LatestMatch.OverrideDescription,
-                AddOnlyForTransaction = mr.LatestMatch.ExactDate.HasValue
-            };
+                mr.LatestMatch);
 
         public static TransactionDropItem FromUnmatchedRow(TransactionRowUnMatched r)
         {
@@ -89,18 +96,8 @@ public partial class DragAndDropTransactions
                 transaction,
                 _unMatchedDropZoneId,
                 Section: null,
-                Match: null)
-            {
-                MatchPattern = description, //Initialise to match on Description
-                MatchOverrideDescription = description.ToCamelCase()
-            };
+                Match: null);
         }
-
-        /// <summary> SelectionId refers to Ids for items in <see cref="ViewModel.AllSections"/> from selector set </summary>
-        public string? SelectionId { get; set; }
-        public string? MatchPattern { get; set; }
-        public string? MatchOverrideDescription { get; set; }
-        public bool AddOnlyForTransaction { get; set; }
 
         public string SectionDropZoneId { get; set; } = DropZoneId;
         
@@ -110,6 +107,40 @@ public partial class DragAndDropTransactions
         public string AmountAndDescription => $"{Transaction.AmountDisplayAbsolute} {Description}";
 
         public bool IsCredit => Transaction.Amount >= 0;
+    }
+
+    public record SelectedItemViewModel(TransactionDropItem DropItem)
+    {
+        /// <summary> SelectionId refers to Ids for items in <see cref="ViewModel.AllSections"/> from selector set </summary>
+        public string? SelectionId { get; set; }
+        public string? MatchPattern { get; set; }
+        public string? MatchOverrideDescription { get; set; }
+        public bool AddOnlyForTransaction { get; set; }
+    }
+
+    private SelectedItemViewModel? _TryCreateSelectedItem(TransactionDropItem? selectedItem)
+    {
+        if (selectedItem == null)
+        {
+            return null;
+        }
+
+        var section = selectedItem.Section;
+        var match = selectedItem.Match;
+        var description = selectedItem.Transaction.Description;
+        return section != null && match != null
+            ? new SelectedItemViewModel(selectedItem)
+            {
+                SelectionId = Model.AllSections.TryFindMatch(section)?.Id,
+                MatchPattern = match.Pattern,
+                MatchOverrideDescription = match.OverrideDescription,
+                AddOnlyForTransaction = match.ExactDate.HasValue
+            }
+            : new SelectedItemViewModel(selectedItem)
+            {
+                MatchPattern = description, //Initialise to match on Description
+                MatchOverrideDescription = description.ToCamelCase()
+            };
     }
 
     private static readonly string _unMatchedDropZoneId = _CreateUniqueId();
