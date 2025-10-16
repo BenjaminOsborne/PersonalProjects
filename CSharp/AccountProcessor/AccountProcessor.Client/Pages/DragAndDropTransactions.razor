@@ -13,14 +13,14 @@
     
     <MudDivider Class="mt-2 mb-1" />
     <MudStack Row="true" Class="align-center">
-        <MudPaper Class="border-dotted border-2 mud-border-primary pa-1" Elevation="0">
+        <MudPaper Class="border-dotted border-2 mud-border-primary pa-3" Elevation="0">
             <MudCheckBox Class="mr-4" @bind-Value=@_hideDropItems>Collapse Drop Zone</MudCheckBox>
         </MudPaper>
         
         @if (SelectedItem != null)
         {
             var item = SelectedItem!;
-            <MudPaper Class="border-dotted border-2 mud-border-primary pa-1" Elevation="0">
+            <MudPaper Class="border-dotted border-2 mud-border-primary pa-3" Elevation="0">
                 <MudStack Row="true" Class="align-center mt-3 mb-3 ml-2 mr-2">
                     <MudText>@item.AmountDisplay</MudText>
                     <MudDivider Vertical="true" FlexItem=true />
@@ -30,11 +30,10 @@
                 </MudStack>
             </MudPaper>
 
-            if (item is { Section: not null, Match: not null })
-            {
-                <MudPaper Class="border-dotted border-2 mud-border-secondary pa-1" Elevation="0">
-                    <MudStack Row="true" Class="align-center mt-3 mb-3 ml-2 mr-2">
-                        
+            <MudPaper Class="border-dotted border-2 mud-border-secondary" Elevation="0">
+                <MudStack Row="true" Class="align-center ml-1 mr-1">
+                    @* Fixed Width Selector *@
+                    <MudPaper Elevation="0" Width="275px">
                         <MudSelect T=string
                                    @bind-Value=@item.SelectionId
                                    Placeholder="Choose category"
@@ -56,17 +55,18 @@
                                 <MudSelectItem Value=@cat.Id>@cat.Display</MudSelectItem>
                             }
                         </MudSelect>
-
-                        <MudText>@item.Section.Parent.Name</MudText>
-                        <MudDivider Vertical="true" FlexItem=true/>
-                        <MudText>@item.Section.Name</MudText>
-                        <MudDivider Vertical="true" FlexItem=true/>
-                        <MudText>@item.Match.Pattern</MudText>
-                        <MudDivider Vertical="true" FlexItem=true/>
-                        <MudText>@item.Match.ExactDate.HasValue</MudText>
-                    </MudStack>
-                </MudPaper>
-            }
+                    </MudPaper>
+                    
+                    <MudPaper Elevation="0" Width="200px">
+                        <MudTextField T=string @bind-Value=@item.MatchPattern Typo=Typo.body2 />
+                    </MudPaper>
+                    <MudPaper Elevation="0" Width="200px">
+                        <MudTextField T=string @bind-Value=@item.MatchDescription Typo=Typo.body2 />
+                    </MudPaper>
+                    <MudDivider Vertical="true" FlexItem=true/>
+                    <MudCheckBox @bind-Value=@item.AddOnlyForTransaction />
+                </MudStack>
+            </MudPaper>
         }
     </MudStack>
     <MudDivider Class="mt-1 mb-2" />

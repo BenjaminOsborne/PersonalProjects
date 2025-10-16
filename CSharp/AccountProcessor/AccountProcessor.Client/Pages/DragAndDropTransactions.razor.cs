@@ -73,7 +73,10 @@ public partial class DragAndDropTransactions
                 mr.Section,
                 mr.LatestMatch)
             {
-                SelectionId = selection?.Id
+                SelectionId = selection?.Id,
+                MatchPattern = mr.LatestMatch.Pattern,
+                MatchDescription = mr.LatestMatch.OverrideDescription,
+                AddOnlyForTransaction = mr.LatestMatch.ExactDate.HasValue
             };
 
         public static TransactionDropItem FromUnmatchedRow(TransactionRowUnMatched r) =>
@@ -86,6 +89,9 @@ public partial class DragAndDropTransactions
 
         /// <summary> SelectionId refers to Ids for items in <see cref="ViewModel.AllSections"/> from selector set </summary>
         public string? SelectionId { get; set; }
+        public string? MatchPattern { get; set; }
+        public string? MatchDescription { get; set; }
+        public bool AddOnlyForTransaction { get; set; }
 
         public string SectionDropZoneId { get; set; } = DropZoneId;
         
