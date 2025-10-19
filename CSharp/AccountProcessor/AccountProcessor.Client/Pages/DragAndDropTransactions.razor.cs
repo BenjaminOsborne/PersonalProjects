@@ -120,6 +120,12 @@ public partial class DragAndDropTransactions
 
     public record SelectedItemViewModel(TransactionDropItem DropItem)
     {
+        public bool CanDeleteMatch { get; } = DropItem.Match != null && DropItem.Section != null;
+
+        public bool CanSave => SelectionId != null &&
+                               MatchPattern != null &&
+                               Match.GetIsValidResult(MatchPattern!, MatchOverrideDescription).IsSuccess;
+
         /// <summary> SelectionId refers to Ids for items in <see cref="ViewModel.AllSections"/> from selector set </summary>
         public string? SelectionId { get; set; }
         public string? MatchPattern { get; set; }
@@ -206,5 +212,27 @@ public partial class DragAndDropTransactions
         // - Need workflow to "split" match when selected to break a single transaction off (create a specific match for it)
 
         //TODO: Display error if fails!
+    }
+
+    private async Task OnClickSaveMatchAsync(SelectedItemViewModel selectedItem)
+    {
+        //TODO: Impl...
+        //Handle if no existing Match (i.e. create new match)
+        //Handle if existing -> Should delete and add?
+        //Add option to "split" out match
+
+        await Task.CompletedTask;
+    }
+
+    private async Task OnClickDeleteMatchAsync(SelectedItemViewModel selectedItem)
+    {
+        var dropItem = selectedItem.DropItem;
+        var section = dropItem.Section;
+        var match = dropItem.Match;
+        if (section == null || match == null)
+        {
+            return;
+        }
+        await DeleteMatchAsync(section, match);
     }
 }

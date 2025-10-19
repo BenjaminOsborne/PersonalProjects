@@ -414,7 +414,7 @@ public class Match
         Pattern = pattern;
         OverrideDescription = overrideDescription;
         ExactDate = exactDate;
-        _wildCardCount = pattern.Count(c => c == '*');
+        _wildCardCount = _GetWildCardCountFromPattern(pattern);
         _regex = LazyHelper.Create(() => _BuildRegex(pattern));
     }
 
@@ -422,17 +422,27 @@ public class Match
     /// - <see cref="Pattern"/> must contain at least 3 letters or numbers (i.e. not just whitespace / wildcard)
     /// - <see cref="OverrideDescription"/> can be null, but if set, must be at least 3 characters (i.e. not just whitespace / wildcard)
     /// </summary>
-    public Result GetIsValidResult()
+    public Result GetIsValidResult() =>
+        _GetIsValidResult(Pattern, _wildCardCount, OverrideDescription);
+    
+    public static Result GetIsValidResult(string pattern, string? overrideDescription) =>
+        _GetIsValidResult(pattern, _GetWildCardCountFromPattern(pattern), overrideDescription);
+
+    private static int _GetWildCardCountFromPattern(string pattern) =>
+        pattern.Count(c => c == '*');
+
+    private static Result _GetIsValidResult(string pattern, int wildCardCount, string? overrideDescription)
     {
-        if (Pattern.IsNullOrEmpty())
+        if (pattern.IsNullOrEmpty())
         {
             return Result.Fail("Pattern must be defined");
         }
-        if (_wildCardCount > 0 && Pattern.Count(char.IsLetterOrDigit) < 3)
+        if (wildCardCount > 0 && pattern.Count(char.IsLetterOrDigit) < 3)
         {
             return Result.Fail("Match Pattern with wildcard(s) should contain at least 3 characters");
         }
-        if (OverrideDescription != null && OverrideDescription.Count(char.IsLetterOrDigit) < 3)
+
+        if (overrideDescription != null && overrideDescription.Count(char.IsLetterOrDigit) < 3)
         {
             return Result.Fail("If Match Override Description defined, must be at least 3 characters");
         }

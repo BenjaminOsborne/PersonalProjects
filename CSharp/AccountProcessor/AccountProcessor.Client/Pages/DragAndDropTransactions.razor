@@ -66,6 +66,8 @@
                         </MudPaper>
                         <MudDivider Vertical="true" FlexItem=true />
                         <MudCheckBox @bind-Value=@selectedItem.AddOnlyForTransaction />
+                        <MudIconButton Disabled=@(!selectedItem.CanSave) Icon="@Icons.Material.Outlined.Save" OnClick="@(e => OnClickSaveMatchAsync(selectedItem))" />
+                        <MudIconButton Disabled=@(!selectedItem.CanDeleteMatch) Icon="@Icons.Material.Filled.Delete" OnClick="@(e => OnClickDeleteMatchAsync(selectedItem))" />
                     </MudStack>
                 </MudPaper>
             }
