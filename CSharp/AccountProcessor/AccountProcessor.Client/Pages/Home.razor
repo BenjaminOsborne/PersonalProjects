@@ -41,7 +41,9 @@
 
         @if (Model.DragAndDropModel != null)
         {
-            <DragAndDropTransactions Model=@Model.DragAndDropModel />
+            <DragAndDropTransactions Model=@Model.DragAndDropModel
+                                     DeleteMatchAsync=@Model.DragDropDeleteMatchAsync
+                                     OnMoveToSectionAsync=@Model.DragDropOnMoveToSectionAsync />
         }
     </MudTabPanel>
 

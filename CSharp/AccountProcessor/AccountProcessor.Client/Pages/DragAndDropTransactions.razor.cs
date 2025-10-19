@@ -1,5 +1,4 @@
-﻿using AccountProcessor.Client.ClientServices;
-using AccountProcessor.Core;
+﻿using AccountProcessor.Core;
 using AccountProcessor.Core.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -9,8 +8,6 @@ namespace AccountProcessor.Client.Pages;
 
 public partial class DragAndDropTransactions
 {
-    [Inject] private IClientTransactionCategoriser _categoriser { get; init; } = null!;
-
     /// <summary> Selected drop item from any of the sections (Categorised and UnCategorised) </summary>
     private TransactionDropItem? _selectedDropItem;
 
@@ -58,6 +55,12 @@ public partial class DragAndDropTransactions
 
     [Parameter]
     public required ViewModel Model { get; init; }
+
+    [Parameter]
+    public required Func<SectionHeader, Match, Task> DeleteMatchAsync { get; init; }
+    
+    [Parameter]
+    public required Func<Transaction, SectionHeader, Task> OnMoveToSectionAsync { get; init; }
 
     public record ViewModel(
         IReadOnlyList<CategorySummary> Categories,
@@ -179,11 +182,7 @@ public partial class DragAndDropTransactions
                 return; //Invalid: Both should be defined
             }
 
-            var result = await _categoriser.DeleteMatchAsync(new DeleteMatchRequest(section, match));
-            if (!result.IsSuccess)
-            {
-                return; //DeleteMatch Failed
-            }
+            await DeleteMatchAsync(section, match);
         }
         else //Apply exactly match on section
         {
@@ -195,15 +194,7 @@ public partial class DragAndDropTransactions
                 return; //Cannot find section for Drop Zone
             }
 
-            var result = await _categoriser.MatchOnceAsync(new MatchRequest(
-                di.Transaction,
-                dropSec.Section,
-                di.Transaction.Description,
-                OverrideDescription: null));
-            if (!result.IsSuccess)
-            {
-                return; //Update failed
-            }
+            await OnMoveToSectionAsync(di.Transaction, dropSec.Section);
         }
             
         di.SectionDropZoneId = dropZoneId; //Update internal model

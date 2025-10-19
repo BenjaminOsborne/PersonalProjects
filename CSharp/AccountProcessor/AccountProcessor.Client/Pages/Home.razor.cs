@@ -216,6 +216,16 @@ public class HomeViewModel
     public Task LoadTransactionsAndCategoriseAsync(WrappedResult<ImmutableArray<Transaction>> result) =>
         _transactionsModel.UpdateLoadedTransactionsAsync(result);
 
+    public Task DragDropDeleteMatchAsync(SectionHeader section, Match match) =>
+        _transactionsModel.ChangeMatchModelAsync(
+            fnPerform: cat => cat.DeleteMatchAsync(new(section, match)),
+            refreshCategories: false);
+
+    public Task DragDropOnMoveToSectionAsync(Transaction transaction, SectionHeader section) =>
+        _transactionsModel.ChangeMatchModelAsync(
+            fnPerform: cat => cat.MatchOnceAsync(new(transaction, section, transaction.Description, OverrideDescription: null)),
+            refreshCategories: false);
+
     private void _UpdateLastActionResult(Result result) =>
         LastActionResult = result;
 
