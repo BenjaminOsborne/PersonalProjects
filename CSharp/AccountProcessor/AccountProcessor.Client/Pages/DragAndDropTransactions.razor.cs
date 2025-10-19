@@ -1,13 +1,16 @@
-﻿using System.Collections.Immutable;
+﻿using AccountProcessor.Client.ClientServices;
 using AccountProcessor.Core;
 using AccountProcessor.Core.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using System.Collections.Immutable;
 
 namespace AccountProcessor.Client.Pages;
 
 public partial class DragAndDropTransactions
 {
+    [Inject] private IClientTransactionCategoriser _categoriser { get; init; } = null!;
+
     /// <summary> Selected drop item from any of the sections (Categorised and UnCategorised) </summary>
     private TransactionDropItem? _selectedDropItem;
 
@@ -75,7 +78,6 @@ public partial class DragAndDropTransactions
     public record TransactionDropItem(string UniqueItemId,
         string Description,
         Transaction Transaction,
-        string DropZoneId,
         SectionHeader? Section,
         Match? Match)
     {
@@ -83,9 +85,11 @@ public partial class DragAndDropTransactions
             new(_CreateUniqueId(),
                 mr.MatchDescription,
                 mr.Transaction,
-                _ToDropZoneId(mr.Category, mr.Section),
                 mr.Section,
-                mr.LatestMatch);
+                mr.LatestMatch)
+            {
+                SectionDropZoneId = _ToDropZoneId(mr.Category, mr.Section)
+            };
 
         public static TransactionDropItem FromUnmatchedRow(TransactionRowUnMatched r)
         {
@@ -94,12 +98,14 @@ public partial class DragAndDropTransactions
             return new(_CreateUniqueId(),
                 description,
                 transaction,
-                _unMatchedDropZoneId,
                 Section: null,
-                Match: null);
+                Match: null)
+            {
+                SectionDropZoneId = _unMatchedDropZoneId
+            };
         }
 
-        public string SectionDropZoneId { get; set; } = DropZoneId;
+        public string SectionDropZoneId { get; set; }
         
         public string AmountDisplay => Transaction.AmountDisplay;
         public string DateDisplay => Transaction.DateDisplay;
@@ -150,16 +156,64 @@ public partial class DragAndDropTransactions
     private static string _ToDropZoneId(CategoryHeader category, SectionHeader section) =>
         $"{category.Name}|{category.Order}:{section.Name}|{section.Order}|{section.Month}";
 
-    private void ItemUpdated(MudItemDropInfo<TransactionDropItem> dropItem)
+    private async Task ItemUpdatedAsync(MudItemDropInfo<TransactionDropItem> dropItem)
     {
         var di = dropItem.Item;
-        if (di != null)
+        if (di == null)
         {
-            di.SectionDropZoneId = dropItem.DropzoneIdentifier;
-
-            //TODO: Execute move and rebuild
-            // - Assume it updates/creates the whole Match (so could move/update many items)
-            // - Need workflow to "split" match when selected to break a single transaction off (create a specific match for it)
+            return;
         }
+
+        var dropZoneId = dropItem.DropzoneIdentifier;
+        if (di.SectionDropZoneId == dropZoneId)
+        {
+            return; //No change
+        }
+
+        if (dropZoneId == _unMatchedDropZoneId) //If moving from Match to Unmatched -> should have Section & Match defined
+        {
+            var section = di.Section;
+            var match = di.Match;
+            if (section == null || match == null)
+            {
+                return; //Invalid: Both should be defined
+            }
+
+            var result = await _categoriser.DeleteMatchAsync(new DeleteMatchRequest(section, match));
+            if (!result.IsSuccess)
+            {
+                return; //DeleteMatch Failed
+            }
+        }
+        else //Apply exactly match on section
+        {
+            var dropSec = Model.Categories
+                .SelectMany(x => x.Sections)
+                .FirstOrDefault(x => x.DropZoneId == dropZoneId);
+            if (dropSec == null)
+            {
+                return; //Cannot find section for Drop Zone
+            }
+
+            var result = await _categoriser.MatchOnceAsync(new MatchRequest(
+                di.Transaction,
+                dropSec.Section,
+                di.Transaction.Description,
+                OverrideDescription: null));
+            if (!result.IsSuccess)
+            {
+                return; //Update failed
+            }
+        }
+            
+        di.SectionDropZoneId = dropZoneId; //Update internal model
+
+        //TODO: Trigger full refresh!?
+
+        //TODO: Execute move and rebuild
+        // - Assume it updates/creates the whole Match (so could move/update many items)
+        // - Need workflow to "split" match when selected to break a single transaction off (create a specific match for it)
+
+        //TODO: Display error if fails!
     }
 }

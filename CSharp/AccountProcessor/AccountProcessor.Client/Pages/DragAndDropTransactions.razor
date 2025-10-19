@@ -76,7 +76,7 @@
     <MudDropContainer T="TransactionDropItem"
                       Items=@Model.Transactions
                       ItemsSelector="@((item, dropzoneId) => item.SectionDropZoneId == dropzoneId)"
-                      ItemDropped="ItemUpdated"
+                      ItemDropped="ItemUpdatedAsync"
                       Class="d-flex flex-wrap flex-grow-1">
         <ChildContent>
             <MudStack>
