@@ -6,6 +6,12 @@ using System.Collections.Immutable;
 
 namespace AccountProcessor.Client.Pages;
 
+public record ExistingMatch(SectionHeader Section, Match Match);
+
+public record UpdateMatchRequest(
+    ExistingMatch? ClearExisting,
+    MatchRequest ApplyMatch);
+
 public partial class DragAndDropTransactions
 {
     /// <summary> Selected drop item from any of the sections (Categorised and UnCategorised) </summary>
@@ -57,10 +63,16 @@ public partial class DragAndDropTransactions
     public required ViewModel Model { get; init; }
 
     [Parameter]
-    public required Func<SectionHeader, Match, Task> DeleteMatchAsync { get; init; }
+    public required Func<ExistingMatch, Task> DeleteMatchAsync { get; init; }
     
     [Parameter]
     public required Func<Transaction, SectionHeader, Task> OnMoveToSectionAsync { get; init; }
+    
+    [Parameter]
+    public required Func<UpdateMatchRequest, Task> UpdateMatchAsync { get; init; }
+
+    [Parameter]
+    public required Action<Result> RaiseError { get; init; }
 
     public record ViewModel(
         IReadOnlyList<CategorySummary> Categories,
@@ -122,12 +134,13 @@ public partial class DragAndDropTransactions
     {
         public bool CanDeleteMatch { get; } = DropItem.Match != null && DropItem.Section != null;
 
-        public bool CanSave => SelectionId != null &&
+        public bool CanSave => SectionSelectionId != null &&
                                MatchPattern != null &&
                                Match.GetIsValidResult(MatchPattern!, MatchOverrideDescription).IsSuccess;
 
         /// <summary> SelectionId refers to Ids for items in <see cref="ViewModel.AllSections"/> from selector set </summary>
-        public string? SelectionId { get; set; }
+        public string? SectionSelectionId { get; set; }
+        
         public string? MatchPattern { get; set; }
         public string? MatchOverrideDescription { get; set; }
         public bool AddOnlyForTransaction { get; set; }
@@ -146,7 +159,7 @@ public partial class DragAndDropTransactions
         return section != null && match != null
             ? new SelectedItemViewModel(selectedItem)
             {
-                SelectionId = Model.AllSections.TryFindMatch(section)?.Id,
+                SectionSelectionId = Model.AllSections.TryFindMatch(section)?.Id,
                 MatchPattern = match.Pattern,
                 MatchOverrideDescription = match.OverrideDescription,
                 AddOnlyForTransaction = match.ExactDate.HasValue
@@ -170,6 +183,7 @@ public partial class DragAndDropTransactions
         var di = dropItem.Item;
         if (di == null)
         {
+            _RaiseError("Empty Item");
             return;
         }
 
@@ -185,34 +199,39 @@ public partial class DragAndDropTransactions
             var match = di.Match;
             if (section == null || match == null)
             {
-                return; //Invalid: Both should be defined
+                _RaiseError("Attempt to move item to undefined - but does not have Section or Match to clear");
+                return;
             }
 
-            await DeleteMatchAsync(section, match);
+            await DeleteMatchAsync(new(section, match));
         }
         else //Apply exactly match on section
         {
-            var dropSec = Model.Categories
-                .SelectMany(x => x.Sections)
-                .FirstOrDefault(x => x.DropZoneId == dropZoneId);
-            if (dropSec == null)
+            var section = _TryFindSectionForId(dropZoneId);
+            if (section == null)
             {
+                _RaiseError($"Attempt to move to section - cannot find: {dropZoneId}");
                 return; //Cannot find section for Drop Zone
             }
 
-            await OnMoveToSectionAsync(di.Transaction, dropSec.Section);
+            await OnMoveToSectionAsync(di.Transaction, section);
         }
             
-        di.SectionDropZoneId = dropZoneId; //Update internal model
-
-        //TODO: Trigger full refresh!?
+        di.SectionDropZoneId = dropZoneId; //Update internal model (largely irrelevant as whole view currently refreshed)
 
         //TODO: Execute move and rebuild
         // - Assume it updates/creates the whole Match (so could move/update many items)
         // - Need workflow to "split" match when selected to break a single transaction off (create a specific match for it)
 
-        //TODO: Display error if fails!
     }
+
+    private SectionHeader? _TryFindSectionForId(string? sectionId) =>
+        sectionId != null
+            ? Model.Categories
+                .SelectMany(x => x.Sections)
+                .FirstOrDefault(x => x.DropZoneId == sectionId)
+                ?.Section
+            : null;
 
     private async Task OnClickSaveMatchAsync(SelectedItemViewModel selectedItem)
     {
@@ -221,7 +240,25 @@ public partial class DragAndDropTransactions
         //Handle if existing -> Should delete and add?
         //Add option to "split" out match
 
-        await Task.CompletedTask;
+        var applySection = _TryFindSectionForId(selectedItem.SectionSelectionId);
+        if (applySection == null)
+        {
+            _RaiseError($"ClickSave: Cannot find Section for {selectedItem.SectionSelectionId}");
+            return;
+        }
+        
+        var di = selectedItem.DropItem;
+
+        var existingMatch = di is { Section: not null, Match: not null }
+            ? new ExistingMatch(di.Section, di.Match)
+            : null;
+
+        var apply = new MatchRequest(di.Transaction,
+            applySection,
+            selectedItem.MatchPattern,
+            selectedItem.MatchOverrideDescription);
+        
+        await UpdateMatchAsync(new(existingMatch, apply));
     }
 
     private async Task OnClickDeleteMatchAsync(SelectedItemViewModel selectedItem)
@@ -231,8 +268,12 @@ public partial class DragAndDropTransactions
         var match = dropItem.Match;
         if (section == null || match == null)
         {
+            _RaiseError("Delete Match - empty Section/Match to clear");
             return;
         }
-        await DeleteMatchAsync(section, match);
+        await DeleteMatchAsync(new(section, match));
     }
+
+    private void _RaiseError(string error) =>
+        RaiseError.Invoke(Result.Fail($"Drag&Drop: {error}"));
 }

@@ -43,7 +43,9 @@
         {
             <DragAndDropTransactions Model=@Model.DragAndDropModel
                                      DeleteMatchAsync=@Model.DragDropDeleteMatchAsync
-                                     OnMoveToSectionAsync=@Model.DragDropOnMoveToSectionAsync />
+                                     OnMoveToSectionAsync=@Model.DragDropOnMoveToSectionAsync
+                                     UpdateMatchAsync=@Model.DragDropUpdateMatchAsync
+                                     RaiseError=@Model.RaiseError/>
         }
     </MudTabPanel>
 
