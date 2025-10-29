@@ -149,9 +149,11 @@ public static class DirectoryHelper
                 Path.Combine("C:", "Users", "Ben", "GoogleDrive") //When mirroring to specific folder
             }
         .Select(root => new DirectoryInfo(root))
+        .Select(dir => Path.Combine(dir.FullName, "Finances", "Accounting", "AccountProcessor"))
+        .Concat([Path.Combine("C:", "Users", "User", "Documents")]) //Custom additional location
         .Select(dir =>
         {
-            var jsonPath = Path.Combine(dir.FullName, "Finances", "Accounting", "AccountProcessor", "MatchModel.json");
+            var jsonPath = Path.Combine(dir, "MatchModel.json");
             return File.Exists(jsonPath)
                 ? jsonPath
                 : null;

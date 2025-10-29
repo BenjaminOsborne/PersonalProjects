@@ -230,10 +230,10 @@ public class HomeViewModel
         _transactionsModel.ChangeMatchModelAsync(
             fnPerformAsync: async cat =>
             {
-                var clear = update.ClearExisting;
-                if (clear != null)
+                var delete = update.DeleteExisting;
+                if (delete != null)
                 {
-                    await cat.DeleteMatchAsync(new(clear.Section, clear.Match));
+                    await cat.DeleteMatchAsync(delete);
                 }
                 return await cat.ApplyMatchAsync(update.ApplyMatch);
             },

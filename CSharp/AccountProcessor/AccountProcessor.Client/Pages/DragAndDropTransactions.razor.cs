@@ -9,7 +9,7 @@ namespace AccountProcessor.Client.Pages;
 public record ExistingMatch(SectionHeader Section, Match Match);
 
 public record UpdateMatchRequest(
-    ExistingMatch? ClearExisting,
+    DeleteMatchRequest? DeleteExisting,
     MatchRequest ApplyMatch);
 
 public partial class DragAndDropTransactions
@@ -207,7 +207,7 @@ public partial class DragAndDropTransactions
         }
         else //Apply exactly match on section
         {
-            var section = _TryFindSectionForId(dropZoneId);
+            var section = _TryFindDropSectionForId(dropZoneId);
             if (section == null)
             {
                 _RaiseError($"Attempt to move to section - cannot find: {dropZoneId}");
@@ -225,12 +225,19 @@ public partial class DragAndDropTransactions
 
     }
 
-    private SectionHeader? _TryFindSectionForId(string? sectionId) =>
-        sectionId != null
+    private SectionHeader? _TryFindDropSectionForId(string? dropZoneId) =>
+        dropZoneId != null
             ? Model.Categories
                 .SelectMany(x => x.Sections)
-                .FirstOrDefault(x => x.DropZoneId == sectionId)
+                .FirstOrDefault(x => x.DropZoneId == dropZoneId)
                 ?.Section
+            : null;
+
+    private SectionHeader? _TryFindSectionForSelectionId(string? sectionSelectionId) =>
+        sectionSelectionId != null
+            ? Model.AllSections
+                .FirstOrDefault(x => x.Id == sectionSelectionId)
+                ?.Header
             : null;
 
     private async Task OnClickSaveMatchAsync(SelectedItemViewModel selectedItem)
@@ -240,7 +247,7 @@ public partial class DragAndDropTransactions
         //Handle if existing -> Should delete and add?
         //Add option to "split" out match
 
-        var applySection = _TryFindSectionForId(selectedItem.SectionSelectionId);
+        var applySection = _TryFindSectionForSelectionId(selectedItem.SectionSelectionId);
         if (applySection == null)
         {
             _RaiseError($"ClickSave: Cannot find Section for {selectedItem.SectionSelectionId}");
@@ -250,7 +257,7 @@ public partial class DragAndDropTransactions
         var di = selectedItem.DropItem;
 
         var existingMatch = di is { Section: not null, Match: not null }
-            ? new ExistingMatch(di.Section, di.Match)
+            ? new DeleteMatchRequest(di.Section, di.Match)
             : null;
 
         var apply = new MatchRequest(di.Transaction,
