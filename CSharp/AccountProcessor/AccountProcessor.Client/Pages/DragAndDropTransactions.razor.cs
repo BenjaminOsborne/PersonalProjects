@@ -225,21 +225,6 @@ public partial class DragAndDropTransactions
 
     }
 
-    private SectionHeader? _TryFindDropSectionForId(string? dropZoneId) =>
-        dropZoneId != null
-            ? Model.Categories
-                .SelectMany(x => x.Sections)
-                .FirstOrDefault(x => x.DropZoneId == dropZoneId)
-                ?.Section
-            : null;
-
-    private SectionHeader? _TryFindSectionForSelectionId(string? sectionSelectionId) =>
-        sectionSelectionId != null
-            ? Model.AllSections
-                .FirstOrDefault(x => x.Id == sectionSelectionId)
-                ?.Header
-            : null;
-
     private async Task OnClickSaveMatchAsync(SelectedItemViewModel selectedItem)
     {
         //TODO: Impl...
@@ -283,4 +268,19 @@ public partial class DragAndDropTransactions
 
     private void _RaiseError(string error) =>
         RaiseError.Invoke(Result.Fail($"Drag&Drop: {error}"));
+
+    private SectionHeader? _TryFindDropSectionForId(string? dropZoneId) =>
+        dropZoneId != null
+            ? Model.Categories
+                .SelectMany(x => x.Sections)
+                .FirstOrDefault(x => x.DropZoneId == dropZoneId)
+                ?.Section
+            : null;
+
+    private SectionHeader? _TryFindSectionForSelectionId(string? sectionSelectionId) =>
+        sectionSelectionId != null
+            ? Model.AllSections
+                .FirstOrDefault(x => x.Id == sectionSelectionId)
+                ?.Header
+            : null;
 }
