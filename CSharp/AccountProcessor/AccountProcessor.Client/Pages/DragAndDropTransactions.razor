@@ -65,9 +65,18 @@
                             <MudTextField T=string @bind-Value=@selectedItem.MatchOverrideDescription Typo=Typo.body2 />
                         </MudPaper>
                         <MudDivider Vertical="true" FlexItem=true />
-                        <MudCheckBox @bind-Value=@selectedItem.AddOnlyForTransaction />
-                        <MudIconButton Disabled=@(!selectedItem.CanSave) Icon="@Icons.Material.Outlined.Save" OnClick="@(e => OnClickSaveMatchAsync(selectedItem))" />
-                        <MudIconButton Disabled=@(!selectedItem.CanDeleteMatch) Icon="@Icons.Material.Filled.Delete" OnClick="@(e => OnClickDeleteMatchAsync(selectedItem))" />
+                        <MudTooltip Text="Add for this transaction only">
+                            <MudCheckBox @bind-Value=@selectedItem.AddOnlyForTransaction />
+                        </MudTooltip>
+                        <MudTooltip Text="Add/Update Match">
+                            <MudIconButton Disabled=@(!selectedItem.CanSave) Icon="@Icons.Material.Outlined.Save" OnClick="@(e => OnClickSaveMatchAsync(selectedItem))" />
+                        </MudTooltip>
+                        <MudTooltip Text="Delete Match">
+                            <MudIconButton Disabled=@(!selectedItem.CanDeleteMatch) Icon="@Icons.Material.Filled.Delete" OnClick="@(e => OnClickDeleteMatchAsync(selectedItem))" />
+                        </MudTooltip>
+                        <MudTooltip Text="Split Out Transaction">
+                            <MudIconButton Disabled=@(!selectedItem.CanSplitMatch) Icon="@Icons.Material.Outlined.ContentCut" OnClick="@(e => OnClickSplitMatchAsync(selectedItem))" />
+                        </MudTooltip>
                     </MudStack>
                 </MudPaper>
             }

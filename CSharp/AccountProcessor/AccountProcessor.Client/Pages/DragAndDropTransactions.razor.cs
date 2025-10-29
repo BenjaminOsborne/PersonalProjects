@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 
 namespace AccountProcessor.Client.Pages;
 
-public record ExistingMatch(SectionHeader Section, Match Match);
+public record ExistingMatch(Transaction Transaction, SectionHeader Section, Match Match);
 
 public record UpdateMatchRequest(
     DeleteMatchRequest? DeleteExisting,
@@ -70,6 +70,9 @@ public partial class DragAndDropTransactions
     
     [Parameter]
     public required Func<UpdateMatchRequest, Task> UpdateMatchAsync { get; init; }
+    
+    [Parameter]
+    public required Func<ExistingMatch, Task> SplitMatchAsync { get; init; }
 
     [Parameter]
     public required Action<Result> RaiseError { get; init; }
@@ -132,7 +135,9 @@ public partial class DragAndDropTransactions
 
     public record SelectedItemViewModel(TransactionDropItem DropItem)
     {
-        public bool CanDeleteMatch { get; } = DropItem.Match != null && DropItem.Section != null;
+        public bool CanDeleteMatch { get; } = _HasSectionAndMatch(DropItem);
+
+        public bool CanSplitMatch { get; } = _HasSectionAndMatch(DropItem) && DropItem.Match?.ExactDate == null;
 
         public bool CanSave => SectionSelectionId != null &&
                                MatchPattern != null &&
@@ -144,6 +149,9 @@ public partial class DragAndDropTransactions
         public string? MatchPattern { get; set; }
         public string? MatchOverrideDescription { get; set; }
         public bool AddOnlyForTransaction { get; set; }
+
+        private static bool _HasSectionAndMatch(TransactionDropItem dropItem) =>
+            dropItem is { Match: not null, Section: not null };
     }
 
     private SelectedItemViewModel? _TryCreateSelectedItem(TransactionDropItem? selectedItem)
@@ -203,7 +211,7 @@ public partial class DragAndDropTransactions
                 return;
             }
 
-            await DeleteMatchAsync(new(section, match));
+            await DeleteMatchAsync(new(di.Transaction, section, match));
         }
         else //Apply exactly match on section
         {
@@ -263,7 +271,20 @@ public partial class DragAndDropTransactions
             _RaiseError("Delete Match - empty Section/Match to clear");
             return;
         }
-        await DeleteMatchAsync(new(section, match));
+        await DeleteMatchAsync(new(dropItem.Transaction, section, match));
+    }
+
+    private async Task OnClickSplitMatchAsync(SelectedItemViewModel selectedItem)
+    {
+        var dropItem = selectedItem.DropItem;
+        var section = dropItem.Section;
+        var match = dropItem.Match;
+        if (section == null || match == null)
+        {
+            _RaiseError("Split Match - empty Section/Match to clear");
+            return;
+        }
+        await SplitMatchAsync(new(dropItem.Transaction, section, match));
     }
 
     private void _RaiseError(string error) =>

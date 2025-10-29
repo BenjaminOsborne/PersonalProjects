@@ -239,6 +239,16 @@ public class HomeViewModel
             },
             refreshCategories: false);
 
+    /// <summary> Currently implemented by adding a specific match on the exact Transaction </summary>
+    public Task DragDropSplitMatchAsync(ExistingMatch existing) =>
+        _transactionsModel.ChangeMatchModelAsync(
+            fnPerformAsync: cat =>
+            {
+                var trans = existing.Transaction;
+                return cat.MatchOnceAsync(new(trans, existing.Section, trans.Description, OverrideDescription: null));
+            },
+            refreshCategories: false);
+
     public void RaiseError(Result error) =>
         _UpdateLastActionResult(error);
 
