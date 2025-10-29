@@ -136,7 +136,7 @@ public class HomeViewModel
 
     public Task CreateNewSectionAsync() =>
         _transactionsModel.ChangeMatchModelAsync(
-            fnPerform: async cat =>
+            fnPerformAsync: async cat =>
             {
                 var category = _transactionsModel.Categories?.SingleOrDefault(x => x.Name == _newSection.CategoryName);
                 if (category == null || _newSection.Name.IsNullOrWhiteSpace())
@@ -153,7 +153,7 @@ public class HomeViewModel
 
     public Task AddNewMatchForRowAsync(TransactionRowUnMatched row) =>
         _transactionsModel.ChangeMatchModelAsync(
-            fnPerform: async cat =>
+            fnPerformAsync: async cat =>
             {
                 if (!row.AddOnlyForTransaction && row.MatchOn.IsNullOrEmpty())
                 {
@@ -210,7 +210,7 @@ public class HomeViewModel
 
     public Task ClearMatchAsync(TransactionRowMatched row) =>
         _transactionsModel.ChangeMatchModelAsync(
-            fnPerform: cat => cat.DeleteMatchAsync(new(row.Section, row.LatestMatch)),
+            fnPerformAsync: cat => cat.DeleteMatchAsync(new(row.Section, row.LatestMatch)),
             refreshCategories: false); //Clearing a match does not change categories (or "suggestions" in the picker)
 
     public Task LoadTransactionsAndCategoriseAsync(WrappedResult<ImmutableArray<Transaction>> result) =>
@@ -218,17 +218,17 @@ public class HomeViewModel
 
     public Task DragDropDeleteMatchAsync(ExistingMatch existing) =>
         _transactionsModel.ChangeMatchModelAsync(
-            fnPerform: cat => cat.DeleteMatchAsync(new(existing.Section, existing.Match)),
+            fnPerformAsync: cat => cat.DeleteMatchAsync(new(existing.Section, existing.Match)),
             refreshCategories: false);
 
     public Task DragDropOnMoveToSectionAsync(Transaction transaction, SectionHeader section) =>
         _transactionsModel.ChangeMatchModelAsync(
-            fnPerform: cat => cat.MatchOnceAsync(new(transaction, section, transaction.Description, OverrideDescription: null)),
+            fnPerformAsync: cat => cat.MatchOnceAsync(new(transaction, section, transaction.Description, OverrideDescription: null)),
             refreshCategories: false);
 
     public Task DragDropUpdateMatchAsync(UpdateMatchRequest update) =>
         _transactionsModel.ChangeMatchModelAsync(
-            fnPerform: async cat =>
+            fnPerformAsync: async cat =>
             {
                 var clear = update.ClearExisting;
                 if (clear != null)
@@ -302,11 +302,11 @@ public class HomeViewModel
                     LatestTransaction = r.Any() ? r.Select(x => x.Date).Max() : null;
                 });
 
-        public Task ChangeMatchModelAsync(Func<IClientTransactionCategoriser, Task<Result>> fnPerform,
+        public Task ChangeMatchModelAsync(Func<IClientTransactionCategoriser, Task<Result>> fnPerformAsync,
             bool refreshCategories,
             Action? onSuccess = null) =>
                 _OnStateChangeAsync(
-                    fnGetResultAsync: async () => (await fnPerform(_categoriser)).ToWrappedUnit(),
+                    fnGetResultAsync: async () => (await fnPerformAsync(_categoriser)).ToWrappedUnit(),
                     refreshCategories: refreshCategories,
                     onSuccess: _ => onSuccess?.Invoke());
 
