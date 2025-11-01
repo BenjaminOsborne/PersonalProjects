@@ -103,7 +103,8 @@
                 </MudList>
 
                 @* Matched *@
-                <MudGrid Spacing="0">
+                <MudGrid Spacing="0"
+                         Style="@("min-height:45px;max-height:400px; overflow-y: scroll")">
                     <MudItem xs=12>
                         <div class="hz-container">
                             @foreach (var summary in Model.Categories)
