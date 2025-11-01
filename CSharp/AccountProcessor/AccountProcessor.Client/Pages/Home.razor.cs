@@ -61,15 +61,19 @@ public partial class Home
 /// <summary> Separate class from <see cref="Home"/> so that state transitions & data access can be controlled explicitly </summary>
 public class HomeViewModel
 {
+    private readonly Action _onStateChanged;
     private static readonly (string? CategoryName, string? Name, bool IsMonthSpecific) _newSectionDefault = (null, null, true);
 
     private readonly TransactionsModel _transactionsModel;
 
-    public HomeViewModel(IClientTransactionCategoriser categoriser, Action onStateChanged) =>
+    public HomeViewModel(IClientTransactionCategoriser categoriser, Action onStateChanged)
+    {
+        _onStateChanged = onStateChanged;
         _transactionsModel = new(
             categoriser,
             onActionHandleResult: _UpdateLastActionResult,
             onStateChanged);
+    }
 
     /// <summary> Display message after any action invoked </summary>
     public Result? LastActionResult { get; private set; }
@@ -249,8 +253,11 @@ public class HomeViewModel
             },
             refreshCategories: false);
 
-    public void RaiseError(Result error) =>
+    public void DragDropRaiseError(Result error)
+    {
         _UpdateLastActionResult(error);
+        _onStateChanged();
+    }
 
     private void _UpdateLastActionResult(Result result) =>
         LastActionResult = result;
@@ -383,7 +390,6 @@ public class HomeViewModel
                 _onActionHandleResult(categorisationResult);
                 return;
             }
-
 
             //Clear models initially; ensures refresh is properly triggered
             _OnCategorisedSetModels(null, null, null, null);
