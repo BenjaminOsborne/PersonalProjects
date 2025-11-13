@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BibleApp/BibleApp.Client/BibleApp.Client.csproj" />
+  <Project Path="BibleApp/BibleApp/BibleApp.csproj" />
+</Solution>
