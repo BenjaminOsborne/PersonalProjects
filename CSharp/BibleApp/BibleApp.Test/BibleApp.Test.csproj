@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BibleApp\BibleApp.csproj" />
+    <ProjectReference Include="..\BibleApp\BibleApp\BibleApp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
