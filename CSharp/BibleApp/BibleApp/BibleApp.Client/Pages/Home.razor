@@ -1,3 +1,8 @@
 ﻿@page "/"
 
 <PageTitle>Home</PageTitle>
+
+@foreach (var book in _books)
+{
+    <MudText>@book</MudText>
+}

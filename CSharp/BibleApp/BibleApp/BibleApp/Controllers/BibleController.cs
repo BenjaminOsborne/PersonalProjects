@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BibleApp.Core;
+using BibleApp.Source;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BibleApp.Controllers;
 
@@ -7,8 +9,9 @@ namespace BibleApp.Controllers;
 public class BibleController : ControllerBase
 {
     [HttpGet("books")]
-    public IReadOnlyList<string> GetBooks()
+    public async Task<IReadOnlyList<string>> GetBooks()
     {
-        return ["Hey!"];
+        var all = await FileLoader.LoadAllAsync();
+        return all[0].Books.Select(x => x.Name).Materialise();
     }
 }
