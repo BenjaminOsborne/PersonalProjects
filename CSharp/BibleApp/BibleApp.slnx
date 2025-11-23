@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="BibleApp.Core/BibleApp.Core.csproj" Id="774475bb-8d80-497f-a6e0-88835704f68e" />
   <Project Path="BibleApp.Test/BibleApp.Test.csproj" />
   <Project Path="BibleApp/BibleApp.Client/BibleApp.Client.csproj" />
   <Project Path="BibleApp/BibleApp/BibleApp.csproj" />

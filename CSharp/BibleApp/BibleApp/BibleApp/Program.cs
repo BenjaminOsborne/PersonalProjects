@@ -1,4 +1,4 @@
-using BibleApp.Client.Pages;
+using BibleApp.Client.ClientServices;
 using BibleApp.Components;
 using MudBlazor.Services;
 
@@ -9,7 +9,12 @@ builder.Services.AddMudServices();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.ConfigureClientServices(builder.Configuration);
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -25,12 +30,15 @@ else
     app.UseHsts();
 }
 
+app.MapControllers();
+
 app.UseHttpsRedirection();
 
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(BibleApp.Client._Imports).Assembly);
 
