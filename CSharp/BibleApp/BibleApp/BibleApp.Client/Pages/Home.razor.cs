@@ -1,4 +1,5 @@
 ﻿using BibleApp.Client.ClientServices;
+using BibleApp.Core;
 using Microsoft.AspNetCore.Components;
 
 namespace BibleApp.Client.Pages;
@@ -13,10 +14,10 @@ public partial class Home
     {
         await base.OnInitializedAsync();
 
-        var books = await BibleService.GetBooksAsync();
-        if (books.IsSuccess)
+        var bible = await BibleService.GetBiblesAsync();
+        if (bible.IsSuccess)
         {
-            _books = books.Value!;
+            _books = bible.Value!.MaterialiseMap(x => x.Translation);
         }
     }
 }

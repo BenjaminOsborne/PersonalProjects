@@ -8,10 +8,10 @@ namespace BibleApp.Controllers;
 [Route("[controller]")]
 public class BibleController : ControllerBase
 {
-    [HttpGet("books")]
-    public async Task<IReadOnlyList<string>> GetBooks()
+    [HttpGet("bibles")]
+    public async Task<IReadOnlyList<BibleStructure>> GetBibles()
     {
         var all = await FileLoader.LoadAllAsync();
-        return all[0].Books.Select(x => x.Name).Materialise();
+        return all.MaterialiseMap(x => x.ToStructure());
     }
 }

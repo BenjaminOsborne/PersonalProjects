@@ -1,16 +1,9 @@
 ﻿using System.Collections.Immutable;
 using System.Reflection;
 using System.Text.Json;
+using BibleApp.Core;
 
 namespace BibleApp.Source;
-
-public record Bible(string Translation, IReadOnlyList<Book> Books);
-
-public record Book(string Name, IReadOnlyList<Chapter> Chapters);
-
-public record Chapter(int Number, IReadOnlyList<Verse> Verses);
-
-public record Verse(int Number, string Text);
 
 public class FileLoader
 {
@@ -28,24 +21,32 @@ public class FileLoader
         return bibles;
     }
 
-    private static Bible _ToBible(string translation, JsonDocument node) =>
-        new(Translation: translation,
-            Books: _MapElementItems(node.RootElement, _ToBook));
+    private static Bible _ToBible(string translation, JsonDocument node)
+    {
+        var id = new BibleId(translation);
+        return new(Id: id, Books: _MapElementItems(id, node.RootElement, _ToBook));
+    }
 
-    private static Book _ToBook(JsonProperty b) =>
-        new(Name: b.Name, Chapters: _MapElementItems(b.Value, _ToChapter));
+    private static Book _ToBook(BibleId parentId, JsonProperty b)
+    {
+        var id = new BookId(b.Name);
+        return new(BibleId: parentId, Id: id, Chapters: _MapElementItems(id, b.Value, _ToChapter));
+    }
 
-    private static Chapter _ToChapter(JsonProperty c) =>
-        new(Number: _NameAsNumber(c), Verses: _MapElementItems(c.Value, _ToVerse));
+    private static Chapter _ToChapter(BookId parentId, JsonProperty c)
+    {
+        var id = new ChapterId(parentId, ChapterNumber: _NameAsNumber(c));
+        return new(Id: id, Verses: _MapElementItems(id, c.Value, _ToVerse));
+    }
 
-    private static Verse _ToVerse(JsonProperty v) =>
-        new(Number: _NameAsNumber(v), Text: v.Value.GetString()!);
+    private static Verse _ToVerse(ChapterId parentId, JsonProperty v) =>
+        new(new VerseId(parentId, VerseNumber: _NameAsNumber(v)), Text: v.Value.GetString()!);
 
     private static int _NameAsNumber(JsonProperty c) =>
         int.Parse(c.Name);
 
-    private static IReadOnlyList<T> _MapElementItems<T>(JsonElement el, Func<JsonProperty, T> mapper) =>
-        el.EnumerateObject().Select(mapper).ToArray();
+    private static IReadOnlyList<T> _MapElementItems<TId, T>(TId parentId, JsonElement el, Func<TId, JsonProperty, T> mapper) =>
+        el.EnumerateObject().Select(x => mapper(parentId, x)).ToArray();
 
     public static string GetPathRelativeToExecuting(params string[] relativePath)
     {
