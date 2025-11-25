@@ -9,11 +9,15 @@
     <link href=@Assets["_content/MudBlazor/MudBlazor.min.css"] rel="stylesheet" />
     <ImportMap />
     <link rel="icon" type="image/ico" href="favicon.ico" />
-    <HeadOutlet @rendermode="InteractiveWebAssembly" />
+    
+    @* Setting pre-render false and rendering on Server avoids double-flash of initial load *@
+    <HeadOutlet @rendermode="@(new InteractiveServerRenderMode(prerender: false))" />
 </head>
 
 <body>
-    <Routes @rendermode="InteractiveWebAssembly" />
+    @* Setting pre-render false and rendering on Server avoids double-flash of initial load *@
+    <Routes @rendermode="@(new InteractiveServerRenderMode(prerender: false))"/>
+
     <script src="_framework/blazor.web.js"></script>
     <script src=@Assets["_content/MudBlazor/MudBlazor.min.js"]></script>
 </body>
