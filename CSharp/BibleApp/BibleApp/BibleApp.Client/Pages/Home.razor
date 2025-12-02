@@ -12,16 +12,16 @@ else
     <MudExpansionPanels>
         @foreach (var book in _books)
         {
-            <MudExpansionPanel Text=@book.BookName>
+            <MudExpansionPanel Text=@book.BookName Style="max-width:40rem">
                 <MudStack>
                     @foreach (var chapterGroup in book.Chapters.GroupIntoBatches(batchSizeLimit: 10))
                     {
-                        <MudToggleGroup T="ChapterStructure" Vertical=false Outlined=true Delimiters=true Size=@Size.Medium CheckMark=false FixedContent=true  @bind-Value="_selectedChapter">
+                        <MudChipSet T=ChapterStructure>
                             @foreach (var chapter in chapterGroup)
                             {
-                                <MudToggleItem Value=@chapter Text="@(chapter.ChapterNumber.ToString())" />
+                                <MudChip T=ChapterStructure Value=@chapter Text="@(chapter.ChapterNumber.ToString())" Style="width: 3rem; min-width: 3rem"/>
                             }
-                        </MudToggleGroup>
+                        </MudChipSet>
                     }
                 </MudStack>
             </MudExpansionPanel>
