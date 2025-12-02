@@ -16,6 +16,8 @@ public record Chapter(ChapterId Id, IReadOnlyList<Verse> Verses);
 
 public record Verse(VerseId Id, string Text);
 
+public record TranslationId(string Translation);
+
 public record BibleStructure(string Translation, IReadOnlyList<BookStructure> Books);
 
 public record BookStructure(string BookName, IReadOnlyList<ChapterStructure> Chapters);

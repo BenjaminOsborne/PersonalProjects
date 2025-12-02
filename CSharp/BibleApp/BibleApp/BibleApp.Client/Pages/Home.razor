@@ -1,8 +1,30 @@
 ﻿@page "/"
+@using BibleApp.Core
 
 <PageTitle>Home</PageTitle>
 
-@foreach (var book in _books)
+@if (_isLoading)
 {
-    <MudText>@book</MudText>
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudExpansionPanels>
+        @foreach (var book in _books)
+        {
+            <MudExpansionPanel Text=@book.BookName>
+                <MudStack>
+                    @foreach (var chapterGroup in book.Chapters.GroupIntoBatches(batchSizeLimit: 10))
+                    {
+                        <MudToggleGroup T="ChapterStructure" Vertical=false Outlined=true Delimiters=true Size=@Size.Medium CheckMark=false FixedContent=true  @bind-Value="_selectedChapter">
+                            @foreach (var chapter in chapterGroup)
+                            {
+                                <MudToggleItem Value=@chapter Text="@(chapter.ChapterNumber.ToString())" />
+                            }
+                        </MudToggleGroup>
+                    }
+                </MudStack>
+            </MudExpansionPanel>
+        }
+    </MudExpansionPanels>
 }

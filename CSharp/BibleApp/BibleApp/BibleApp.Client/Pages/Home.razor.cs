@@ -8,16 +8,46 @@ public partial class Home
 {
     [Inject] private IBibleService BibleService { get; init; } = null!;
 
-    private IReadOnlyList<string> _books = [];
+    private bool _isLoading = true;
+    private IReadOnlyList<BookStructure> _books = [];
+    
+    private ChapterStructure _selectedChapter;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        var bible = await BibleService.GetBiblesAsync();
-        if (bible.IsSuccess)
+        await _InitialiseAsync();
+    }
+
+    private async Task _InitialiseAsync()
+    {
+        var translations = await BibleService.GetTranslationsAsync();
+        if (translations.IsFail)
         {
-            _books = bible.Value!.MaterialiseMap(x => x.Translation);
+            return;
         }
+
+
+        var translation = translations.Value!.FirstOrDefault();
+        if (translation is null)
+        {
+            return;
+        }
+
+        var bible = await BibleService.GetBibleAsync(translation);
+        if (bible.IsFail)
+        {
+            return;
+        }
+
+        _books = bible.Value!.Books;
+        if (_books.IsEmpty())
+        {
+            return;
+        }
+
+        _isLoading = false;
+
     }
 }

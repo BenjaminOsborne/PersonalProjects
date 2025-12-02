@@ -8,10 +8,20 @@ namespace BibleApp.Controllers;
 [Route("[controller]")]
 public class BibleController : ControllerBase
 {
-    [HttpGet("bibles")]
-    public async Task<IReadOnlyList<BibleStructure>> GetBibles()
+    [HttpGet("translations")]
+    public async Task<IReadOnlyList<TranslationId>> GetTranslations()
     {
         var all = await FileLoader.LoadAllAsync();
-        return all.MaterialiseMap(x => x.ToStructure());
+        return all.MaterialiseMap(x => new TranslationId(x.Id.Translation));
+    }
+
+    [HttpGet("bible/{translation}")]
+    public async Task<ActionResult<BibleStructure>> GetBible(string translation)
+    {
+        var all = await FileLoader.LoadAllAsync();
+        var found = all.SingleOrDefault(x => x.Id.Translation == translation);
+        return found != null
+            ? Ok(found.ToStructure())
+            : NotFound();
     }
 }
