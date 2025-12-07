@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 
 namespace PdfProcessor;
 
@@ -6,6 +7,8 @@ public static class SpurgeonSermonDownloader
 {
     public static async Task DownloadSpuregonSermonsAsync()
     {
+        var sw = Stopwatch.StartNew();
+
         var baseUrl = "https://www.spurgeongems.org/sermon";
         var filePrefix = "C:\\PdfDownload\\SpurgeonSermon_";
 
@@ -28,12 +31,14 @@ public static class SpurgeonSermonDownloader
 
         Console.WriteLine($"Total PDFs: {pdfPaths.Length}");
 
-        Console.WriteLine("Begin Download...");
+        Console.WriteLine("\nBegin Download...\n");
         
         await PdfDownloader.DownloadPdfsAsync(
             basePath: baseUrl,
             paths: pdfPaths,
             filePrefix: filePrefix);
+
+        Console.WriteLine($"\nDownload complete: {sw.Elapsed.TotalSeconds:F1}(s)");
     }
 }
 
