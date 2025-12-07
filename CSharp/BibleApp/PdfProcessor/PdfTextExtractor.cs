@@ -10,18 +10,55 @@ public static class PdfTextExtractor
 {
     private record PageExtract(
         int Number,
-        IReadOnlyList<LineExtract> Lines
-        );
+        IReadOnlyList<LineExtract> Lines)
+    {
+        public double? ModalHeight { get; } = Lines
+            .Select(x => x.Height)
+            .Where(x => x.HasValue)
+            .Skip(Lines.Count / 2)
+            .FirstOrDefault();
+    }
 
     private record LineExtract(
-        bool IsLikelyHeader,
         string Text,
-        IReadOnlyList<Word> Words
-        );
+        IReadOnlyList<Word> Words)
+    {
+        public double? Height { get; } = Words
+            .FirstOrDefault(x => x.Text.Trim().Length > 0)?
+            .BoundingBox.Height;
+    }
+
+    private record LinePostProcess(bool IsLikelyHeader, string Text);
 
     public static async Task ExtractSpuregonSermonAsync()
     {
-        var filePath = @"C:\PdfDownload\SpurgeonSermon_chs 566.pdf";
+        var root = @"C:\PdfDownload\";
+        var paths = Directory.GetFiles(root, searchPattern: "*.pdf");
+        foreach (var filePath in paths
+                     .Where(x => x.Contains("chstop") == false) //Tabular PDFs - not useful
+                     .OrderBy(x => x))
+        {
+            var fileName = new FileInfo(filePath);
+            var txtName = fileName.Name.Replace(".pdf", ".txt");
+            var txtPath = Path.Combine(root, "TextExtract", txtName);
+            if (File.Exists(txtPath))
+            {
+                Console.WriteLine($"Skipping file (txt already extracted): {filePath}");
+                continue;
+            }
+
+            Console.WriteLine($"Extracting txt from pdf: {filePath}");
+            
+            if (bool.Parse("false"))
+            {
+                var lines = _ExtractSpuregonSermon(filePath);
+                await File.WriteAllLinesAsync(txtPath, lines);
+            }
+        }
+    }
+
+    public static IReadOnlyList<string> _ExtractSpuregonSermon(string filePath)
+    {
         using var document = PdfDocument.Open(filePath);
 
         var pages = ImmutableList.CreateBuilder<PageExtract>();
@@ -48,36 +85,7 @@ public static class PdfTextExtractor
                     return;
                 }
 
-                bool IsLikelyHeader()
-                {
-                    if (lines.Any(x => !x.IsLikelyHeader))
-                    {
-                        return false;
-                    }
-                    if (int.TryParse(lineText.Trim(), out _)) //Likely page number
-                    {
-                        return true;
-                    }
-                    if (page.Number == 1 && lineText.StartsWith("Sermon #"))
-                    {
-                        return true;
-                    }
-                    if (lineText.Contains("Volume") && lineText.Contains("www.spurgeongems.org"))
-                    {
-                        return true;
-                    }
-                    
-                    var sermonTitle = pages.FirstOrDefault()?.Lines.FirstOrDefault(x => !x.IsLikelyHeader)?.Text;
-                    if (sermonTitle != null && lineText.ToLower().Contains(sermonTitle.ToLower()))
-                    {
-                        return true;
-                    }
-
-                    return false;
-                }
-
                 lines.Add(new LineExtract(
-                    IsLikelyHeader: IsLikelyHeader(),
                     Text: lineText,
                     Words: lineWords.ToImmutable()));
             }
@@ -106,17 +114,36 @@ public static class PdfTextExtractor
             pages.Add(new PageExtract(page.Number, lines.ToImmutable()));
         }
 
-        Console.WriteLine($"Extracted Lines: {pages.Sum(x => x.Lines.Count)} from {filePath}");
-
-        var finalLines = _BuildFinalText(pages);
-
-        await Task.Delay(10); //Will write to file once sanitised...
+        return _BuildFinalText(pages, filePath);
     }
 
-    private static IReadOnlyList<string> _BuildFinalText(IReadOnlyList<PageExtract> pages)
+    private static bool _IsNumber(string lineText) =>
+        int.TryParse(lineText.Trim(), out _);
+
+    private static IReadOnlyList<string> _SplitToWords(string line) =>
+        line
+            .SplitOnWhitespace()
+            .Select(x => x.Trim())
+            .Where(x => x.Length > 0)
+            .ToArray();
+
+    private static IReadOnlyList<string> _BuildFinalText(IReadOnlyList<PageExtract> pages, string filePath)
     {
+        var processed = pages
+            .Select(p => new { page = p, lines = _ProcessPage(p).ToArray() })
+            .ToArray();
+
+        var missingHeader = processed
+            .Where(x => x.page.Number > 1)
+            .FirstOrDefault(p => p.lines.Any(l => l.IsLikelyHeader) == false);
+        if (missingHeader != null)
+        {
+            throw new Exception($"NO HEADER: {filePath}");
+        }
+
         var lines = ImmutableList.CreateBuilder<string>();
-        foreach (var txt in pages.SelectMany(x => x.Lines)
+        foreach (var txt in processed
+                     .SelectMany(x => x.lines)
                      .Where(x => !x.IsLikelyHeader)
                      .Select(x => x.Text))
         {
@@ -149,12 +176,78 @@ public static class PdfTextExtractor
             lines.Add(txt);
         }
 
-        return lines
+        var data = lines
             .Select(x => x.Trim())
+            .Select(x => new { Line = x, IsFooterBegin = IsLikelyFileFooterBegin(x) })
             .ToArray();
-        //return lines
-        //    .SelectMany(x => x.Split(". "))
-        //    .Select(x => x.Trim())
-        //    .ToArray();
+        if (data.Any(x => x.IsFooterBegin) == false)
+        {
+            throw new Exception($"Cannot find footer: {filePath}");
+        }
+
+        return data
+            .TakeWhile(x => !x.IsFooterBegin)
+            .Select(x => x.Line)
+            .ToArray();
+
+        static bool IsLikelyFileFooterBegin(string line) =>
+            line.StartsWith("Taken from The Metropolitan Tabernacle Pulpit C. H. Spurgeon Collection.") ||
+            line.StartsWith("Taken from The Metropolitan tabernacle Pulpit C. H. Spurgeon Collection.") ||
+            line.StartsWith("Taken from The metropolitan Tabernacle Pulpit C. H. Spurgeon Collection.") ||
+            line.StartsWith("Taken from The C. H. Spurgeon Collection, Version 1.0, Ages Software.") ||
+            line.StartsWith("Adapted from The C. H. Spurgeon Collection, Version 1.0, Ages Software.") ||
+            line.StartsWith("Adapted from The C.H. Spurgeon Collection, Ages Software.") ||
+            line.StartsWith("—Adapted from The C. H. Spurgeon Collection, Version 1.0, Ages Software,") ||
+            line.StartsWith("END OF VOLUME 28.")
+            ;
+    }
+
+    private static IEnumerable<LinePostProcess> _ProcessPage(PageExtract page)
+    {
+        var isHeader = true;
+        foreach (var line in page.Lines)
+        {
+            isHeader = isHeader &&
+                       (IsLikelyHeaderHeight() || IsLikelyHeaderText());
+            yield return new LinePostProcess(IsLikelyHeader: isHeader, Text: line.Text);
+
+            bool IsLikelyHeaderHeight() =>
+                page.ModalHeight.HasValue &&
+                line.Height.HasValue &&
+                line.Height.Value < page.ModalHeight;
+
+
+            bool IsLikelyHeaderText()
+            {
+                var lineText = line.Text;
+                if (_IsNumber(lineText)) //Likely page number
+                {
+                    return true;
+                }
+                if (page.Number == 1 && lineText.StartsWith("Sermon #"))
+                {
+                    return true;
+                }
+                if (lineText.Contains("Volume") && lineText.Contains("www.spurgeongems.org"))
+                {
+                    return true;
+                }
+                return false;
+                //var sermonTitle = pages.FirstOrDefault()?.Lines.FirstOrDefault(x => !x.IsLikelyHeader)?.Text;
+                //if (sermonTitle != null)
+                //{
+                //    var setTitle = _SplitToWords(sermonTitle.ToLower())
+                //        .Where(x => _IsNumber(x) == false)
+                //        .ToImmutableHashSet();
+                //    var splitLineWords = _SplitToWords(lineText.ToLower())
+                //        .Where(x => _IsNumber(x) == false)
+                //        .ToArray();
+                //    if (splitLineWords.All(setTitle.Contains))
+                //    {
+                //        return true;
+                //    }
+                //}
+            }
+}
     }
 }
