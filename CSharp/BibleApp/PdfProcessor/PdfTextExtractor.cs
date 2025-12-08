@@ -203,7 +203,7 @@ public static class PdfTextExtractor
             yield break;
         }
 
-        var headerHeight = page.Lines[0].Height * 1.05; //5% tolerance on height
+        var headerHeight = page.Lines[0].Height;
         var isHeader = headerHeight.HasValue && headerHeight < modalHeight;
         foreach (var line in page.Lines)
         {
@@ -217,7 +217,9 @@ public static class PdfTextExtractor
                 IsLikelyFooter: isLikelyFooter);
 
             bool IsLikelyHeaderHeight() =>
-                line.Height.HasValue && line.Height.Value <= headerHeight;
+                line.Height.HasValue &&
+                line.Height.Value <= headerHeight * 1.05 && //5% tolerance on height;
+                line.Height.Value < modalHeight; //MUST be less than modal (comes into play of header height within 5% of modal height!)
 
             bool IsLikelyHeaderText()
             {
