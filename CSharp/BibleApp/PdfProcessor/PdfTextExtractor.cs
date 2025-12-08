@@ -10,14 +10,7 @@ public static class PdfTextExtractor
 {
     private record PageExtract(
         int Number,
-        IReadOnlyList<LineExtract> Lines)
-    {
-        public double? ModalHeight { get; } = Lines
-            .Select(x => x.Height)
-            .Where(x => x.HasValue)
-            .Skip(Lines.Count / 2)
-            .FirstOrDefault();
-    }
+        IReadOnlyList<LineExtract> Lines);
 
     private record LineExtract(
         string Text,
@@ -28,7 +21,7 @@ public static class PdfTextExtractor
             .BoundingBox.Height;
     }
 
-    private record LinePostProcess(bool IsLikelyHeader, string Text);
+    private record LinePostProcess(bool IsLikelyHeader, string Text, bool IsLikelyFooter);
 
     public static async Task ExtractSpuregonSermonAsync()
     {
@@ -48,12 +41,9 @@ public static class PdfTextExtractor
             }
 
             Console.WriteLine($"Extracting txt from pdf: {filePath}");
-            
-            if (bool.Parse("false"))
-            {
-                var lines = _ExtractSpuregonSermon(filePath);
-                await File.WriteAllLinesAsync(txtPath, lines);
-            }
+
+            var lines = _ExtractSpuregonSermon(filePath);
+            await File.WriteAllLinesAsync(txtPath, lines);
         }
     }
 
@@ -129,8 +119,22 @@ public static class PdfTextExtractor
 
     private static IReadOnlyList<string> _BuildFinalText(IReadOnlyList<PageExtract> pages, string filePath)
     {
+        var heights = pages
+            .SelectMany(x => x.Lines)
+            .Where(x => x.Height.HasValue)
+            .Select(x => x.Height!.Value)
+            .OrderBy(x => x)
+            .ToArray();
+        if (heights.Length == 0)
+        {
+            throw new Exception($"No page has any lines with height: {filePath}");
+        }
+        var modalHeight = heights
+            .Skip(heights.Length / 2)
+            .First();
+
         var processed = pages
-            .Select(p => new { page = p, lines = _ProcessPage(p).ToArray() })
+            .Select(p => new { page = p, lines = _ProcessPage(p, modalHeight).ToArray() })
             .ToArray();
 
         var missingHeader = processed
@@ -141,12 +145,17 @@ public static class PdfTextExtractor
             throw new Exception($"NO HEADER: {filePath}");
         }
 
+        var foundFooter = false;
         var lines = ImmutableList.CreateBuilder<string>();
-        foreach (var txt in processed
-                     .SelectMany(x => x.lines)
-                     .Where(x => !x.IsLikelyHeader)
-                     .Select(x => x.Text))
+        foreach (var lpp in processed.SelectMany(x => x.lines))
         {
+            foundFooter = foundFooter || lpp.IsLikelyFooter;
+            if (lpp.IsLikelyHeader || foundFooter)
+            {
+                continue;
+            }
+
+            var txt = lpp.Text;
             if (lines.Any() &&
                 txt.Length > 0 &&
                 char.IsLower(txt[0]))
@@ -176,46 +185,39 @@ public static class PdfTextExtractor
             lines.Add(txt);
         }
 
-        var data = lines
-            .Select(x => x.Trim())
-            .Select(x => new { Line = x, IsFooterBegin = IsLikelyFileFooterBegin(x) })
-            .ToArray();
-        if (data.Any(x => x.IsFooterBegin) == false)
+        if (foundFooter == false)
         {
             throw new Exception($"Cannot find footer: {filePath}");
         }
 
-        return data
-            .TakeWhile(x => !x.IsFooterBegin)
-            .Select(x => x.Line)
+        var trimmedLines = lines
+            .Select(x => x.Trim())
             .ToArray();
-
-        static bool IsLikelyFileFooterBegin(string line) =>
-            line.StartsWith("Taken from The Metropolitan Tabernacle Pulpit C. H. Spurgeon Collection.") ||
-            line.StartsWith("Taken from The Metropolitan tabernacle Pulpit C. H. Spurgeon Collection.") ||
-            line.StartsWith("Taken from The metropolitan Tabernacle Pulpit C. H. Spurgeon Collection.") ||
-            line.StartsWith("Taken from The C. H. Spurgeon Collection, Version 1.0, Ages Software.") ||
-            line.StartsWith("Adapted from The C. H. Spurgeon Collection, Version 1.0, Ages Software.") ||
-            line.StartsWith("Adapted from The C.H. Spurgeon Collection, Ages Software.") ||
-            line.StartsWith("—Adapted from The C. H. Spurgeon Collection, Version 1.0, Ages Software,") ||
-            line.StartsWith("END OF VOLUME 28.")
-            ;
+        return trimmedLines;
     }
 
-    private static IEnumerable<LinePostProcess> _ProcessPage(PageExtract page)
+    private static IEnumerable<LinePostProcess> _ProcessPage(PageExtract page, double modalHeight)
     {
-        var isHeader = true;
+        if (!page.Lines.Any())
+        {
+            yield break;
+        }
+
+        var headerHeight = page.Lines[0].Height;
+        var isHeader = headerHeight.HasValue && headerHeight < modalHeight;
         foreach (var line in page.Lines)
         {
             isHeader = isHeader &&
                        (IsLikelyHeaderHeight() || IsLikelyHeaderText());
-            yield return new LinePostProcess(IsLikelyHeader: isHeader, Text: line.Text);
+            var isLikelyFooter = IsLikelyFileFooterBegin(line.Text);
+
+            yield return new LinePostProcess(
+                IsLikelyHeader: isHeader,
+                Text: line.Text,
+                IsLikelyFooter: isLikelyFooter);
 
             bool IsLikelyHeaderHeight() =>
-                page.ModalHeight.HasValue &&
-                line.Height.HasValue &&
-                line.Height.Value < page.ModalHeight;
-
+                line.Height.HasValue && line.Height.Value <= headerHeight;
 
             bool IsLikelyHeaderText()
             {
@@ -224,7 +226,7 @@ public static class PdfTextExtractor
                 {
                     return true;
                 }
-                if (page.Number == 1 && lineText.StartsWith("Sermon #"))
+                if (lineText.Contains("Sermon #") || lineText.Contains("Sermons #"))
                 {
                     return true;
                 }
@@ -232,22 +234,28 @@ public static class PdfTextExtractor
                 {
                     return true;
                 }
+
+                var words = _SplitToWords(lineText)
+                    .Where(x => _IsNumber(x) == false)
+                    .ToArray();
+                if (words.All(x => x == "Volume"))
+                {
+                    return true;
+                }
+                
                 return false;
-                //var sermonTitle = pages.FirstOrDefault()?.Lines.FirstOrDefault(x => !x.IsLikelyHeader)?.Text;
-                //if (sermonTitle != null)
-                //{
-                //    var setTitle = _SplitToWords(sermonTitle.ToLower())
-                //        .Where(x => _IsNumber(x) == false)
-                //        .ToImmutableHashSet();
-                //    var splitLineWords = _SplitToWords(lineText.ToLower())
-                //        .Where(x => _IsNumber(x) == false)
-                //        .ToArray();
-                //    if (splitLineWords.All(setTitle.Contains))
-                //    {
-                //        return true;
-                //    }
-                //}
             }
-}
+
+            static bool IsLikelyFileFooterBegin(string line) =>
+                line.StartsWith("Taken from The Metropolitan Tabernacle Pulpit C. H. Spurgeon Collection.") ||
+                line.StartsWith("Taken from The Metropolitan tabernacle Pulpit C. H. Spurgeon Collection.") ||
+                line.StartsWith("Taken from The metropolitan Tabernacle Pulpit C. H. Spurgeon Collection.") ||
+                line.StartsWith("Taken from The C. H. Spurgeon Collection, Version 1.0, Ages Software.") ||
+                line.StartsWith("Adapted from The C. H. Spurgeon Collection, Version 1.0, Ages Software.") ||
+                line.StartsWith("Adapted from The C.H. Spurgeon Collection, Ages Software.") ||
+                line.StartsWith("—Adapted from The C. H. Spurgeon Collection, Version 1.0, Ages Software,") ||
+                line.StartsWith("END OF VOLUME 28.")
+            ;
+        }
     }
 }
