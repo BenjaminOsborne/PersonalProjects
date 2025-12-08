@@ -203,7 +203,7 @@ public static class PdfTextExtractor
             yield break;
         }
 
-        var headerHeight = page.Lines[0].Height;
+        var headerHeight = page.Lines[0].Height * 1.05; //5% tolerance on height
         var isHeader = headerHeight.HasValue && headerHeight < modalHeight;
         foreach (var line in page.Lines)
         {
