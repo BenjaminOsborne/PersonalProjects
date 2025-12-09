@@ -16,9 +16,10 @@ public static class PdfTextExtractor
         string Text,
         IReadOnlyList<Word> Words)
     {
-        public double? Height { get; } = Words
-            .FirstOrDefault(x => x.Text.Trim().Length > 0)?
-            .BoundingBox.Height;
+        /// <summary> Line height is the maximum height of the words in the line </summary>
+        public double? Height { get; } = _GetMaxHeight(heights: Words
+            .Where(x => x.Text.Trim().Length > 0)
+            .Select(x => x.BoundingBox.Height));
     }
 
     private record LinePostProcess(bool IsLikelyHeader, string Text, bool IsLikelyFooter);
@@ -26,13 +27,26 @@ public static class PdfTextExtractor
     public static async Task ExtractSpuregonSermonAsync()
     {
         var root = @"C:\PdfDownload\";
+        if (!Directory.Exists(root))
+        {
+            throw new ArgumentException($"Cannot find Directory: {root}");
+        }
+
+        var extractDir = Path.Combine(root, "TextExtract");
+        if (!Directory.Exists(extractDir))
+        {
+            Directory.CreateDirectory(extractDir); //Create extract directory if not there
+        }
+
         var paths = Directory.GetFiles(root, searchPattern: "*.pdf");
         foreach (var filePath in paths
                      .Where(x => x.Contains("chstop") == false) //Tabular PDFs - not useful
+                     //.SkipWhile(x => x.Contains("chs") == false)
                      .OrderBy(x => x))
         {
             var fileName = new FileInfo(filePath);
             var txtName = fileName.Name.Replace(".pdf", ".txt");
+
             var txtPath = Path.Combine(root, "TextExtract", txtName);
             if (File.Exists(txtPath))
             {
@@ -119,20 +133,11 @@ public static class PdfTextExtractor
 
     private static IReadOnlyList<string> _BuildFinalText(IReadOnlyList<PageExtract> pages, string filePath)
     {
-        var heights = pages
-            .SelectMany(x => x.Lines)
-            .Where(x => x.Height.HasValue)
-            .Select(x => x.Height!.Value)
-            .OrderBy(x => x)
-            .ToArray();
-        if (heights.Length == 0)
-        {
-            throw new Exception($"No page has any lines with height: {filePath}");
-        }
-        var modalHeight = heights
-            .Skip(heights.Length / 2)
-            .First();
-
+        var modalHeight = _GetModalHeight(heights: pages
+                              .SelectMany(x => x.Lines)
+                              .Where(x => x.Height.HasValue)
+                              .Select(x => x.Height!.Value))
+                          ?? throw new Exception($"No page has any lines with height: {filePath}");
         var processed = pages
             .Select(p => new { page = p, lines = _ProcessPage(p, modalHeight).ToArray() })
             .ToArray();
@@ -203,8 +208,8 @@ public static class PdfTextExtractor
             yield break;
         }
 
-        var headerHeight = page.Lines[0].Height;
-        var isHeader = headerHeight.HasValue && headerHeight < modalHeight;
+        var likelyHeaderHeight = modalHeight * 0.88;
+        var isHeader = true;
         foreach (var line in page.Lines)
         {
             isHeader = isHeader &&
@@ -218,8 +223,7 @@ public static class PdfTextExtractor
 
             bool IsLikelyHeaderHeight() =>
                 line.Height.HasValue &&
-                line.Height.Value <= headerHeight * 1.05 && //5% tolerance on height;
-                line.Height.Value < modalHeight; //MUST be less than modal (comes into play of header height within 5% of modal height!)
+                line.Height.Value <= likelyHeaderHeight; //MUST be less than modal (comes into play of header height within 5% of modal height!)
 
             bool IsLikelyHeaderText()
             {
@@ -259,5 +263,25 @@ public static class PdfTextExtractor
                 line.StartsWith("END OF VOLUME 28.")
             ;
         }
+    }
+
+    private static double? _GetModalHeight(IEnumerable<double> heights)
+    {
+        var ordered = heights
+            .OrderBy(x => x)
+            .ToArray();
+        if (ordered.Length == 0)
+        {
+            return null;
+        }
+        return ordered
+            .Skip(ordered.Length / 2) //Mode is the middle number
+            .First();
+    }
+
+    private static double? _GetMaxHeight(IEnumerable<double> heights)
+    {
+        var arr = heights.ToArray();
+        return arr.Any() ? arr.Max() : null;
     }
 }
