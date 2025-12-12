@@ -9,22 +9,58 @@
 }
 else
 {
-    <MudExpansionPanels>
-        @foreach (var book in _books)
-        {
-            <MudExpansionPanel Text=@book.BookName Style="max-width:40rem">
-                <MudStack>
-                    @foreach (var chapterGroup in book.Chapters.GroupIntoBatches(batchSizeLimit: 10))
+    <MudGrid>
+        @* Left hand panel *@
+        <MudItem xs="12" md="6">
+            <MudPaper Elevation="2" Class="pa-1" Style="height: 100%;">
+                <MudExpansionPanels>
+                    @foreach (var book in _books)
                     {
-                        <MudChipSet T=ChapterStructure>
-                            @foreach (var chapter in chapterGroup)
-                            {
-                                <MudChip T=ChapterStructure Value=@chapter Text="@(chapter.ChapterNumber.ToString())" Style="width: 3rem; min-width: 3rem"/>
-                            }
-                        </MudChipSet>
+                        <MudExpansionPanel Text=@book.BookName Style="max-width:40rem"
+                        ExpandedChanged="isSelected => _SelectBookAsync(book, isSelected)">
+                            <MudStack>
+                                @foreach (var chapterGroup in book.Chapters.GroupIntoBatches(batchSizeLimit: 10))
+                                {
+                                    <MudChipSet T=ChapterStructure>
+                                        @foreach (var chapter in chapterGroup)
+                                        {
+                                            <MudChip T=ChapterStructure Value=@chapter Text="@(chapter.ChapterNumber.ToString())"
+                                                     Style="width: 3rem; min-width: 3rem"
+                                                     SelectedChanged=@(() => _SelectChapterAsync(book, chapter))/>
+                                        }
+                                    </MudChipSet>
+                                }
+                            </MudStack>
+                        </MudExpansionPanel>
                     }
-                </MudStack>
-            </MudExpansionPanel>
-        }
-    </MudExpansionPanels>
+                </MudExpansionPanels>
+            </MudPaper>
+        </MudItem>
+
+        @* Right hand child panel *@
+        <MudItem xs="12" md="6">
+            <MudPaper Elevation="2" Class="pa-1" Style="height: 100%;">
+                @if (_selectedBook != null)
+                {
+                    <MudText Typo="Typo.h6">@_selectedBook.Id.BookName</MudText>
+
+                    foreach (var chapter in _selectedBook.Chapters)
+                    {
+                        <MudDivider Class="mt-3 mb-3"/>
+
+                        <MudText Typo="Typo.h6">Chapter @chapter.Id.ChapterNumber</MudText>
+
+                        <div>
+                            @foreach (var verse in chapter.Verses)
+                            {
+                                <sup style="color: lightgrey;">@verse.Id.VerseNumber</sup>
+                                <MudText Inline="true" Typo="Typo.body1"> </MudText>
+                                <MudText Inline="true" Typo="Typo.body1">@verse.Text</MudText>
+                            }    
+                        </div>
+                    }
+                }
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 }

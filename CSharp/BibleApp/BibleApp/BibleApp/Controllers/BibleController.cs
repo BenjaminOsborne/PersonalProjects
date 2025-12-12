@@ -18,10 +18,24 @@ public class BibleController : ControllerBase
     [HttpGet("bible/{translation}")]
     public async Task<ActionResult<BibleStructure>> GetBible(string translation)
     {
-        var all = await FileLoader.LoadAllAsync();
-        var found = all.SingleOrDefault(x => x.Id.Translation == translation);
+        var found = await _GetBibleAsync(translation);
         return found != null
             ? Ok(found.ToStructure())
             : NotFound();
     }
+
+    [HttpGet("book/{translation}/{book}")]
+    public async Task<ActionResult<Book>> GetBook(string translation, string book)
+    {
+        var found = await _GetBibleAsync(translation)
+            .UnWrapAsync(b => b?.Books.SingleOrDefault(x => x.Id.BookName == book));
+        return found != null
+            ? Ok(found)
+            : NotFound();
+    }
+
+    private static Task<Bible?> _GetBibleAsync(string translation) =>
+        FileLoader.LoadAllAsync()
+            .UnWrapAsync(b =>
+                b.SingleOrDefault(x => x.Id.Translation == translation));
 }

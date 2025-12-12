@@ -10,8 +10,10 @@ public partial class Home
 
     private bool _isLoading = true;
     private IReadOnlyList<BookStructure> _books = [];
-    
+
+    private TranslationId? _translation;
     private ChapterStructure _selectedChapter;
+    private Book? _selectedBook;
 
     protected override async Task OnInitializedAsync()
     {
@@ -27,15 +29,14 @@ public partial class Home
         {
             return;
         }
-
-
-        var translation = translations.Value!.FirstOrDefault();
-        if (translation is null)
+        
+        _translation = translations.Value!.FirstOrDefault();
+        if (_translation is null)
         {
             return;
         }
 
-        var bible = await BibleService.GetBibleAsync(translation);
+        var bible = await BibleService.GetBibleAsync(_translation);
         if (bible.IsFail)
         {
             return;
@@ -48,6 +49,25 @@ public partial class Home
         }
 
         _isLoading = false;
+    }
 
+    private async Task _SelectChapterAsync(BookStructure book, ChapterStructure chapter)
+    {
+        _selectedChapter = chapter;
+        await _SelectBookAsync(book);
+    }
+
+    private async Task _SelectBookAsync(BookStructure book, bool isSelected = true)
+    {
+        if (!isSelected)
+        {
+            return; //Do nothing for now...
+        }
+        var fetched = await BibleService.GetBookAsync(_translation!, new(BookName: book.BookName));
+        if (fetched.IsFail)
+        {
+            return;
+        }
+        _selectedBook = fetched.Value;
     }
 }
