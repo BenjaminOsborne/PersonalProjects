@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AccountProcessor.Client/AccountProcessor.Client.csproj" />
+  <Project Path="AccountProcessor.Core/AccountProcessor.Core.csproj" />
+  <Project Path="AccountProcessor.Tests/AccountProcessor.Tests.csproj" />
+  <Project Path="AccountProcessor/AccountProcessor.csproj" />
+</Solution>
