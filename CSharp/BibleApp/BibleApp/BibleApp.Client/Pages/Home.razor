@@ -16,8 +16,7 @@ else
                 <MudExpansionPanels>
                     @foreach (var book in _books)
                     {
-                        <MudExpansionPanel Text=@book.BookName Style="max-width:40rem"
-                        ExpandedChanged="isSelected => _SelectBookAsync(book, isSelected)">
+                        <MudExpansionPanel Text=@book.BookName Style="max-width:40rem"                                           >
                             <MudStack>
                                 @foreach (var chapterGroup in book.Chapters.GroupIntoBatches(batchSizeLimit: 10))
                                 {
@@ -26,7 +25,7 @@ else
                                         {
                                             <MudChip T=ChapterStructure Value=@chapter Text="@(chapter.ChapterNumber.ToString())"
                                                      Style="width: 3rem; min-width: 3rem"
-                                                     SelectedChanged=@(() => _SelectChapterAsync(book, chapter))/>
+                                                     SelectedChanged=@(isSelected => _SelectChapterAsync(book, chapter, isSelected)) />
                                         }
                                     </MudChipSet>
                                 }
@@ -42,21 +41,25 @@ else
             <MudPaper Elevation="2" Class="pa-1" Style="height: 100%; overflow-y: auto; max-height: 88vh;">
                 @if (_selectedBook != null)
                 {
-                    <MudText Typo="Typo.h6">@_selectedBook.Id.BookName</MudText>
+                    <MudText Typo="Typo.h6">@_selectedBook.Book.BookName</MudText>
 
                     foreach (var chapter in _selectedBook.Chapters)
                     {
-                        <MudDivider Class="mt-3 mb-3"/>
+                        <div @key="@chapter.InstanceKey">
+                            <MudDivider Class="mt-3 mb-3"/>
 
-                        <MudText Typo="Typo.h6">Chapter @chapter.Id.ChapterNumber</MudText>
-
-                        <div>
-                            @foreach (var verse in chapter.Verses)
-                            {
-                                <sup style="color: lightgrey;">@verse.Id.VerseNumber</sup>
-                                <MudText Inline="true" Typo="Typo.body1"> </MudText>
-                                <MudText Inline="true" Typo="Typo.body1">@verse.Text</MudText>
-                            }    
+                            <div @ref=@chapter.Ref>
+                                <MudText Typo="Typo.h6">Chapter @chapter.Chapter.Id.ChapterNumber</MudText>
+                            </div>
+                        
+                            <div>
+                                @foreach (var verse in chapter.Chapter.Verses)
+                                {
+                                    <sup style="color: lightgrey;">@verse.Id.VerseNumber</sup>
+                                    <MudText Inline="true" Typo="Typo.body1"> </MudText>
+                                    <MudText Inline="true" Typo="Typo.body1">@verse.Text</MudText>
+                                }    
+                            </div>
                         </div>
                     }
                 }

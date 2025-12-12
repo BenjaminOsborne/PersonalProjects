@@ -1,19 +1,29 @@
 ﻿using BibleApp.Client.ClientServices;
 using BibleApp.Core;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace BibleApp.Client.Pages;
 
 public partial class Home
 {
+    private record BookViewModel(BookId Book, IReadOnlyList<ChapterViewModel> Chapters);
+
+    private record ChapterViewModel(Chapter Chapter)
+    {
+        public ElementReference? Ref { get; set; }
+        public string InstanceKey { get; } = Guid.NewGuid().ToString();
+    }
+
     [Inject] private IBibleService BibleService { get; init; } = null!;
+    [Inject] private IJSRuntime JS { get; init; } = null!;
 
     private bool _isLoading = true;
     private IReadOnlyList<BookStructure> _books = [];
 
     private TranslationId? _translation;
     private ChapterStructure _selectedChapter;
-    private Book? _selectedBook;
+    private BookViewModel? _selectedBook;
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,10 +61,24 @@ public partial class Home
         _isLoading = false;
     }
 
-    private async Task _SelectChapterAsync(BookStructure book, ChapterStructure chapter)
+    private async Task _SelectChapterAsync(BookStructure book, ChapterStructure chapter, bool isSelected)
     {
+        if (!isSelected)
+        {
+            return;
+        }
         _selectedChapter = chapter;
         await _SelectBookAsync(book);
+
+        var found = _selectedBook?.Chapters.FirstOrDefault(x => x.Chapter.Id.ChapterNumber == chapter.ChapterNumber);
+        if(found != null)
+        {
+            var element = found.Ref;
+            if (element != null)
+            {
+                await JS.InvokeVoidAsync("scrollToElement", element);
+            }
+        }
     }
 
     private async Task _SelectBookAsync(BookStructure book, bool isSelected = true)
@@ -63,11 +87,22 @@ public partial class Home
         {
             return; //Do nothing for now...
         }
-        var fetched = await BibleService.GetBookAsync(_translation!, new(BookName: book.BookName));
+        
+        var bookId = new BookId(BookName: book.BookName);
+        if (_selectedBook != null && _selectedBook.Book.EqualsSafe(bookId))
+        {
+            return;
+        }
+
+        var fetched = await BibleService.GetBookAsync(_translation!, bookId);
         if (fetched.IsFail)
         {
             return;
         }
-        _selectedBook = fetched.Value;
+
+        _selectedBook = new BookViewModel(
+            Book: bookId,
+            Chapters: fetched.Value!.Chapters
+                .MaterialiseMap(c => new ChapterViewModel(c)));
     }
 }

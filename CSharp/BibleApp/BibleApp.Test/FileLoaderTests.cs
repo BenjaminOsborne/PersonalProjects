@@ -18,13 +18,13 @@ public class FileLoaderTests
                 for (var cNx = 0; cNx < book.Chapters.Count; cNx++)
                 {
                     var chapter = book.Chapters[cNx];
-                    Assert.That(chapter.Number, Is.EqualTo(cNx + 1));
+                    Assert.That(chapter.Id.ChapterNumber, Is.EqualTo(cNx + 1));
                     Assert.That(chapter.Verses.Count, Is.GreaterThanOrEqualTo(2));
 
                     for (var vNx = 0; vNx < chapter.Verses.Count; vNx++)
                     {
                         var verse = chapter.Verses[vNx];
-                        Assert.That(verse.Number, Is.EqualTo(vNx+1));
+                        Assert.That(verse.Id.VerseNumber, Is.EqualTo(vNx+1));
                         Assert.That(verse.Text, Is.Not.Null);
                     }
                 }
