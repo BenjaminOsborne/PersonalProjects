@@ -1,4 +1,5 @@
-﻿using BibleApp.Client.ClientServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using BibleApp.Client.ClientServices;
 using BibleApp.Core;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -76,10 +77,34 @@ public partial class Home
             var element = found.Ref;
             if (element != null)
             {
-                await JS.InvokeVoidAsync("scrollToElement", element);
+                await _ScrollToElementAsync(element);
+            }
+            else
+            {
+                //TODO: Track task and await on Page teardown
+                var untrackedTask = _ScrollToElementWhenSetAsync(found, timeoutAfter: TimeSpan.FromSeconds(3));
             }
         }
     }
+
+    private Task _ScrollToElementWhenSetAsync(ChapterViewModel found, TimeSpan timeoutAfter) =>
+        InvokeAsync(async () =>
+        {
+            var loopDelay = TimeSpan.FromSeconds(0.25);
+            var loopCountLimit = (int)(timeoutAfter / loopDelay);
+            var loops = 0;
+            while (loops++ < loopCountLimit)
+            {
+                await Task.Delay(loopDelay);
+                if (found.Ref != null)
+                {
+                    await _ScrollToElementAsync(found.Ref);
+                }
+            }
+        });
+
+    private async Task _ScrollToElementAsync([DisallowNull] ElementReference? element) =>
+        await JS.InvokeVoidAsync("scrollToElement", element);
 
     private async Task _SelectBookAsync(BookStructure book, bool isSelected = true)
     {
