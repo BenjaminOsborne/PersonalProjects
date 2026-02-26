@@ -2,36 +2,42 @@
 
 <PageTitle>Home — Aspire Demo</PageTitle>
 
-<h1>Aspire Demo</h1>
+<MudText Typo="Typo.h4" GutterBottom="true">Aspire Demo</MudText>
+<MudText Class="mb-6">
+    This app demonstrates <strong>.NET Aspire</strong> — service orchestration, distributed tracing, and PostgreSQL integration.
+</MudText>
 
-<p>This app demonstrates <strong>.NET Aspire</strong> — service orchestration, distributed tracing, and PostgreSQL integration.</p>
-
-<h2 class="mt-4">Architecture</h2>
-<pre class="bg-light p-3 rounded">
+<MudText Typo="Typo.h5" GutterBottom="true">Architecture</MudText>
+<MudPaper Elevation="2" Class="pa-4 mb-6">
+    <MudText Typo="Typo.body2" Style="font-family: monospace; white-space: pre;">
   [Browser]
       │  HTTP
       ▼
   webfrontend  (Blazor Server)
       │  HTTP via service discovery
       ▼
-  apiservice   (ASP.NET Core Minimal API — gateway / BFF)
+  apiservice   (ASP.NET Core — gateway / BFF)
       │  HTTP via service discovery
       ▼
-  catalogservice (ASP.NET Core Minimal API — owns the data)
+  catalogservice (ASP.NET Core — owns the data)
       │  Npgsql + EF Core
       ▼
-  postgres     (PostgreSQL in Docker, managed by Aspire)
-</pre>
+  postgres     (PostgreSQL in Docker, managed by Aspire)</MudText>
+</MudPaper>
 
-<h2 class="mt-4">Try it out</h2>
-<ul>
-    <li><a href="products">Products</a> — loads data from CatalogService via ApiService via PostgreSQL</li>
-    <li><a href="weather">Weather</a> — loads random data directly from ApiService</li>
-</ul>
+<MudText Typo="Typo.h5" GutterBottom="true">Try it out</MudText>
+<MudList T="string" Class="mb-6">
+    <MudListItem Icon="@Icons.Material.Filled.ShoppingBag">
+        <MudLink Href="products">Products</MudLink> — loads from CatalogService → ApiService → PostgreSQL
+    </MudListItem>
+    <MudListItem Icon="@Icons.Material.Filled.WbSunny">
+        <MudLink Href="weather">Weather</MudLink> — loads random data directly from ApiService
+    </MudListItem>
+</MudList>
 
-<h2 class="mt-4">Open the Aspire Dashboard</h2>
-<p>
-    When you run the AppHost project the Aspire dashboard starts automatically.
-    It shows <strong>distributed traces</strong> (see the full Web → ApiService → CatalogService → Postgres span chain),
-    <strong>structured logs</strong>, and <strong>metrics</strong> for every service.
-</p>
+<MudAlert Severity="Severity.Info" Class="mb-4">
+    <strong>Open the Aspire Dashboard</strong> to see distributed traces, structured logs, and metrics for every service.
+    The dashboard URL is printed in the AppHost console on startup.
+    Navigate to <strong>Traces</strong> and click any <em>Products</em> request to see the full
+    Web → ApiService → CatalogService → Postgres span chain.
+</MudAlert>

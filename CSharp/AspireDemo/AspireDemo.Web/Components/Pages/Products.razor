@@ -5,47 +5,50 @@
 
 <PageTitle>Products</PageTitle>
 
-<h1>Product Catalog</h1>
-
-<p>
-    Data flows: <strong>Web</strong> → <strong>ApiService</strong> → <strong>CatalogService</strong> → <strong>PostgreSQL</strong>.
+<MudText Typo="Typo.h4" GutterBottom="true">Product Catalog</MudText>
+<MudText Class="mb-6">
+    Data flows: <strong>Web → ApiService → CatalogService → PostgreSQL</strong>.
     Each hop is a separate traced request visible in the Aspire dashboard.
-</p>
+</MudText>
 
 @if (products == null)
 {
-    <p><em>Loading products from catalog service...</em></p>
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mb-4" />
 }
 else if (products.Length == 0)
 {
-    <p>No products found.</p>
+    <MudAlert Severity="Severity.Info">No products found.</MudAlert>
 }
 else
 {
     @foreach (var category in products.GroupBy(p => p.Category).OrderBy(g => g.Key))
     {
-        <h3 class="mt-4">@category.Key</h3>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-3">
+        <MudText Typo="Typo.h5" Class="mt-6 mb-3">@category.Key</MudText>
+        <MudGrid>
             @foreach (var product in category.OrderBy(p => p.Name))
             {
-                <div class="col">
-                    <div class="card h-100 @(product.IsFeatured ? "border-warning" : "")">
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="2" Style="height:100%">
                         @if (product.IsFeatured)
                         {
-                            <div class="card-header bg-warning text-dark fw-bold">⭐ Featured</div>
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudChip T="string" Color="Color.Warning" Icon="@Icons.Material.Filled.Star" Size="Size.Small">Featured</MudChip>
+                                </CardHeaderContent>
+                            </MudCardHeader>
                         }
-                        <div class="card-body">
-                            <h5 class="card-title">@product.Name</h5>
-                            <p class="card-text text-muted">@product.Description</p>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between align-items-center">
-                            <span class="fs-5 fw-bold">$@product.Price.ToString("N2")</span>
-                            <span class="badge @StockBadgeClass(product.StockStatus)">@product.StockStatus</span>
-                        </div>
-                    </div>
-                </div>
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6">@product.Name</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@product.Description</MudText>
+                        </MudCardContent>
+                        <MudCardActions Class="justify-space-between px-4 pb-3">
+                            <MudText Typo="Typo.h6">$@product.Price.ToString("N2")</MudText>
+                            <MudChip T="string" Color="@StockColor(product.StockStatus)" Size="Size.Small">@product.StockStatus</MudChip>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
             }
-        </div>
+        </MudGrid>
     }
 }
 
@@ -57,10 +60,10 @@ else
         products = await CatalogApi.GetProductsAsync();
     }
 
-    private static string StockBadgeClass(string status) => status switch
+    private static Color StockColor(string status) => status switch
     {
-        "Out of stock" => "bg-danger",
-        "Low stock"    => "bg-warning text-dark",
-        _              => "bg-success"
+        "Out of stock" => Color.Error,
+        "Low stock"    => Color.Warning,
+        _              => Color.Success
     };
 }
