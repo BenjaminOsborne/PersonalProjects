@@ -1,6 +1,11 @@
 namespace AspireDemo.Web;
 
-public class CatalogApiClient(HttpClient httpClient)
+public interface ICatalogApiClient
+{
+    Task<ProductSummary[]> GetProductsAsync(CancellationToken cancellationToken = default);
+}
+
+public class CatalogApiClient(HttpClient httpClient) : ICatalogApiClient
 {
     public async Task<ProductSummary[]> GetProductsAsync(CancellationToken cancellationToken = default)
     {

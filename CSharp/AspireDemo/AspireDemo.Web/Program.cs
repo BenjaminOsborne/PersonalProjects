@@ -21,7 +21,7 @@ builder.Services.AddHttpClient<WeatherApiClient>(client =>
         client.BaseAddress = new("https+http://apiservice");
     });
 
-builder.Services.AddHttpClient<CatalogApiClient>(client =>
+builder.Services.AddHttpClient<ICatalogApiClient, CatalogApiClient>(client =>
     {
         client.BaseAddress = new("https+http://apiservice");
     });

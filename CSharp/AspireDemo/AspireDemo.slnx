@@ -8,5 +8,6 @@
   <Project Path="AspireDemo.AppHost/AspireDemo.AppHost.csproj" />
   <Project Path="AspireDemo.CatalogService/AspireDemo.CatalogService.csproj" />
   <Project Path="AspireDemo.ServiceDefaults/AspireDemo.ServiceDefaults.csproj" />
+  <Project Path="AspireDemo.Tests/AspireDemo.Tests.csproj" />
   <Project Path="AspireDemo.Web/AspireDemo.Web.csproj" />
 </Solution>
