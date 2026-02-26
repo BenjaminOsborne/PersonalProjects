@@ -1,0 +1,37 @@
+@page "/"
+
+<PageTitle>Home — Aspire Demo</PageTitle>
+
+<h1>Aspire Demo</h1>
+
+<p>This app demonstrates <strong>.NET Aspire</strong> — service orchestration, distributed tracing, and PostgreSQL integration.</p>
+
+<h2 class="mt-4">Architecture</h2>
+<pre class="bg-light p-3 rounded">
+  [Browser]
+      │  HTTP
+      ▼
+  webfrontend  (Blazor Server)
+      │  HTTP via service discovery
+      ▼
+  apiservice   (ASP.NET Core Minimal API — gateway / BFF)
+      │  HTTP via service discovery
+      ▼
+  catalogservice (ASP.NET Core Minimal API — owns the data)
+      │  Npgsql + EF Core
+      ▼
+  postgres     (PostgreSQL in Docker, managed by Aspire)
+</pre>
+
+<h2 class="mt-4">Try it out</h2>
+<ul>
+    <li><a href="products">Products</a> — loads data from CatalogService via ApiService via PostgreSQL</li>
+    <li><a href="weather">Weather</a> — loads random data directly from ApiService</li>
+</ul>
+
+<h2 class="mt-4">Open the Aspire Dashboard</h2>
+<p>
+    When you run the AppHost project the Aspire dashboard starts automatically.
+    It shows <strong>distributed traces</strong> (see the full Web → ApiService → CatalogService → Postgres span chain),
+    <strong>structured logs</strong>, and <strong>metrics</strong> for every service.
+</p>
