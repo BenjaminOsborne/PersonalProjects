@@ -1,0 +1,12 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="AspireDemo.ApiService/AspireDemo.ApiService.csproj" />
+  <Project Path="AspireDemo.AppHost/AspireDemo.AppHost.csproj" />
+  <Project Path="AspireDemo.CatalogService/AspireDemo.CatalogService.csproj" />
+  <Project Path="AspireDemo.ServiceDefaults/AspireDemo.ServiceDefaults.csproj" />
+  <Project Path="AspireDemo.Web/AspireDemo.Web.csproj" />
+</Solution>
