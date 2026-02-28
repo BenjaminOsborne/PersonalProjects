@@ -60,7 +60,7 @@ public static class FileLoader
     public static string GetCurrentDir()
     {
         var dir = new FileInfo(_GetCurrentFilePath()).Directory!;
-        while (dir.Name != "NiceBnf")
+        while (dir.Name != "DataScraper")
         {
             dir = dir.Parent!;
         }
