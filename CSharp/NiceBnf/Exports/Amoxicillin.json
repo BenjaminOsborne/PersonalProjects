@@ -473,7 +473,7 @@
               "NhsIndicativePrice": "£0.94",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "500",
@@ -481,7 +481,7 @@
               "NhsIndicativePrice": "£28.00",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -500,7 +500,7 @@
               "NhsIndicativePrice": "£0.94",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -519,7 +519,7 @@
               "NhsIndicativePrice": "£0.94",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -538,7 +538,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -557,7 +557,7 @@
               "NhsIndicativePrice": "£8.99",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -576,7 +576,7 @@
               "NhsIndicativePrice": "£5.00",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "500",
@@ -584,7 +584,7 @@
               "NhsIndicativePrice": "£120.00",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -603,7 +603,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -622,7 +622,7 @@
               "NhsIndicativePrice": "£4.50",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -641,7 +641,7 @@
               "NhsIndicativePrice": "£0.56",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -660,7 +660,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.67",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -668,7 +668,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "500",
@@ -676,7 +676,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -695,7 +695,7 @@
               "NhsIndicativePrice": "£4.80",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -714,7 +714,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.94",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -733,7 +733,7 @@
               "NhsIndicativePrice": "£0.90",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -741,7 +741,7 @@
               "NhsIndicativePrice": "£1.22",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "100",
@@ -749,7 +749,7 @@
               "NhsIndicativePrice": "£9.00",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -768,7 +768,7 @@
               "NhsIndicativePrice": "£0.87",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -776,7 +776,7 @@
               "NhsIndicativePrice": "£1.35",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -795,7 +795,7 @@
               "NhsIndicativePrice": "£0.87",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -803,7 +803,7 @@
               "NhsIndicativePrice": "£1.20",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "100",
@@ -811,7 +811,7 @@
               "NhsIndicativePrice": "£5.81",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -830,7 +830,7 @@
               "NhsIndicativePrice": "£0.87",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -838,7 +838,7 @@
               "NhsIndicativePrice": "£1.22",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "100",
@@ -846,7 +846,7 @@
               "NhsIndicativePrice": "£5.81",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -865,7 +865,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -884,7 +884,7 @@
               "NhsIndicativePrice": "£7.85",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -892,7 +892,7 @@
               "NhsIndicativePrice": "£10.99",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -911,7 +911,7 @@
               "NhsIndicativePrice": "£2.50",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -919,7 +919,7 @@
               "NhsIndicativePrice": "£5.95",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "100",
@@ -927,7 +927,7 @@
               "NhsIndicativePrice": "£10.00",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -946,7 +946,7 @@
               "NhsIndicativePrice": "£7.50",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -954,7 +954,7 @@
               "NhsIndicativePrice": "£15.00",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "100",
@@ -962,7 +962,7 @@
               "NhsIndicativePrice": "£75.00",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -981,7 +981,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -989,7 +989,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1008,7 +1008,7 @@
               "NhsIndicativePrice": "£5.00",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1027,7 +1027,7 @@
               "NhsIndicativePrice": "£0.73",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1046,7 +1046,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1065,7 +1065,7 @@
               "NhsIndicativePrice": "£4.90",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -1073,7 +1073,7 @@
               "NhsIndicativePrice": "£4.98",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1092,7 +1092,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.87",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             },
             {
               "Size": "21",
@@ -1100,7 +1100,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1119,7 +1119,7 @@
               "NhsIndicativePrice": "£6.00",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1138,7 +1138,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.22",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         }
@@ -1167,7 +1167,7 @@
               "NhsIndicativePrice": "£2.20",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.24",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1186,7 +1186,7 @@
               "NhsIndicativePrice": "£1.33",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.24",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1205,7 +1205,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.24",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1224,7 +1224,7 @@
               "NhsIndicativePrice": "£1.11",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.24",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1243,7 +1243,7 @@
               "NhsIndicativePrice": "£25.00",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.24",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1262,7 +1262,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.24",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1281,7 +1281,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.24",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1300,7 +1300,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.24",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1319,7 +1319,7 @@
               "NhsIndicativePrice": "£0.96",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1338,7 +1338,7 @@
               "NhsIndicativePrice": "£2.59",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1357,7 +1357,7 @@
               "NhsIndicativePrice": "£0.76",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1376,7 +1376,7 @@
               "NhsIndicativePrice": "£0.76",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1395,7 +1395,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1414,7 +1414,7 @@
               "NhsIndicativePrice": "£3.09",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1433,7 +1433,7 @@
               "NhsIndicativePrice": "£2.85",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1452,7 +1452,7 @@
               "NhsIndicativePrice": "£25.00",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1471,7 +1471,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1490,7 +1490,7 @@
               "NhsIndicativePrice": "£4.00",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1509,7 +1509,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1528,7 +1528,7 @@
               "NhsIndicativePrice": "£4.80",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1547,7 +1547,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1566,7 +1566,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£0.76",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1585,7 +1585,7 @@
               "NhsIndicativePrice": "£2.40",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.46",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1604,7 +1604,7 @@
               "NhsIndicativePrice": "£1.49",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.46",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1623,7 +1623,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.46",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1642,7 +1642,7 @@
               "NhsIndicativePrice": "£1.42",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.46",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1661,7 +1661,7 @@
               "NhsIndicativePrice": "£35.00",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.46",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1680,7 +1680,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.46",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1699,7 +1699,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.46",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1718,7 +1718,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.46",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1737,7 +1737,7 @@
               "NhsIndicativePrice": "£1.40",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1756,7 +1756,7 @@
               "NhsIndicativePrice": "£5.56",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1775,7 +1775,7 @@
               "NhsIndicativePrice": "£1.34",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1794,7 +1794,7 @@
               "NhsIndicativePrice": "£1.34",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1813,7 +1813,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1832,7 +1832,7 @@
               "NhsIndicativePrice": "£3.09",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1851,7 +1851,7 @@
               "NhsIndicativePrice": "£2.95",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1870,7 +1870,7 @@
               "NhsIndicativePrice": "£35.00",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1889,7 +1889,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1908,7 +1908,7 @@
               "NhsIndicativePrice": "£6.00",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1927,7 +1927,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1946,7 +1946,7 @@
               "NhsIndicativePrice": "£4.90",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1965,7 +1965,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -1984,7 +1984,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
               "DrugTariffPrice": "£1.34",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2003,7 +2003,7 @@
               "NhsIndicativePrice": "£10.00",
               "DrugTariff": "Part VIIIA Category A",
               "DrugTariffPrice": "£9.86",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2022,7 +2022,7 @@
               "NhsIndicativePrice": "£9.86",
               "DrugTariff": "Part VIIIA Category A",
               "DrugTariffPrice": "£9.86",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2041,7 +2041,7 @@
               "NhsIndicativePrice": "£5.75",
               "DrugTariff": "Part VIIIA Category A",
               "DrugTariffPrice": "£9.86",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         }
@@ -2072,7 +2072,7 @@
               "NhsIndicativePrice": "£46.00",
               "DrugTariff": "Part VIIIA Category A",
               "DrugTariffPrice": "£43.86",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2092,7 +2092,7 @@
               "NhsIndicativePrice": "£43.86",
               "DrugTariff": "Part VIIIA Category A",
               "DrugTariffPrice": "£43.86",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2112,7 +2112,7 @@
               "NhsIndicativePrice": "£10.99",
               "DrugTariff": "Part VIIIA Category A",
               "DrugTariffPrice": "£43.86",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2132,7 +2132,7 @@
               "NhsIndicativePrice": "£46.00",
               "DrugTariff": "Part VIIIA Category A",
               "DrugTariffPrice": "£43.86",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2152,7 +2152,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category A",
               "DrugTariffPrice": "£43.86",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2172,7 +2172,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category A",
               "DrugTariffPrice": "£43.86",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2192,7 +2192,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category A",
               "DrugTariffPrice": "£43.86",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         }
@@ -2217,7 +2217,7 @@
               "NhsIndicativePrice": "£7.50 (Hospital only)",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2234,7 +2234,7 @@
               "NhsIndicativePrice": "£7.50",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2251,7 +2251,7 @@
               "NhsIndicativePrice": "£12.00 (Hospital only)",
               "DrugTariff": "Part VIIIA Category C",
               "DrugTariffPrice": "£9.60",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2268,7 +2268,7 @@
               "NhsIndicativePrice": "£9.60",
               "DrugTariff": "Part VIIIA Category C",
               "DrugTariffPrice": "£9.60",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2285,7 +2285,7 @@
               "NhsIndicativePrice": "£16.50 (Hospital only)",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -2302,7 +2302,7 @@
               "NhsIndicativePrice": "£1.92",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         }

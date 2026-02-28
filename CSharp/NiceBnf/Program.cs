@@ -7,11 +7,8 @@ using var scraper = new DataScraper();
 
 var allDrugs = await scraper.GetDrugSlugsAsync();
 
-Console.WriteLine("Drugs:");
-foreach (var slug in allDrugs)
-{
-    Console.WriteLine(slug);
-}
+Console.WriteLine($"Drugs: {allDrugs.Count}");
+//foreach (var slug in allDrugs) Console.WriteLine(slug);
 
 var checkDrugs = new[] { "/drugs/amoxicillin/" }
     .Concat(allDrugs.Take(3))
@@ -20,6 +17,8 @@ var checkDrugs = new[] { "/drugs/amoxicillin/" }
 
 foreach (var drugSlug in checkDrugs)
 {
+    Console.WriteLine($"Fetching: {drugSlug}");
+
     // Scrape a single drug as a demo (amoxicillin has multiple indications, routes, and patient groups).
     var drug = await scraper.ScrapeDrugAsync(drugSlug) ?? throw new ArgumentException($"Could not load drug: {drugSlug}");
     var json = FormatJson(drug);
@@ -35,6 +34,7 @@ static string FormatJson(Drug drug) =>
     JsonSerializer.Serialize(drug, JsonSerializerOptionsSettings.Indented)
         .Replace("\\u2009", "_")
         .Replace("\\u2002", "__")
+        .Replace("POM__(", "POM (")
         .Replace("\\u00A3", "£")
         .Replace("\\u00A0", "|")
         .Replace("\\u0026", "&")

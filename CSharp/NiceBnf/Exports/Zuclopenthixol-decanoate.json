@@ -44,7 +44,7 @@
               "NhsIndicativePrice": "£31.51",
               "DrugTariff": "Part VIIIA Category C",
               "DrugTariffPrice": "£31.51",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -61,7 +61,7 @@
               "NhsIndicativePrice": "£37.18",
               "DrugTariff": "Part VIIIA Category C",
               "DrugTariffPrice": "£37.18",
-              "LegalCategory": "POM__(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         }
