@@ -31,6 +31,13 @@ public record Indication(
     IReadOnlyList<RouteOfAdministration> Routes
 );
 
+/// <summary>A BNF cautionary and advisory label.</summary>
+/// <param name="Number">e.g. 9</param>
+/// <param name="Description">e.g. "Space the doses evenly throughout the day…"</param>
+public record CautionaryLabel(
+    int Number,
+    string Description);
+
 /// <summary>A single pack size/price entry for a preparation.</summary>
 /// <param name="Size">e.g. "21"</param>
 /// <param name="Unit">e.g. "capsule"</param>
@@ -51,13 +58,13 @@ public record MedicinalFormPack(
 /// <param name="Name">e.g. "Amoxicillin 250mg capsules"</param>
 /// <param name="Manufacturer">e.g. "A A H Pharmaceuticals Ltd"</param>
 /// <param name="ActiveIngredients">e.g. "Amoxicillin (as Amoxicillin trihydrate) 250 mg"</param>
-/// <param name="CautionaryLabels">BNF cautionary label numbers, e.g. [9]</param>
+/// <param name="CautionaryLabels">BNF cautionary labels, e.g. label 9 with its description</param>
 public record Preparation(
     string Name,
     string Manufacturer,
     bool SugarFree,
     string ActiveIngredients,
-    IReadOnlyList<int> CautionaryLabels,
+    IReadOnlyList<CautionaryLabel> CautionaryLabels,
     IReadOnlyList<MedicinalFormPack> Packs
 );
 
@@ -65,12 +72,12 @@ public record Preparation(
 /// <param name="FormType">e.g. "Oral capsule", "Oral suspension"</param>
 /// <param name="Excipients">e.g. "May contain sucrose." – null if not stated</param>
 /// <param name="Electrolytes">e.g. "May contain sodium." – null if not stated</param>
-/// <param name="CautionaryLabels">BNF cautionary label numbers that apply to all preparations in this form</param>
+/// <param name="CautionaryLabels">BNF cautionary labels that apply to all preparations in this form</param>
 public record MedicinalForm(
     string FormType,
     string? Excipients,
     string? Electrolytes,
-    IReadOnlyList<int> CautionaryLabels,
+    IReadOnlyList<CautionaryLabel> CautionaryLabels,
     IReadOnlyList<Preparation> Preparations
 );
 
@@ -337,7 +344,7 @@ public sealed class DataScraper : IDisposable
         var formLabelDetails = section
             .QuerySelector("h3[class*='medicinal-forms-module--labelAccordionHeading']")
             ?.Closest("details");
-        var formLabels = _ParseLabelNumbers(formLabelDetails);
+        var formLabels = _ParseCautionaryLabels(formLabelDetails);
 
         var preparations = section
             .QuerySelectorAll("ol[class*='medicinal-forms-module--prepList'] > li")
@@ -371,7 +378,7 @@ public sealed class DataScraper : IDisposable
         var prepLabelDetails = prepDetails
             ?.QuerySelector("h4[class*='medicinal-forms-module--nestedLabelAccordionHeading']")
             ?.Closest("details");
-        var cautionaryLabels = _ParseLabelNumbers(prepLabelDetails);
+        var cautionaryLabels = _ParseCautionaryLabels(prepLabelDetails);
 
         // Active ingredients: find a <dt> with that exact text that is NOT inside a pack item.
         var activeDt = prepDetails
@@ -418,23 +425,27 @@ public sealed class DataScraper : IDisposable
     }
 
     /// <summary>
-    /// Extracts BNF cautionary label numbers from a &lt;details&gt; accordion element.
-    /// Label headings look like: &lt;h4 class="…labelHeading…"&gt;Label 9&lt;/h4&gt;
+    /// Extracts BNF cautionary labels from a &lt;details&gt; accordion element.
+    /// Each label item is a &lt;li&gt; containing an &lt;h4 class="…labelHeading…"&gt;Label 9&lt;/h4&gt;
+    /// followed by a &lt;p&gt; with the English description.
     /// </summary>
-    private static IReadOnlyList<int> _ParseLabelNumbers(IElement? detailsEl)
+    private static IReadOnlyList<CautionaryLabel> _ParseCautionaryLabels(IElement? detailsEl)
     {
         if (detailsEl == null)
         {
             return [];
         }
-        var labels = new List<int>();
+        var labels = new List<CautionaryLabel>();
         foreach (var heading in detailsEl.QuerySelectorAll("[class*='medicinal-forms-module--labelHeading']"))
         {
             var match = Regex.Match(heading.TextContent, @"\d+");
-            if (match.Success)
+            if (!match.Success)
             {
-                labels.Add(int.Parse(match.Value));
+                continue;
             }
+            var number = int.Parse(match.Value);
+            var description = heading.NextElementSibling?.TextContent.Trim() ?? "";
+            labels.Add(new CautionaryLabel(number, description));
         }
         return labels;
     }

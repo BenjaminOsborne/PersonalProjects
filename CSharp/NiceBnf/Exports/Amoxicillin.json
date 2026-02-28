@@ -455,7 +455,10 @@
       "Excipients": null,
       "Electrolytes": null,
       "CautionaryLabels": [
-        9
+        {
+          "Number": 9,
+          "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+        }
       ],
       "Preparations": [
         {
@@ -464,7 +467,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -491,7 +497,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -510,7 +519,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -529,7 +541,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -548,7 +563,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -567,7 +585,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -594,7 +615,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -613,7 +637,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -632,7 +659,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -651,7 +681,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -686,7 +719,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -705,7 +741,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -724,7 +763,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -759,7 +801,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -786,7 +831,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -821,7 +869,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -856,7 +907,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -875,7 +929,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -902,7 +959,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -937,7 +997,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -972,7 +1035,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -999,7 +1065,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1018,7 +1087,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1037,7 +1109,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1056,7 +1131,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1083,7 +1161,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1110,7 +1191,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1129,7 +1213,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1149,7 +1236,10 @@
       "Excipients": "May contain sucrose.",
       "Electrolytes": null,
       "CautionaryLabels": [
-        9
+        {
+          "Number": 9,
+          "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+        }
       ],
       "Preparations": [
         {
@@ -1158,7 +1248,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1177,7 +1270,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1196,7 +1292,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1215,7 +1314,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1234,7 +1336,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1253,7 +1358,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1272,7 +1380,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1291,7 +1402,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1310,7 +1424,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1329,7 +1446,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1348,7 +1468,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1367,7 +1490,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1386,7 +1512,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1405,7 +1534,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1424,7 +1556,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1443,7 +1578,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1462,7 +1600,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1481,7 +1622,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1500,7 +1644,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1519,7 +1666,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1538,7 +1688,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1557,7 +1710,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1576,7 +1732,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1595,7 +1754,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1614,7 +1776,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1633,7 +1798,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1652,7 +1820,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1671,7 +1842,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1690,7 +1864,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1709,7 +1886,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1728,7 +1908,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1747,7 +1930,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1766,7 +1952,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1785,7 +1974,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1804,7 +1996,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1823,7 +2018,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1842,7 +2040,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1861,7 +2062,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1880,7 +2084,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1899,7 +2106,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1918,7 +2128,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1937,7 +2150,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1956,7 +2172,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1975,7 +2194,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -1994,7 +2216,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 100_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -2013,7 +2238,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 100_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -2032,7 +2260,10 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 100_mg per 1_ml",
           "CautionaryLabels": [
-            9
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            }
           ],
           "Packs": [
             {
@@ -2052,8 +2283,14 @@
       "Excipients": null,
       "Electrolytes": null,
       "CautionaryLabels": [
-        9,
-        13
+        {
+          "Number": 9,
+          "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+        },
+        {
+          "Number": 13,
+          "Description": "Dissolve or mix with water before taking"
+        }
       ],
       "Preparations": [
         {
@@ -2062,8 +2299,14 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
-            9,
-            13
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            },
+            {
+              "Number": 13,
+              "Description": "Dissolve or mix with water before taking"
+            }
           ],
           "Packs": [
             {
@@ -2082,8 +2325,14 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
-            9,
-            13
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            },
+            {
+              "Number": 13,
+              "Description": "Dissolve or mix with water before taking"
+            }
           ],
           "Packs": [
             {
@@ -2102,8 +2351,14 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
-            9,
-            13
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            },
+            {
+              "Number": 13,
+              "Description": "Dissolve or mix with water before taking"
+            }
           ],
           "Packs": [
             {
@@ -2122,8 +2377,14 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
-            9,
-            13
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            },
+            {
+              "Number": 13,
+              "Description": "Dissolve or mix with water before taking"
+            }
           ],
           "Packs": [
             {
@@ -2142,8 +2403,14 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
-            9,
-            13
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            },
+            {
+              "Number": 13,
+              "Description": "Dissolve or mix with water before taking"
+            }
           ],
           "Packs": [
             {
@@ -2162,8 +2429,14 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
-            9,
-            13
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            },
+            {
+              "Number": 13,
+              "Description": "Dissolve or mix with water before taking"
+            }
           ],
           "Packs": [
             {
@@ -2182,8 +2455,14 @@
           "SugarFree": true,
           "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
-            9,
-            13
+            {
+              "Number": 9,
+              "Description": "Space the doses evenly throughout the day. Keep taking this medicine until the course is finished, unless you are told to stop"
+            },
+            {
+              "Number": 13,
+              "Description": "Dissolve or mix with water before taking"
+            }
           ],
           "Packs": [
             {

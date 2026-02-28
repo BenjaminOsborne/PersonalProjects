@@ -30,7 +30,10 @@
       "Excipients": null,
       "Electrolytes": null,
       "CautionaryLabels": [
-        2
+        {
+          "Number": 2,
+          "Description": "Warning: This medicine may make you sleepy. If this happens, do not drive or use tools or machines. Do not drink alcohol"
+        }
       ],
       "Preparations": [
         {
@@ -39,7 +42,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 2_mg",
           "CautionaryLabels": [
-            2
+            {
+              "Number": 2,
+              "Description": "Warning: This medicine may make you sleepy. If this happens, do not drive or use tools or machines. Do not drink alcohol"
+            }
           ],
           "Packs": [
             {
@@ -58,7 +64,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 10_mg",
           "CautionaryLabels": [
-            2
+            {
+              "Number": 2,
+              "Description": "Warning: This medicine may make you sleepy. If this happens, do not drive or use tools or machines. Do not drink alcohol"
+            }
           ],
           "Packs": [
             {
@@ -77,7 +86,10 @@
           "SugarFree": false,
           "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 25_mg",
           "CautionaryLabels": [
-            2
+            {
+              "Number": 2,
+              "Description": "Warning: This medicine may make you sleepy. If this happens, do not drive or use tools or machines. Do not drink alcohol"
+            }
           ],
           "Packs": [
             {
