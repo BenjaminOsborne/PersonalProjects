@@ -1,6 +1,7 @@
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace NiceBnf;
 
@@ -29,7 +30,50 @@ public record Indication(
     IReadOnlyList<RouteOfAdministration> Routes
 );
 
-/// <summary>A BNF drug entry with its full name and all indications/doses.</summary>
+/// <summary>A single pack size/price entry for a preparation.</summary>
+public record MedicinalFormPack(
+    /// <summary>e.g. "21"</summary>
+    string? Size,
+    /// <summary>e.g. "capsule"</summary>
+    string? Unit,
+    /// <summary>e.g. "£0.94"</summary>
+    string? NhsIndicativePrice,
+    /// <summary>e.g. "Part VIIIA Category M"</summary>
+    string? DrugTariff,
+    /// <summary>e.g. "£0.94"</summary>
+    string? DrugTariffPrice,
+    /// <summary>e.g. "POM (Prescription-only medicine)"</summary>
+    string? LegalCategory
+);
+
+/// <summary>A specific brand/manufacturer preparation within a medicinal form.</summary>
+public record Preparation(
+    /// <summary>e.g. "Amoxicillin 250mg capsules"</summary>
+    string Name,
+    /// <summary>e.g. "A A H Pharmaceuticals Ltd"</summary>
+    string Manufacturer,
+    bool SugarFree,
+    /// <summary>e.g. "Amoxicillin (as Amoxicillin trihydrate) 250 mg"</summary>
+    string ActiveIngredients,
+    /// <summary>BNF cautionary label numbers, e.g. [9]</summary>
+    IReadOnlyList<int> CautionaryLabels,
+    IReadOnlyList<MedicinalFormPack> Packs
+);
+
+/// <summary>A physical dosage form (e.g. "Oral capsule") with all its preparations.</summary>
+public record MedicinalForm(
+    /// <summary>e.g. "Oral capsule", "Oral suspension"</summary>
+    string FormType,
+    /// <summary>e.g. "May contain sucrose." – null if not stated</summary>
+    string? Excipients,
+    /// <summary>e.g. "May contain sodium." – null if not stated</summary>
+    string? Electrolytes,
+    /// <summary>BNF cautionary label numbers that apply to all preparations in this form</summary>
+    IReadOnlyList<int> CautionaryLabels,
+    IReadOnlyList<Preparation> Preparations
+);
+
+/// <summary>A BNF drug entry with its full name, all indications/doses, and medicinal forms.</summary>
 public record Drug(
     /// <summary>e.g. "Amoxicillin"</summary>
     string Name,
@@ -37,7 +81,8 @@ public record Drug(
     string Slug,
     /// <summary>Full page URL</summary>
     string Url,
-    IReadOnlyList<Indication> Indications
+    IReadOnlyList<Indication> Indications,
+    IReadOnlyList<MedicinalForm> MedicinalForms
 );
 
 // ─── Scraper ─────────────────────────────────────────────────────────────────
@@ -91,7 +136,8 @@ public sealed class DataScraper : IDisposable
 
     /// <summary>
     /// Fetches and parses a single drug page, returning a structured <see cref="Drug"/>
-    /// object. Returns <c>null</c> if the page cannot be fetched.
+    /// object that includes indications and medicinal forms. Returns <c>null</c> if the
+    /// page cannot be fetched.
     /// </summary>
     public async Task<Drug?> ScrapeDrugAsync(string slug, CancellationToken ct = default)
     {
@@ -115,13 +161,41 @@ public sealed class DataScraper : IDisposable
 
         var drugSlug = slug.Trim('/').Split('/').Last();
 
+        // Polite delay before the second request for this drug.
+        await Task.Delay(RequestDelayMs, ct);
+        var medicinalForms = await ScrapeMedicinalFormsAsync(slug, ct);
+
         return new Drug(
             Name: name,
             Slug: drugSlug,
             Url: url,
-            Indications: document.QuerySelector("h2[id='indications-and-dose']") != null // If the page has no "Indications and dose" section, return the drug with no doses.
+            Indications: document.QuerySelector("h2[id='indications-and-dose']") != null
                 ? ParseIndications(document)
-                : []);
+                : [],
+            MedicinalForms: medicinalForms);
+    }
+
+    /// <summary>
+    /// Fetches and parses the medicinal-forms page for a drug slug.
+    /// Returns an empty list if the page cannot be fetched.
+    /// </summary>
+    public async Task<IReadOnlyList<MedicinalForm>> ScrapeMedicinalFormsAsync(
+        string slug, CancellationToken ct = default)
+    {
+        var url = $"{BaseUrl}{slug}medicinal-forms/";
+        string html;
+        try
+        {
+            html = await _httpClient.GetStringAsync(url, ct);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[WARN] Failed to fetch {url}: {ex.Message}");
+            return [];
+        }
+
+        using var document = await _parser.ParseDocumentAsync(html, ct);
+        return ParseMedicinalForms(document);
     }
 
     /// <summary>
@@ -141,11 +215,12 @@ public sealed class DataScraper : IDisposable
             if (drug is not null)
             {
                 Console.WriteLine($"[{i + 1}/{slugs.Count}] {drug.Name} " +
-                                  $"({drug.Indications.Count} indication(s))");
+                                  $"({drug.Indications.Count} indication(s), " +
+                                  $"{drug.MedicinalForms.Count} form(s))");
                 yield return drug;
             }
 
-            // Avoid hammering the server between requests.
+            // Avoid hammering the server between drugs.
             if (i < slugs.Count - 1)
             {
                 await Task.Delay(RequestDelayMs, ct);
@@ -153,7 +228,7 @@ public sealed class DataScraper : IDisposable
         }
     }
 
-    // ── Parsing helpers ───────────────────────────────────────────────────────
+    // ── Indication parsing ────────────────────────────────────────────────────
 
     // CSS module class names use hashed suffixes (e.g. "indicationWrapper--edb2c").
     // Attribute-contains selectors [class*="…"] are used for resilience against hash changes.
@@ -171,22 +246,22 @@ public sealed class DataScraper : IDisposable
             .QuerySelectorAll("section[class*='routeOfAdministration']")
             .Select(routeEl => new RouteOfAdministration(
                 Route: routeEl.QuerySelectorGetContent("[class*='routeOfAdministrationHeading']"),
-                Doses: _ParseDoses(routeEl)))
+                Doses: ParseDoses(routeEl)))
             .ToList();
 
     // Each patient group is a <div class="…patientGroupDose… …adult/child/neonate…">
     //   <dt class="…patientGroup…">Adult</dt>
     //   <dd class="…doseStatement…">500 mg every 8 hours</dd>
-    private static IReadOnlyList<PatientGroupDose> _ParseDoses(IElement routeEl) =>
+    private static IReadOnlyList<PatientGroupDose> ParseDoses(IElement routeEl) =>
         routeEl
             .QuerySelectorAll("div[class*='patientGroupDose']")
             .Select(div => new PatientGroupDose(
                 PatientGroup: div.QuerySelectorGetContent("dt"),
                 DoseStatement: div.QuerySelectorGetContent("dd"),
-                PatientType: _ParseExpectedPatientType(className: div.ClassName)))
+                PatientType: ParsePatientType(className: div.ClassName)))
             .ToList();
 
-    private static string _ParseExpectedPatientType(string? className) =>
+    private static string ParsePatientType(string? className) =>
         className != null
             ? className.Contains("adult")
                 ? "adult"
@@ -194,6 +269,157 @@ public sealed class DataScraper : IDisposable
                     : className.Contains("neonate") ? "neonate"
                         : "unknown"
             : "unknown";
+
+    // ── Medicinal form parsing ────────────────────────────────────────────────
+
+    // Page structure:
+    //   <section class="medicinal-forms-module--form--*">
+    //     <h2 id="oral-capsule">Oral capsule</h2>
+    //     <details>   ← form-level cautionary labels (h3[class*='--labelAccordionHeading--'])
+    //     <h3>Excipients</h3><p>May contain sucrose.</p>     ← optional, no class
+    //     <h3>Electrolytes</h3><p>May contain sodium.</p>    ← optional, no class
+    //     <ol class="medicinal-forms-module--prepList--*">
+    //       <li>
+    //         <details>
+    //           <summary>
+    //             <h3 class="Prep-module--prepHeading--*">
+    //               <span class="Prep-module--sugarFree--*">Sugar free</span>   ← optional
+    //               <span class="Prep-module--headingText--*">
+    //                 Amoxicillin 250mg capsules
+    //                 <span class="Prep-module--manufacturer--*">A A H Pharmaceuticals Ltd</span>
+    //               </span>
+    //             </h3>
+    //           </summary>
+    //           <details>  ← prep-level cautionary labels (h4[class*='nestedLabelAccordionHeading'])
+    //           <dl>       ← active ingredients
+    //             <div class="Prep-module--packDefinitionListItem--*">
+    //               <dt>Active ingredients</dt><dd>Amoxicillin ... 250 mg</dd>
+    //             </div>
+    //           </dl>
+    //           <ol class="Prep-module--packList--*">
+    //             <li class="Prep-module--packItem--*">
+    //               <dl>Size / Unit / NHS indicative price / Drug tariff / Legal category</dl>
+    //             </li>
+    //           </ol>
+    //         </details>
+    //       </li>
+    //     </ol>
+    //   </section>
+
+    private static IReadOnlyList<MedicinalForm> ParseMedicinalForms(IDocument document) =>
+        document
+            .QuerySelectorAll("section[class*='medicinal-forms-module--form']")
+            .Select(ParseMedicinalForm)
+            .ToList();
+
+    private static MedicinalForm ParseMedicinalForm(IElement section)
+    {
+        var formType = section.QuerySelector("h2")?.TextContent.Trim() ?? string.Empty;
+
+        // Excipients and electrolytes are plain <h3> elements (no class) that are
+        // direct children of the section, followed by a <p> with the detail.
+        string? excipients = null;
+        string? electrolytes = null;
+        foreach (var child in section.Children)
+        {
+            if (child.TagName != "H3" || child.ClassName?.Length > 0) continue;
+            var text = child.TextContent.Trim();
+            if (text == "Excipients")
+                excipients = child.NextElementSibling?.TextContent.Trim();
+            else if (text == "Electrolytes")
+                electrolytes = child.NextElementSibling?.TextContent.Trim();
+        }
+
+        // Form-level cautionary labels live in the top-level <details> (<h3> not <h4>).
+        var formLabelDetails = section
+            .QuerySelector("h3[class*='medicinal-forms-module--labelAccordionHeading']")
+            ?.Closest("details");
+        var formLabels = ParseLabelNumbers(formLabelDetails);
+
+        var preparations = section
+            .QuerySelectorAll("ol[class*='medicinal-forms-module--prepList'] > li")
+            .Select(ParsePreparation)
+            .ToList();
+
+        return new MedicinalForm(formType, excipients, electrolytes, formLabels, preparations);
+    }
+
+    private static Preparation ParsePreparation(IElement li)
+    {
+        var prepDetails = li.QuerySelector("details");
+
+        // Name and manufacturer from the <summary> heading.
+        var summary = prepDetails?.QuerySelector("summary");
+        var manufacturer = summary?.QuerySelectorGetContent("[class*='Prep-module--manufacturer']") ?? "";
+        var fullHeading = summary?.QuerySelectorGetContent("[class*='Prep-module--headingText']") ?? "";
+        // Strip the manufacturer from the end of the heading text to get the bare name.
+        var name = manufacturer.Length > 0 && fullHeading.EndsWith(manufacturer)
+            ? fullHeading[..^manufacturer.Length].Trim()
+            : fullHeading;
+
+        var sugarFree = summary?.QuerySelector("[class*='Prep-module--sugarFree']") != null;
+
+        // Prep-level cautionary labels live in a nested <details> (<h4> not <h3>).
+        var prepLabelDetails = prepDetails
+            ?.QuerySelector("h4[class*='medicinal-forms-module--nestedLabelAccordionHeading']")
+            ?.Closest("details");
+        var cautionaryLabels = ParseLabelNumbers(prepLabelDetails);
+
+        // Active ingredients: find a <dt> with that exact text that is NOT inside a pack item.
+        var activeDt = prepDetails
+            ?.QuerySelectorAll("dt")
+            .FirstOrDefault(dt =>
+                dt.TextContent.Trim() == "Active ingredients" &&
+                dt.Closest("li[class*='Prep-module--packItem']") == null);
+        var activeIngredients = activeDt?.NextElementSibling?.TextContent.Trim() ?? "";
+
+        var packs = ParsePacks(prepDetails?.QuerySelector("ol[class*='Prep-module--packList']"));
+
+        return new Preparation(name, manufacturer, sugarFree, activeIngredients, cautionaryLabels, packs);
+    }
+
+    private static IReadOnlyList<MedicinalFormPack> ParsePacks(IElement? packList)
+    {
+        if (packList == null) return [];
+        return packList
+            .QuerySelectorAll("li[class*='Prep-module--packItem']")
+            .Select(ParsePack)
+            .ToList();
+    }
+
+    private static MedicinalFormPack ParsePack(IElement li)
+    {
+        // Build a dt→dd dictionary from each definition list item in this pack.
+        var fields = li
+            .QuerySelectorAll("div[class*='Prep-module--packDefinitionListItem']")
+            .ToDictionary(
+                div => div.QuerySelector("dt")?.TextContent.Trim() ?? "",
+                div => div.QuerySelector("dd")?.TextContent.Trim() ?? "");
+
+        return new MedicinalFormPack(
+            Size: fields.GetValueOrDefault("Size"),
+            Unit: fields.GetValueOrDefault("Unit"),
+            NhsIndicativePrice: fields.GetValueOrDefault("NHS indicative price"),
+            DrugTariff: fields.GetValueOrDefault("Drug tariff"),
+            DrugTariffPrice: fields.GetValueOrDefault("Drug tariff price"),
+            LegalCategory: fields.GetValueOrDefault("Legal category"));
+    }
+
+    /// <summary>
+    /// Extracts BNF cautionary label numbers from a &lt;details&gt; accordion element.
+    /// Label headings look like: &lt;h4 class="…labelHeading…"&gt;Label 9&lt;/h4&gt;
+    /// </summary>
+    private static IReadOnlyList<int> ParseLabelNumbers(IElement? detailsEl)
+    {
+        if (detailsEl == null) return [];
+        var labels = new List<int>();
+        foreach (var heading in detailsEl.QuerySelectorAll("[class*='medicinal-forms-module--labelHeading']"))
+        {
+            var match = Regex.Match(heading.TextContent, @"\d+");
+            if (match.Success) labels.Add(int.Parse(match.Value));
+        }
+        return labels;
+    }
 }
 
 public static class AgileSharpExtensions
