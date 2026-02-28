@@ -11,7 +11,7 @@ foreach (var slug in allDrugs)
     Console.WriteLine(slug);
 }
 
-if (bool.Parse("false"))
+if (bool.Parse("true"))
 {
     // Scrape a single drug as a demo (amoxicillin has multiple indications, routes, and patient groups).
     var drug = await scraper.ScrapeDrugAsync("/drugs/amoxicillin/");

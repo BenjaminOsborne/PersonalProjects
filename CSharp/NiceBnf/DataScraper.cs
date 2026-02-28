@@ -115,20 +115,20 @@ public sealed class DataScraper : IDisposable
 
         var drugSlug = slug.Trim('/').Split('/').Last();
 
-        return new Drug(Name: name,
-                Slug: drugSlug,
-                Url: url,
-                Indications: document.QuerySelector("h2[id='indications-and-dose']") != null // If the page has no "Indications and dose" section, return the drug with no doses.
-                    ? ParseIndications(document)
-                    : []);
+        return new Drug(
+            Name: name,
+            Slug: drugSlug,
+            Url: url,
+            Indications: document.QuerySelector("h2[id='indications-and-dose']") != null // If the page has no "Indications and dose" section, return the drug with no doses.
+                ? ParseIndications(document)
+                : []);
     }
 
     /// <summary>
     /// Lazily scrapes every drug from the BNF A–Z list, yielding each
     /// <see cref="Drug"/> as soon as it is parsed.
     /// </summary>
-    public async IAsyncEnumerable<Drug> ScrapeAllDrugsAsync(
-        [EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<Drug> ScrapeAllDrugsAsync([EnumeratorCancellation] CancellationToken ct = default)
     {
         var slugs = await GetDrugSlugsAsync(ct);
         Console.WriteLine($"Found {slugs.Count} drugs. Starting scrape…");
