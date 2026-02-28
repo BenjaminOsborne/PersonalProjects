@@ -10,28 +10,28 @@
           "Route": "By mouth",
           "Doses": [
             {
-              "PatientGroup": "Child 1\u201311 months",
-              "DoseStatement": "125\u00A0mg 3 times a day, increased if necessary up to 30\u00A0mg/kg 3 times a day.",
+              "PatientGroup": "Child 1-11 months",
+              "DoseStatement": "125|mg 3 times a day, increased if necessary up to 30|mg/kg 3 times a day.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 1\u20134 years",
-              "DoseStatement": "250\u00A0mg 3 times a day, increased if necessary up to 30\u00A0mg/kg 3 times a day.",
+              "PatientGroup": "Child 1-4 years",
+              "DoseStatement": "250|mg 3 times a day, increased if necessary up to 30|mg/kg 3 times a day.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 5\u201311 years",
-              "DoseStatement": "500\u00A0mg 3 times a day, increased if necessary up to 30\u00A0mg/kg 3 times a day (max. per dose 1\u00A0g).",
+              "PatientGroup": "Child 5-11 years",
+              "DoseStatement": "500|mg 3 times a day, increased if necessary up to 30|mg/kg 3 times a day (max. per dose 1|g).",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 12\u201317 years",
-              "DoseStatement": "500\u00A0mg 3 times a day, increased if necessary up to 1\u00A0g 3 times a day, use increased dose in severe infections.",
+              "PatientGroup": "Child 12-17 years",
+              "DoseStatement": "500|mg 3 times a day, increased if necessary up to 1|g 3 times a day, use increased dose in severe infections.",
               "PatientType": "Child"
             },
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg every 8\u00A0hours, increased if necessary to 1\u00A0g every 8\u00A0hours, increased dose used in severe infections.",
+              "DoseStatement": "500|mg every 8|hours, increased if necessary to 1|g every 8|hours, increased dose used in severe infections.",
               "PatientType": "Adult"
             }
           ]
@@ -41,7 +41,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg every 8\u00A0hours.",
+              "DoseStatement": "500|mg every 8|hours.",
               "PatientType": "Adult"
             }
           ]
@@ -51,7 +51,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg every 8\u00A0hours, increased to 1\u00A0g every 6\u00A0hours, use increased dose in severe infections.",
+              "DoseStatement": "500|mg every 8|hours, increased to 1|g every 6|hours, use increased dose in severe infections.",
               "PatientType": "Adult"
             }
           ]
@@ -65,33 +65,33 @@
           "Route": "By mouth",
           "Doses": [
             {
-              "PatientGroup": "Child 1\u20132 months",
-              "DoseStatement": "125\u00A0mg 3 times a day for 5 days, increased if necessary up to 30\u00A0mg/kg 3 times a day.",
+              "PatientGroup": "Child 1-2 months",
+              "DoseStatement": "125|mg 3 times a day for 5 days, increased if necessary up to 30|mg/kg 3 times a day.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 3\u201311 months",
-              "DoseStatement": "125\u00A0mg 3 times a day for 3 days, increased if necessary up to 30\u00A0mg/kg 3 times a day.",
+              "PatientGroup": "Child 3-11 months",
+              "DoseStatement": "125|mg 3 times a day for 3 days, increased if necessary up to 30|mg/kg 3 times a day.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 1\u20134 years",
-              "DoseStatement": "250\u00A0mg 3 times a day for 3 days, increased if necessary up to 30\u00A0mg/kg 3 times a day.",
+              "PatientGroup": "Child 1-4 years",
+              "DoseStatement": "250|mg 3 times a day for 3 days, increased if necessary up to 30|mg/kg 3 times a day.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 5\u201311 years",
-              "DoseStatement": "500\u00A0mg 3 times a day for 3 days, increased if necessary up to 30\u00A0mg/kg 3 times a day (max. per dose 1\u00A0g).",
+              "PatientGroup": "Child 5-11 years",
+              "DoseStatement": "500|mg 3 times a day for 3 days, increased if necessary up to 30|mg/kg 3 times a day (max. per dose 1|g).",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 12\u201317 years",
-              "DoseStatement": "500\u00A0mg 3 times a day for 5 days, increased if necessary up to 1\u00A0g 3 times a day.",
+              "PatientGroup": "Child 12-17 years",
+              "DoseStatement": "500|mg 3 times a day for 5 days, increased if necessary up to 1|g 3 times a day.",
               "PatientType": "Child"
             },
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg 3 times a day for 5 days, increased if necessary to 1\u00A0g 3 times a day.",
+              "DoseStatement": "500|mg 3 times a day for 5 days, increased if necessary to 1|g 3 times a day.",
               "PatientType": "Adult"
             }
           ]
@@ -105,23 +105,23 @@
           "Route": "By mouth",
           "Doses": [
             {
-              "PatientGroup": "Child 1\u201311 months",
-              "DoseStatement": "125\u00A0mg 3 times a day for 7\u201314 days.",
+              "PatientGroup": "Child 1-11 months",
+              "DoseStatement": "125|mg 3 times a day for 7-14 days.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 1\u20134 years",
-              "DoseStatement": "250\u00A0mg 3 times a day for 7\u201314 days.",
+              "PatientGroup": "Child 1-4 years",
+              "DoseStatement": "250|mg 3 times a day for 7-14 days.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 5\u201317 years",
-              "DoseStatement": "500\u00A0mg 3 times a day for 7\u201314 days.",
+              "PatientGroup": "Child 5-17 years",
+              "DoseStatement": "500|mg 3 times a day for 7-14 days.",
               "PatientType": "Child"
             },
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg 3 times a day for 7\u201314 days.",
+              "DoseStatement": "500|mg 3 times a day for 7-14 days.",
               "PatientType": "Adult"
             }
           ]
@@ -136,7 +136,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg 3 times a day for 5 days, increased if necessary to 1\u00A0g 3 times a day, increased dose used in severe infections.",
+              "DoseStatement": "500|mg 3 times a day for 5 days, increased if necessary to 1|g 3 times a day, increased dose used in severe infections.",
               "PatientType": "Adult"
             }
           ]
@@ -146,7 +146,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg every 8\u00A0hours, increased to 1\u00A0g every 6\u00A0hours, increased dose used in severe infections.",
+              "DoseStatement": "500|mg every 8|hours, increased to 1|g every 6|hours, increased dose used in severe infections.",
               "PatientType": "Adult"
             }
           ]
@@ -160,23 +160,23 @@
           "Route": "By mouth",
           "Doses": [
             {
-              "PatientGroup": "Child 1\u201311 months",
-              "DoseStatement": "125\u00A0mg 3 times a day for 5 days.",
+              "PatientGroup": "Child 1-11 months",
+              "DoseStatement": "125|mg 3 times a day for 5 days.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 1\u20134 years",
-              "DoseStatement": "250\u00A0mg 3 times a day for 5 days.",
+              "PatientGroup": "Child 1-4 years",
+              "DoseStatement": "250|mg 3 times a day for 5 days.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 5\u201317 years",
-              "DoseStatement": "500\u00A0mg 3 times a day for 5 days.",
+              "PatientGroup": "Child 5-17 years",
+              "DoseStatement": "500|mg 3 times a day for 5 days.",
               "PatientType": "Child"
             },
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg 3 times a day for 5 days.",
+              "DoseStatement": "500|mg 3 times a day for 5 days.",
               "PatientType": "Adult"
             }
           ]
@@ -190,18 +190,18 @@
           "Route": "By mouth",
           "Doses": [
             {
-              "PatientGroup": "Child 1\u201311 months",
-              "DoseStatement": "125\u00A0mg 3 times a day for 5\u20137 days.",
+              "PatientGroup": "Child 1-11 months",
+              "DoseStatement": "125|mg 3 times a day for 5-7 days.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 1\u20134 years",
-              "DoseStatement": "250\u00A0mg 3 times a day for 5\u20137 days.",
+              "PatientGroup": "Child 1-4 years",
+              "DoseStatement": "250|mg 3 times a day for 5-7 days.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 5\u201317 years",
-              "DoseStatement": "500\u00A0mg 3 times a day for 5\u20137 days.",
+              "PatientGroup": "Child 5-17 years",
+              "DoseStatement": "500|mg 3 times a day for 5-7 days.",
               "PatientType": "Child"
             }
           ]
@@ -216,7 +216,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "1\u00A0g 3 times a day for 21 days.",
+              "DoseStatement": "1|g 3 times a day for 21 days.",
               "PatientType": "Adult"
             }
           ]
@@ -231,7 +231,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "1\u00A0g 3 times a day for 28 days.",
+              "DoseStatement": "1|g 3 times a day for 28 days.",
               "PatientType": "Adult"
             }
           ]
@@ -246,7 +246,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg 3 times a day.",
+              "DoseStatement": "500|mg 3 times a day.",
               "PatientType": "Adult"
             }
           ]
@@ -261,7 +261,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "3\u00A0g for 1 dose, then 3\u00A0g for 1 dose, to be given 8 hours after the first dose.",
+              "DoseStatement": "3|g for 1 dose, then 3|g for 1 dose, to be given 8 hours after the first dose.",
               "PatientType": "Adult"
             }
           ]
@@ -276,7 +276,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "2\u00A0g every 4\u00A0hours.",
+              "DoseStatement": "2|g every 4|hours.",
               "PatientType": "Adult"
             }
           ]
@@ -291,7 +291,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "2\u00A0g every 4\u00A0hours.",
+              "DoseStatement": "2|g every 4|hours.",
               "PatientType": "Adult"
             }
           ]
@@ -306,7 +306,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "1\u00A0g twice daily for 7 days for first- and second-line eradication therapy; 10 days for third-line eradication therapy.",
+              "DoseStatement": "1|g twice daily for 7 days for first- and second-line eradication therapy; 10 days for third-line eradication therapy.",
               "PatientType": "Adult"
             }
           ]
@@ -321,7 +321,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg every 8\u00A0hours; increased if necessary to 1\u00A0g every 6\u00A0hours, increased dose used in severe infections.",
+              "DoseStatement": "500|mg every 8|hours; increased if necessary to 1|g every 6|hours, increased dose used in severe infections.",
               "PatientType": "Adult"
             }
           ]
@@ -336,7 +336,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg for 1 dose, dose to be taken following exposure to a trigger.",
+              "DoseStatement": "500|mg for 1 dose, dose to be taken following exposure to a trigger.",
               "PatientType": "Adult"
             }
           ]
@@ -351,7 +351,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "250\u00A0mg once daily, dose to be taken at night, seek specialist advice if considering use for prophylaxis during pregnancy, in male patients, or for recurrent upper urinary-tract infection or recurrent complicated lower urinary-tract infection.",
+              "DoseStatement": "250|mg once daily, dose to be taken at night, seek specialist advice if considering use for prophylaxis during pregnancy, in male patients, or for recurrent upper urinary-tract infection or recurrent complicated lower urinary-tract infection.",
               "PatientType": "Adult"
             }
           ]
@@ -366,7 +366,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg 3 times a day for 7 days.",
+              "DoseStatement": "500|mg 3 times a day for 7 days.",
               "PatientType": "Adult"
             }
           ]
@@ -380,18 +380,18 @@
           "Route": "By mouth",
           "Doses": [
             {
-              "PatientGroup": "Child 3\u201311 months",
-              "DoseStatement": "125\u00A0mg 3 times a day for 3 days.",
+              "PatientGroup": "Child 3-11 months",
+              "DoseStatement": "125|mg 3 times a day for 3 days.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 1\u20134 years",
-              "DoseStatement": "250\u00A0mg 3 times a day for 3 days.",
+              "PatientGroup": "Child 1-4 years",
+              "DoseStatement": "250|mg 3 times a day for 3 days.",
               "PatientType": "Child"
             },
             {
-              "PatientGroup": "Child 5\u201315 years",
-              "DoseStatement": "500\u00A0mg 3 times a day for 3 days.",
+              "PatientGroup": "Child 5-15 years",
+              "DoseStatement": "500|mg 3 times a day for 3 days.",
               "PatientType": "Child"
             }
           ]
@@ -406,7 +406,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "3\u00A0g for 1 dose, then 3\u00A0g for 1 dose, to be given 10\u201312 hours after the first dose.",
+              "DoseStatement": "3|g for 1 dose, then 3|g for 1 dose, to be given 10-12 hours after the first dose.",
               "PatientType": "Adult"
             }
           ]
@@ -421,7 +421,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "250\u2013500\u00A0mg 3 times a day, alternatively 750\u20131000\u00A0mg twice daily.",
+              "DoseStatement": "250-500|mg 3 times a day, alternatively 750-1000|mg twice daily.",
               "PatientType": "Adult"
             }
           ]
@@ -435,13 +435,13 @@
           "Route": "By mouth",
           "Doses": [
             {
-              "PatientGroup": "Child 16\u201317 years",
-              "DoseStatement": "500\u00A0mg 3 times a day for 7 days.",
+              "PatientGroup": "Child 16-17 years",
+              "DoseStatement": "500|mg 3 times a day for 7 days.",
               "PatientType": "Child"
             },
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "500\u00A0mg 3 times a day for 7 days.",
+              "DoseStatement": "500|mg 3 times a day for 7 days.",
               "PatientType": "Adult"
             }
           ]
@@ -462,7 +462,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "A A H Pharmaceuticals Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -470,18 +470,18 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A30.94",
+              "NhsIndicativePrice": "£0.94",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "500",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A328.00",
+              "NhsIndicativePrice": "£28.00",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -489,7 +489,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "Alliance Healthcare (Distribution) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -497,10 +497,10 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A30.94",
+              "NhsIndicativePrice": "£0.94",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -508,7 +508,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "Almus Pharmaceuticals Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -516,10 +516,10 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A30.94",
+              "NhsIndicativePrice": "£0.94",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -527,7 +527,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "Bristol Laboratories Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -537,16 +537,16 @@
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
         {
           "Name": "Amoxicillin 250mg capsules",
-          "Manufacturer": "Brown \u0026 Burk UK Ltd",
+          "Manufacturer": "Brown & Burk UK Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -554,10 +554,10 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A38.99",
+              "NhsIndicativePrice": "£8.99",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -565,7 +565,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "Kent Pharma (UK) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -573,18 +573,18 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A35.00",
+              "NhsIndicativePrice": "£5.00",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "500",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A3120.00",
+              "NhsIndicativePrice": "£120.00",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -592,7 +592,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "Medihealth (Northern) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -602,8 +602,8 @@
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -611,7 +611,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "Medreich Plc",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -619,10 +619,10 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A34.50",
+              "NhsIndicativePrice": "£4.50",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -630,7 +630,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "Milpharm Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -638,10 +638,10 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A30.56",
+              "NhsIndicativePrice": "£0.56",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -649,7 +649,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "Phoenix Healthcare Distribution Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -659,16 +659,16 @@
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.67",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.67",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "500",
@@ -676,7 +676,7 @@
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -684,7 +684,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "RX Farma",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -692,10 +692,10 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A34.80",
+              "NhsIndicativePrice": "£4.80",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -703,7 +703,7 @@
           "Name": "Amoxicillin 250mg capsules",
           "Manufacturer": "Sigma Pharmaceuticals Plc",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 250_mg",
           "CautionaryLabels": [
             9
           ],
@@ -713,8 +713,8 @@
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.94",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.94",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -722,7 +722,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "A A H Pharmaceuticals Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -730,26 +730,26 @@
             {
               "Size": "15",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A30.90",
+              "NhsIndicativePrice": "£0.90",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A31.22",
+              "NhsIndicativePrice": "£1.22",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "100",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A39.00",
+              "NhsIndicativePrice": "£9.00",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -757,7 +757,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Accord-UK Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -765,18 +765,18 @@
             {
               "Size": "15",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A30.87",
+              "NhsIndicativePrice": "£0.87",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A31.35",
+              "NhsIndicativePrice": "£1.35",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -784,7 +784,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Alliance Healthcare (Distribution) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -792,26 +792,26 @@
             {
               "Size": "15",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A30.87",
+              "NhsIndicativePrice": "£0.87",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A31.20",
+              "NhsIndicativePrice": "£1.20",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "100",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A35.81",
+              "NhsIndicativePrice": "£5.81",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -819,7 +819,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Almus Pharmaceuticals Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -827,26 +827,26 @@
             {
               "Size": "15",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A30.87",
+              "NhsIndicativePrice": "£0.87",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A31.22",
+              "NhsIndicativePrice": "£1.22",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "100",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A35.81",
+              "NhsIndicativePrice": "£5.81",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -854,7 +854,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Bristol Laboratories Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -864,16 +864,16 @@
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
         {
           "Name": "Amoxicillin 500mg capsules",
-          "Manufacturer": "Brown \u0026 Burk UK Ltd",
+          "Manufacturer": "Brown & Burk UK Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -881,18 +881,18 @@
             {
               "Size": "15",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A37.85",
+              "NhsIndicativePrice": "£7.85",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A310.99",
+              "NhsIndicativePrice": "£10.99",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -900,7 +900,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Flamingo Pharma (UK) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -908,26 +908,26 @@
             {
               "Size": "15",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A32.50",
+              "NhsIndicativePrice": "£2.50",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A35.95",
+              "NhsIndicativePrice": "£5.95",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "100",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A310.00",
+              "NhsIndicativePrice": "£10.00",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -935,7 +935,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Kent Pharma (UK) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -943,26 +943,26 @@
             {
               "Size": "15",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A37.50",
+              "NhsIndicativePrice": "£7.50",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A315.00",
+              "NhsIndicativePrice": "£15.00",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "100",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A375.00",
+              "NhsIndicativePrice": "£75.00",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -970,7 +970,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Medihealth (Northern) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -980,16 +980,16 @@
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -997,7 +997,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Medreich Plc",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -1005,10 +1005,10 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A35.00",
+              "NhsIndicativePrice": "£5.00",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1016,7 +1016,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Milpharm Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -1024,10 +1024,10 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A30.73",
+              "NhsIndicativePrice": "£0.73",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1035,7 +1035,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Phoenix Healthcare Distribution Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -1045,8 +1045,8 @@
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1054,7 +1054,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "RX Farma",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -1062,18 +1062,18 @@
             {
               "Size": "15",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A34.90",
+              "NhsIndicativePrice": "£4.90",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A34.98",
+              "NhsIndicativePrice": "£4.98",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1081,7 +1081,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Rudipharm Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -1091,16 +1091,16 @@
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.87",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.87",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             },
             {
               "Size": "21",
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1108,7 +1108,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Sandoz Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -1116,10 +1116,10 @@
             {
               "Size": "21",
               "Unit": "capsule",
-              "NhsIndicativePrice": "\u00A36.00",
+              "NhsIndicativePrice": "£6.00",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1127,7 +1127,7 @@
           "Name": "Amoxicillin 500mg capsules",
           "Manufacturer": "Sigma Pharmaceuticals Plc",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 500_mg",
           "CautionaryLabels": [
             9
           ],
@@ -1137,8 +1137,8 @@
               "Unit": "capsule",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.22",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.22",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         }
@@ -1156,7 +1156,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension",
           "Manufacturer": "A A H Pharmaceuticals Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1164,10 +1164,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A32.20",
+              "NhsIndicativePrice": "£2.20",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.24",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.24",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1175,7 +1175,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension",
           "Manufacturer": "Alliance Healthcare (Distribution) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1183,10 +1183,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A31.33",
+              "NhsIndicativePrice": "£1.33",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.24",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.24",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1194,7 +1194,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension",
           "Manufacturer": "Bristol Laboratories Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1204,8 +1204,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.24",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.24",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1213,7 +1213,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension",
           "Manufacturer": "Crescent Pharma Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1221,10 +1221,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A31.11",
+              "NhsIndicativePrice": "£1.11",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.24",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.24",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1232,7 +1232,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension",
           "Manufacturer": "Kent Pharma (UK) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1240,10 +1240,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A325.00",
+              "NhsIndicativePrice": "£25.00",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.24",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.24",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1251,7 +1251,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension",
           "Manufacturer": "Medihealth (Northern) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1261,8 +1261,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.24",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.24",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1270,7 +1270,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension",
           "Manufacturer": "Phoenix Healthcare Distribution Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1280,8 +1280,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.24",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.24",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1289,7 +1289,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension",
           "Manufacturer": "Sigma Pharmaceuticals Plc",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1299,8 +1299,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.24",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.24",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1308,7 +1308,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "A A H Pharmaceuticals Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1316,10 +1316,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A30.96",
+              "NhsIndicativePrice": "£0.96",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1327,7 +1327,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Accord-UK Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1335,10 +1335,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A32.59",
+              "NhsIndicativePrice": "£2.59",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1346,7 +1346,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Alliance Healthcare (Distribution) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1354,10 +1354,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A30.76",
+              "NhsIndicativePrice": "£0.76",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1365,7 +1365,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Almus Pharmaceuticals Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1373,10 +1373,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A30.76",
+              "NhsIndicativePrice": "£0.76",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1384,7 +1384,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Bristol Laboratories Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1394,16 +1394,16 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
         {
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
-          "Manufacturer": "Brown \u0026 Burk UK Ltd",
+          "Manufacturer": "Brown & Burk UK Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1411,10 +1411,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A33.09",
+              "NhsIndicativePrice": "£3.09",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1422,7 +1422,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Flamingo Pharma (UK) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1430,10 +1430,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A32.85",
+              "NhsIndicativePrice": "£2.85",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1441,7 +1441,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Kent Pharma (UK) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1449,10 +1449,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A325.00",
+              "NhsIndicativePrice": "£25.00",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1460,7 +1460,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Medihealth (Northern) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1470,8 +1470,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1479,7 +1479,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Medreich Plc",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1487,10 +1487,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A34.00",
+              "NhsIndicativePrice": "£4.00",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1498,7 +1498,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Phoenix Healthcare Distribution Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1508,8 +1508,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1517,7 +1517,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "RX Farma",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1525,10 +1525,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A34.80",
+              "NhsIndicativePrice": "£4.80",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1536,7 +1536,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Rudipharm Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1546,8 +1546,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1555,7 +1555,7 @@
           "Name": "Amoxicillin 125mg/5ml oral suspension sugar free",
           "Manufacturer": "Sigma Pharmaceuticals Plc",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 25_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1565,8 +1565,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A30.76",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£0.76",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1574,7 +1574,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension",
           "Manufacturer": "A A H Pharmaceuticals Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1582,10 +1582,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A32.40",
+              "NhsIndicativePrice": "£2.40",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.46",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.46",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1593,7 +1593,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension",
           "Manufacturer": "Alliance Healthcare (Distribution) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1601,10 +1601,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A31.49",
+              "NhsIndicativePrice": "£1.49",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.46",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.46",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1612,7 +1612,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension",
           "Manufacturer": "Bristol Laboratories Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1622,8 +1622,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.46",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.46",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1631,7 +1631,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension",
           "Manufacturer": "Crescent Pharma Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1639,10 +1639,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A31.42",
+              "NhsIndicativePrice": "£1.42",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.46",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.46",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1650,7 +1650,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension",
           "Manufacturer": "Kent Pharma (UK) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1658,10 +1658,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A335.00",
+              "NhsIndicativePrice": "£35.00",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.46",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.46",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1669,7 +1669,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension",
           "Manufacturer": "Medihealth (Northern) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1679,8 +1679,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.46",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.46",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1688,7 +1688,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension",
           "Manufacturer": "Phoenix Healthcare Distribution Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1698,8 +1698,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.46",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.46",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1707,7 +1707,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension",
           "Manufacturer": "Sigma Pharmaceuticals Plc",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1717,8 +1717,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.46",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.46",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1726,7 +1726,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "A A H Pharmaceuticals Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1734,10 +1734,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A31.40",
+              "NhsIndicativePrice": "£1.40",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1745,7 +1745,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Accord-UK Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1753,10 +1753,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A35.56",
+              "NhsIndicativePrice": "£5.56",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1764,7 +1764,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Alliance Healthcare (Distribution) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1772,10 +1772,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A31.34",
+              "NhsIndicativePrice": "£1.34",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1783,7 +1783,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Almus Pharmaceuticals Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1791,10 +1791,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A31.34",
+              "NhsIndicativePrice": "£1.34",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1802,7 +1802,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Bristol Laboratories Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1812,16 +1812,16 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
         {
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
-          "Manufacturer": "Brown \u0026 Burk UK Ltd",
+          "Manufacturer": "Brown & Burk UK Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1829,10 +1829,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A33.09",
+              "NhsIndicativePrice": "£3.09",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1840,7 +1840,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Flamingo Pharma (UK) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1848,10 +1848,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A32.95",
+              "NhsIndicativePrice": "£2.95",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1859,7 +1859,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Kent Pharma (UK) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1867,10 +1867,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A335.00",
+              "NhsIndicativePrice": "£35.00",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1878,7 +1878,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Medihealth (Northern) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1888,8 +1888,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1897,7 +1897,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Medreich Plc",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1905,10 +1905,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A36.00",
+              "NhsIndicativePrice": "£6.00",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1916,7 +1916,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Phoenix Healthcare Distribution Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1926,8 +1926,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1935,7 +1935,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "RX Farma",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1943,10 +1943,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A34.90",
+              "NhsIndicativePrice": "£4.90",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1954,7 +1954,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Rudipharm Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1964,8 +1964,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1973,7 +1973,7 @@
           "Name": "Amoxicillin 250mg/5ml oral suspension sugar free",
           "Manufacturer": "Sigma Pharmaceuticals Plc",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 50_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -1983,8 +1983,8 @@
               "Unit": "ml",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category M",
-              "DrugTariffPrice": "\u00A31.34",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£1.34",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -1992,7 +1992,7 @@
           "Name": "Amoxicillin 500mg/5ml oral suspension sugar free",
           "Manufacturer": "A A H Pharmaceuticals Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 100\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 100_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -2000,10 +2000,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A310.00",
+              "NhsIndicativePrice": "£10.00",
               "DrugTariff": "Part VIIIA Category A",
-              "DrugTariffPrice": "\u00A39.86",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£9.86",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2011,7 +2011,7 @@
           "Name": "Amoxicillin 500mg/5ml oral suspension sugar free",
           "Manufacturer": "Alliance Healthcare (Distribution) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 100\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 100_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -2019,18 +2019,18 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A39.86",
+              "NhsIndicativePrice": "£9.86",
               "DrugTariff": "Part VIIIA Category A",
-              "DrugTariffPrice": "\u00A39.86",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£9.86",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
         {
           "Name": "Amoxicillin 500mg/5ml oral suspension sugar free",
-          "Manufacturer": "Brown \u0026 Burk UK Ltd",
+          "Manufacturer": "Brown & Burk UK Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 100\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 100_mg per 1_ml",
           "CautionaryLabels": [
             9
           ],
@@ -2038,10 +2038,10 @@
             {
               "Size": "100",
               "Unit": "ml",
-              "NhsIndicativePrice": "\u00A35.75",
+              "NhsIndicativePrice": "£5.75",
               "DrugTariff": "Part VIIIA Category A",
-              "DrugTariffPrice": "\u00A39.86",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£9.86",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         }
@@ -2060,7 +2060,7 @@
           "Name": "Amoxicillin 3g oral powder sachets sugar free",
           "Manufacturer": "A A H Pharmaceuticals Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3\u2009gram",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
             9,
             13
@@ -2069,10 +2069,10 @@
             {
               "Size": "2",
               "Unit": "sachet",
-              "NhsIndicativePrice": "\u00A346.00",
+              "NhsIndicativePrice": "£46.00",
               "DrugTariff": "Part VIIIA Category A",
-              "DrugTariffPrice": "\u00A343.86",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£43.86",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2080,7 +2080,7 @@
           "Name": "Amoxicillin 3g oral powder sachets sugar free",
           "Manufacturer": "Alliance Healthcare (Distribution) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3\u2009gram",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
             9,
             13
@@ -2089,18 +2089,18 @@
             {
               "Size": "2",
               "Unit": "sachet",
-              "NhsIndicativePrice": "\u00A343.86",
+              "NhsIndicativePrice": "£43.86",
               "DrugTariff": "Part VIIIA Category A",
-              "DrugTariffPrice": "\u00A343.86",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£43.86",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
         {
           "Name": "Amoxicillin 3g oral powder sachets sugar free",
-          "Manufacturer": "Brown \u0026 Burk UK Ltd",
+          "Manufacturer": "Brown & Burk UK Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3\u2009gram",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
             9,
             13
@@ -2109,10 +2109,10 @@
             {
               "Size": "2",
               "Unit": "sachet",
-              "NhsIndicativePrice": "\u00A310.99",
+              "NhsIndicativePrice": "£10.99",
               "DrugTariff": "Part VIIIA Category A",
-              "DrugTariffPrice": "\u00A343.86",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£43.86",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2120,7 +2120,7 @@
           "Name": "Amoxicillin 3g oral powder sachets sugar free",
           "Manufacturer": "Kent Pharma (UK) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3\u2009gram",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
             9,
             13
@@ -2129,10 +2129,10 @@
             {
               "Size": "2",
               "Unit": "sachet",
-              "NhsIndicativePrice": "\u00A346.00",
+              "NhsIndicativePrice": "£46.00",
               "DrugTariff": "Part VIIIA Category A",
-              "DrugTariffPrice": "\u00A343.86",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£43.86",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2140,7 +2140,7 @@
           "Name": "Amoxicillin 3g oral powder sachets sugar free",
           "Manufacturer": "Medihealth (Northern) Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3\u2009gram",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
             9,
             13
@@ -2151,8 +2151,8 @@
               "Unit": "sachet",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category A",
-              "DrugTariffPrice": "\u00A343.86",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£43.86",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2160,7 +2160,7 @@
           "Name": "Amoxicillin 3g oral powder sachets sugar free",
           "Manufacturer": "Phoenix Healthcare Distribution Ltd",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3\u2009gram",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
             9,
             13
@@ -2171,8 +2171,8 @@
               "Unit": "sachet",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category A",
-              "DrugTariffPrice": "\u00A343.86",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£43.86",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2180,7 +2180,7 @@
           "Name": "Amoxicillin 3g oral powder sachets sugar free",
           "Manufacturer": "Sigma Pharmaceuticals Plc",
           "SugarFree": true,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3\u2009gram",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin trihydrate) 3_gram",
           "CautionaryLabels": [
             9,
             13
@@ -2191,8 +2191,8 @@
               "Unit": "sachet",
               "NhsIndicativePrice": "No NHS indicative price available",
               "DrugTariff": "Part VIIIA Category A",
-              "DrugTariffPrice": "\u00A343.86",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£43.86",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         }
@@ -2208,16 +2208,16 @@
           "Name": "Amoxicillin 250mg powder for solution for injection vials",
           "Manufacturer": "Bowmed Ibisqus Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 250_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "10",
               "Unit": "vial",
-              "NhsIndicativePrice": "\u00A37.50 (Hospital only)",
+              "NhsIndicativePrice": "£7.50 (Hospital only)",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2225,16 +2225,16 @@
           "Name": "Amoxicillin 250mg powder for solution for injection vials",
           "Manufacturer": "Wockhardt UK Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 250\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 250_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "10",
               "Unit": "vial",
-              "NhsIndicativePrice": "\u00A37.50",
+              "NhsIndicativePrice": "£7.50",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2242,16 +2242,16 @@
           "Name": "Amoxicillin 500mg powder for solution for injection vials",
           "Manufacturer": "Bowmed Ibisqus Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 500_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "10",
               "Unit": "vial",
-              "NhsIndicativePrice": "\u00A312.00 (Hospital only)",
+              "NhsIndicativePrice": "£12.00 (Hospital only)",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A39.60",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£9.60",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2259,16 +2259,16 @@
           "Name": "Amoxicillin 500mg powder for solution for injection vials",
           "Manufacturer": "Wockhardt UK Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 500\u2009mg",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 500_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "10",
               "Unit": "vial",
-              "NhsIndicativePrice": "\u00A39.60",
+              "NhsIndicativePrice": "£9.60",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A39.60",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£9.60",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2276,16 +2276,16 @@
           "Name": "Amoxicillin 1g powder for solution for injection vials",
           "Manufacturer": "Bowmed Ibisqus Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 1\u2009gram",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 1_gram",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "10",
               "Unit": "vial",
-              "NhsIndicativePrice": "\u00A316.50 (Hospital only)",
+              "NhsIndicativePrice": "£16.50 (Hospital only)",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -2293,16 +2293,16 @@
           "Name": "Amoxicillin 1g powder for solution for injection vials",
           "Manufacturer": "Wockhardt UK Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 1\u2009gram",
+          "ActiveIngredients": "Amoxicillin (as Amoxicillin sodium) 1_gram",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "1",
               "Unit": "vial",
-              "NhsIndicativePrice": "\u00A31.92",
+              "NhsIndicativePrice": "£1.92",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         }

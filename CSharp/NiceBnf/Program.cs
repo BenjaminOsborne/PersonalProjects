@@ -22,11 +22,26 @@ foreach (var drugSlug in checkDrugs)
 {
     // Scrape a single drug as a demo (amoxicillin has multiple indications, routes, and patient groups).
     var drug = await scraper.ScrapeDrugAsync(drugSlug) ?? throw new ArgumentException($"Could not load drug: {drugSlug}");
-    var json = JsonSerializer.Serialize(drug, JsonSerializerOptionsSettings.Indented);
-    var fileName = drugSlug.Split("/").Last(x => x.Any());
+    var json = FormatJson(drug);
+    var rawFileName = drugSlug.Split("/").Last(x => x.Any());
+    var fileName = rawFileName[0].ToString().ToUpper() + rawFileName[1..];
     var filePath = Path.Combine(FileLoader.GetCurrentDir(), "Exports", $"{fileName}.json");
     await File.WriteAllTextAsync(filePath, json);
 }
+
+return;
+
+static string FormatJson(Drug drug) =>
+    JsonSerializer.Serialize(drug, JsonSerializerOptionsSettings.Indented)
+        .Replace("\\u2009", "_")
+        .Replace("\\u2002", "__")
+        .Replace("\\u00A3", "£")
+        .Replace("\\u00A0", "|")
+        .Replace("\\u0026", "&")
+        .Replace("\\u2013", "-")
+        .Replace("\\u2014", "-")
+        .Replace("\\u0027", "'")
+    ;
 
 public static class FileLoader
 {

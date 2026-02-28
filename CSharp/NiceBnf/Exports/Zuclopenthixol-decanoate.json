@@ -11,7 +11,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "Test dose 100\u00A0mg, dose to be administered into the upper outer buttock or lateral thigh, followed by 200\u2013500\u00A0mg after at least 7\u00A0days, then 200\u2013500\u00A0mg every 1\u20134\u00A0weeks, adjusted according to response, higher doses of more than 500mg can be used; do not exceed 600\u00A0mg weekly.",
+              "DoseStatement": "Test dose 100|mg, dose to be administered into the upper outer buttock or lateral thigh, followed by 200-500|mg after at least 7|days, then 200-500|mg every 1-4|weeks, adjusted according to response, higher doses of more than 500mg can be used; do not exceed 600|mg weekly.",
               "PatientType": "Adult"
             },
             {
@@ -35,16 +35,16 @@
           "Name": "Clopixol 200mg/1ml solution for injection ampoules",
           "Manufacturer": "Lundbeck Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Zuclopenthixol decanoate 200\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Zuclopenthixol decanoate 200_mg per 1_ml",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "10",
               "Unit": "ampoule",
-              "NhsIndicativePrice": "\u00A331.51",
+              "NhsIndicativePrice": "£31.51",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A331.51",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£31.51",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         },
@@ -52,16 +52,16 @@
           "Name": "Clopixol Conc 500mg/1ml solution for injection ampoules",
           "Manufacturer": "Lundbeck Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Zuclopenthixol decanoate 500\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Zuclopenthixol decanoate 500_mg per 1_ml",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "5",
               "Unit": "ampoule",
-              "NhsIndicativePrice": "\u00A337.18",
+              "NhsIndicativePrice": "£37.18",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A337.18",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£37.18",
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         }

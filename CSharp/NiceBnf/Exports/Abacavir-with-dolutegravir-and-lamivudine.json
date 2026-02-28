@@ -11,7 +11,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult (body-weight 40 kg and above)",
-              "DoseStatement": "1\u00A0tablet once daily.",
+              "DoseStatement": "1|tablet once daily.",
               "PatientType": "Adult"
             }
           ]
@@ -30,16 +30,16 @@
           "Name": "Triumeq 50mg/600mg/300mg tablets",
           "Manufacturer": "ViiV Healthcare UK Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Abacavir (as Abacavir sulfate) 600\u2009mg, Dolutegravir (as Dolutegravir sodium) 50\u2009mg, Lamivudine 300\u2009mg",
+          "ActiveIngredients": "Abacavir (as Abacavir sulfate) 600_mg, Dolutegravir (as Dolutegravir sodium) 50_mg, Lamivudine 300_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "30",
               "Unit": "tablet",
-              "NhsIndicativePrice": "\u00A3798.16 (Hospital only)",
+              "NhsIndicativePrice": "£798.16 (Hospital only)",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM__(Prescription-only medicine)"
             }
           ]
         }
