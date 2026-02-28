@@ -8,12 +8,12 @@ namespace NiceBnf;
 // ─── Data Models ─────────────────────────────────────────────────────────────
 
 /// <summary>A dose entry for a specific patient group under a route of administration.</summary>
+/// <param name="PatientGroup">e.g. "Adult", "Child 1–11 months", "Neonate"</param>
+/// <param name="DoseStatement">e.g. "500 mg 3 times a day for 5 days"</param>
+/// <param name="PatientType">"adult", "child", or "neonate"</param>
 public record PatientGroupDose(
-    /// <summary>e.g. "Adult", "Child 1–11 months", "Neonate"</summary>
     string PatientGroup,
-    /// <summary>e.g. "500 mg 3 times a day for 5 days"</summary>
     string DoseStatement,
-    /// <summary>"adult", "child", or "neonate"</summary>
     string PatientType
 );
 
@@ -24,62 +24,62 @@ public record RouteOfAdministration(
 );
 
 /// <summary>A clinical indication with all routes and doses beneath it.</summary>
+/// <param name="Text">e.g. "Susceptible infections (e.g. sinusitis, salmonellosis, oral infections)"</param>
 public record Indication(
-    /// <summary>e.g. "Susceptible infections (e.g. sinusitis, salmonellosis, oral infections)"</summary>
     string Text,
     IReadOnlyList<RouteOfAdministration> Routes
 );
 
 /// <summary>A single pack size/price entry for a preparation.</summary>
+/// <param name="Size">e.g. "21"</param>
+/// <param name="Unit">e.g. "capsule"</param>
+/// <param name="NhsIndicativePrice">e.g. "£0.94"</param>
+/// <param name="DrugTariff">e.g. "Part VIIIA Category M"</param>
+/// <param name="DrugTariffPrice">e.g. "£0.94"</param>
+/// <param name="LegalCategory">e.g. "POM (Prescription-only medicine)"</param>
 public record MedicinalFormPack(
-    /// <summary>e.g. "21"</summary>
     string? Size,
-    /// <summary>e.g. "capsule"</summary>
     string? Unit,
-    /// <summary>e.g. "£0.94"</summary>
     string? NhsIndicativePrice,
-    /// <summary>e.g. "Part VIIIA Category M"</summary>
     string? DrugTariff,
-    /// <summary>e.g. "£0.94"</summary>
     string? DrugTariffPrice,
-    /// <summary>e.g. "POM (Prescription-only medicine)"</summary>
     string? LegalCategory
 );
 
 /// <summary>A specific brand/manufacturer preparation within a medicinal form.</summary>
+/// <param name="Name">e.g. "Amoxicillin 250mg capsules"</param>
+/// <param name="Manufacturer">e.g. "A A H Pharmaceuticals Ltd"</param>
+/// <param name="ActiveIngredients">e.g. "Amoxicillin (as Amoxicillin trihydrate) 250 mg"</param>
+/// <param name="CautionaryLabels">BNF cautionary label numbers, e.g. [9]</param>
 public record Preparation(
-    /// <summary>e.g. "Amoxicillin 250mg capsules"</summary>
     string Name,
-    /// <summary>e.g. "A A H Pharmaceuticals Ltd"</summary>
     string Manufacturer,
     bool SugarFree,
-    /// <summary>e.g. "Amoxicillin (as Amoxicillin trihydrate) 250 mg"</summary>
     string ActiveIngredients,
-    /// <summary>BNF cautionary label numbers, e.g. [9]</summary>
     IReadOnlyList<int> CautionaryLabels,
     IReadOnlyList<MedicinalFormPack> Packs
 );
 
 /// <summary>A physical dosage form (e.g. "Oral capsule") with all its preparations.</summary>
+/// <param name="FormType">e.g. "Oral capsule", "Oral suspension"</param>
+/// <param name="Excipients">e.g. "May contain sucrose." – null if not stated</param>
+/// <param name="Electrolytes">e.g. "May contain sodium." – null if not stated</param>
+/// <param name="CautionaryLabels">BNF cautionary label numbers that apply to all preparations in this form</param>
 public record MedicinalForm(
-    /// <summary>e.g. "Oral capsule", "Oral suspension"</summary>
     string FormType,
-    /// <summary>e.g. "May contain sucrose." – null if not stated</summary>
     string? Excipients,
-    /// <summary>e.g. "May contain sodium." – null if not stated</summary>
     string? Electrolytes,
-    /// <summary>BNF cautionary label numbers that apply to all preparations in this form</summary>
     IReadOnlyList<int> CautionaryLabels,
     IReadOnlyList<Preparation> Preparations
 );
 
 /// <summary>A BNF drug entry with its full name, all indications/doses, and medicinal forms.</summary>
+/// <param name="Name">e.g. "Amoxicillin"</param>
+/// <param name="Slug">URL slug, e.g. "amoxicillin"</param>
+/// <param name="Url">Full page URL</param>
 public record Drug(
-    /// <summary>e.g. "Amoxicillin"</summary>
     string Name,
-    /// <summary>URL slug, e.g. "amoxicillin"</summary>
     string Slug,
-    /// <summary>Full page URL</summary>
     string Url,
     IReadOnlyList<Indication> Indications,
     IReadOnlyList<MedicinalForm> MedicinalForms
