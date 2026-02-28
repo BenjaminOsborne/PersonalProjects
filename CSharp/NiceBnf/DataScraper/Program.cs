@@ -1,9 +1,10 @@
-using NiceBnf;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using DataModel;
+using DataScraper;
 
-using var scraper = new DataScraper();
+using var scraper = new DataScraper.DataScraper();
 
 var allDrugs = await scraper.GetDrugSlugsAsync();
 
@@ -24,7 +25,7 @@ foreach (var drugSlug in checkDrugs)
     var json = FormatJson(drug);
     var rawFileName = drugSlug.Split("/").Last(x => x.Any());
     var fileName = rawFileName[0].ToString().ToUpper() + rawFileName[1..];
-    var filePath = Path.Combine(FileLoader.GetCurrentDir(), "Exports", $"{fileName}.json");
+    var filePath = Path.Combine(FileLoader.GetRootDirectory(), "DataModel", "Definitions", $"{fileName}.json");
     await File.WriteAllTextAsync(filePath, json);
 }
 
@@ -41,36 +42,39 @@ static string FormatJson(Drug drug) =>
         .Replace("\\u2013", "-")
         .Replace("\\u2014", "-")
         .Replace("\\u0027", "'")
-    ;
+;
 
-public static class FileLoader
+namespace DataScraper
 {
-    public static string GetPathRelativeToExecuting(params string[] relativePath)
+    public static class FileLoader
     {
-        var assemblyLoc = Assembly.GetExecutingAssembly().Location;
-        var execDir = Path.GetDirectoryName(assemblyLoc)!;
-        return relativePath.Length switch
+        public static string GetPathRelativeToExecuting(params string[] relativePath)
         {
-            0 => execDir,
-            1 => Path.Combine(execDir, relativePath[0]),
-            _ => Path.Combine(new[] { execDir }.Concat(relativePath).ToArray())
-        };
-    }
-
-    public static string GetCurrentDir()
-    {
-        var dir = new FileInfo(_GetCurrentFilePath()).Directory!;
-        while (dir.Name != "DataScraper")
-        {
-            dir = dir.Parent!;
+            var assemblyLoc = Assembly.GetExecutingAssembly().Location;
+            var execDir = Path.GetDirectoryName(assemblyLoc)!;
+            return relativePath.Length switch
+            {
+                0 => execDir,
+                1 => Path.Combine(execDir, relativePath[0]),
+                _ => Path.Combine(new[] { execDir }.Concat(relativePath).ToArray())
+            };
         }
-        return dir.FullName;
+
+        public static string GetRootDirectory()
+        {
+            var dir = new FileInfo(_GetCurrentFilePath()).Directory!;
+            while (dir.Name != "NiceBnf")
+            {
+                dir = dir.Parent!;
+            }
+            return dir.FullName;
+        }
+
+        private static string _GetCurrentFilePath([CallerFilePath] string path = "") => path;
     }
 
-    private static string _GetCurrentFilePath([CallerFilePath] string path = "") => path;
-}
-
-public static class JsonSerializerOptionsSettings
-{
-    public static JsonSerializerOptions Indented { get; } = new JsonSerializerOptions { WriteIndented = true };
+    public static class JsonSerializerOptionsSettings
+    {
+        public static JsonSerializerOptions Indented { get; } = new JsonSerializerOptions { WriteIndented = true };
+    }
 }

@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="DataModel/DataModel.csproj" Id="59b4849a-3324-4dac-9e5e-8c18dd5624b2" />
   <Project Path="DataScraper/DataScraper.csproj" />
 </Solution>
