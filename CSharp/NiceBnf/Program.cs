@@ -22,8 +22,7 @@ foreach (var drugSlug in checkDrugs)
 {
     // Scrape a single drug as a demo (amoxicillin has multiple indications, routes, and patient groups).
     var drug = await scraper.ScrapeDrugAsync(drugSlug);
-    var json = JsonSerializer.Serialize(drug!, JsonSerializerOptionsSettings.Indented)
-        .Replace('\u2009', '_');
+    var json = JsonSerializer.Serialize(drug!, JsonSerializerOptionsSettings.Indented);
 
     var fileName = drugSlug.Split("/").Last(x => x.Any());
     var filePath = Path.Combine(FileLoader.GetCurrentDir(), "Exports", $"{fileName}.json");
