@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using System.Runtime.CompilerServices;
@@ -85,8 +86,6 @@ public record Drug(
     IReadOnlyList<MedicinalForm> MedicinalForms
 );
 
-// ─── Scraper ─────────────────────────────────────────────────────────────────
-
 /// <summary>
 /// Scrapes drugs and their recommended doses from https://bnf.nice.org.uk/drugs/
 /// using AngleSharp for HTML parsing.
@@ -110,8 +109,6 @@ public sealed class DataScraper : IDisposable
     }
 
     public void Dispose() => _httpClient.Dispose();
-
-    // ── Public API ────────────────────────────────────────────────────────────
 
     /// <summary>
     /// Returns every drug page slug listed on the BNF A–Z index
@@ -170,7 +167,7 @@ public sealed class DataScraper : IDisposable
             Slug: drugSlug,
             Url: url,
             Indications: document.QuerySelector("h2[id='indications-and-dose']") != null
-                ? ParseIndications(document)
+                ? _ParseIndications(document)
                 : [],
             MedicinalForms: medicinalForms);
     }
@@ -179,8 +176,7 @@ public sealed class DataScraper : IDisposable
     /// Fetches and parses the medicinal-forms page for a drug slug.
     /// Returns an empty list if the page cannot be fetched.
     /// </summary>
-    public async Task<IReadOnlyList<MedicinalForm>> ScrapeMedicinalFormsAsync(
-        string slug, CancellationToken ct = default)
+    public async Task<IReadOnlyList<MedicinalForm>> ScrapeMedicinalFormsAsync(string slug, CancellationToken ct = default)
     {
         var url = $"{BaseUrl}{slug}medicinal-forms/";
         string html;
@@ -195,7 +191,7 @@ public sealed class DataScraper : IDisposable
         }
 
         using var document = await _parser.ParseDocumentAsync(html, ct);
-        return ParseMedicinalForms(document);
+        return _ParseMedicinalForms(document);
     }
 
     /// <summary>
@@ -228,91 +224,87 @@ public sealed class DataScraper : IDisposable
         }
     }
 
-    // ── Indication parsing ────────────────────────────────────────────────────
-
     // CSS module class names use hashed suffixes (e.g. "indicationWrapper--edb2c").
     // Attribute-contains selectors [class*="…"] are used for resilience against hash changes.
 
-    private static IReadOnlyList<Indication> ParseIndications(IDocument document) =>
+    private static IReadOnlyList<Indication> _ParseIndications(IDocument document) =>
         document
             .QuerySelectorAll("section[class*='indicationWrapper']")
             .Select(el => new Indication(
                 Text: el.QuerySelectorGetContent("[class*='indicationText']"),
-                Routes: ParseRoutes(el)))
+                Routes: _ParseRoutes(el)))
             .ToList();
 
-    private static IReadOnlyList<RouteOfAdministration> ParseRoutes(IElement indicationEl) =>
+    private static IReadOnlyList<RouteOfAdministration> _ParseRoutes(IElement indicationEl) =>
         indicationEl
             .QuerySelectorAll("section[class*='routeOfAdministration']")
             .Select(routeEl => new RouteOfAdministration(
                 Route: routeEl.QuerySelectorGetContent("[class*='routeOfAdministrationHeading']"),
-                Doses: ParseDoses(routeEl)))
+                Doses: _ParseDoses(routeEl)))
             .ToList();
 
     // Each patient group is a <div class="…patientGroupDose… …adult/child/neonate…">
     //   <dt class="…patientGroup…">Adult</dt>
     //   <dd class="…doseStatement…">500 mg every 8 hours</dd>
-    private static IReadOnlyList<PatientGroupDose> ParseDoses(IElement routeEl) =>
+    private static IReadOnlyList<PatientGroupDose> _ParseDoses(IElement routeEl) =>
         routeEl
             .QuerySelectorAll("div[class*='patientGroupDose']")
             .Select(div => new PatientGroupDose(
                 PatientGroup: div.QuerySelectorGetContent("dt"),
                 DoseStatement: div.QuerySelectorGetContent("dd"),
-                PatientType: ParsePatientType(className: div.ClassName)))
+                PatientType: _ParsePatientType(className: div.ClassName)))
             .ToList();
 
-    private static string ParsePatientType(string? className) =>
+    private static string _ParsePatientType(string? className) =>
         className != null
             ? className.Contains("adult")
-                ? "adult"
-                : className.Contains("child") ? "child"
-                    : className.Contains("neonate") ? "neonate"
-                        : "unknown"
-            : "unknown";
+                ? "Adult"
+                : className.Contains("child") ? "Child"
+                    : className.Contains("neonate") ? "Neonate"
+                        : "Unknown"
+            : "Unknown";
 
-    // ── Medicinal form parsing ────────────────────────────────────────────────
-
-    // Page structure:
-    //   <section class="medicinal-forms-module--form--*">
-    //     <h2 id="oral-capsule">Oral capsule</h2>
-    //     <details>   ← form-level cautionary labels (h3[class*='--labelAccordionHeading--'])
-    //     <h3>Excipients</h3><p>May contain sucrose.</p>     ← optional, no class
-    //     <h3>Electrolytes</h3><p>May contain sodium.</p>    ← optional, no class
-    //     <ol class="medicinal-forms-module--prepList--*">
-    //       <li>
-    //         <details>
-    //           <summary>
-    //             <h3 class="Prep-module--prepHeading--*">
-    //               <span class="Prep-module--sugarFree--*">Sugar free</span>   ← optional
-    //               <span class="Prep-module--headingText--*">
-    //                 Amoxicillin 250mg capsules
-    //                 <span class="Prep-module--manufacturer--*">A A H Pharmaceuticals Ltd</span>
-    //               </span>
-    //             </h3>
-    //           </summary>
-    //           <details>  ← prep-level cautionary labels (h4[class*='nestedLabelAccordionHeading'])
-    //           <dl>       ← active ingredients
-    //             <div class="Prep-module--packDefinitionListItem--*">
-    //               <dt>Active ingredients</dt><dd>Amoxicillin ... 250 mg</dd>
-    //             </div>
-    //           </dl>
-    //           <ol class="Prep-module--packList--*">
-    //             <li class="Prep-module--packItem--*">
-    //               <dl>Size / Unit / NHS indicative price / Drug tariff / Legal category</dl>
-    //             </li>
-    //           </ol>
-    //         </details>
-    //       </li>
-    //     </ol>
-    //   </section>
-
-    private static IReadOnlyList<MedicinalForm> ParseMedicinalForms(IDocument document) =>
+    /* Page structure:
+    <section class="medicinal-forms-module--form--*">
+      <h2 id="oral-capsule">Oral capsule</h2>
+      <details>   ← form-level cautionary labels (h3[class*='--labelAccordionHeading--'])
+      <h3>Excipients</h3><p>May contain sucrose.</p>     ← optional, no class
+      <h3>Electrolytes</h3><p>May contain sodium.</p>    ← optional, no class
+      <ol class="medicinal-forms-module--prepList--*">
+        <li>
+          <details>
+            <summary>
+              <h3 class="Prep-module--prepHeading--*">
+                <span class="Prep-module--sugarFree--*">Sugar free</span>   ← optional
+                <span class="Prep-module--headingText--*">
+                  Amoxicillin 250mg capsules
+                  <span class="Prep-module--manufacturer--*">A A H Pharmaceuticals Ltd</span>
+                </span>
+              </h3>
+            </summary>
+            <details>  ← prep-level cautionary labels (h4[class*='nestedLabelAccordionHeading'])
+            <dl>       ← active ingredients
+              <div class="Prep-module--packDefinitionListItem--*">
+                <dt>Active ingredients</dt><dd>Amoxicillin ... 250 mg</dd>
+              </div>
+            </dl>
+            <ol class="Prep-module--packList--*">
+              <li class="Prep-module--packItem--*">
+                <dl>Size / Unit / NHS indicative price / Drug tariff / Legal category</dl>
+              </li>
+            </ol>
+          </details>
+        </li>
+      </ol>
+    </section>
+    */
+    private static IReadOnlyList<MedicinalForm> _ParseMedicinalForms(IDocument document) =>
         document
             .QuerySelectorAll("section[class*='medicinal-forms-module--form']")
-            .Select(ParseMedicinalForm)
+            .Select(_ParseMedicinalForm)
             .ToList();
 
-    private static MedicinalForm ParseMedicinalForm(IElement section)
+    private static MedicinalForm _ParseMedicinalForm(IElement section)
     {
         var formType = section.QuerySelector("h2")?.TextContent.Trim() ?? string.Empty;
 
@@ -322,29 +314,45 @@ public sealed class DataScraper : IDisposable
         string? electrolytes = null;
         foreach (var child in section.Children)
         {
-            if (child.TagName != "H3" || child.ClassName?.Length > 0) continue;
+            if (child.TagName != "H3" || child.ClassName?.Length > 0)
+            {
+                continue;
+            }
             var text = child.TextContent.Trim();
             if (text == "Excipients")
-                excipients = child.NextElementSibling?.TextContent.Trim();
+            {
+                excipients = excipients == null
+                    ? child.NextElementSibling?.TextContent.Trim()
+                    : throw new Exception("Excipients already set");
+            }
             else if (text == "Electrolytes")
-                electrolytes = child.NextElementSibling?.TextContent.Trim();
+            {
+                electrolytes = electrolytes == null
+                    ? child.NextElementSibling?.TextContent.Trim()
+                    : throw new Exception("Electrolytes already set");
+            }
         }
 
         // Form-level cautionary labels live in the top-level <details> (<h3> not <h4>).
         var formLabelDetails = section
             .QuerySelector("h3[class*='medicinal-forms-module--labelAccordionHeading']")
             ?.Closest("details");
-        var formLabels = ParseLabelNumbers(formLabelDetails);
+        var formLabels = _ParseLabelNumbers(formLabelDetails);
 
         var preparations = section
             .QuerySelectorAll("ol[class*='medicinal-forms-module--prepList'] > li")
-            .Select(ParsePreparation)
+            .Select(_ParsePreparation)
             .ToList();
 
-        return new MedicinalForm(formType, excipients, electrolytes, formLabels, preparations);
+        return new MedicinalForm(
+            FormType: formType,
+            Excipients: excipients,
+            Electrolytes: electrolytes,
+            CautionaryLabels: formLabels,
+            Preparations: preparations);
     }
 
-    private static Preparation ParsePreparation(IElement li)
+    private static Preparation _ParsePreparation(IElement li)
     {
         var prepDetails = li.QuerySelector("details");
 
@@ -363,7 +371,7 @@ public sealed class DataScraper : IDisposable
         var prepLabelDetails = prepDetails
             ?.QuerySelector("h4[class*='medicinal-forms-module--nestedLabelAccordionHeading']")
             ?.Closest("details");
-        var cautionaryLabels = ParseLabelNumbers(prepLabelDetails);
+        var cautionaryLabels = _ParseLabelNumbers(prepLabelDetails);
 
         // Active ingredients: find a <dt> with that exact text that is NOT inside a pack item.
         var activeDt = prepDetails
@@ -373,28 +381,32 @@ public sealed class DataScraper : IDisposable
                 dt.Closest("li[class*='Prep-module--packItem']") == null);
         var activeIngredients = activeDt?.NextElementSibling?.TextContent.Trim() ?? "";
 
-        var packs = ParsePacks(prepDetails?.QuerySelector("ol[class*='Prep-module--packList']"));
+        var packs = _ParsePacks(prepDetails?.QuerySelector("ol[class*='Prep-module--packList']"));
 
-        return new Preparation(name, manufacturer, sugarFree, activeIngredients, cautionaryLabels, packs);
+        return new Preparation(
+            Name: name,
+            Manufacturer: manufacturer,
+            SugarFree: sugarFree,
+            ActiveIngredients: activeIngredients,
+            CautionaryLabels: cautionaryLabels,
+            Packs: packs);
     }
 
-    private static IReadOnlyList<MedicinalFormPack> ParsePacks(IElement? packList)
-    {
-        if (packList == null) return [];
-        return packList
+    private static IReadOnlyList<MedicinalFormPack> _ParsePacks(IElement? packList) =>
+        packList?
             .QuerySelectorAll("li[class*='Prep-module--packItem']")
             .Select(ParsePack)
-            .ToList();
-    }
+            .ToList()
+        ?? [];
 
     private static MedicinalFormPack ParsePack(IElement li)
     {
         // Build a dt→dd dictionary from each definition list item in this pack.
         var fields = li
             .QuerySelectorAll("div[class*='Prep-module--packDefinitionListItem']")
-            .ToDictionary(
-                div => div.QuerySelector("dt")?.TextContent.Trim() ?? "",
-                div => div.QuerySelector("dd")?.TextContent.Trim() ?? "");
+            .ToImmutableDictionary(
+                div => div.QuerySelectorGetContent("dt"),
+                div => div.QuerySelectorGetContent("dd"));
 
         return new MedicinalFormPack(
             Size: fields.GetValueOrDefault("Size"),
@@ -409,14 +421,20 @@ public sealed class DataScraper : IDisposable
     /// Extracts BNF cautionary label numbers from a &lt;details&gt; accordion element.
     /// Label headings look like: &lt;h4 class="…labelHeading…"&gt;Label 9&lt;/h4&gt;
     /// </summary>
-    private static IReadOnlyList<int> ParseLabelNumbers(IElement? detailsEl)
+    private static IReadOnlyList<int> _ParseLabelNumbers(IElement? detailsEl)
     {
-        if (detailsEl == null) return [];
+        if (detailsEl == null)
+        {
+            return [];
+        }
         var labels = new List<int>();
         foreach (var heading in detailsEl.QuerySelectorAll("[class*='medicinal-forms-module--labelHeading']"))
         {
             var match = Regex.Match(heading.TextContent, @"\d+");
-            if (match.Success) labels.Add(int.Parse(match.Value));
+            if (match.Success)
+            {
+                labels.Add(int.Parse(match.Value));
+            }
         }
         return labels;
     }
