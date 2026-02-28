@@ -3,14 +3,18 @@ using System.Text.Json;
 
 using var scraper = new DataScraper();
 
-// Scrape a single drug as a demo (amoxicillin has multiple indications, routes, and patient groups).
-var drug = await scraper.ScrapeDrugAsync("/drugs/amoxicillin/");
+var allDrugs = await scraper.GetDrugSlugsAsync();
 
-if (drug is null)
+Console.WriteLine("Drugs:");
+foreach (var slug in allDrugs)
 {
-    Console.WriteLine("Failed to scrape drug.");
-    return;
+    Console.WriteLine(slug);
 }
 
-var json = JsonSerializer.Serialize(drug, new JsonSerializerOptions { WriteIndented = true });
-Console.WriteLine(json);
+if (bool.Parse("false"))
+{
+    // Scrape a single drug as a demo (amoxicillin has multiple indications, routes, and patient groups).
+    var drug = await scraper.ScrapeDrugAsync("/drugs/amoxicillin/");
+    var json = JsonSerializer.Serialize(drug!, new JsonSerializerOptions { WriteIndented = true });
+    Console.WriteLine(json);
+}

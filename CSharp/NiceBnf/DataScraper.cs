@@ -64,6 +64,8 @@ public sealed class DataScraper : IDisposable
         _parser = new HtmlParser();
     }
 
+    public void Dispose() => _httpClient.Dispose();
+
     // ── Public API ────────────────────────────────────────────────────────────
 
     /// <summary>
@@ -76,13 +78,14 @@ public sealed class DataScraper : IDisposable
         using var document = await _parser.ParseDocumentAsync(html, ct);
 
         // Drug links follow the pattern /drugs/<slug>/ with exactly 3 slashes.
-        var slugs = document
+        var hrefs = document
             .QuerySelectorAll("a[href^='/drugs/']")
             .Select(a => a.GetAttribute("href")!)
-            .Where(href => href != "/drugs/" && href.Count(c => c == '/') == 3)
+            .ToList();
+        var slugs = hrefs
+            .Where(href => href != "/drugs/" && href.StartsWith("/drugs/"))
             .Distinct()
             .ToList();
-
         return slugs;
     }
 
@@ -94,7 +97,6 @@ public sealed class DataScraper : IDisposable
     {
         var url = $"{BaseUrl}{slug}";
         string html;
-
         try
         {
             html = await _httpClient.GetStringAsync(url, ct);
@@ -113,11 +115,12 @@ public sealed class DataScraper : IDisposable
 
         var drugSlug = slug.Trim('/').Split('/').Last();
 
-        // If the page has no "Indications and dose" section, return the drug with no doses.
-        if (document.QuerySelector("h2[id='indications-and-dose']") is null)
-            return new Drug(name, drugSlug, url, []);
-
-        return new Drug(name, drugSlug, url, ParseIndications(document));
+        return new Drug(Name: name,
+                Slug: drugSlug,
+                Url: url,
+                Indications: document.QuerySelector("h2[id='indications-and-dose']") != null // If the page has no "Indications and dose" section, return the drug with no doses.
+                    ? ParseIndications(document)
+                    : []);
     }
 
     /// <summary>
@@ -144,7 +147,9 @@ public sealed class DataScraper : IDisposable
 
             // Avoid hammering the server between requests.
             if (i < slugs.Count - 1)
+            {
                 await Task.Delay(RequestDelayMs, ct);
+            }
         }
     }
 
@@ -153,60 +158,46 @@ public sealed class DataScraper : IDisposable
     // CSS module class names use hashed suffixes (e.g. "indicationWrapper--edb2c").
     // Attribute-contains selectors [class*="…"] are used for resilience against hash changes.
 
-    private static IReadOnlyList<Indication> ParseIndications(IDocument document)
-    {
-        var indications = new List<Indication>();
+    private static IReadOnlyList<Indication> ParseIndications(IDocument document) =>
+        document
+            .QuerySelectorAll("section[class*='indicationWrapper']")
+            .Select(el => new Indication(
+                Text: el.QuerySelectorGetContent("[class*='indicationText']"),
+                Routes: ParseRoutes(el)))
+            .ToList();
 
-        foreach (var el in document.QuerySelectorAll("section[class*='indicationWrapper']"))
-        {
-            var text = el.QuerySelector("[class*='indicationText']")
-                         ?.TextContent.Trim() ?? string.Empty;
+    private static IReadOnlyList<RouteOfAdministration> ParseRoutes(IElement indicationEl) =>
+        indicationEl
+            .QuerySelectorAll("section[class*='routeOfAdministration']")
+            .Select(routeEl => new RouteOfAdministration(
+                Route: routeEl.QuerySelectorGetContent("[class*='routeOfAdministrationHeading']"),
+                Doses: _ParseDoses(routeEl)))
+            .ToList();
 
-            indications.Add(new Indication(text, ParseRoutes(el)));
-        }
+    // Each patient group is a <div class="…patientGroupDose… …adult/child/neonate…">
+    //   <dt class="…patientGroup…">Adult</dt>
+    //   <dd class="…doseStatement…">500 mg every 8 hours</dd>
+    private static IReadOnlyList<PatientGroupDose> _ParseDoses(IElement routeEl) =>
+        routeEl
+            .QuerySelectorAll("div[class*='patientGroupDose']")
+            .Select(div => new PatientGroupDose(
+                PatientGroup: div.QuerySelectorGetContent("dt"),
+                DoseStatement: div.QuerySelectorGetContent("dd"),
+                PatientType: _ParseExpectedPatientType(className: div.ClassName)))
+            .ToList();
 
-        return indications;
-    }
+    private static string _ParseExpectedPatientType(string? className) =>
+        className != null
+            ? className.Contains("adult")
+                ? "adult"
+                : className.Contains("child") ? "child"
+                    : className.Contains("neonate") ? "neonate"
+                        : "unknown"
+            : "unknown";
+}
 
-    private static IReadOnlyList<RouteOfAdministration> ParseRoutes(IElement indicationEl)
-    {
-        var routes = new List<RouteOfAdministration>();
-
-        foreach (var routeEl in indicationEl.QuerySelectorAll("section[class*='routeOfAdministration']"))
-        {
-            var routeName = routeEl
-                .QuerySelector("[class*='routeOfAdministrationHeading']")
-                ?.TextContent.Trim() ?? string.Empty;
-
-            routes.Add(new RouteOfAdministration(routeName, ParseDoses(routeEl)));
-        }
-
-        return routes;
-    }
-
-    private static IReadOnlyList<PatientGroupDose> ParseDoses(IElement routeEl)
-    {
-        var doses = new List<PatientGroupDose>();
-
-        // Each patient group is a <div class="…patientGroupDose… …adult/child/neonate…">
-        //   <dt class="…patientGroup…">Adult</dt>
-        //   <dd class="…doseStatement…">500 mg every 8 hours</dd>
-        foreach (var div in routeEl.QuerySelectorAll("div[class*='patientGroupDose']"))
-        {
-            var group = div.QuerySelector("dt")?.TextContent.Trim() ?? string.Empty;
-            var dose  = div.QuerySelector("dd")?.TextContent.Trim() ?? string.Empty;
-
-            var classes = div.ClassName ?? string.Empty;
-            var patientType = classes.Contains("adult")   ? "adult"
-                            : classes.Contains("child")   ? "child"
-                            : classes.Contains("neonate") ? "neonate"
-                            : "unknown";
-
-            doses.Add(new PatientGroupDose(group, dose, patientType));
-        }
-
-        return doses;
-    }
-
-    public void Dispose() => _httpClient.Dispose();
+public static class AgileSharpExtensions
+{
+    public static string QuerySelectorGetContent(this IElement el, string selector) =>
+        el.QuerySelector(selector)?.TextContent.Trim() ?? string.Empty;
 }
