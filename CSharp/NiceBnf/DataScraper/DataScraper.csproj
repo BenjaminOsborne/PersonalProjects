@@ -15,4 +15,8 @@
     <ProjectReference Include="..\DataModel\DataModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Sanitised\" />
+  </ItemGroup>
+
 </Project>

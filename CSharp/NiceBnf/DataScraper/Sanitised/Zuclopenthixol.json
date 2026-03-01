@@ -11,12 +11,12 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "Initially 20\u201330\u00A0mg daily in divided doses, increased if necessary up to 150\u00A0mg daily; usual maintenance 20\u201350\u00A0mg daily (max. per dose 40\u00A0mg), for debilitated patients, use elderly dose.",
+              "DoseStatement": "Initially 20-30|mg daily in divided doses, increased if necessary up to 150|mg daily; usual maintenance 20-50|mg daily (max. per dose 40|mg), for debilitated patients, use elderly dose.",
               "PatientType": "Adult"
             },
             {
               "PatientGroup": "Elderly",
-              "DoseStatement": "Initially 5\u201315\u00A0mg daily in divided doses, increased if necessary up to 150\u00A0mg daily; usual maintenance 20\u201350\u00A0mg daily (max. per dose 40\u00A0mg).",
+              "DoseStatement": "Initially 5-15|mg daily in divided doses, increased if necessary up to 150|mg daily; usual maintenance 20-50|mg daily (max. per dose 40|mg).",
               "PatientType": "Adult"
             }
           ]
@@ -40,7 +40,7 @@
           "Name": "Clopixol 2mg tablets",
           "Manufacturer": "Lundbeck Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 2\u2009mg",
+          "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 2_mg",
           "CautionaryLabels": [
             {
               "Number": 2,
@@ -51,10 +51,10 @@
             {
               "Size": "100",
               "Unit": "tablet",
-              "NhsIndicativePrice": "\u00A33.14",
+              "NhsIndicativePrice": "£3.14",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A33.14",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£3.14",
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -62,7 +62,7 @@
           "Name": "Clopixol 10mg tablets",
           "Manufacturer": "Lundbeck Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 10\u2009mg",
+          "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 10_mg",
           "CautionaryLabels": [
             {
               "Number": 2,
@@ -73,10 +73,10 @@
             {
               "Size": "100",
               "Unit": "tablet",
-              "NhsIndicativePrice": "\u00A38.06",
+              "NhsIndicativePrice": "£8.06",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A38.06",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£8.06",
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -84,7 +84,7 @@
           "Name": "Clopixol 25mg tablets",
           "Manufacturer": "Lundbeck Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 25\u2009mg",
+          "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 25_mg",
           "CautionaryLabels": [
             {
               "Number": 2,
@@ -95,10 +95,10 @@
             {
               "Size": "100",
               "Unit": "tablet",
-              "NhsIndicativePrice": "\u00A316.13",
+              "NhsIndicativePrice": "£16.13",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A316.13",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£16.13",
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         }
@@ -114,7 +114,7 @@
           "Name": "Ciatyl-Z 20mg/ml oral drops",
           "Manufacturer": "Imported (Germany)",
           "SugarFree": false,
-          "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 20\u2009mg per 1\u2009ml",
+          "ActiveIngredients": "Zuclopenthixol (as Zuclopenthixol dihydrochloride) 20_mg per 1_ml",
           "CautionaryLabels": [],
           "Packs": [
             {
@@ -123,7 +123,7 @@
               "NhsIndicativePrice": "No NHS indicative price available (Hospital only)",
               "DrugTariff": null,
               "DrugTariffPrice": null,
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         }

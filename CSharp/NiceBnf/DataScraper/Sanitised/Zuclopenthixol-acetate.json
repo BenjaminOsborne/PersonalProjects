@@ -1,0 +1,54 @@
+{
+  "Name": "Zuclopenthixol acetate",
+  "Slug": "zuclopenthixol-acetate",
+  "Url": "https://bnf.nice.org.uk/drugs/zuclopenthixol-acetate/",
+  "Indications": [
+    {
+      "Text": "Short-term management of acute psychosis,",
+      "Routes": [
+        {
+          "Route": "By deep intramuscular injection",
+          "Doses": [
+            {
+              "PatientGroup": "Adult",
+              "DoseStatement": "50-150|mg, then 50-150|mg after 2-3|days if required, (1 additional dose may be needed 1-2 days after the first injection); maximum cumulative dose 400|mg in 2 weeks and maximum 4 injections; maximum duration of treatment 2 weeks-if maintenance treatment necessary change to an oral antipsychotic 2-3 days after last injection, or to a longer acting antipsychotic depot injection given concomitantly with last injection of zuclopenthixol acetate; to be administered into the gluteal muscle or lateral thigh.",
+              "PatientType": "Adult"
+            },
+            {
+              "PatientGroup": "Elderly",
+              "DoseStatement": "50-100|mg, then 50-100|mg after 2-3|days if required, (1 additional dose may be needed 1-2 days after the first injection); maximum cumulative dose 400|mg in 2 weeks and maximum 4 injections; maximum duration of treatment 2 weeks-if maintenance treatment necessary change to an oral antipsychotic 2-3 days after last injection, or to a longer acting antipsychotic depot injection given concomitantly with last injection of zuclopenthixol acetate; to be administered into the gluteal muscle or lateral thigh.",
+              "PatientType": "Adult"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "MedicinalForms": [
+    {
+      "FormType": "Solution for injection",
+      "Excipients": null,
+      "Electrolytes": null,
+      "CautionaryLabels": [],
+      "Preparations": [
+        {
+          "Name": "Clopixol Acuphase 50mg/1ml solution for injection ampoules",
+          "Manufacturer": "Lundbeck Ltd",
+          "SugarFree": false,
+          "ActiveIngredients": "Zuclopenthixol acetate 50_mg per 1_ml",
+          "CautionaryLabels": [],
+          "Packs": [
+            {
+              "Size": "5",
+              "Unit": "ampoule",
+              "NhsIndicativePrice": "£24.21 (Hospital only)",
+              "DrugTariff": "Part VIIIA Category C",
+              "DrugTariffPrice": "£24.21",
+              "LegalCategory": "POM (Prescription-only medicine)"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

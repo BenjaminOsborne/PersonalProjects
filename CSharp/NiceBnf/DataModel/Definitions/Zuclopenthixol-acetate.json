@@ -11,12 +11,12 @@
           "Doses": [
             {
               "PatientGroup": "Adult",
-              "DoseStatement": "50-150|mg, then 50-150|mg after 2-3|days if required, (1 additional dose may be needed 1-2 days after the first injection); maximum cumulative dose 400|mg in 2 weeks and maximum 4 injections; maximum duration of treatment 2 weeks-if maintenance treatment necessary change to an oral antipsychotic 2-3 days after last injection, or to a longer acting antipsychotic depot injection given concomitantly with last injection of zuclopenthixol acetate; to be administered into the gluteal muscle or lateral thigh.",
+              "DoseStatement": "50\u2013150\u00A0mg, then 50\u2013150\u00A0mg after 2\u20133\u00A0days if required, (1 additional dose may be needed 1\u20132 days after the first injection); maximum cumulative dose 400\u00A0mg in 2 weeks and maximum 4 injections; maximum duration of treatment 2 weeks\u2014if maintenance treatment necessary change to an oral antipsychotic 2\u20133 days after last injection, or to a longer acting antipsychotic depot injection given concomitantly with last injection of zuclopenthixol acetate; to be administered into the gluteal muscle or lateral thigh.",
               "PatientType": "Adult"
             },
             {
               "PatientGroup": "Elderly",
-              "DoseStatement": "50-100|mg, then 50-100|mg after 2-3|days if required, (1 additional dose may be needed 1-2 days after the first injection); maximum cumulative dose 400|mg in 2 weeks and maximum 4 injections; maximum duration of treatment 2 weeks-if maintenance treatment necessary change to an oral antipsychotic 2-3 days after last injection, or to a longer acting antipsychotic depot injection given concomitantly with last injection of zuclopenthixol acetate; to be administered into the gluteal muscle or lateral thigh.",
+              "DoseStatement": "50\u2013100\u00A0mg, then 50\u2013100\u00A0mg after 2\u20133\u00A0days if required, (1 additional dose may be needed 1\u20132 days after the first injection); maximum cumulative dose 400\u00A0mg in 2 weeks and maximum 4 injections; maximum duration of treatment 2 weeks\u2014if maintenance treatment necessary change to an oral antipsychotic 2\u20133 days after last injection, or to a longer acting antipsychotic depot injection given concomitantly with last injection of zuclopenthixol acetate; to be administered into the gluteal muscle or lateral thigh.",
               "PatientType": "Adult"
             }
           ]
@@ -35,16 +35,16 @@
           "Name": "Clopixol Acuphase 50mg/1ml solution for injection ampoules",
           "Manufacturer": "Lundbeck Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Zuclopenthixol acetate 50_mg per 1_ml",
+          "ActiveIngredients": "Zuclopenthixol acetate 50\u2009mg per 1\u2009ml",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "5",
               "Unit": "ampoule",
-              "NhsIndicativePrice": "£24.21 (Hospital only)",
+              "NhsIndicativePrice": "\u00A324.21 (Hospital only)",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "£24.21",
-              "LegalCategory": "POM (Prescription-only medicine)"
+              "DrugTariffPrice": "\u00A324.21",
+              "LegalCategory": "POM\u2002(Prescription-only medicine)"
             }
           ]
         }

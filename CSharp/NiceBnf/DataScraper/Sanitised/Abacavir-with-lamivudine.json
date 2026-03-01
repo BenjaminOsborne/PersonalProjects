@@ -11,7 +11,7 @@
           "Doses": [
             {
               "PatientGroup": "Adult (body-weight 40 kg and above)",
-              "DoseStatement": "1\u00A0tablet once daily.",
+              "DoseStatement": "1|tablet once daily.",
               "PatientType": "Adult"
             }
           ]
@@ -30,7 +30,7 @@
           "Name": "Abacavir 600mg / Lamivudine 300mg tablets",
           "Manufacturer": "Amarox Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Abacavir 600\u2009mg, Lamivudine 300\u2009mg",
+          "ActiveIngredients": "Abacavir 600_mg, Lamivudine 300_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
@@ -38,25 +38,25 @@
               "Unit": "tablet",
               "NhsIndicativePrice": "No NHS indicative price available (Hospital only)",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A3352.25",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£352.25",
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
         {
           "Name": "Abacavir 600mg / Lamivudine 300mg tablets",
-          "Manufacturer": "Dr Reddy\u0027s Laboratories (UK) Ltd",
+          "Manufacturer": "Dr Reddy's Laboratories (UK) Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Abacavir 600\u2009mg, Lamivudine 300\u2009mg",
+          "ActiveIngredients": "Abacavir 600_mg, Lamivudine 300_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "30",
               "Unit": "tablet",
-              "NhsIndicativePrice": "\u00A3299.41 (Hospital only)",
+              "NhsIndicativePrice": "£299.41 (Hospital only)",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A3352.25",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£352.25",
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -64,16 +64,16 @@
           "Name": "Abacavir 600mg / Lamivudine 300mg tablets",
           "Manufacturer": "Macleods Pharma UK Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Abacavir 600\u2009mg, Lamivudine 300\u2009mg",
+          "ActiveIngredients": "Abacavir 600_mg, Lamivudine 300_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "30",
               "Unit": "tablet",
-              "NhsIndicativePrice": "\u00A3199.00 (Hospital only)",
+              "NhsIndicativePrice": "£199.00 (Hospital only)",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A3352.25",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£352.25",
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -81,7 +81,7 @@
           "Name": "Abacavir 600mg / Lamivudine 300mg tablets",
           "Manufacturer": "Milpharm Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Abacavir 600\u2009mg, Lamivudine 300\u2009mg",
+          "ActiveIngredients": "Abacavir 600_mg, Lamivudine 300_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
@@ -89,8 +89,8 @@
               "Unit": "tablet",
               "NhsIndicativePrice": "No NHS indicative price available (Hospital only)",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A3352.25",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£352.25",
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -98,7 +98,7 @@
           "Name": "Abacavir 600mg / Lamivudine 300mg tablets",
           "Manufacturer": "Sun Pharma UK Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Abacavir 600\u2009mg, Lamivudine 300\u2009mg",
+          "ActiveIngredients": "Abacavir 600_mg, Lamivudine 300_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
@@ -106,8 +106,8 @@
               "Unit": "tablet",
               "NhsIndicativePrice": "No NHS indicative price available (Hospital only)",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A3352.25",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£352.25",
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         },
@@ -115,16 +115,16 @@
           "Name": "Kivexa 600mg/300mg tablets",
           "Manufacturer": "ViiV Healthcare UK Ltd",
           "SugarFree": false,
-          "ActiveIngredients": "Abacavir 600\u2009mg, Lamivudine 300\u2009mg",
+          "ActiveIngredients": "Abacavir 600_mg, Lamivudine 300_mg",
           "CautionaryLabels": [],
           "Packs": [
             {
               "Size": "30",
               "Unit": "tablet",
-              "NhsIndicativePrice": "\u00A3352.25 (Hospital only)",
+              "NhsIndicativePrice": "£352.25 (Hospital only)",
               "DrugTariff": "Part VIIIA Category C",
-              "DrugTariffPrice": "\u00A3352.25",
-              "LegalCategory": "POM\u2002(Prescription-only medicine)"
+              "DrugTariffPrice": "£352.25",
+              "LegalCategory": "POM (Prescription-only medicine)"
             }
           ]
         }
