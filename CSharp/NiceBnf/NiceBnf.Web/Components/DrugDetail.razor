@@ -1,6 +1,9 @@
 @if (Drug is not null)
 {
-    <MudText Typo="Typo.h5" Class="pa-4">@Drug.Name</MudText>
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="pa-4">
+        <MudText Typo="Typo.h5">@Drug.Name</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Href="@Drug.Url" Target="_blank" Title="Open NICE BNF source" />
+    </MudStack>
 
     <MudTabs Class="px-4">
         <MudTabPanel Text="Indications &amp; Doses">
