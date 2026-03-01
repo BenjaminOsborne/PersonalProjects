@@ -1,12 +1,31 @@
+@* <FILE IS GENERATED FROM MUDBLAZOR TEMPLATE. CONSIDER RE-GENERATING ROUTINELY> *@
+
 @inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
-
 <MudLayout>
-    <MudMainContent>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">NICE BNF</MudText>
+        <MudImage Src="logo.png" Elevation="25" Class="rounded-lg" Width="40" Height="40" Style="margin-left:10px" />
+        <MudSpacer />
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggleAsync" />
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+    </MudAppBar>
+    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent Class="mt-16 pa-4">
         @Body
     </MudMainContent>
 </MudLayout>
+
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

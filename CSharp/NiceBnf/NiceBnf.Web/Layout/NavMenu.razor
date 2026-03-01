@@ -1,0 +1,14 @@
+﻿<MudNavMenu>
+    <MudNavLink Href=@NavigationRoutes.HomePage Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Create">Medicines</MudNavLink>
+</MudNavMenu>
+
+@code
+{
+    public static class NavigationRoutes
+    {
+        public const string HomePage = "";
+
+        public static void NavigateToHomePage(NavigationManager manager) =>
+            manager.NavigateTo(HomePage);
+    }
+}
