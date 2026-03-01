@@ -1,0 +1,98 @@
+@if (Drug is not null)
+{
+    <MudText Typo="Typo.h5" Class="pa-4">@Drug.Name</MudText>
+
+    <MudTabs Class="px-4">
+        <MudTabPanel Text="Indications &amp; Doses">
+            <MudExpansionPanels>
+                @foreach (var indication in Drug.Indications)
+                {
+                    <MudExpansionPanel Text="@indication.Text">
+                        @foreach (var route in indication.Routes)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class="mt-2 mb-1"><b>@route.Route</b></MudText>
+                            <MudSimpleTable>
+                                <thead>
+                                    <tr>
+                                        <th>Patient Group</th>
+                                        <th>Dose</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var dose in route.Doses)
+                                    {
+                                        <tr>
+                                            <td>@dose.PatientGroup</td>
+                                            <td>@dose.DoseStatement</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                    </MudExpansionPanel>
+                }
+            </MudExpansionPanels>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Medicinal Forms">
+            <MudExpansionPanels>
+                @foreach (var form in Drug.MedicinalForms)
+                {
+                    <MudExpansionPanel Text="@FormHeader(form)">
+                        @if (form.Excipients is not null)
+                        {
+                            <MudText Typo="Typo.body2" Class="mb-1"><em>Excipients: @form.Excipients</em></MudText>
+                        }
+                        @if (form.Electrolytes is not null)
+                        {
+                            <MudText Typo="Typo.body2" Class="mb-1"><em>Electrolytes: @form.Electrolytes</em></MudText>
+                        }
+                        @foreach (var prep in form.Preparations)
+                        {
+                            <MudText Typo="Typo.subtitle2" Class="mt-3">@prep.Name</MudText>
+                            <MudText Typo="Typo.body2">@prep.Manufacturer</MudText>
+                            @if (prep.SugarFree)
+                            {
+                                <MudChip T="string" Color="Color.Success" Size="Size.Small">Sugar free</MudChip>
+                            }
+                            <MudText Typo="Typo.body2" Class="mt-1">@prep.ActiveIngredients</MudText>
+                            <MudSimpleTable Class="mt-1 mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>Size</th>
+                                        <th>Unit</th>
+                                        <th>NHS Price</th>
+                                        <th>Legal Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var pack in prep.Packs)
+                                    {
+                                        <tr>
+                                            <td>@pack.Size</td>
+                                            <td>@pack.Unit</td>
+                                            <td>@pack.NhsIndicativePrice</td>
+                                            <td>@pack.LegalCategory</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                    </MudExpansionPanel>
+                }
+            </MudExpansionPanels>
+        </MudTabPanel>
+    </MudTabs>
+}
+
+@code {
+    [Parameter] public Drug? Drug { get; set; }
+
+    private static string FormHeader(MedicinalForm form)
+    {
+        if (form.CautionaryLabels.Count == 0)
+            return form.FormType;
+        var labels = string.Join(", ", form.CautionaryLabels.Select(l => l.Number));
+        return $"{form.FormType} (Label {labels})";
+    }
+}

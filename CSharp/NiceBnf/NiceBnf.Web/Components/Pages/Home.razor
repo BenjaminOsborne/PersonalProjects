@@ -1,0 +1,33 @@
+@page "/"
+@rendermode InteractiveServer
+
+@inject IReadOnlyList<Drug> Drugs
+
+<PageTitle>NiceBnf</PageTitle>
+
+<MudGrid Style="height: 100vh; margin: 0;">
+    <MudItem xs="3">
+        <MudPaper Class="pa-2" Style="height: 100vh; overflow-y: auto;" Elevation="0">
+            <MudList T="Drug" @bind-SelectedValue="_selected">
+                @foreach (var drug in Drugs.OrderBy(d => d.Name))
+                {
+                    <MudListItem Value="drug" Text="@drug.Name" />
+                }
+            </MudList>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="9" Style="overflow-y: auto;">
+        @if (_selected is null)
+        {
+            <MudText Class="pa-4" Typo="Typo.body1">Select a drug from the list.</MudText>
+        }
+        else
+        {
+            <DrugDetail Drug="_selected" />
+        }
+    </MudItem>
+</MudGrid>
+
+@code {
+    Drug? _selected;
+}
