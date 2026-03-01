@@ -1,8 +1,13 @@
 ﻿namespace DataModel;
 
-public static class ModelLoader
+public interface IModelLoader
 {
-    public static async Task<IReadOnlyList<Drug>> LoadDrugsAsync()
+    Task<IReadOnlyList<Drug>> LoadDrugsAsync();
+}
+
+public class ModelLoader : IModelLoader
+{
+    public async Task<IReadOnlyList<Drug>> LoadDrugsAsync()
     {
         var filePaths = new DirectoryInfo(FileLoader.GetDefinitionsPath()).GetFiles("*.json");
         var drugs = new List<Drug>();
@@ -10,6 +15,8 @@ public static class ModelLoader
         {
             drugs.Add(await JsonHelper.DeserializeAsync<Drug>(File.OpenRead(filePath.FullName)));
         }
-        return drugs;
+        return drugs
+            .OrderBy(d => d.Name)
+            .ToList();
     }
 }

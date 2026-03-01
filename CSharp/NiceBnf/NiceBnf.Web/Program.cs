@@ -9,8 +9,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddMudServices();
 
-var drugs = await ModelLoader.LoadDrugsAsync();
-builder.Services.AddSingleton<IReadOnlyList<Drug>>(drugs);
+builder.Services.AddSingleton<IModelLoader, ModelLoader>();
 
 var app = builder.Build();
 

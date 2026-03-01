@@ -1,6 +1,6 @@
 using DataModel;
 
-var loadedPre = await ModelLoader.LoadDrugsAsync();
+var loadedPre = await LoadDrugsAsync();
 Console.WriteLine($"Loaded Pre: {loadedPre.Count}");
 
 using var scraper = new DataScraper.DataScraper();
@@ -32,7 +32,7 @@ foreach (var drugSlug in checkDrugs)
     await File.WriteAllTextAsync(exportPath, FormatJson(drug, sanitiseCharacters: true));
 }
 
-var loadedPost = await ModelLoader.LoadDrugsAsync();
+var loadedPost = await LoadDrugsAsync();
 Console.WriteLine($"Loaded Post: {loadedPost.Count}");
 
 return;
@@ -56,3 +56,6 @@ static string FormatJson(Drug drug, bool sanitiseCharacters)
 
 static string Capitalise(string text) =>
     text[0].ToString().ToUpper() + text[1..];
+
+static Task<IReadOnlyList<Drug>> LoadDrugsAsync() =>
+    new ModelLoader().LoadDrugsAsync();

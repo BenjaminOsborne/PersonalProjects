@@ -1,15 +1,13 @@
 @page "/"
 @rendermode InteractiveServer
 
-@inject IReadOnlyList<Drug> Drugs
-
 <PageTitle>NiceBnf</PageTitle>
 
 <MudGrid Style="height: 100vh; margin: 0;">
     <MudItem xs="3">
         <MudPaper Class="pa-2" Style="height: 100vh; overflow-y: auto;" Elevation="0">
-            <MudList T="Drug" @bind-SelectedValue="_selected">
-                @foreach (var drug in Drugs.OrderBy(d => d.Name))
+            <MudList T="Drug" @bind-SelectedValue=@_selected>
+                @foreach (var drug in Drugs)
                 {
                     <MudListItem Value="drug" Text="@drug.Name" />
                 }
@@ -23,11 +21,24 @@
         }
         else
         {
-            <DrugDetail Drug="_selected" />
+            <DrugDetail Drug=@_selected />
         }
     </MudItem>
 </MudGrid>
 
-@code {
+@code
+{
+    [Inject] private IModelLoader? ModelLoader { get; init; }
+
+    private IReadOnlyList<Drug> Drugs = [];
+
     Drug? _selected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        Drugs = await ModelLoader!.LoadDrugsAsync();
+    }
+
 }
