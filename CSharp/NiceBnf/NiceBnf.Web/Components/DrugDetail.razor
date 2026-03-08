@@ -10,28 +10,35 @@
             <MudExpansionPanels>
                 @foreach (var indication in Drug.Indications)
                 {
-                    <MudExpansionPanel Text="@indication.Text">
-                        @foreach (var route in indication.Routes)
-                        {
-                            <MudText Typo="Typo.subtitle1" Class="mt-2 mb-1"><b>@route.Route</b></MudText>
-                            <MudSimpleTable>
-                                <thead>
-                                    <tr>
-                                        <th>Patient Group</th>
-                                        <th>Dose</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var dose in route.Doses)
-                                    {
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            @indication.Text
+                        </TitleContent>
+                        <ChildContent>
+                            <MudStack>
+                                @foreach (var route in indication.Routes)
+                                {
+                                    <MudText Typo="Typo.subtitle1" Class="mt-2 mb-1"><b>@route.Route</b></MudText>
+                                    <MudSimpleTable>
+                                        <thead>
                                         <tr>
-                                            <td>@dose.PatientGroup</td>
-                                            <td>@dose.DoseStatement</td>
+                                            <th>Patient Group</th>
+                                            <th>Dose</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </MudSimpleTable>
-                        }
+                                        </thead>
+                                        <tbody>
+                                        @foreach (var dose in route.Doses)
+                                        {
+                                            <tr>
+                                                <td>@dose.PatientGroup</td>
+                                                <td>@dose.DoseStatement</td>
+                                            </tr>
+                                        }
+                                        </tbody>
+                                    </MudSimpleTable>
+                                }
+                            </MudStack>
+                        </ChildContent>
                     </MudExpansionPanel>
                 }
             </MudExpansionPanels>
