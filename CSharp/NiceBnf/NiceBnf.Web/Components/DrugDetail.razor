@@ -1,117 +1,102 @@
-@if (Drug is not null)
-{
-    <MudStack Row="true" AlignItems="AlignItems.Center" Class="pa-4">
-        <MudText Typo="Typo.h5">@Drug.Name</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Href="@Drug.Url" Target="_blank" Title="Open NICE BNF source" />
-    </MudStack>
+<MudStack Row="true" AlignItems="AlignItems.Center" Class="pa-4">
+    <MudText Typo="Typo.h5">@Drug.Name</MudText>
+    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Href="@Drug.Url" Target="_blank" Title="Open NICE BNF source" />
+</MudStack>
 
-    <MudTabs Class="px-4">
-        <MudTabPanel Text="Indications & Doses">
-            <MudDataGrid Items=@Drug.Indications ReadOnly="true">
-                <Columns>
-                    <HierarchyColumn T="Indication" />
-                    <TemplateColumn Title="Indication" Sortable="false">
-                        <CellTemplate>@context.Item.Text</CellTemplate>
-                    </TemplateColumn>
-                </Columns>
-                <ChildRowContent>
-                    @if (context.Open)
-                    {
-                        <td colspan="2" class="pa-3">
-                            @foreach (var route in context.Item.Routes)
-                            {
-                                <MudText Typo="Typo.subtitle1" Class="mt-2 mb-1"><b>@route.Route</b></MudText>
-                                <MudSimpleTable>
-                                    <thead>
+<MudTabs Class="px-4">
+    <MudTabPanel Text="Indications & Doses">
+        <MudDataGrid T="Indication" @ref="_indicationsGrid" Items=@Drug.Indications ReadOnly="true" RowClick=@_OnIndicationRowClicked>
+            <Columns>
+                <HierarchyColumn T="Indication" />
+                <TemplateColumn Title="Indication" Sortable="false">
+                    <CellTemplate>@context.Item.Text</CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <ChildRowContent>
+                @if (context.Open)
+                {
+                    <td colspan="2" class="pa-3">
+                        @foreach (var route in context.Item.Routes)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class="mt-2 mb-1"><b>@route.Route</b></MudText>
+                            <MudSimpleTable>
+                                <thead>
+                                    <tr>
+                                        <th>Patient Group</th>
+                                        <th>Dose</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var dose in route.Doses)
+                                    {
                                         <tr>
-                                            <th>Patient Group</th>
-                                            <th>Dose</th>
+                                            <td>@dose.PatientGroup</td>
+                                            <td>@dose.DoseStatement</td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var dose in route.Doses)
-                                        {
-                                            <tr>
-                                                <td>@dose.PatientGroup</td>
-                                                <td>@dose.DoseStatement</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </MudSimpleTable>
-                            }
-                        </td>
-                    }
-                </ChildRowContent>
-            </MudDataGrid>
-        </MudTabPanel>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                    </td>
+                }
+            </ChildRowContent>
+        </MudDataGrid>
+    </MudTabPanel>
 
-        <MudTabPanel Text="Medicinal Forms">
-            <MudDataGrid Items=@Drug.MedicinalForms ReadOnly=true>
-                <Columns>
-                    <HierarchyColumn T="MedicinalForm" />
-                    <TemplateColumn Title="Form" Sortable="false">
-                        <CellTemplate>@FormHeader(context.Item)</CellTemplate>
-                    </TemplateColumn>
-                </Columns>
-                <ChildRowContent>
-                    @if (context.Open)
-                    {
-                        <td colspan="2" class="pa-3">
-                            @if (context.Item.Excipients is not null)
+    <MudTabPanel Text="Medicinal Forms">
+        <MudDataGrid T="MedicinalForm" @ref="_medicinalFormsGrid" Items=@Drug.MedicinalForms ReadOnly=true RowClick=_OnMedicineClicked>
+            <Columns>
+                <HierarchyColumn T="MedicinalForm" />
+                <TemplateColumn Title="Form" Sortable="false">
+                    <CellTemplate>@BuildMedicineHeader(context.Item)</CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <ChildRowContent>
+                @if (context.Open)
+                {
+                    <td colspan="2" class="pa-3">
+                        @if (context.Item.Excipients is not null)
+                        {
+                            <MudText Typo="Typo.body2" Class="mb-1"><em>Excipients: @context.Item.Excipients</em></MudText>
+                        }
+                        @if (context.Item.Electrolytes is not null)
+                        {
+                            <MudText Typo="Typo.body2" Class="mb-1"><em>Electrolytes: @context.Item.Electrolytes</em></MudText>
+                        }
+                        @foreach (var prep in context.Item.Preparations)
+                        {
+                            <MudText Typo="Typo.subtitle2" Class="mt-3">@prep.Name</MudText>
+                            <MudText Typo="Typo.body2">@prep.Manufacturer</MudText>
+                            @if (prep.SugarFree)
                             {
-                                <MudText Typo="Typo.body2" Class="mb-1"><em>Excipients: @context.Item.Excipients</em></MudText>
+                                <MudChip T="string" Color="Color.Success" Size="Size.Small">Sugar free</MudChip>
                             }
-                            @if (context.Item.Electrolytes is not null)
-                            {
-                                <MudText Typo="Typo.body2" Class="mb-1"><em>Electrolytes: @context.Item.Electrolytes</em></MudText>
-                            }
-                            @foreach (var prep in context.Item.Preparations)
-                            {
-                                <MudText Typo="Typo.subtitle2" Class="mt-3">@prep.Name</MudText>
-                                <MudText Typo="Typo.body2">@prep.Manufacturer</MudText>
-                                @if (prep.SugarFree)
-                                {
-                                    <MudChip T="string" Color="Color.Success" Size="Size.Small">Sugar free</MudChip>
-                                }
-                                <MudText Typo="Typo.body2" Class="mt-1">@prep.ActiveIngredients</MudText>
-                                <MudSimpleTable Class="mt-1 mb-3">
-                                    <thead>
+                            <MudText Typo="Typo.body2" Class="mt-1">@prep.ActiveIngredients</MudText>
+                            <MudSimpleTable Class="mt-1 mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>Size</th>
+                                        <th>Unit</th>
+                                        <th>NHS Price</th>
+                                        <th>Legal Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var pack in prep.Packs)
+                                    {
                                         <tr>
-                                            <th>Size</th>
-                                            <th>Unit</th>
-                                            <th>NHS Price</th>
-                                            <th>Legal Category</th>
+                                            <td>@pack.Size</td>
+                                            <td>@pack.Unit</td>
+                                            <td>@pack.NhsIndicativePrice</td>
+                                            <td>@pack.LegalCategory</td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var pack in prep.Packs)
-                                        {
-                                            <tr>
-                                                <td>@pack.Size</td>
-                                                <td>@pack.Unit</td>
-                                                <td>@pack.NhsIndicativePrice</td>
-                                                <td>@pack.LegalCategory</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </MudSimpleTable>
-                            }
-                        </td>
-                    }
-                </ChildRowContent>
-            </MudDataGrid>
-        </MudTabPanel>
-    </MudTabs>
-}
-
-@code {
-    [Parameter] public Drug? Drug { get; set; }
-
-    private static string FormHeader(MedicinalForm form)
-    {
-        if (form.CautionaryLabels.Count == 0)
-            return form.FormType;
-        var labels = string.Join(", ", form.CautionaryLabels.Select(l => l.Number));
-        return $"{form.FormType} (Label {labels})";
-    }
-}
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        }
+                    </td>
+                }
+            </ChildRowContent>
+        </MudDataGrid>
+    </MudTabPanel>
+</MudTabs>
