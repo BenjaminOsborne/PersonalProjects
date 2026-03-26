@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Utils.Analyzer.Common/Utils.Analyzer.Common.csproj" />
+  <Project Path="Utils.Analyzer/Utils.Analyzer.CodeFixes/Utils.Analyzer.CodeFixes.csproj" />
+  <Project Path="Utils.Analyzer/Utils.Analyzer.Package/Utils.Analyzer.Package.csproj" />
+  <Project Path="Utils.Analyzer/Utils.Analyzer.Test/Utils.Analyzer.Test.csproj" />
+  <Project Path="Utils.Analyzer/Utils.Analyzer.Vsix/Utils.Analyzer.Vsix.csproj" />
+  <Project Path="Utils.Analyzer/Utils.Analyzer/Utils.Analyzer.csproj" />
+</Solution>
