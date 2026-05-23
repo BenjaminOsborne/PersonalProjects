@@ -65,7 +65,19 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// Add additional endpoints required by the Identity /Account Razor components.
-app.MapAdditionalIdentityEndpoints();
+app.MapAdditionalIdentityEndpoints(); // Add additional endpoints required by the Identity /Account Razor components.
+
+await MigrateDbAsync(app.Services); //Apply any pending db migrations
 
 app.Run();
+
+return;
+
+async Task MigrateDbAsync(IServiceProvider services)
+{
+    await using var scope = services.CreateAsyncScope();
+    await scope.ServiceProvider
+        .GetRequiredService<ApplicationDbContext>()
+        .Database
+        .MigrateAsync();
+}
