@@ -17,25 +17,40 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
+var authEnabled = builder.Configuration.GetValue("Auth:Enabled", defaultValue: true);
+if (authEnabled)
+{
+    builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+    builder.Services.AddAuthentication(configureOptions: options =>
+        {
+            options.DefaultScheme = IdentityConstants.ApplicationScheme;
+            options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+        })
+        .AddIdentityCookies();
+}
+else
+{
+    builder.Services.AddScoped<AuthenticationStateProvider, PassThroughAuthenticationStateProvider>();
+    builder.Services.AddAuthentication(PassThroughAuthHandler.SchemeName)
+        .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, PassThroughAuthHandler>(
+            authenticationScheme: PassThroughAuthHandler.SchemeName,
+            configureOptions: _ => { });
+}
+
+builder.Services.AddAuthorization();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = true;
-    options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
-})
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
+    })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
@@ -65,7 +80,10 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.MapAdditionalIdentityEndpoints(); // Add additional endpoints required by the Identity /Account Razor components.
+if (authEnabled)
+{
+    app.MapAdditionalIdentityEndpoints(); // Add additional endpoints required by the Identity /Account Razor components.
+}
 
 await MigrateDbAsync(app.Services); //Apply any pending db migrations
 
