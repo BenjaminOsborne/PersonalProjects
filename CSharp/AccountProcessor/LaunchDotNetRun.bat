@@ -1,0 +1,1 @@
+pwsh -File "DotNetRunScript.ps1"
